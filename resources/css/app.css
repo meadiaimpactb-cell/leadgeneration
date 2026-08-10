@@ -1,0 +1,73 @@
+/* ============================================================
+   Amad Craft — B2B Corporate Site
+   Stylesheet entry point.
+
+   Order matters: tokens define the variables, Tailwind's theme
+   consumes them, base sets element defaults, components build
+   on both.
+   ============================================================ */
+
+@import './tokens.css';
+/* `source(none)` turns OFF Tailwind's automatic content detection so the
+   scanned set is exactly what is listed below. Without it Tailwind walks the
+   project tree and picks up vendor/, which pulls `ml-*` / `mr-*` physical
+   -property utilities into the bundle — utilities nothing renders and that
+   §22.6 forbids. Explicit beats implicit for a file that ships to every page. */
+@import 'tailwindcss' source(none);
+@import './base.css';
+@import './components.css';
+
+@source '../js/**/*.vue';
+@source '../js/**/*.js';
+@source '../views/**/*.blade.php';
+
+/* ------------------------------------------------------------
+   Expose the design tokens to Tailwind utilities so that
+   `bg-navy-900`, `text-muted`, `p-5` … resolve to the SAME
+   values as the CSS custom properties. One source of truth.
+   ------------------------------------------------------------ */
+@theme {
+    --color-navy-900: #002546;
+    --color-navy-800: #06345c;
+    --color-navy-700: #0b4370;
+    --color-navy-100: #e3eaf1;
+    --color-lavender-500: #8685d8;
+    --color-lavender-700: #5f5ebe;
+    --color-orange-500: #d7653b;
+    --color-action-600: #b4522c;
+    --color-gold-400: #dcad75;
+    --color-gold-100: #f6ecdd;
+    --color-sand: #f3eee7;
+    --color-ink: #10161c;
+    --color-muted: #5a6b7b;
+    --color-paper: #ffffff;
+    --color-paper-alt: #f7f9fb;
+    --color-hairline: rgba(0, 37, 70, 0.12);
+
+    /* Spacing scale, base 4 (§10.4). Tailwind's numeric steps map
+       onto it, so `p-5` is 24px — the scale, not 1.25rem. */
+    --spacing: 4px;
+
+    --radius-sm: 4px;
+    --radius-md: 12px;
+    --radius-pill: 999px;
+
+    --shadow-card: 0 1px 2px rgba(0, 37, 70, 0.06), 0 8px 24px rgba(0, 37, 70, 0.06);
+
+    /* Breakpoints per §10.4. */
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 1024px;
+    --breakpoint-lg: 1440px;
+
+    /* Type scale — fluid, from tokens.css. */
+    --text-display: var(--fs-display);
+    --text-h1: var(--fs-h1);
+    --text-h2: var(--fs-h2);
+    --text-h3: var(--fs-h3);
+    --text-body-lg: var(--fs-body-lg);
+    --text-body: var(--fs-body);
+    --text-sm: var(--fs-sm);
+    --text-xs: var(--fs-xs);
+
+    --ease-brand: cubic-bezier(0.2, 0.7, 0.3, 1);
+}

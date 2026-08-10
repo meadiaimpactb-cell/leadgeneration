@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python tools/_zid/probe7.py)",
+      "Bash(./vendor/bin/pint tests/Feature/AdminWorkspaceTest.php)"
+    ]
+  }
+}

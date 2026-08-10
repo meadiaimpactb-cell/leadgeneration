@@ -1,0 +1,12779 @@
+import { computed, mergeProps, unref, useSSRContext, ref, withCtx, createVNode, toDisplayString, openBlock, createBlock, Fragment, renderList, createCommentVNode, useId, createTextVNode, withModifiers, reactive, watch, resolveDynamicComponent, renderSlot, nextTick, onMounted, onBeforeUnmount, onUnmounted, withDirectives, vShow, createSSRApp, h } from "vue";
+import { ssrRenderAttrs, ssrRenderAttr, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderSlot, ssrRenderStyle, ssrIncludeBooleanAttr, ssrRenderVNode, ssrLooseContain, ssrLooseEqual, ssrRenderDynamicModel } from "vue/server-renderer";
+import { usePage, router, Head, Link, useForm, createInertiaApp } from "@inertiajs/vue3";
+import { renderToString } from "@vue/server-renderer";
+import createServer from "@inertiajs/vue3/server";
+function translate(key, replacements = {}) {
+  const messages = usePage().props.translations ?? {};
+  let line = messages[key];
+  if (line === void 0) {
+    return key;
+  }
+  for (const [token, value] of Object.entries(replacements)) {
+    line = line.replace(new RegExp(`:${token}\\b`, "g"), String(value));
+  }
+  return line;
+}
+const i18n = {
+  install(app) {
+    app.config.globalProperties.$t = translate;
+    app.provide("t", translate);
+  }
+};
+function useTranslation() {
+  return { t: translate };
+}
+const _export_sfc = (sfc, props) => {
+  const target = sfc.__vccOpts || sfc;
+  for (const [key, val] of props) {
+    target[key] = val;
+  }
+  return target;
+};
+const _sfc_main$18 = {
+  __name: "Logo",
+  __ssrInlineRender: true,
+  props: {
+    lockup: {
+      type: String,
+      default: "horizontal",
+      validator: (v) => ["horizontal", "stacked"].includes(v)
+    },
+    tone: {
+      type: String,
+      default: "navy",
+      validator: (v) => ["navy", "lavender", "black", "white"].includes(v)
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const page = usePage();
+    const uploaded = computed(() => {
+      const brand = page.props.brand ?? {};
+      return props.tone === "white" ? brand.logo_dark : brand.logo_light;
+    });
+    const src = computed(() => `/brand/logo-${props.lockup}.svg`);
+    const colour = computed(
+      () => ({
+        navy: "var(--navy-900)",
+        lavender: "var(--lavender-500)",
+        black: "#000000",
+        white: "#FFFFFF"
+      })[props.tone]
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      if (uploaded.value) {
+        _push(`<img${ssrRenderAttrs(mergeProps({
+          class: ["logo logo--file", `logo--${__props.lockup}`],
+          src: uploaded.value,
+          alt: unref(t)("common.logo_alt")
+        }, _attrs))} data-v-ef29b1f9>`);
+      } else {
+        _push(`<span${ssrRenderAttrs(mergeProps({
+          class: ["logo", `logo--${__props.lockup}`],
+          style: { "--logo-colour": colour.value, "--logo-src": `url(${src.value})` },
+          role: "img",
+          "aria-label": unref(t)("common.logo_alt")
+        }, _attrs))} data-v-ef29b1f9></span>`);
+      }
+    };
+  }
+};
+const _sfc_setup$18 = _sfc_main$18.setup;
+_sfc_main$18.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Logo.vue");
+  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
+};
+const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-ef29b1f9"]]);
+const _sfc_main$17 = {
+  __name: "NavIcon",
+  __ssrInlineRender: true,
+  props: {
+    name: { type: String, required: true }
+  },
+  setup(__props) {
+    const PATHS = {
+      dashboard: "M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z",
+      leads: "M17 20v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9.5 10a4 4 0 100-8 4 4 0 000 8zM22 20v-2a4 4 0 00-3-3.9",
+      pages: "M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zM14 3v5h5M9 13h6M9 17h6",
+      solutions: "M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.2l5.9-.8L12 3z",
+      sectors: "M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6",
+      products: "M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7M12 11v10",
+      categories: "M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z",
+      impact: "M3 20h18M6 20V10M11 20V4M16 20v-7M21 20v-4",
+      stories: "M20 15a2 2 0 01-2 2H8l-4 4V5a2 2 0 012-2h12a2 2 0 012 2v10z",
+      reports: "M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zM14 3v5h5M9 15l2 2 4-4",
+      training: "M22 9L12 4 2 9l10 5 10-5zM6 11.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-5.5",
+      partners: "M8 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm8 0a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2 20a6 6 0 0112 0M12 20a6 6 0 0110 0",
+      campaigns: "M3 11v2a1 1 0 001 1h2l4 4V6L6 10H4a1 1 0 00-1 1zM15 8.5a4 4 0 010 7M18 5.5a8 8 0 010 13",
+      fields: "M4 6h16M4 12h10M4 18h7",
+      navigation: "M4 6h16M4 12h16M4 18h16",
+      redirects: "M4 8h11l-3-3M20 16H9l3 3",
+      users: "M16 20v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 10a4 4 0 100-8 4 4 0 000 8zM22 20v-2a4 4 0 00-3-3.9M16 2.1a4 4 0 010 7.8",
+      contact: "M6.5 3h3l1.5 4-2 1.5a12 12 0 006.5 6.5L17 13l4 1.5v3a2 2 0 01-2.2 2A17 17 0 013.1 5.2 2 2 0 015 3h1.5z",
+      site: "M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z",
+      brand: "M12 3l7 4v6c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4zM9.5 12l1.8 1.8 3.2-3.6",
+      store: "M4 7h16l-1 4H5L4 7zM5 11v8h14v-8M9 19v-4h6v4",
+      seo: "M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-5-5",
+      keywords: "M15 7a4 4 0 11-4 4l-7 7v3h3l7-7a4 4 0 011-7z",
+      robots: "M8 3v3M16 3v3M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zM9 12h.01M15 12h.01M9 16h6",
+      tracking: "M3 17l5-6 4 3 4-6 5 4M3 21h18",
+      advanced: "M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1v.2a2 2 0 11-4 0V21a1.6 1.6 0 00-2.7-1.1l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15a2 2 0 010-4 1.6 1.6 0 001.1-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 0010 4.6V4a2 2 0 014 0v.2a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1A1.6 1.6 0 0021 11a2 2 0 010 4z",
+      profile: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z",
+      dot: "M12 12h.01"
+    };
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<svg${ssrRenderAttrs(mergeProps({
+        class: "ico",
+        viewBox: "0 0 24 24",
+        width: "18",
+        height: "18",
+        fill: "none",
+        stroke: "currentColor",
+        "stroke-width": "1.75",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "aria-hidden": "true",
+        focusable: "false"
+      }, _attrs))} data-v-6c11aeaa><path${ssrRenderAttr("d", PATHS[__props.name] ?? PATHS.dot)} data-v-6c11aeaa></path></svg>`);
+    };
+  }
+};
+const _sfc_setup$17 = _sfc_main$17.setup;
+_sfc_main$17.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/NavIcon.vue");
+  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
+};
+const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-6c11aeaa"]]);
+const _sfc_main$16 = {
+  __name: "AdminLayout",
+  __ssrInlineRender: true,
+  props: {
+    title: { type: String, default: null }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const page = usePage();
+    const menuOpen = ref(false);
+    const user = computed(() => page.props.auth?.user ?? null);
+    const can = computed(() => page.props.auth?.can ?? {});
+    const groups = computed(() => [
+      {
+        label: t("admin.nav_overview"),
+        items: [
+          { icon: "dashboard", label: t("admin.dashboard"), href: "/admin", show: true },
+          { icon: "leads", label: t("admin.leads"), href: "/admin/leads", show: can.value["leads.view"] }
+        ]
+      },
+      {
+        label: t("admin.nav_content"),
+        items: [
+          { icon: "pages", label: t("admin.pages"), href: "/admin/pages", show: can.value["pages.view"] },
+          { icon: "solutions", label: t("admin.solutions"), href: "/admin/content/solutions", show: can.value["solutions.manage"] },
+          { icon: "sectors", label: t("admin.sectors"), href: "/admin/content/sectors", show: can.value["sectors.manage"] },
+          { icon: "products", label: t("admin.products"), href: "/admin/content/products", show: can.value["products.manage"] },
+          { icon: "categories", label: t("admin.product_categories"), href: "/admin/content/product-categories", show: can.value["products.manage"] },
+          { icon: "impact", label: t("admin.impact_metrics"), href: "/admin/content/impact-metrics", show: can.value["impact.manage"] },
+          { icon: "stories", label: t("admin.stories"), href: "/admin/content/stories", show: can.value["stories.manage"] },
+          { icon: "reports", label: t("admin.reports"), href: "/admin/content/reports", show: can.value["reports.manage"] },
+          { icon: "training", label: t("admin.training"), href: "/admin/content/training-programs", show: can.value["training.manage"] },
+          { icon: "partners", label: t("admin.partners"), href: "/admin/content/partners", show: can.value["partners.manage"] }
+        ]
+      },
+      {
+        label: t("admin.nav_campaigns"),
+        items: [
+          { icon: "campaigns", label: t("admin.campaigns"), href: "/admin/campaigns", show: can.value["campaigns.view"] }
+        ]
+      },
+      {
+        label: t("admin.nav_system"),
+        items: [
+          { icon: "fields", label: t("admin.lead_fields"), href: "/admin/lead-fields", show: can.value["settings.manage"] },
+          { icon: "navigation", label: t("admin.navigation"), href: "/admin/navigation", show: can.value["navigation.manage"] },
+          { icon: "redirects", label: t("admin.redirects"), href: "/admin/redirects", show: can.value["redirects.manage"] },
+          { icon: "users", label: t("admin.users"), href: "/admin/users", show: can.value["users.manage"] }
+        ]
+      },
+      /*
+       * Settings expand into their own group rather than sitting behind one
+       * link. They used to be a single page of thirty database keys; the sidebar
+       * is now the map of what can be changed, so an editor can find "where do I
+       * change the phone number" by reading rather than by opening and scanning.
+       */
+      {
+        label: t("admin.settings"),
+        items: [
+          { icon: "contact", label: t("settings.screen.contact"), href: "/admin/settings/contact", show: can.value["settings.manage"] },
+          { icon: "site", label: t("settings.screen.site"), href: "/admin/settings/site", show: can.value["settings.manage"] },
+          { icon: "brand", label: t("admin.brand"), href: "/admin/brand", show: can.value["settings.manage"] },
+          { icon: "store", label: t("settings.screen.store"), href: "/admin/settings/store", show: can.value["settings.manage"] },
+          { icon: "seo", label: t("settings.screen.seo"), href: "/admin/settings/seo", show: can.value["settings.manage"] },
+          { icon: "keywords", label: t("settings.screen.keywords"), href: "/admin/seo/keywords", show: can.value["pages.view"] },
+          { icon: "robots", label: t("settings.screen.robots"), href: "/admin/settings/robots", show: can.value["settings.manage"] },
+          { icon: "tracking", label: t("settings.screen.tracking"), href: "/admin/settings/tracking", show: can.value["settings.manage"] },
+          { icon: "advanced", label: t("settings.screen.advanced"), href: "/admin/settings/advanced", show: can.value["settings.manage"] }
+        ]
+      }
+    ]);
+    const visibleGroups = computed(
+      () => groups.value.map((g) => ({ ...g, items: g.items.filter((i) => i.show) })).filter((g) => g.items.length)
+    );
+    function isCurrent(href) {
+      const path = page.url.split("?")[0];
+      if (href === "/admin") return path === "/admin";
+      if (href.startsWith("/admin/settings/")) return path === href;
+      return path.startsWith(href);
+    }
+    const roleLabel = computed(() => {
+      const role = user.value?.roles?.[0];
+      return role ? t(`admin.role_${role.replace(/-/g, "_")}`) : "";
+    });
+    const initials = computed(
+      () => (user.value?.name ?? "").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("")
+    );
+    router.on("navigate", () => {
+      menuOpen.value = false;
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      _push(ssrRenderComponent(unref(Head), {
+        title: __props.title ? `${__props.title} — ${unref(t)("admin.panel")}` : unref(t)("admin.panel")
+      }, null, _parent));
+      _push(`<div class="shell" data-v-f7bf67cb><aside class="${ssrRenderClass([{ "side--open": menuOpen.value }, "side"])}" data-v-f7bf67cb><div class="side__brand" data-v-f7bf67cb>`);
+      _push(ssrRenderComponent(Logo, {
+        lockup: "horizontal",
+        tone: "white"
+      }, null, _parent));
+      _push(`</div><nav class="side__nav"${ssrRenderAttr("aria-label", unref(t)("admin.panel"))} data-v-f7bf67cb><!--[-->`);
+      ssrRenderList(visibleGroups.value, (group) => {
+        _push(`<div class="side__group" data-v-f7bf67cb><p class="side__group-label" data-v-f7bf67cb><span class="side__group-rule" aria-hidden="true" data-v-f7bf67cb></span> ${ssrInterpolate(group.label)}</p><!--[-->`);
+        ssrRenderList(group.items, (item) => {
+          _push(ssrRenderComponent(unref(Link), {
+            key: item.href,
+            href: item.href,
+            class: ["side__link", { "is-current": isCurrent(item.href) }],
+            "aria-current": isCurrent(item.href) ? "page" : void 0,
+            onClick: ($event) => menuOpen.value = false
+          }, {
+            default: withCtx((_, _push2, _parent2, _scopeId) => {
+              if (_push2) {
+                _push2(ssrRenderComponent(NavIcon, {
+                  name: item.icon ?? "dot"
+                }, null, _parent2, _scopeId));
+                _push2(`<span class="side__label" data-v-f7bf67cb${_scopeId}>${ssrInterpolate(item.label)}</span>`);
+              } else {
+                return [
+                  createVNode(NavIcon, {
+                    name: item.icon ?? "dot"
+                  }, null, 8, ["name"]),
+                  createVNode("span", { class: "side__label" }, toDisplayString(item.label), 1)
+                ];
+              }
+            }),
+            _: 2
+          }, _parent));
+        });
+        _push(`<!--]--></div>`);
+      });
+      _push(`<!--]--></nav><div class="side__foot" data-v-f7bf67cb><a class="side__visit" href="/" target="_blank" rel="noopener" data-v-f7bf67cb><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-f7bf67cb><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" data-v-f7bf67cb></path></svg><span data-v-f7bf67cb>${ssrInterpolate(unref(t)("admin.view_site"))}</span><span class="visually-hidden" data-v-f7bf67cb>${ssrInterpolate(unref(t)("common.external_link"))}</span></a></div></aside><div class="main" data-v-f7bf67cb><header class="topbar" data-v-f7bf67cb><button class="topbar__toggle" type="button"${ssrRenderAttr("aria-expanded", menuOpen.value)}${ssrRenderAttr("aria-label", menuOpen.value ? unref(t)("common.close_menu") : unref(t)("common.open_menu"))} data-v-f7bf67cb><span aria-hidden="true" data-v-f7bf67cb>☰</span></button>`);
+      if (__props.title) {
+        _push(`<h1 class="topbar__title" data-v-f7bf67cb>${ssrInterpolate(__props.title)}</h1>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(ssrRenderComponent(unref(Link), {
+        class: "account",
+        href: "/admin/profile"
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (user.value?.avatar) {
+              _push2(`<img class="account__avatar account__avatar--img"${ssrRenderAttr("src", user.value.avatar)} alt="" data-v-f7bf67cb${_scopeId}>`);
+            } else {
+              _push2(`<span class="account__avatar" aria-hidden="true" data-v-f7bf67cb${_scopeId}>${ssrInterpolate(initials.value)}</span>`);
+            }
+            _push2(`<span class="account__who" data-v-f7bf67cb${_scopeId}><span class="account__name" data-v-f7bf67cb${_scopeId}>${ssrInterpolate(user.value?.name)}</span><span class="account__role" data-v-f7bf67cb${_scopeId}>${ssrInterpolate(roleLabel.value)}</span></span>`);
+          } else {
+            return [
+              user.value?.avatar ? (openBlock(), createBlock("img", {
+                key: 0,
+                class: "account__avatar account__avatar--img",
+                src: user.value.avatar,
+                alt: ""
+              }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                key: 1,
+                class: "account__avatar",
+                "aria-hidden": "true"
+              }, toDisplayString(initials.value), 1)),
+              createVNode("span", { class: "account__who" }, [
+                createVNode("span", { class: "account__name" }, toDisplayString(user.value?.name), 1),
+                createVNode("span", { class: "account__role" }, toDisplayString(roleLabel.value), 1)
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`<a class="topbar__visit" href="/" target="_blank" rel="noopener" data-v-f7bf67cb><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-f7bf67cb><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" data-v-f7bf67cb></path></svg><span class="topbar__visit-text" data-v-f7bf67cb>${ssrInterpolate(unref(t)("admin.view_site"))}</span><span class="visually-hidden" data-v-f7bf67cb>${ssrInterpolate(unref(t)("common.external_link"))}</span></a><button class="topbar__out" type="button" data-v-f7bf67cb><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-f7bf67cb><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" data-v-f7bf67cb></path></svg><span class="topbar__out-text" data-v-f7bf67cb>${ssrInterpolate(unref(t)("admin.logout"))}</span></button></header>`);
+      if (unref(page).props.flash?.success) {
+        _push(`<p class="flash flash--ok" role="status" data-v-f7bf67cb>${ssrInterpolate(unref(page).props.flash.success)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (unref(page).props.flash?.error) {
+        _push(`<p class="flash flash--bad" role="alert" data-v-f7bf67cb>${ssrInterpolate(unref(page).props.flash.error)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<main class="content" data-v-f7bf67cb>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</main></div></div><!--]-->`);
+    };
+  }
+};
+const _sfc_setup$16 = _sfc_main$16.setup;
+_sfc_main$16.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AdminLayout.vue");
+  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
+};
+const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$16, [["__scopeId", "data-v-f7bf67cb"]]);
+const AR = "ar-SA-u-ca-gregory-nu-latn";
+const EN = "en-GB";
+function useFormat() {
+  const page = usePage();
+  const tag = () => page.props.locale === "en" ? EN : AR;
+  function number(value) {
+    if (value === null || value === void 0 || value === "") return "—";
+    const n = Number(value);
+    return Number.isFinite(n) ? new Intl.NumberFormat("en-US").format(n) : "—";
+  }
+  function date(iso, options = {}) {
+    if (!iso) return "—";
+    return new Intl.DateTimeFormat(tag(), {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      ...options
+    }).format(new Date(iso));
+  }
+  function dateTime(iso) {
+    if (!iso) return "—";
+    return new Intl.DateTimeFormat(tag(), {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    }).format(new Date(iso));
+  }
+  function dayMonth(iso) {
+    return date(iso, { year: void 0, month: "short", day: "numeric" });
+  }
+  return { number, date, dateTime, dayMonth };
+}
+const _sfc_main$15 = {
+  __name: "Workspace",
+  __ssrInlineRender: true,
+  props: {
+    /** Shown on the profile tabs; the settings screens keep the header but
+     *  have no reason to offer photo controls. */
+    editable: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const { date, dateTime } = useFormat();
+    const page = usePage();
+    const workspace = computed(() => page.props.workspace ?? {});
+    const profile = computed(() => workspace.value.profile ?? {});
+    const busy = ref(null);
+    const initials = computed(
+      () => (profile.value.name ?? "").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("")
+    );
+    const roleLabel = computed(
+      () => profile.value.role ? t(`admin.role_${profile.value.role.replace(/-/g, "_")}`) : ""
+    );
+    const TAB_ICONS = {
+      details: "profile",
+      appearance: "brand",
+      password: "advanced",
+      security: "robots"
+    };
+    function isCurrent(href) {
+      const path = page.url.split("?")[0];
+      if (path === "/admin/profile") {
+        return href === "/admin/profile/details";
+      }
+      return path === href;
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[--><section class="hero" data-v-dec49d27><div class="hero__cover" style="${ssrRenderStyle(profile.value.cover ? { backgroundImage: `url(${profile.value.cover})` } : null)}" data-v-dec49d27>`);
+      if (__props.editable) {
+        _push(`<!--[--><label class="hero__coverBtn" data-v-dec49d27>`);
+        _push(ssrRenderComponent(NavIcon, { name: "brand" }, null, _parent));
+        _push(`<span data-v-dec49d27>${ssrInterpolate(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.cover_add"))}</span><input type="file" accept="image/*" data-v-dec49d27></label>`);
+        if (profile.value.cover) {
+          _push(`<button class="hero__coverBtn hero__coverBtn--del" type="button" data-v-dec49d27>${ssrInterpolate(unref(t)("admin.delete"))}</button>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`<!--]-->`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</div><div class="hero__bar" data-v-dec49d27><div class="hero__portrait" data-v-dec49d27>`);
+      if (profile.value.avatar) {
+        _push(`<img class="hero__img"${ssrRenderAttr("src", profile.value.avatar)} alt="" data-v-dec49d27>`);
+      } else {
+        _push(`<span class="hero__initials" aria-hidden="true" data-v-dec49d27>${ssrInterpolate(initials.value)}</span>`);
+      }
+      if (__props.editable) {
+        _push(`<label class="hero__camera"${ssrRenderAttr("title", unref(t)("admin.avatar_add"))} data-v-dec49d27>`);
+        _push(ssrRenderComponent(NavIcon, { name: "stories" }, null, _parent));
+        _push(`<span class="visually-hidden" data-v-dec49d27>${ssrInterpolate(unref(t)("admin.avatar_add"))}</span><input type="file" accept="image/*" data-v-dec49d27></label>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</div><div class="hero__who" data-v-dec49d27><h2 class="hero__name" data-v-dec49d27>${ssrInterpolate(profile.value.name)}</h2><p class="hero__email latin" data-v-dec49d27>${ssrInterpolate(profile.value.email)}</p><div class="badges" data-v-dec49d27><span class="badge badge--role" data-v-dec49d27>${ssrInterpolate(roleLabel.value)}</span><span class="${ssrRenderClass([profile.value.twoFactor ? "badge--ok" : "badge--warn", "badge"])}" data-v-dec49d27>${ssrInterpolate(profile.value.twoFactor ? unref(t)("admin.twofa_on") : unref(t)("admin.twofa_off"))}</span></div></div><dl class="stats" data-v-dec49d27><div class="stat" data-v-dec49d27><dt data-v-dec49d27>${ssrInterpolate(unref(t)("admin.last_login"))}</dt><dd data-v-dec49d27>${ssrInterpolate(profile.value.lastLoginAt ? unref(dateTime)(profile.value.lastLoginAt) : "—")}</dd></div><div class="stat" data-v-dec49d27><dt data-v-dec49d27>${ssrInterpolate(unref(t)("admin.member_since"))}</dt><dd data-v-dec49d27>${ssrInterpolate(profile.value.createdAt ? unref(date)(profile.value.createdAt) : "—")}</dd></div></dl></div></section><div class="split" data-v-dec49d27><nav class="tabs"${ssrRenderAttr("aria-label", unref(t)("admin.profile"))} data-v-dec49d27><p class="tabs__head" data-v-dec49d27>${ssrInterpolate(unref(t)("admin.profile"))}</p><!--[-->`);
+      ssrRenderList(workspace.value.tabs ?? [], (item) => {
+        _push(ssrRenderComponent(unref(Link), {
+          key: item.href,
+          class: ["tab", { "is-current": isCurrent(item.href) }],
+          href: item.href,
+          "aria-current": isCurrent(item.href) ? "page" : void 0
+        }, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(ssrRenderComponent(NavIcon, {
+                name: TAB_ICONS[item.key] ?? "dot"
+              }, null, _parent2, _scopeId));
+              _push2(`<span class="tab__text" data-v-dec49d27${_scopeId}><span class="tab__title" data-v-dec49d27${_scopeId}>${ssrInterpolate(item.label)}</span><span class="tab__note" data-v-dec49d27${_scopeId}>${ssrInterpolate(item.hint)}</span></span>`);
+            } else {
+              return [
+                createVNode(NavIcon, {
+                  name: TAB_ICONS[item.key] ?? "dot"
+                }, null, 8, ["name"]),
+                createVNode("span", { class: "tab__text" }, [
+                  createVNode("span", { class: "tab__title" }, toDisplayString(item.label), 1),
+                  createVNode("span", { class: "tab__note" }, toDisplayString(item.hint), 1)
+                ])
+              ];
+            }
+          }),
+          _: 2
+        }, _parent));
+      });
+      _push(`<!--]-->`);
+      if ((workspace.value.shortcuts ?? []).length) {
+        _push(`<!--[--><p class="tabs__head tabs__head--spaced" data-v-dec49d27>${ssrInterpolate(unref(t)("admin.settings"))}</p><!--[-->`);
+        ssrRenderList(workspace.value.shortcuts, (item) => {
+          _push(ssrRenderComponent(unref(Link), {
+            key: item.href,
+            class: ["tab", { "is-current": isCurrent(item.href) }],
+            href: item.href,
+            "aria-current": isCurrent(item.href) ? "page" : void 0
+          }, {
+            default: withCtx((_, _push2, _parent2, _scopeId) => {
+              if (_push2) {
+                _push2(ssrRenderComponent(NavIcon, {
+                  name: item.icon
+                }, null, _parent2, _scopeId));
+                _push2(`<span class="tab__text" data-v-dec49d27${_scopeId}><span class="tab__title" data-v-dec49d27${_scopeId}>${ssrInterpolate(item.label)}</span><span class="tab__note" data-v-dec49d27${_scopeId}>${ssrInterpolate(item.hint)}</span></span>`);
+              } else {
+                return [
+                  createVNode(NavIcon, {
+                    name: item.icon
+                  }, null, 8, ["name"]),
+                  createVNode("span", { class: "tab__text" }, [
+                    createVNode("span", { class: "tab__title" }, toDisplayString(item.label), 1),
+                    createVNode("span", { class: "tab__note" }, toDisplayString(item.hint), 1)
+                  ])
+                ];
+              }
+            }),
+            _: 2
+          }, _parent));
+        });
+        _push(`<!--]--><!--]-->`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</nav><div class="pane" data-v-dec49d27>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</div></div><!--]-->`);
+    };
+  }
+};
+const _sfc_setup$15 = _sfc_main$15.setup;
+_sfc_main$15.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Workspace.vue");
+  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
+};
+const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-dec49d27"]]);
+const _sfc_main$14 = {
+  __name: "Panel",
+  __ssrInlineRender: true,
+  props: {
+    title: { type: String, default: null },
+    hint: { type: String, default: null }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "panel" }, _attrs))} data-v-5a439de4>`);
+      if (__props.title || _ctx.$slots.actions) {
+        _push(`<header class="panel__head" data-v-5a439de4><div data-v-5a439de4>`);
+        if (__props.title) {
+          _push(`<h2 class="panel__title" data-v-5a439de4>${ssrInterpolate(__props.title)}</h2>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (__props.hint) {
+          _push(`<p class="panel__hint" data-v-5a439de4>${ssrInterpolate(__props.hint)}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div>`);
+        if (_ctx.$slots.actions) {
+          _push(`<div class="panel__actions" data-v-5a439de4>`);
+          ssrRenderSlot(_ctx.$slots, "actions", {}, null, _push, _parent);
+          _push(`</div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</header>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<div class="panel__body" data-v-5a439de4>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</div></section>`);
+    };
+  }
+};
+const _sfc_setup$14 = _sfc_main$14.setup;
+_sfc_main$14.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Panel.vue");
+  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
+};
+const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-5a439de4"]]);
+const _sfc_main$13 = {
+  __name: "Brand",
+  __ssrInlineRender: true,
+  props: {
+    assets: { type: Object, default: () => ({}) },
+    palette: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const busy = ref(null);
+    const SLOTS = ["logo_light", "logo_dark", "favicon", "og_image"];
+    function upload(collection, event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      busy.value = collection;
+      router.post(
+        "/admin/brand",
+        { collection, file },
+        {
+          forceFormData: true,
+          preserveScroll: true,
+          onFinish: () => {
+            busy.value = null;
+            event.target.value = "";
+          }
+        }
+      );
+    }
+    function remove(asset) {
+      router.delete(`/admin/brand/${asset.id}`, { preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.brand")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Workspace, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(Panel, {
+                    title: unref(t)("admin.brand")
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<p class="intro" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_hint"))}</p><div class="slots" data-v-d1bab7a5${_scopeId3}><!--[-->`);
+                        ssrRenderList(SLOTS, (slot) => {
+                          _push4(`<div class="slot" data-v-d1bab7a5${_scopeId3}><h3 class="slot__title" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)(`admin.brand_${slot}`))}</h3><p class="slot__hint" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)(`admin.brand_${slot}_hint`))}</p><div class="${ssrRenderClass([{ "slot__frame--dark": slot === "logo_dark" }, "slot__frame"])}" data-v-d1bab7a5${_scopeId3}>`);
+                          if (__props.assets[slot]) {
+                            _push4(`<img class="slot__img"${ssrRenderAttr("src", __props.assets[slot].url)} alt="" data-v-d1bab7a5${_scopeId3}>`);
+                          } else {
+                            _push4(`<span class="slot__empty" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_default"))}</span>`);
+                          }
+                          _push4(`</div><div class="slot__actions" data-v-d1bab7a5${_scopeId3}><label class="btn btn--ghost slot__upload" data-v-d1bab7a5${_scopeId3}><span data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*,.ico" data-v-d1bab7a5${_scopeId3}></label>`);
+                          if (__props.assets[slot]) {
+                            _push4(`<button class="btn btn--ghost slot__remove" type="button" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)("admin.delete"))}</button>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`</div></div>`);
+                        });
+                        _push4(`<!--]--></div>`);
+                      } else {
+                        return [
+                          createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_hint")), 1),
+                          createVNode("div", { class: "slots" }, [
+                            (openBlock(), createBlock(Fragment, null, renderList(SLOTS, (slot) => {
+                              return createVNode("div", {
+                                key: slot,
+                                class: "slot"
+                              }, [
+                                createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)(`admin.brand_${slot}`)), 1),
+                                createVNode("p", { class: "slot__hint" }, toDisplayString(unref(t)(`admin.brand_${slot}_hint`)), 1),
+                                createVNode("div", {
+                                  class: ["slot__frame", { "slot__frame--dark": slot === "logo_dark" }]
+                                }, [
+                                  __props.assets[slot] ? (openBlock(), createBlock("img", {
+                                    key: 0,
+                                    class: "slot__img",
+                                    src: __props.assets[slot].url,
+                                    alt: ""
+                                  }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                    key: 1,
+                                    class: "slot__empty"
+                                  }, toDisplayString(unref(t)("admin.brand_default")), 1))
+                                ], 2),
+                                createVNode("div", { class: "slot__actions" }, [
+                                  createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                    createVNode("span", null, toDisplayString(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                    createVNode("input", {
+                                      type: "file",
+                                      accept: "image/*,.ico",
+                                      onChange: (e) => upload(slot, e)
+                                    }, null, 40, ["onChange"])
+                                  ]),
+                                  __props.assets[slot] ? (openBlock(), createBlock("button", {
+                                    key: 0,
+                                    class: "btn btn--ghost slot__remove",
+                                    type: "button",
+                                    onClick: ($event) => remove(__props.assets[slot])
+                                  }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                                ])
+                              ]);
+                            }), 64))
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Panel, {
+                    title: unref(t)("admin.brand_palette")
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<p class="intro" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_palette_hint"))}</p><ul class="palette" data-v-d1bab7a5${_scopeId3}><!--[-->`);
+                        ssrRenderList(__props.palette, (colour) => {
+                          _push4(`<li class="swatch" data-v-d1bab7a5${_scopeId3}><span class="swatch__chip" style="${ssrRenderStyle({ background: colour.hex })}" aria-hidden="true" data-v-d1bab7a5${_scopeId3}></span><span class="swatch__name" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(unref(t)(`admin.colour_${colour.name}`))}</span><code class="swatch__hex latin" data-v-d1bab7a5${_scopeId3}>${ssrInterpolate(colour.hex)}</code></li>`);
+                        });
+                        _push4(`<!--]--></ul>`);
+                      } else {
+                        return [
+                          createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_palette_hint")), 1),
+                          createVNode("ul", { class: "palette" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.palette, (colour) => {
+                              return openBlock(), createBlock("li", {
+                                key: colour.hex,
+                                class: "swatch"
+                              }, [
+                                createVNode("span", {
+                                  class: "swatch__chip",
+                                  style: { background: colour.hex },
+                                  "aria-hidden": "true"
+                                }, null, 4),
+                                createVNode("span", { class: "swatch__name" }, toDisplayString(unref(t)(`admin.colour_${colour.name}`)), 1),
+                                createVNode("code", { class: "swatch__hex latin" }, toDisplayString(colour.hex), 1)
+                              ]);
+                            }), 128))
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(Panel, {
+                      title: unref(t)("admin.brand")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_hint")), 1),
+                        createVNode("div", { class: "slots" }, [
+                          (openBlock(), createBlock(Fragment, null, renderList(SLOTS, (slot) => {
+                            return createVNode("div", {
+                              key: slot,
+                              class: "slot"
+                            }, [
+                              createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)(`admin.brand_${slot}`)), 1),
+                              createVNode("p", { class: "slot__hint" }, toDisplayString(unref(t)(`admin.brand_${slot}_hint`)), 1),
+                              createVNode("div", {
+                                class: ["slot__frame", { "slot__frame--dark": slot === "logo_dark" }]
+                              }, [
+                                __props.assets[slot] ? (openBlock(), createBlock("img", {
+                                  key: 0,
+                                  class: "slot__img",
+                                  src: __props.assets[slot].url,
+                                  alt: ""
+                                }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                  key: 1,
+                                  class: "slot__empty"
+                                }, toDisplayString(unref(t)("admin.brand_default")), 1))
+                              ], 2),
+                              createVNode("div", { class: "slot__actions" }, [
+                                createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                  createVNode("span", null, toDisplayString(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                  createVNode("input", {
+                                    type: "file",
+                                    accept: "image/*,.ico",
+                                    onChange: (e) => upload(slot, e)
+                                  }, null, 40, ["onChange"])
+                                ]),
+                                __props.assets[slot] ? (openBlock(), createBlock("button", {
+                                  key: 0,
+                                  class: "btn btn--ghost slot__remove",
+                                  type: "button",
+                                  onClick: ($event) => remove(__props.assets[slot])
+                                }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                              ])
+                            ]);
+                          }), 64))
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"]),
+                    createVNode(Panel, {
+                      title: unref(t)("admin.brand_palette")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_palette_hint")), 1),
+                        createVNode("ul", { class: "palette" }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.palette, (colour) => {
+                            return openBlock(), createBlock("li", {
+                              key: colour.hex,
+                              class: "swatch"
+                            }, [
+                              createVNode("span", {
+                                class: "swatch__chip",
+                                style: { background: colour.hex },
+                                "aria-hidden": "true"
+                              }, null, 4),
+                              createVNode("span", { class: "swatch__name" }, toDisplayString(unref(t)(`admin.colour_${colour.name}`)), 1),
+                              createVNode("code", { class: "swatch__hex latin" }, toDisplayString(colour.hex), 1)
+                            ]);
+                          }), 128))
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Workspace, null, {
+                default: withCtx(() => [
+                  createVNode(Panel, {
+                    title: unref(t)("admin.brand")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_hint")), 1),
+                      createVNode("div", { class: "slots" }, [
+                        (openBlock(), createBlock(Fragment, null, renderList(SLOTS, (slot) => {
+                          return createVNode("div", {
+                            key: slot,
+                            class: "slot"
+                          }, [
+                            createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)(`admin.brand_${slot}`)), 1),
+                            createVNode("p", { class: "slot__hint" }, toDisplayString(unref(t)(`admin.brand_${slot}_hint`)), 1),
+                            createVNode("div", {
+                              class: ["slot__frame", { "slot__frame--dark": slot === "logo_dark" }]
+                            }, [
+                              __props.assets[slot] ? (openBlock(), createBlock("img", {
+                                key: 0,
+                                class: "slot__img",
+                                src: __props.assets[slot].url,
+                                alt: ""
+                              }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                key: 1,
+                                class: "slot__empty"
+                              }, toDisplayString(unref(t)("admin.brand_default")), 1))
+                            ], 2),
+                            createVNode("div", { class: "slot__actions" }, [
+                              createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                createVNode("span", null, toDisplayString(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                createVNode("input", {
+                                  type: "file",
+                                  accept: "image/*,.ico",
+                                  onChange: (e) => upload(slot, e)
+                                }, null, 40, ["onChange"])
+                              ]),
+                              __props.assets[slot] ? (openBlock(), createBlock("button", {
+                                key: 0,
+                                class: "btn btn--ghost slot__remove",
+                                type: "button",
+                                onClick: ($event) => remove(__props.assets[slot])
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                            ])
+                          ]);
+                        }), 64))
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"]),
+                  createVNode(Panel, {
+                    title: unref(t)("admin.brand_palette")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_palette_hint")), 1),
+                      createVNode("ul", { class: "palette" }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.palette, (colour) => {
+                          return openBlock(), createBlock("li", {
+                            key: colour.hex,
+                            class: "swatch"
+                          }, [
+                            createVNode("span", {
+                              class: "swatch__chip",
+                              style: { background: colour.hex },
+                              "aria-hidden": "true"
+                            }, null, 4),
+                            createVNode("span", { class: "swatch__name" }, toDisplayString(unref(t)(`admin.colour_${colour.name}`)), 1),
+                            createVNode("code", { class: "swatch__hex latin" }, toDisplayString(colour.hex), 1)
+                          ]);
+                        }), 128))
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"])
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$13 = _sfc_main$13.setup;
+_sfc_main$13.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Brand.vue");
+  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
+};
+const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-d1bab7a5"]]);
+const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Brand
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$12 = {
+  __name: "Field",
+  __ssrInlineRender: true,
+  props: {
+    label: { type: String, required: true },
+    modelValue: { type: [String, Number, Boolean, null], default: "" },
+    type: { type: String, default: "text" },
+    error: { type: String, default: null },
+    hint: { type: String, default: null },
+    dir: { type: String, default: null },
+    placeholder: { type: String, default: null },
+    options: { type: Array, default: () => [] },
+    rows: { type: Number, default: 4 },
+    required: { type: Boolean, default: false },
+    // A locked control still renders, so the reader can see the value and
+    // why it cannot change — better than hiding it.
+    disabled: { type: Boolean, default: false }
+  },
+  emits: ["update:modelValue"],
+  setup(__props) {
+    const props = __props;
+    const id = useId();
+    const describedBy = computed(
+      () => [props.hint ? `${id}-hint` : null, props.error ? `${id}-error` : null].filter(Boolean).join(" ") || void 0
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "field" }, _attrs))} data-v-4723bd15><label class="field__label"${ssrRenderAttr("for", unref(id))} data-v-4723bd15>${ssrInterpolate(__props.label)} `);
+      if (__props.required) {
+        _push(`<span aria-hidden="true" class="field__req" data-v-4723bd15>*</span>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</label>`);
+      if (__props.type === "select") {
+        _push(`<select${ssrRenderAttr("id", unref(id))} class="field__input"${ssrRenderAttr("value", __props.modelValue)}${ssrRenderAttr("placeholder", __props.placeholder ?? void 0)}${ssrIncludeBooleanAttr(__props.disabled) ? " disabled" : ""}${ssrRenderAttr("aria-invalid", __props.error ? "true" : void 0)}${ssrRenderAttr("aria-describedby", describedBy.value)} data-v-4723bd15><option value="" data-v-4723bd15>—</option><!--[-->`);
+        ssrRenderList(__props.options, (opt) => {
+          _push(`<option${ssrRenderAttr("value", opt.value)} data-v-4723bd15>${ssrInterpolate(opt.label)}</option>`);
+        });
+        _push(`<!--]--></select>`);
+      } else if (__props.type === "checkbox") {
+        _push(`<label class="field__check" data-v-4723bd15><input${ssrRenderAttr("id", unref(id))} type="checkbox"${ssrIncludeBooleanAttr(Boolean(__props.modelValue)) ? " checked" : ""}${ssrIncludeBooleanAttr(__props.disabled) ? " disabled" : ""}${ssrRenderAttr("aria-describedby", describedBy.value)} data-v-4723bd15><span data-v-4723bd15>${ssrInterpolate(__props.hint ?? __props.label)}</span></label>`);
+      } else if (__props.type === "textarea" || __props.type === "richtext") {
+        _push(`<textarea${ssrRenderAttr("id", unref(id))} class="field__input field__input--area"${ssrRenderAttr("rows", __props.type === "richtext" ? 10 : __props.rows)}${ssrIncludeBooleanAttr(__props.disabled) ? " disabled" : ""}${ssrRenderAttr("dir", __props.dir ?? "auto")}${ssrRenderAttr("aria-invalid", __props.error ? "true" : void 0)}${ssrRenderAttr("aria-describedby", describedBy.value)} data-v-4723bd15>${ssrInterpolate(__props.modelValue ?? "")}</textarea>`);
+      } else {
+        _push(`<input${ssrRenderAttr("id", unref(id))} class="field__input"${ssrRenderAttr("type", __props.type === "slug" ? "text" : __props.type)}${ssrRenderAttr("value", __props.modelValue ?? "")}${ssrRenderAttr("dir", __props.dir ?? "auto")}${ssrRenderAttr("placeholder", __props.placeholder ?? void 0)}${ssrIncludeBooleanAttr(__props.disabled) ? " disabled" : ""}${ssrRenderAttr("aria-invalid", __props.error ? "true" : void 0)}${ssrRenderAttr("aria-describedby", describedBy.value)} data-v-4723bd15>`);
+      }
+      if (__props.hint && __props.type !== "checkbox") {
+        _push(`<p${ssrRenderAttr("id", `${unref(id)}-hint`)} class="field__hint" data-v-4723bd15>${ssrInterpolate(__props.hint)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (__props.error) {
+        _push(`<p${ssrRenderAttr("id", `${unref(id)}-error`)} class="field__error" data-v-4723bd15>${ssrInterpolate(__props.error)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</div>`);
+    };
+  }
+};
+const _sfc_setup$12 = _sfc_main$12.setup;
+_sfc_main$12.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Field.vue");
+  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
+};
+const Field = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-4723bd15"]]);
+const _sfc_main$11 = {
+  __name: "BilingualFields",
+  __ssrInlineRender: true,
+  props: {
+    // { ar: {field: value}, en: {...} }
+    modelValue: { type: Object, required: true },
+    locales: { type: Array, required: true },
+    // { fieldName: 'text' | 'textarea' | 'richtext' }
+    fields: { type: Object, required: true },
+    errors: { type: Object, default: () => ({}) },
+    labels: { type: Object, default: () => ({}) }
+  },
+  emits: ["update:modelValue"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit = __emit;
+    const { t } = useTranslation();
+    const DIRS = { ar: "rtl", en: "ltr" };
+    const entries = computed(() => Object.entries(props.fields));
+    function update(locale, field, value) {
+      emit("update:modelValue", {
+        ...props.modelValue,
+        [locale]: { ...props.modelValue[locale] ?? {}, [field]: value }
+      });
+    }
+    function isMissing(locale) {
+      const values = props.modelValue[locale] ?? {};
+      return !Object.values(values).some((v) => v !== null && v !== void 0 && String(v).trim() !== "");
+    }
+    function label(field) {
+      return props.labels[field] ?? field.replace(/_/g, " ");
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "bi" }, _attrs))} data-v-8f821154><!--[-->`);
+      ssrRenderList(__props.locales, (locale) => {
+        _push(`<div class="bi__col"${ssrRenderAttr("dir", DIRS[locale] ?? "auto")} data-v-8f821154><header class="bi__head" data-v-8f821154><span class="bi__locale" data-v-8f821154>${ssrInterpolate(locale.toUpperCase())}</span>`);
+        if (isMissing(locale)) {
+          _push(`<span class="bi__missing" data-v-8f821154>${ssrInterpolate(unref(t)("admin.translation_missing"))}</span>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</header><div class="bi__fields" data-v-8f821154><!--[-->`);
+        ssrRenderList(entries.value, ([field, type]) => {
+          _push(ssrRenderComponent(Field, {
+            key: `${locale}-${field}`,
+            label: label(field),
+            type,
+            dir: DIRS[locale] ?? "auto",
+            "model-value": __props.modelValue[locale]?.[field] ?? "",
+            error: __props.errors[`translations.${locale}.${field}`],
+            "onUpdate:modelValue": (v) => update(locale, field, v)
+          }, null, _parent));
+        });
+        _push(`<!--]--></div></div>`);
+      });
+      _push(`<!--]--></div>`);
+    };
+  }
+};
+const _sfc_setup$11 = _sfc_main$11.setup;
+_sfc_main$11.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/BilingualFields.vue");
+  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
+};
+const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-8f821154"]]);
+const _sfc_main$10 = {
+  __name: "Edit",
+  __ssrInlineRender: true,
+  props: {
+    campaign: { type: Object, default: null },
+    locales: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const FIELDS = {
+      title: "text",
+      meta_title: "text",
+      meta_description: "textarea"
+    };
+    function blankTranslations() {
+      return Object.fromEntries(
+        props.locales.map((l) => [l, Object.fromEntries(Object.keys(FIELDS).map((f) => [f, ""]))])
+      );
+    }
+    const form = useForm({
+      slug: props.campaign?.slug ?? "",
+      is_active: props.campaign?.is_active ?? false,
+      starts_at: props.campaign?.starts_at ?? "",
+      ends_at: props.campaign?.ends_at ?? "",
+      default_utm_source: props.campaign?.default_utm_source ?? "",
+      default_utm_medium: props.campaign?.default_utm_medium ?? "",
+      default_utm_campaign: props.campaign?.default_utm_campaign ?? "",
+      translations: props.campaign?.translations ?? blankTranslations()
+    });
+    function submit() {
+      if (props.campaign) {
+        form.patch(`/admin/campaigns/${props.campaign.id}`, { preserveScroll: true });
+      } else {
+        form.post("/admin/campaigns");
+      }
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: __props.campaign ? __props.campaign.slug : unref(t)("admin.campaign_wizard")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<ol class="steps" data-v-81e9c2fe${_scopeId}><li class="steps__item is-current" data-v-81e9c2fe${_scopeId}>${ssrInterpolate(unref(t)("admin.campaign_step_1"))}</li><li class="steps__item" data-v-81e9c2fe${_scopeId}>${ssrInterpolate(unref(t)("admin.campaign_step_2"))}</li><li class="steps__item" data-v-81e9c2fe${_scopeId}>${ssrInterpolate(unref(t)("admin.campaign_step_3"))}</li></ol><form data-v-81e9c2fe${_scopeId}>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.shared_fields")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (__props.campaign) {
+                    _push3(`<a class="btn btn--ghost"${ssrRenderAttr("href", __props.campaign.previewUrl)} target="_blank" rel="noopener" data-v-81e9c2fe${_scopeId2}>${ssrInterpolate(unref(t)("admin.preview"))}</a>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  if (__props.campaign) {
+                    _push3(ssrRenderComponent(unref(Link), {
+                      href: `/admin/sections/campaign/${__props.campaign.id}`,
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`${ssrInterpolate(unref(t)("admin.sections"))}`);
+                        } else {
+                          return [
+                            createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    __props.campaign ? (openBlock(), createBlock("a", {
+                      key: 0,
+                      class: "btn btn--ghost",
+                      href: __props.campaign.previewUrl,
+                      target: "_blank",
+                      rel: "noopener"
+                    }, toDisplayString(unref(t)("admin.preview")), 9, ["href"])) : createCommentVNode("", true),
+                    __props.campaign ? (openBlock(), createBlock(unref(Link), {
+                      key: 1,
+                      href: `/admin/sections/campaign/${__props.campaign.id}`,
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="grid" data-v-81e9c2fe${_scopeId2}>`);
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).slug,
+                    "onUpdate:modelValue": ($event) => unref(form).slug = $event,
+                    label: "slug",
+                    type: "slug",
+                    dir: "ltr",
+                    error: unref(form).errors.slug,
+                    required: ""
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).starts_at,
+                    "onUpdate:modelValue": ($event) => unref(form).starts_at = $event,
+                    label: "starts_at",
+                    type: "date",
+                    error: unref(form).errors.starts_at
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).ends_at,
+                    "onUpdate:modelValue": ($event) => unref(form).ends_at = $event,
+                    label: "ends_at",
+                    type: "date",
+                    error: unref(form).errors.ends_at
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).default_utm_source,
+                    "onUpdate:modelValue": ($event) => unref(form).default_utm_source = $event,
+                    label: "utm_source",
+                    dir: "ltr"
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).default_utm_medium,
+                    "onUpdate:modelValue": ($event) => unref(form).default_utm_medium = $event,
+                    label: "utm_medium",
+                    dir: "ltr"
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).default_utm_campaign,
+                    "onUpdate:modelValue": ($event) => unref(form).default_utm_campaign = $event,
+                    label: "utm_campaign",
+                    dir: "ltr"
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).is_active,
+                    "onUpdate:modelValue": ($event) => unref(form).is_active = $event,
+                    label: unref(t)("admin.active"),
+                    type: "checkbox"
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "grid" }, [
+                      createVNode(Field, {
+                        modelValue: unref(form).slug,
+                        "onUpdate:modelValue": ($event) => unref(form).slug = $event,
+                        label: "slug",
+                        type: "slug",
+                        dir: "ltr",
+                        error: unref(form).errors.slug,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).starts_at,
+                        "onUpdate:modelValue": ($event) => unref(form).starts_at = $event,
+                        label: "starts_at",
+                        type: "date",
+                        error: unref(form).errors.starts_at
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).ends_at,
+                        "onUpdate:modelValue": ($event) => unref(form).ends_at = $event,
+                        label: "ends_at",
+                        type: "date",
+                        error: unref(form).errors.ends_at
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).default_utm_source,
+                        "onUpdate:modelValue": ($event) => unref(form).default_utm_source = $event,
+                        label: "utm_source",
+                        dir: "ltr"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).default_utm_medium,
+                        "onUpdate:modelValue": ($event) => unref(form).default_utm_medium = $event,
+                        label: "utm_medium",
+                        dir: "ltr"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).default_utm_campaign,
+                        "onUpdate:modelValue": ($event) => unref(form).default_utm_campaign = $event,
+                        label: "utm_campaign",
+                        dir: "ltr"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).is_active,
+                        "onUpdate:modelValue": ($event) => unref(form).is_active = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.per_locale")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(BilingualFields, {
+                    modelValue: unref(form).translations,
+                    "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                    locales: __props.locales,
+                    fields: FIELDS,
+                    errors: unref(form).errors
+                  }, null, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(BilingualFields, {
+                      modelValue: unref(form).translations,
+                      "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                      locales: __props.locales,
+                      fields: FIELDS,
+                      errors: unref(form).errors
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "locales", "errors"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`<div class="bar" data-v-81e9c2fe${_scopeId}><button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-81e9c2fe${_scopeId}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button>`);
+            _push2(ssrRenderComponent(unref(Link), {
+              href: "/admin/campaigns",
+              class: "btn btn--ghost"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`${ssrInterpolate(unref(t)("admin.cancel"))}`);
+                } else {
+                  return [
+                    createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</div></form>`);
+          } else {
+            return [
+              createVNode("ol", { class: "steps" }, [
+                createVNode("li", { class: "steps__item is-current" }, toDisplayString(unref(t)("admin.campaign_step_1")), 1),
+                createVNode("li", { class: "steps__item" }, toDisplayString(unref(t)("admin.campaign_step_2")), 1),
+                createVNode("li", { class: "steps__item" }, toDisplayString(unref(t)("admin.campaign_step_3")), 1)
+              ]),
+              createVNode("form", {
+                onSubmit: withModifiers(submit, ["prevent"])
+              }, [
+                createVNode(Panel, {
+                  title: unref(t)("admin.shared_fields")
+                }, {
+                  actions: withCtx(() => [
+                    __props.campaign ? (openBlock(), createBlock("a", {
+                      key: 0,
+                      class: "btn btn--ghost",
+                      href: __props.campaign.previewUrl,
+                      target: "_blank",
+                      rel: "noopener"
+                    }, toDisplayString(unref(t)("admin.preview")), 9, ["href"])) : createCommentVNode("", true),
+                    __props.campaign ? (openBlock(), createBlock(unref(Link), {
+                      key: 1,
+                      href: `/admin/sections/campaign/${__props.campaign.id}`,
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true)
+                  ]),
+                  default: withCtx(() => [
+                    createVNode("div", { class: "grid" }, [
+                      createVNode(Field, {
+                        modelValue: unref(form).slug,
+                        "onUpdate:modelValue": ($event) => unref(form).slug = $event,
+                        label: "slug",
+                        type: "slug",
+                        dir: "ltr",
+                        error: unref(form).errors.slug,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).starts_at,
+                        "onUpdate:modelValue": ($event) => unref(form).starts_at = $event,
+                        label: "starts_at",
+                        type: "date",
+                        error: unref(form).errors.starts_at
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).ends_at,
+                        "onUpdate:modelValue": ($event) => unref(form).ends_at = $event,
+                        label: "ends_at",
+                        type: "date",
+                        error: unref(form).errors.ends_at
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).default_utm_source,
+                        "onUpdate:modelValue": ($event) => unref(form).default_utm_source = $event,
+                        label: "utm_source",
+                        dir: "ltr"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).default_utm_medium,
+                        "onUpdate:modelValue": ($event) => unref(form).default_utm_medium = $event,
+                        label: "utm_medium",
+                        dir: "ltr"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).default_utm_campaign,
+                        "onUpdate:modelValue": ($event) => unref(form).default_utm_campaign = $event,
+                        label: "utm_campaign",
+                        dir: "ltr"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).is_active,
+                        "onUpdate:modelValue": ($event) => unref(form).is_active = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode(Panel, {
+                  title: unref(t)("admin.per_locale")
+                }, {
+                  default: withCtx(() => [
+                    createVNode(BilingualFields, {
+                      modelValue: unref(form).translations,
+                      "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                      locales: __props.locales,
+                      fields: FIELDS,
+                      errors: unref(form).errors
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "locales", "errors"])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode("div", { class: "bar" }, [
+                  createVNode("button", {
+                    class: "btn btn--cta",
+                    type: "submit",
+                    disabled: unref(form).processing
+                  }, toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"]),
+                  createVNode(unref(Link), {
+                    href: "/admin/campaigns",
+                    class: "btn btn--ghost"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                    ]),
+                    _: 1
+                  })
+                ])
+              ], 32)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$10 = _sfc_main$10.setup;
+_sfc_main$10.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Edit.vue");
+  return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
+};
+const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-81e9c2fe"]]);
+const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Edit$3
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$$ = {
+  __name: "Index",
+  __ssrInlineRender: true,
+  props: {
+    campaigns: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    function destroy(campaign) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/campaigns/${campaign.id}`);
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.campaigns")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.campaigns")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(unref(Link), {
+                    href: "/admin/campaigns/create",
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(unref(t)("admin.campaign_wizard"))}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(t)("admin.campaign_wizard")), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(unref(Link), {
+                      href: "/admin/campaigns/create",
+                      class: "btn btn--cta"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.campaign_wizard")), 1)
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.campaigns.length) {
+                    _push3(`<p class="empty" data-v-66c2bead${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<div class="table-wrap" data-v-66c2bead${_scopeId2}><table class="table" data-v-66c2bead${_scopeId2}><thead data-v-66c2bead${_scopeId2}><tr data-v-66c2bead${_scopeId2}><th data-v-66c2bead${_scopeId2}>${ssrInterpolate(unref(t)("admin.campaigns"))}</th><th data-v-66c2bead${_scopeId2}>slug</th><th data-v-66c2bead${_scopeId2}>${ssrInterpolate(unref(t)("admin.campaign_leads"))}</th><th data-v-66c2bead${_scopeId2}>${ssrInterpolate(unref(t)("admin.published"))}</th><th data-v-66c2bead${_scopeId2}></th></tr></thead><tbody data-v-66c2bead${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.campaigns, (campaign) => {
+                      _push3(`<tr data-v-66c2bead${_scopeId2}><td data-v-66c2bead${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/campaigns/${campaign.id}/edit`,
+                        class: "table__link"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(campaign.title ?? campaign.slug)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(campaign.title ?? campaign.slug), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`</td><td class="latin" data-v-66c2bead${_scopeId2}>${ssrInterpolate(campaign.slug)}</td><td class="tabular" data-v-66c2bead${_scopeId2}>${ssrInterpolate(campaign.leads)}</td><td data-v-66c2bead${_scopeId2}><span class="${ssrRenderClass([campaign.isLive ? "chip--ok" : "", "chip"])}" data-v-66c2bead${_scopeId2}>${ssrInterpolate(campaign.isLive ? unref(t)("admin.published") : unref(t)("admin.draft"))}</span></td><td class="actions" data-v-66c2bead${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/sections/campaign/${campaign.id}`,
+                        class: "btn btn--ghost"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(unref(t)("admin.sections"))}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`<a class="btn btn--ghost"${ssrRenderAttr("href", campaign.previewUrl)} target="_blank" rel="noopener" data-v-66c2bead${_scopeId2}>${ssrInterpolate(unref(t)("admin.preview"))}</a><button class="btn btn--ghost danger" type="button" data-v-66c2bead${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button></td></tr>`);
+                    });
+                    _push3(`<!--]--></tbody></table></div>`);
+                  }
+                } else {
+                  return [
+                    !__props.campaigns.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("div", {
+                      key: 1,
+                      class: "table-wrap"
+                    }, [
+                      createVNode("table", { class: "table" }, [
+                        createVNode("thead", null, [
+                          createVNode("tr", null, [
+                            createVNode("th", null, toDisplayString(unref(t)("admin.campaigns")), 1),
+                            createVNode("th", null, "slug"),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.campaign_leads")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.published")), 1),
+                            createVNode("th")
+                          ])
+                        ]),
+                        createVNode("tbody", null, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.campaigns, (campaign) => {
+                            return openBlock(), createBlock("tr", {
+                              key: campaign.id
+                            }, [
+                              createVNode("td", null, [
+                                createVNode(unref(Link), {
+                                  href: `/admin/campaigns/${campaign.id}/edit`,
+                                  class: "table__link"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(campaign.title ?? campaign.slug), 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["href"])
+                              ]),
+                              createVNode("td", { class: "latin" }, toDisplayString(campaign.slug), 1),
+                              createVNode("td", { class: "tabular" }, toDisplayString(campaign.leads), 1),
+                              createVNode("td", null, [
+                                createVNode("span", {
+                                  class: ["chip", campaign.isLive ? "chip--ok" : ""]
+                                }, toDisplayString(campaign.isLive ? unref(t)("admin.published") : unref(t)("admin.draft")), 3)
+                              ]),
+                              createVNode("td", { class: "actions" }, [
+                                createVNode(unref(Link), {
+                                  href: `/admin/sections/campaign/${campaign.id}`,
+                                  class: "btn btn--ghost"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                                  ]),
+                                  _: 1
+                                }, 8, ["href"]),
+                                createVNode("a", {
+                                  class: "btn btn--ghost",
+                                  href: campaign.previewUrl,
+                                  target: "_blank",
+                                  rel: "noopener"
+                                }, toDisplayString(unref(t)("admin.preview")), 9, ["href"]),
+                                createVNode("button", {
+                                  class: "btn btn--ghost danger",
+                                  type: "button",
+                                  onClick: ($event) => destroy(campaign)
+                                }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                              ])
+                            ]);
+                          }), 128))
+                        ])
+                      ])
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.campaigns")
+              }, {
+                actions: withCtx(() => [
+                  createVNode(unref(Link), {
+                    href: "/admin/campaigns/create",
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.campaign_wizard")), 1)
+                    ]),
+                    _: 1
+                  })
+                ]),
+                default: withCtx(() => [
+                  !__props.campaigns.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("div", {
+                    key: 1,
+                    class: "table-wrap"
+                  }, [
+                    createVNode("table", { class: "table" }, [
+                      createVNode("thead", null, [
+                        createVNode("tr", null, [
+                          createVNode("th", null, toDisplayString(unref(t)("admin.campaigns")), 1),
+                          createVNode("th", null, "slug"),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.campaign_leads")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.published")), 1),
+                          createVNode("th")
+                        ])
+                      ]),
+                      createVNode("tbody", null, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.campaigns, (campaign) => {
+                          return openBlock(), createBlock("tr", {
+                            key: campaign.id
+                          }, [
+                            createVNode("td", null, [
+                              createVNode(unref(Link), {
+                                href: `/admin/campaigns/${campaign.id}/edit`,
+                                class: "table__link"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(campaign.title ?? campaign.slug), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["href"])
+                            ]),
+                            createVNode("td", { class: "latin" }, toDisplayString(campaign.slug), 1),
+                            createVNode("td", { class: "tabular" }, toDisplayString(campaign.leads), 1),
+                            createVNode("td", null, [
+                              createVNode("span", {
+                                class: ["chip", campaign.isLive ? "chip--ok" : ""]
+                              }, toDisplayString(campaign.isLive ? unref(t)("admin.published") : unref(t)("admin.draft")), 3)
+                            ]),
+                            createVNode("td", { class: "actions" }, [
+                              createVNode(unref(Link), {
+                                href: `/admin/sections/campaign/${campaign.id}`,
+                                class: "btn btn--ghost"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                                ]),
+                                _: 1
+                              }, 8, ["href"]),
+                              createVNode("a", {
+                                class: "btn btn--ghost",
+                                href: campaign.previewUrl,
+                                target: "_blank",
+                                rel: "noopener"
+                              }, toDisplayString(unref(t)("admin.preview")), 9, ["href"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => destroy(campaign)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ])
+                          ]);
+                        }), 128))
+                      ])
+                    ])
+                  ]))
+                ]),
+                _: 1
+              }, 8, ["title"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$$ = _sfc_main$$.setup;
+_sfc_main$$.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Index.vue");
+  return _sfc_setup$$ ? _sfc_setup$$(props, ctx) : void 0;
+};
+const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-66c2bead"]]);
+const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index$4
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$_ = {
+  __name: "Edit",
+  __ssrInlineRender: true,
+  props: {
+    entity: { type: String, required: true },
+    record: { type: Object, default: null },
+    meta: { type: Object, required: true },
+    options: { type: Object, default: () => ({}) },
+    locales: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const uploading = ref(null);
+    function blankTranslations() {
+      return Object.fromEntries(
+        props.locales.map((l) => [l, Object.fromEntries(Object.keys(props.meta.fields).map((f) => [f, ""]))])
+      );
+    }
+    function blankAttributes() {
+      return Object.fromEntries(Object.keys(props.meta.attributes).map((a) => [a, ""]));
+    }
+    const form = useForm({
+      active: props.record?.active ?? true,
+      attributes: props.record?.attributes ?? blankAttributes(),
+      translations: props.record?.translations ?? blankTranslations()
+    });
+    function inputType(type) {
+      if (type === "number") return "number";
+      if (type === "url") return "url";
+      if (type.startsWith("relation:") || type.startsWith("enum:")) return "select";
+      return "text";
+    }
+    function optionsFor(name, type) {
+      if (type.startsWith("relation:")) {
+        return props.options[name] ?? [];
+      }
+      if (type.startsWith("enum:")) {
+        return type.slice("enum:".length).split(",").map((v) => ({ value: v, label: v }));
+      }
+      return [];
+    }
+    function submit() {
+      if (props.record) {
+        form.patch(`/admin/content/${props.entity}/${props.record.id}`, { preserveScroll: true });
+      } else {
+        form.post(`/admin/content/${props.entity}`);
+      }
+    }
+    function upload(collection, event) {
+      const file = event.target.files?.[0];
+      if (!file || !props.record) return;
+      uploading.value = collection;
+      router.post(
+        "/admin/media",
+        { entity: props.entity, id: props.record.id, collection, file },
+        {
+          forceFormData: true,
+          preserveScroll: true,
+          onFinish: () => {
+            uploading.value = null;
+            event.target.value = "";
+          }
+        }
+      );
+    }
+    function removeMedia(id) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/media/${id}`, { preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: __props.record ? __props.record.attributes.slug ?? __props.record.attributes.name ?? unref(t)("admin.edit") : unref(t)("admin.create")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<form data-v-f83b7358${_scopeId}>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.shared_fields")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="grid" data-v-f83b7358${_scopeId2}><!--[-->`);
+                  ssrRenderList(__props.meta.attributes, (type, name) => {
+                    _push3(ssrRenderComponent(Field, {
+                      key: name,
+                      modelValue: unref(form).attributes[name],
+                      "onUpdate:modelValue": ($event) => unref(form).attributes[name] = $event,
+                      label: name.replace(/_/g, " "),
+                      type: inputType(type),
+                      options: optionsFor(name, type),
+                      dir: type === "slug" || type === "url" ? "ltr" : null,
+                      error: unref(form).errors[`attributes.${name}`],
+                      required: type === "slug"
+                    }, null, _parent3, _scopeId2));
+                  });
+                  _push3(`<!--]-->`);
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).active,
+                    "onUpdate:modelValue": ($event) => unref(form).active = $event,
+                    label: unref(t)("admin.active"),
+                    type: "checkbox"
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "grid" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.meta.attributes, (type, name) => {
+                        return openBlock(), createBlock(Field, {
+                          key: name,
+                          modelValue: unref(form).attributes[name],
+                          "onUpdate:modelValue": ($event) => unref(form).attributes[name] = $event,
+                          label: name.replace(/_/g, " "),
+                          type: inputType(type),
+                          options: optionsFor(name, type),
+                          dir: type === "slug" || type === "url" ? "ltr" : null,
+                          error: unref(form).errors[`attributes.${name}`],
+                          required: type === "slug"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type", "options", "dir", "error", "required"]);
+                      }), 128)),
+                      createVNode(Field, {
+                        modelValue: unref(form).active,
+                        "onUpdate:modelValue": ($event) => unref(form).active = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.per_locale")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(BilingualFields, {
+                    modelValue: unref(form).translations,
+                    "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                    locales: __props.locales,
+                    fields: __props.meta.fields,
+                    errors: unref(form).errors
+                  }, null, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(BilingualFields, {
+                      modelValue: unref(form).translations,
+                      "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                      locales: __props.locales,
+                      fields: __props.meta.fields,
+                      errors: unref(form).errors
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "locales", "fields", "errors"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`<div class="bar" data-v-f83b7358${_scopeId}><button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-f83b7358${_scopeId}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button>`);
+            _push2(ssrRenderComponent(unref(Link), {
+              href: `/admin/content/${__props.entity}`,
+              class: "btn btn--ghost"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`${ssrInterpolate(unref(t)("admin.cancel"))}`);
+                } else {
+                  return [
+                    createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</div></form>`);
+            if (__props.record && __props.meta.media.length) {
+              _push2(ssrRenderComponent(Panel, {
+                title: unref(t)("admin.media")
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(`<!--[-->`);
+                    ssrRenderList(__props.meta.media, (collection) => {
+                      _push3(`<div class="media" data-v-f83b7358${_scopeId2}><p class="media__label latin" data-v-f83b7358${_scopeId2}>${ssrInterpolate(collection)}</p>`);
+                      if (__props.record.media[collection]?.length) {
+                        _push3(`<ul class="media__list" data-v-f83b7358${_scopeId2}><!--[-->`);
+                        ssrRenderList(__props.record.media[collection], (item) => {
+                          _push3(`<li class="media__item" data-v-f83b7358${_scopeId2}><img${ssrRenderAttr("src", item.url)}${ssrRenderAttr("alt", item.name)} class="media__thumb" data-v-f83b7358${_scopeId2}><button class="btn btn--ghost danger" type="button" data-v-f83b7358${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button></li>`);
+                        });
+                        _push3(`<!--]--></ul>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      _push3(`<label class="media__upload" data-v-f83b7358${_scopeId2}><span data-v-f83b7358${_scopeId2}>${ssrInterpolate(uploading.value === collection ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" data-v-f83b7358${_scopeId2}></label></div>`);
+                    });
+                    _push3(`<!--]-->`);
+                  } else {
+                    return [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.meta.media, (collection) => {
+                        return openBlock(), createBlock("div", {
+                          key: collection,
+                          class: "media"
+                        }, [
+                          createVNode("p", { class: "media__label latin" }, toDisplayString(collection), 1),
+                          __props.record.media[collection]?.length ? (openBlock(), createBlock("ul", {
+                            key: 0,
+                            class: "media__list"
+                          }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.record.media[collection], (item) => {
+                              return openBlock(), createBlock("li", {
+                                key: item.id,
+                                class: "media__item"
+                              }, [
+                                createVNode("img", {
+                                  src: item.url,
+                                  alt: item.name,
+                                  class: "media__thumb"
+                                }, null, 8, ["src", "alt"]),
+                                createVNode("button", {
+                                  class: "btn btn--ghost danger",
+                                  type: "button",
+                                  onClick: ($event) => removeMedia(item.id)
+                                }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                              ]);
+                            }), 128))
+                          ])) : createCommentVNode("", true),
+                          createVNode("label", { class: "media__upload" }, [
+                            createVNode("span", null, toDisplayString(uploading.value === collection ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                            createVNode("input", {
+                              type: "file",
+                              onChange: (e) => upload(collection, e)
+                            }, null, 40, ["onChange"])
+                          ])
+                        ]);
+                      }), 128))
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+          } else {
+            return [
+              createVNode("form", {
+                onSubmit: withModifiers(submit, ["prevent"])
+              }, [
+                createVNode(Panel, {
+                  title: unref(t)("admin.shared_fields")
+                }, {
+                  default: withCtx(() => [
+                    createVNode("div", { class: "grid" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.meta.attributes, (type, name) => {
+                        return openBlock(), createBlock(Field, {
+                          key: name,
+                          modelValue: unref(form).attributes[name],
+                          "onUpdate:modelValue": ($event) => unref(form).attributes[name] = $event,
+                          label: name.replace(/_/g, " "),
+                          type: inputType(type),
+                          options: optionsFor(name, type),
+                          dir: type === "slug" || type === "url" ? "ltr" : null,
+                          error: unref(form).errors[`attributes.${name}`],
+                          required: type === "slug"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type", "options", "dir", "error", "required"]);
+                      }), 128)),
+                      createVNode(Field, {
+                        modelValue: unref(form).active,
+                        "onUpdate:modelValue": ($event) => unref(form).active = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode(Panel, {
+                  title: unref(t)("admin.per_locale")
+                }, {
+                  default: withCtx(() => [
+                    createVNode(BilingualFields, {
+                      modelValue: unref(form).translations,
+                      "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                      locales: __props.locales,
+                      fields: __props.meta.fields,
+                      errors: unref(form).errors
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "locales", "fields", "errors"])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode("div", { class: "bar" }, [
+                  createVNode("button", {
+                    class: "btn btn--cta",
+                    type: "submit",
+                    disabled: unref(form).processing
+                  }, toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"]),
+                  createVNode(unref(Link), {
+                    href: `/admin/content/${__props.entity}`,
+                    class: "btn btn--ghost"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["href"])
+                ])
+              ], 32),
+              __props.record && __props.meta.media.length ? (openBlock(), createBlock(Panel, {
+                key: 0,
+                title: unref(t)("admin.media")
+              }, {
+                default: withCtx(() => [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.meta.media, (collection) => {
+                    return openBlock(), createBlock("div", {
+                      key: collection,
+                      class: "media"
+                    }, [
+                      createVNode("p", { class: "media__label latin" }, toDisplayString(collection), 1),
+                      __props.record.media[collection]?.length ? (openBlock(), createBlock("ul", {
+                        key: 0,
+                        class: "media__list"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.record.media[collection], (item) => {
+                          return openBlock(), createBlock("li", {
+                            key: item.id,
+                            class: "media__item"
+                          }, [
+                            createVNode("img", {
+                              src: item.url,
+                              alt: item.name,
+                              class: "media__thumb"
+                            }, null, 8, ["src", "alt"]),
+                            createVNode("button", {
+                              class: "btn btn--ghost danger",
+                              type: "button",
+                              onClick: ($event) => removeMedia(item.id)
+                            }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                          ]);
+                        }), 128))
+                      ])) : createCommentVNode("", true),
+                      createVNode("label", { class: "media__upload" }, [
+                        createVNode("span", null, toDisplayString(uploading.value === collection ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                        createVNode("input", {
+                          type: "file",
+                          onChange: (e) => upload(collection, e)
+                        }, null, 40, ["onChange"])
+                      ])
+                    ]);
+                  }), 128))
+                ]),
+                _: 1
+              }, 8, ["title"])) : createCommentVNode("", true)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$_ = _sfc_main$_.setup;
+_sfc_main$_.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Edit.vue");
+  return _sfc_setup$_ ? _sfc_setup$_(props, ctx) : void 0;
+};
+const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$_, [["__scopeId", "data-v-f83b7358"]]);
+const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Edit$2
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$Z = {
+  __name: "Index",
+  __ssrInlineRender: true,
+  props: {
+    entity: { type: String, required: true },
+    records: { type: Array, default: () => [] },
+    locales: { type: Array, default: () => [] },
+    meta: { type: Object, required: true }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const dragging = ref(null);
+    function title() {
+      return t(`admin.${props.entity.replace(/-/g, "_")}`);
+    }
+    function destroy(record) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/content/${props.entity}/${record.id}`);
+    }
+    function persistOrder(order) {
+      router.post(`/admin/content/${props.entity}/reorder`, { order }, { preserveScroll: true });
+    }
+    function move(index, delta) {
+      const next = index + delta;
+      if (next < 0 || next >= props.records.length) return;
+      const ids = props.records.map((r) => r.id);
+      [ids[index], ids[next]] = [ids[next], ids[index]];
+      persistOrder(ids);
+    }
+    function onDrop(index) {
+      if (dragging.value === null || dragging.value === index) return;
+      const ids = props.records.map((r) => r.id);
+      const [moved] = ids.splice(dragging.value, 1);
+      ids.splice(index, 0, moved);
+      dragging.value = null;
+      persistOrder(ids);
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: title()
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.entity_records"),
+              hint: unref(t)("admin.order_hint")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (__props.meta.creatable) {
+                    _push3(ssrRenderComponent(unref(Link), {
+                      href: `/admin/content/${__props.entity}/create`,
+                      class: "btn btn--cta"
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`${ssrInterpolate(unref(t)("admin.create"))}`);
+                        } else {
+                          return [
+                            createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    __props.meta.creatable ? (openBlock(), createBlock(unref(Link), {
+                      key: 0,
+                      href: `/admin/content/${__props.entity}/create`,
+                      class: "btn btn--cta"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.records.length) {
+                    _push3(`<p class="empty" data-v-83be9b57${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<ol class="rows" data-v-83be9b57${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.records, (record, index) => {
+                      _push3(`<li class="row" draggable="true" data-v-83be9b57${_scopeId2}><div class="row__main" data-v-83be9b57${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/content/${__props.entity}/${record.id}/edit`,
+                        class: "row__title"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(record.title)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(record.title), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      if (record.slug) {
+                        _push3(`<span class="row__slug latin" data-v-83be9b57${_scopeId2}>${ssrInterpolate(record.slug)}</span>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      if (!record.active) {
+                        _push3(`<span class="chip" data-v-83be9b57${_scopeId2}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      _push3(`<!--[-->`);
+                      ssrRenderList(__props.locales.filter((l) => !record.locales.includes(l)), (loc) => {
+                        _push3(`<span class="chip chip--warn" data-v-83be9b57${_scopeId2}>${ssrInterpolate(unref(t)("admin.translation_missing"))}: ${ssrInterpolate(loc)}</span>`);
+                      });
+                      _push3(`<!--]--></div><div class="row__tools" data-v-83be9b57${_scopeId2}>`);
+                      if (__props.meta.hasSections) {
+                        _push3(ssrRenderComponent(unref(Link), {
+                          href: `/admin/sections/${__props.entity === "sectors" ? "sector" : "solution"}/${record.id}`,
+                          class: "btn btn--ghost"
+                        }, {
+                          default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                            if (_push4) {
+                              _push4(`${ssrInterpolate(unref(t)("admin.sections"))}`);
+                            } else {
+                              return [
+                                createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                              ];
+                            }
+                          }),
+                          _: 2
+                        }, _parent3, _scopeId2));
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      _push3(`<button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-83be9b57${_scopeId2}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.records.length - 1) ? " disabled" : ""} data-v-83be9b57${_scopeId2}>↓</button>`);
+                      if (__props.meta.deletable) {
+                        _push3(`<button class="btn btn--ghost danger" type="button" data-v-83be9b57${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      _push3(`</div></li>`);
+                    });
+                    _push3(`<!--]--></ol>`);
+                  }
+                } else {
+                  return [
+                    !__props.records.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ol", {
+                      key: 1,
+                      class: "rows"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.records, (record, index) => {
+                        return openBlock(), createBlock("li", {
+                          key: record.id,
+                          class: "row",
+                          draggable: "true",
+                          onDragstart: ($event) => dragging.value = index,
+                          onDragover: withModifiers(() => {
+                          }, ["prevent"]),
+                          onDrop: withModifiers(($event) => onDrop(index), ["prevent"])
+                        }, [
+                          createVNode("div", { class: "row__main" }, [
+                            createVNode(unref(Link), {
+                              href: `/admin/content/${__props.entity}/${record.id}/edit`,
+                              class: "row__title"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(record.title), 1)
+                              ]),
+                              _: 2
+                            }, 1032, ["href"]),
+                            record.slug ? (openBlock(), createBlock("span", {
+                              key: 0,
+                              class: "row__slug latin"
+                            }, toDisplayString(record.slug), 1)) : createCommentVNode("", true),
+                            !record.active ? (openBlock(), createBlock("span", {
+                              key: 1,
+                              class: "chip"
+                            }, toDisplayString(unref(t)("admin.inactive")), 1)) : createCommentVNode("", true),
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.locales.filter((l) => !record.locales.includes(l)), (loc) => {
+                              return openBlock(), createBlock("span", {
+                                key: loc,
+                                class: "chip chip--warn"
+                              }, toDisplayString(unref(t)("admin.translation_missing")) + ": " + toDisplayString(loc), 1);
+                            }), 128))
+                          ]),
+                          createVNode("div", { class: "row__tools" }, [
+                            __props.meta.hasSections ? (openBlock(), createBlock(unref(Link), {
+                              key: 0,
+                              href: `/admin/sections/${__props.entity === "sectors" ? "sector" : "solution"}/${record.id}`,
+                              class: "btn btn--ghost"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                              ]),
+                              _: 1
+                            }, 8, ["href"])) : createCommentVNode("", true),
+                            createVNode("button", {
+                              class: "btn btn--ghost",
+                              type: "button",
+                              "aria-label": unref(t)("admin.move_up"),
+                              disabled: index === 0,
+                              onClick: ($event) => move(index, -1)
+                            }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                            createVNode("button", {
+                              class: "btn btn--ghost",
+                              type: "button",
+                              "aria-label": unref(t)("admin.move_down"),
+                              disabled: index === __props.records.length - 1,
+                              onClick: ($event) => move(index, 1)
+                            }, "↓", 8, ["aria-label", "disabled", "onClick"]),
+                            __props.meta.deletable ? (openBlock(), createBlock("button", {
+                              key: 1,
+                              class: "btn btn--ghost danger",
+                              type: "button",
+                              onClick: ($event) => destroy(record)
+                            }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                          ])
+                        ], 40, ["onDragstart", "onDragover", "onDrop"]);
+                      }), 128))
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.entity_records"),
+                hint: unref(t)("admin.order_hint")
+              }, {
+                actions: withCtx(() => [
+                  __props.meta.creatable ? (openBlock(), createBlock(unref(Link), {
+                    key: 0,
+                    href: `/admin/content/${__props.entity}/create`,
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["href"])) : createCommentVNode("", true)
+                ]),
+                default: withCtx(() => [
+                  !__props.records.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ol", {
+                    key: 1,
+                    class: "rows"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.records, (record, index) => {
+                      return openBlock(), createBlock("li", {
+                        key: record.id,
+                        class: "row",
+                        draggable: "true",
+                        onDragstart: ($event) => dragging.value = index,
+                        onDragover: withModifiers(() => {
+                        }, ["prevent"]),
+                        onDrop: withModifiers(($event) => onDrop(index), ["prevent"])
+                      }, [
+                        createVNode("div", { class: "row__main" }, [
+                          createVNode(unref(Link), {
+                            href: `/admin/content/${__props.entity}/${record.id}/edit`,
+                            class: "row__title"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(toDisplayString(record.title), 1)
+                            ]),
+                            _: 2
+                          }, 1032, ["href"]),
+                          record.slug ? (openBlock(), createBlock("span", {
+                            key: 0,
+                            class: "row__slug latin"
+                          }, toDisplayString(record.slug), 1)) : createCommentVNode("", true),
+                          !record.active ? (openBlock(), createBlock("span", {
+                            key: 1,
+                            class: "chip"
+                          }, toDisplayString(unref(t)("admin.inactive")), 1)) : createCommentVNode("", true),
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.locales.filter((l) => !record.locales.includes(l)), (loc) => {
+                            return openBlock(), createBlock("span", {
+                              key: loc,
+                              class: "chip chip--warn"
+                            }, toDisplayString(unref(t)("admin.translation_missing")) + ": " + toDisplayString(loc), 1);
+                          }), 128))
+                        ]),
+                        createVNode("div", { class: "row__tools" }, [
+                          __props.meta.hasSections ? (openBlock(), createBlock(unref(Link), {
+                            key: 0,
+                            href: `/admin/sections/${__props.entity === "sectors" ? "sector" : "solution"}/${record.id}`,
+                            class: "btn btn--ghost"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                            ]),
+                            _: 1
+                          }, 8, ["href"])) : createCommentVNode("", true),
+                          createVNode("button", {
+                            class: "btn btn--ghost",
+                            type: "button",
+                            "aria-label": unref(t)("admin.move_up"),
+                            disabled: index === 0,
+                            onClick: ($event) => move(index, -1)
+                          }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                          createVNode("button", {
+                            class: "btn btn--ghost",
+                            type: "button",
+                            "aria-label": unref(t)("admin.move_down"),
+                            disabled: index === __props.records.length - 1,
+                            onClick: ($event) => move(index, 1)
+                          }, "↓", 8, ["aria-label", "disabled", "onClick"]),
+                          __props.meta.deletable ? (openBlock(), createBlock("button", {
+                            key: 1,
+                            class: "btn btn--ghost danger",
+                            type: "button",
+                            onClick: ($event) => destroy(record)
+                          }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                        ])
+                      ], 40, ["onDragstart", "onDragover", "onDrop"]);
+                    }), 128))
+                  ]))
+                ]),
+                _: 1
+              }, 8, ["title", "hint"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$Z = _sfc_main$Z.setup;
+_sfc_main$Z.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Index.vue");
+  return _sfc_setup$Z ? _sfc_setup$Z(props, ctx) : void 0;
+};
+const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$Z, [["__scopeId", "data-v-83be9b57"]]);
+const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index$3
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$Y = {
+  __name: "Dashboard",
+  __ssrInlineRender: true,
+  props: {
+    stats: { type: Object, required: true },
+    daily: { type: Array, default: () => [] },
+    bySource: { type: Array, default: () => [] },
+    byCampaign: { type: Array, default: () => [] },
+    latest: { type: Array, default: () => [] },
+    crmDriver: { type: String, default: null }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { number, dayMonth } = useFormat();
+    const tiles = computed(() => [
+      { label: t("admin.total_leads"), value: props.stats.total, tone: "navy" },
+      { label: t("admin.leads_30d"), value: props.stats.recent, change: props.stats.change, tone: "navy" },
+      { label: t("admin.qualified_leads"), value: props.stats.qualified, tone: "navy" },
+      { label: t("admin.unanswered"), value: props.stats.unanswered, tone: "accent" },
+      { label: t("admin.crm_failures"), value: props.stats.failedCrm, tone: props.stats.failedCrm > 0 ? "danger" : "navy" }
+    ]);
+    const peak = computed(() => Math.max(1, ...props.daily.map((d) => d.count)));
+    const maxSource = computed(() => Math.max(1, ...props.bySource.map((s) => s.count)));
+    const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.count)));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.dashboard")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (__props.crmDriver === "null") {
+              _push2(`<p class="warn" role="alert" data-v-b7a7a3b3${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_driver_null_warning"))}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<ul class="tiles" data-v-b7a7a3b3${_scopeId}><!--[-->`);
+            ssrRenderList(tiles.value, (tile) => {
+              _push2(`<li class="${ssrRenderClass([`tile--${tile.tone}`, "tile"])}" data-v-b7a7a3b3${_scopeId}><p class="tile__label" data-v-b7a7a3b3${_scopeId}>${ssrInterpolate(tile.label)}</p><p class="tile__value tabular" data-v-b7a7a3b3${_scopeId}>${ssrInterpolate(unref(number)(tile.value))}</p>`);
+              if (tile.change !== void 0 && tile.change !== null) {
+                _push2(`<p class="tile__change tabular" data-v-b7a7a3b3${_scopeId}>${ssrInterpolate(tile.change > 0 ? "+" : "")}${ssrInterpolate(unref(number)(tile.change))}% </p>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</li>`);
+            });
+            _push2(`<!--]--></ul>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.leads_by_day"),
+              hint: unref(t)("admin.no_targets_note")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="chart" role="img"${ssrRenderAttr("aria-label", unref(t)("admin.leads_by_day"))} data-v-b7a7a3b3${_scopeId2}><svg${ssrRenderAttr("viewBox", `0 0 ${__props.daily.length * 4} 60`)} preserveAspectRatio="none" class="chart__svg" data-v-b7a7a3b3${_scopeId2}><!--[-->`);
+                  ssrRenderList(__props.daily, (day, i) => {
+                    _push3(`<rect${ssrRenderAttr("x", i * 4)}${ssrRenderAttr("y", 60 - day.count / peak.value * 60)} width="3"${ssrRenderAttr("height", Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0))} fill="#002546" data-v-b7a7a3b3${_scopeId2}></rect>`);
+                  });
+                  _push3(`<!--]--></svg><div class="chart__axis" data-v-b7a7a3b3${_scopeId2}><span data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : "")}</span><span data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : "")}</span></div></div>`);
+                } else {
+                  return [
+                    createVNode("div", {
+                      class: "chart",
+                      role: "img",
+                      "aria-label": unref(t)("admin.leads_by_day")
+                    }, [
+                      (openBlock(), createBlock("svg", {
+                        viewBox: `0 0 ${__props.daily.length * 4} 60`,
+                        preserveAspectRatio: "none",
+                        class: "chart__svg"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.daily, (day, i) => {
+                          return openBlock(), createBlock("rect", {
+                            key: day.date,
+                            x: i * 4,
+                            y: 60 - day.count / peak.value * 60,
+                            width: "3",
+                            height: Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0),
+                            fill: "#002546"
+                          }, null, 8, ["x", "y", "height"]);
+                        }), 128))
+                      ], 8, ["viewBox"])),
+                      createVNode("div", { class: "chart__axis" }, [
+                        createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : ""), 1),
+                        createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : ""), 1)
+                      ])
+                    ], 8, ["aria-label"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`<div class="split" data-v-b7a7a3b3${_scopeId}>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.leads_by_source")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.bySource.length) {
+                    _push3(`<p class="empty" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<ul class="bars" data-v-b7a7a3b3${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.bySource, (row) => {
+                      _push3(`<li class="bars__row" data-v-b7a7a3b3${_scopeId2}><span class="bars__label" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-b7a7a3b3${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxSource.value * 100}%` })}" data-v-b7a7a3b3${_scopeId2}></span></span><span class="bars__value tabular" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
+                    });
+                    _push3(`<!--]--></ul>`);
+                  }
+                } else {
+                  return [
+                    !__props.bySource.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "bars"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.bySource, (row) => {
+                        return openBlock(), createBlock("li", {
+                          key: row.label,
+                          class: "bars__row"
+                        }, [
+                          createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
+                          createVNode("span", { class: "bars__track" }, [
+                            createVNode("span", {
+                              class: "bars__fill",
+                              style: { inlineSize: `${row.count / maxSource.value * 100}%` }
+                            }, null, 4)
+                          ]),
+                          createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
+                        ]);
+                      }), 128))
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.leads_by_campaign")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.byCampaign.length) {
+                    _push3(`<p class="empty" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<ul class="bars" data-v-b7a7a3b3${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.byCampaign, (row) => {
+                      _push3(`<li class="bars__row" data-v-b7a7a3b3${_scopeId2}><span class="bars__label" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-b7a7a3b3${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxCampaign.value * 100}%` })}" data-v-b7a7a3b3${_scopeId2}></span></span><span class="bars__value tabular" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
+                    });
+                    _push3(`<!--]--></ul>`);
+                  }
+                } else {
+                  return [
+                    !__props.byCampaign.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "bars"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.byCampaign, (row) => {
+                        return openBlock(), createBlock("li", {
+                          key: row.label,
+                          class: "bars__row"
+                        }, [
+                          createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
+                          createVNode("span", { class: "bars__track" }, [
+                            createVNode("span", {
+                              class: "bars__fill",
+                              style: { inlineSize: `${row.count / maxCampaign.value * 100}%` }
+                            }, null, 4)
+                          ]),
+                          createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
+                        ]);
+                      }), 128))
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</div>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.latest_leads")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(unref(Link), {
+                    href: "/admin/leads",
+                    class: "btn btn--secondary"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(unref(t)("admin.leads"))}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(unref(Link), {
+                      href: "/admin/leads",
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.latest.length) {
+                    _push3(`<p class="empty" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<ul class="latest" data-v-b7a7a3b3${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.latest, (lead) => {
+                      _push3(`<li class="latest__row" data-v-b7a7a3b3${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/leads/${lead.id}`,
+                        class: "latest__contact latin"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(lead.contact)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(lead.contact), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`<span class="latest__msg" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</span><span class="latest__status" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span><span class="${ssrRenderClass([`is-${lead.crmStatus}`, "latest__crm"])}" data-v-b7a7a3b3${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></li>`);
+                    });
+                    _push3(`<!--]--></ul>`);
+                  }
+                } else {
+                  return [
+                    !__props.latest.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "latest"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.latest, (lead) => {
+                        return openBlock(), createBlock("li", {
+                          key: lead.id,
+                          class: "latest__row"
+                        }, [
+                          createVNode(unref(Link), {
+                            href: `/admin/leads/${lead.id}`,
+                            class: "latest__contact latin"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(toDisplayString(lead.contact), 1)
+                            ]),
+                            _: 2
+                          }, 1032, ["href"]),
+                          createVNode("span", { class: "latest__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                          createVNode("span", { class: "latest__status" }, toDisplayString(unref(t)(`admin.status_${lead.status}`)), 1),
+                          createVNode("span", {
+                            class: ["latest__crm", `is-${lead.crmStatus}`]
+                          }, toDisplayString(unref(t)(`admin.crm_${lead.crmStatus}`)), 3)
+                        ]);
+                      }), 128))
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              __props.crmDriver === "null" ? (openBlock(), createBlock("p", {
+                key: 0,
+                class: "warn",
+                role: "alert"
+              }, toDisplayString(unref(t)("admin.crm_driver_null_warning")), 1)) : createCommentVNode("", true),
+              createVNode("ul", { class: "tiles" }, [
+                (openBlock(true), createBlock(Fragment, null, renderList(tiles.value, (tile) => {
+                  return openBlock(), createBlock("li", {
+                    key: tile.label,
+                    class: ["tile", `tile--${tile.tone}`]
+                  }, [
+                    createVNode("p", { class: "tile__label" }, toDisplayString(tile.label), 1),
+                    createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(tile.value)), 1),
+                    tile.change !== void 0 && tile.change !== null ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "tile__change tabular"
+                    }, toDisplayString(tile.change > 0 ? "+" : "") + toDisplayString(unref(number)(tile.change)) + "% ", 1)) : createCommentVNode("", true)
+                  ], 2);
+                }), 128))
+              ]),
+              createVNode(Panel, {
+                title: unref(t)("admin.leads_by_day"),
+                hint: unref(t)("admin.no_targets_note")
+              }, {
+                default: withCtx(() => [
+                  createVNode("div", {
+                    class: "chart",
+                    role: "img",
+                    "aria-label": unref(t)("admin.leads_by_day")
+                  }, [
+                    (openBlock(), createBlock("svg", {
+                      viewBox: `0 0 ${__props.daily.length * 4} 60`,
+                      preserveAspectRatio: "none",
+                      class: "chart__svg"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.daily, (day, i) => {
+                        return openBlock(), createBlock("rect", {
+                          key: day.date,
+                          x: i * 4,
+                          y: 60 - day.count / peak.value * 60,
+                          width: "3",
+                          height: Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0),
+                          fill: "#002546"
+                        }, null, 8, ["x", "y", "height"]);
+                      }), 128))
+                    ], 8, ["viewBox"])),
+                    createVNode("div", { class: "chart__axis" }, [
+                      createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : ""), 1),
+                      createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : ""), 1)
+                    ])
+                  ], 8, ["aria-label"])
+                ]),
+                _: 1
+              }, 8, ["title", "hint"]),
+              createVNode("div", { class: "split" }, [
+                createVNode(Panel, {
+                  title: unref(t)("admin.leads_by_source")
+                }, {
+                  default: withCtx(() => [
+                    !__props.bySource.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "bars"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.bySource, (row) => {
+                        return openBlock(), createBlock("li", {
+                          key: row.label,
+                          class: "bars__row"
+                        }, [
+                          createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
+                          createVNode("span", { class: "bars__track" }, [
+                            createVNode("span", {
+                              class: "bars__fill",
+                              style: { inlineSize: `${row.count / maxSource.value * 100}%` }
+                            }, null, 4)
+                          ]),
+                          createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
+                        ]);
+                      }), 128))
+                    ]))
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode(Panel, {
+                  title: unref(t)("admin.leads_by_campaign")
+                }, {
+                  default: withCtx(() => [
+                    !__props.byCampaign.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "bars"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.byCampaign, (row) => {
+                        return openBlock(), createBlock("li", {
+                          key: row.label,
+                          class: "bars__row"
+                        }, [
+                          createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
+                          createVNode("span", { class: "bars__track" }, [
+                            createVNode("span", {
+                              class: "bars__fill",
+                              style: { inlineSize: `${row.count / maxCampaign.value * 100}%` }
+                            }, null, 4)
+                          ]),
+                          createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
+                        ]);
+                      }), 128))
+                    ]))
+                  ]),
+                  _: 1
+                }, 8, ["title"])
+              ]),
+              createVNode(Panel, {
+                title: unref(t)("admin.latest_leads")
+              }, {
+                actions: withCtx(() => [
+                  createVNode(unref(Link), {
+                    href: "/admin/leads",
+                    class: "btn btn--secondary"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
+                    ]),
+                    _: 1
+                  })
+                ]),
+                default: withCtx(() => [
+                  !__props.latest.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                    key: 1,
+                    class: "latest"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.latest, (lead) => {
+                      return openBlock(), createBlock("li", {
+                        key: lead.id,
+                        class: "latest__row"
+                      }, [
+                        createVNode(unref(Link), {
+                          href: `/admin/leads/${lead.id}`,
+                          class: "latest__contact latin"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(toDisplayString(lead.contact), 1)
+                          ]),
+                          _: 2
+                        }, 1032, ["href"]),
+                        createVNode("span", { class: "latest__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                        createVNode("span", { class: "latest__status" }, toDisplayString(unref(t)(`admin.status_${lead.status}`)), 1),
+                        createVNode("span", {
+                          class: ["latest__crm", `is-${lead.crmStatus}`]
+                        }, toDisplayString(unref(t)(`admin.crm_${lead.crmStatus}`)), 3)
+                      ]);
+                    }), 128))
+                  ]))
+                ]),
+                _: 1
+              }, 8, ["title"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$Y = _sfc_main$Y.setup;
+_sfc_main$Y.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
+  return _sfc_setup$Y ? _sfc_setup$Y(props, ctx) : void 0;
+};
+const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$Y, [["__scopeId", "data-v-b7a7a3b3"]]);
+const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Dashboard
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$X = {
+  __name: "LeadFields",
+  __ssrInlineRender: true,
+  props: {
+    fields: { type: Array, default: () => [] },
+    locales: { type: Array, default: () => [] },
+    types: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const DIRS = { ar: "rtl", en: "ltr" };
+    const state = reactive(
+      props.fields.map((f) => ({
+        id: f.id,
+        key: f.key,
+        type: f.type,
+        isEnabled: f.isEnabled,
+        isRequired: f.isRequired,
+        isLocked: f.isLocked,
+        maxLength: f.maxLength,
+        labels: JSON.parse(JSON.stringify(f.labels))
+      }))
+    );
+    function move(index, delta) {
+      const next = index + delta;
+      if (next < 0 || next >= state.length) return;
+      [state[index], state[next]] = [state[next], state[index]];
+    }
+    function save() {
+      router.put("/admin/lead-fields", { fields: state }, { preserveScroll: true });
+    }
+    const enabledCount = () => state.filter((f) => f.isEnabled).length;
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.lead_fields")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<p class="notice" role="note" data-v-4196502c${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_fields_warning"))}</p>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.lead_fields"),
+              hint: unref(t)("admin.order_hint")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<span class="count" data-v-4196502c${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_fields_enabled", { count: enabledCount() }))}</span><button class="btn btn--cta" type="button" data-v-4196502c${_scopeId2}>${ssrInterpolate(unref(t)("admin.save"))}</button>`);
+                } else {
+                  return [
+                    createVNode("span", { class: "count" }, toDisplayString(unref(t)("admin.lead_fields_enabled", { count: enabledCount() })), 1),
+                    createVNode("button", {
+                      class: "btn btn--cta",
+                      type: "button",
+                      onClick: save
+                    }, toDisplayString(unref(t)("admin.save")), 1)
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<ol class="fields" data-v-4196502c${_scopeId2}><!--[-->`);
+                  ssrRenderList(state, (field, index) => {
+                    _push3(`<li class="field-row" data-v-4196502c${_scopeId2}><header class="field-row__head" data-v-4196502c${_scopeId2}><span class="field-row__key latin" data-v-4196502c${_scopeId2}>${ssrInterpolate(field.key)}</span><span class="field-row__type latin" data-v-4196502c${_scopeId2}>${ssrInterpolate(field.type)}</span>`);
+                    if (field.isLocked) {
+                      _push3(`<span class="chip chip--lock" data-v-4196502c${_scopeId2}>${ssrInterpolate(unref(t)("admin.field_locked"))}</span>`);
+                    } else {
+                      _push3(`<!---->`);
+                    }
+                    _push3(`<div class="field-row__tools" data-v-4196502c${_scopeId2}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-4196502c${_scopeId2}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === state.length - 1) ? " disabled" : ""} data-v-4196502c${_scopeId2}>↓</button></div></header><div class="field-row__switches" data-v-4196502c${_scopeId2}>`);
+                    _push3(ssrRenderComponent(Field, {
+                      modelValue: field.isEnabled,
+                      "onUpdate:modelValue": ($event) => field.isEnabled = $event,
+                      label: unref(t)("admin.field_enabled"),
+                      type: "checkbox",
+                      disabled: field.isLocked
+                    }, null, _parent3, _scopeId2));
+                    _push3(ssrRenderComponent(Field, {
+                      modelValue: field.isRequired,
+                      "onUpdate:modelValue": ($event) => field.isRequired = $event,
+                      label: unref(t)("admin.field_required"),
+                      type: "checkbox",
+                      disabled: field.isLocked
+                    }, null, _parent3, _scopeId2));
+                    _push3(ssrRenderComponent(Field, {
+                      modelValue: field.maxLength,
+                      "onUpdate:modelValue": ($event) => field.maxLength = $event,
+                      label: unref(t)("admin.field_max_length"),
+                      type: "number"
+                    }, null, _parent3, _scopeId2));
+                    _push3(`</div><div class="field-row__locales" data-v-4196502c${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.locales, (locale) => {
+                      _push3(`<div class="locale"${ssrRenderAttr("dir", DIRS[locale] ?? "auto")} data-v-4196502c${_scopeId2}><span class="locale__tag" data-v-4196502c${_scopeId2}>${ssrInterpolate(locale.toUpperCase())}</span>`);
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: field.labels[locale].label,
+                        "onUpdate:modelValue": ($event) => field.labels[locale].label = $event,
+                        label: unref(t)("admin.field_label"),
+                        dir: DIRS[locale]
+                      }, null, _parent3, _scopeId2));
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: field.labels[locale].placeholder,
+                        "onUpdate:modelValue": ($event) => field.labels[locale].placeholder = $event,
+                        label: unref(t)("admin.field_placeholder"),
+                        dir: DIRS[locale]
+                      }, null, _parent3, _scopeId2));
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: field.labels[locale].help,
+                        "onUpdate:modelValue": ($event) => field.labels[locale].help = $event,
+                        label: unref(t)("admin.field_help"),
+                        dir: DIRS[locale]
+                      }, null, _parent3, _scopeId2));
+                      _push3(`</div>`);
+                    });
+                    _push3(`<!--]--></div></li>`);
+                  });
+                  _push3(`<!--]--></ol>`);
+                } else {
+                  return [
+                    createVNode("ol", { class: "fields" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(state, (field, index) => {
+                        return openBlock(), createBlock("li", {
+                          key: field.id,
+                          class: "field-row"
+                        }, [
+                          createVNode("header", { class: "field-row__head" }, [
+                            createVNode("span", { class: "field-row__key latin" }, toDisplayString(field.key), 1),
+                            createVNode("span", { class: "field-row__type latin" }, toDisplayString(field.type), 1),
+                            field.isLocked ? (openBlock(), createBlock("span", {
+                              key: 0,
+                              class: "chip chip--lock"
+                            }, toDisplayString(unref(t)("admin.field_locked")), 1)) : createCommentVNode("", true),
+                            createVNode("div", { class: "field-row__tools" }, [
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                "aria-label": unref(t)("admin.move_up"),
+                                disabled: index === 0,
+                                onClick: ($event) => move(index, -1)
+                              }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                "aria-label": unref(t)("admin.move_down"),
+                                disabled: index === state.length - 1,
+                                onClick: ($event) => move(index, 1)
+                              }, "↓", 8, ["aria-label", "disabled", "onClick"])
+                            ])
+                          ]),
+                          createVNode("div", { class: "field-row__switches" }, [
+                            createVNode(Field, {
+                              modelValue: field.isEnabled,
+                              "onUpdate:modelValue": ($event) => field.isEnabled = $event,
+                              label: unref(t)("admin.field_enabled"),
+                              type: "checkbox",
+                              disabled: field.isLocked
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"]),
+                            createVNode(Field, {
+                              modelValue: field.isRequired,
+                              "onUpdate:modelValue": ($event) => field.isRequired = $event,
+                              label: unref(t)("admin.field_required"),
+                              type: "checkbox",
+                              disabled: field.isLocked
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"]),
+                            createVNode(Field, {
+                              modelValue: field.maxLength,
+                              "onUpdate:modelValue": ($event) => field.maxLength = $event,
+                              label: unref(t)("admin.field_max_length"),
+                              type: "number"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                          ]),
+                          createVNode("div", { class: "field-row__locales" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.locales, (locale) => {
+                              return openBlock(), createBlock("div", {
+                                key: locale,
+                                class: "locale",
+                                dir: DIRS[locale] ?? "auto"
+                              }, [
+                                createVNode("span", { class: "locale__tag" }, toDisplayString(locale.toUpperCase()), 1),
+                                createVNode(Field, {
+                                  modelValue: field.labels[locale].label,
+                                  "onUpdate:modelValue": ($event) => field.labels[locale].label = $event,
+                                  label: unref(t)("admin.field_label"),
+                                  dir: DIRS[locale]
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"]),
+                                createVNode(Field, {
+                                  modelValue: field.labels[locale].placeholder,
+                                  "onUpdate:modelValue": ($event) => field.labels[locale].placeholder = $event,
+                                  label: unref(t)("admin.field_placeholder"),
+                                  dir: DIRS[locale]
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"]),
+                                createVNode(Field, {
+                                  modelValue: field.labels[locale].help,
+                                  "onUpdate:modelValue": ($event) => field.labels[locale].help = $event,
+                                  label: unref(t)("admin.field_help"),
+                                  dir: DIRS[locale]
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"])
+                              ], 8, ["dir"]);
+                            }), 128))
+                          ])
+                        ]);
+                      }), 128))
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode("p", {
+                class: "notice",
+                role: "note"
+              }, toDisplayString(unref(t)("admin.lead_fields_warning")), 1),
+              createVNode(Panel, {
+                title: unref(t)("admin.lead_fields"),
+                hint: unref(t)("admin.order_hint")
+              }, {
+                actions: withCtx(() => [
+                  createVNode("span", { class: "count" }, toDisplayString(unref(t)("admin.lead_fields_enabled", { count: enabledCount() })), 1),
+                  createVNode("button", {
+                    class: "btn btn--cta",
+                    type: "button",
+                    onClick: save
+                  }, toDisplayString(unref(t)("admin.save")), 1)
+                ]),
+                default: withCtx(() => [
+                  createVNode("ol", { class: "fields" }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(state, (field, index) => {
+                      return openBlock(), createBlock("li", {
+                        key: field.id,
+                        class: "field-row"
+                      }, [
+                        createVNode("header", { class: "field-row__head" }, [
+                          createVNode("span", { class: "field-row__key latin" }, toDisplayString(field.key), 1),
+                          createVNode("span", { class: "field-row__type latin" }, toDisplayString(field.type), 1),
+                          field.isLocked ? (openBlock(), createBlock("span", {
+                            key: 0,
+                            class: "chip chip--lock"
+                          }, toDisplayString(unref(t)("admin.field_locked")), 1)) : createCommentVNode("", true),
+                          createVNode("div", { class: "field-row__tools" }, [
+                            createVNode("button", {
+                              class: "btn btn--ghost",
+                              type: "button",
+                              "aria-label": unref(t)("admin.move_up"),
+                              disabled: index === 0,
+                              onClick: ($event) => move(index, -1)
+                            }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                            createVNode("button", {
+                              class: "btn btn--ghost",
+                              type: "button",
+                              "aria-label": unref(t)("admin.move_down"),
+                              disabled: index === state.length - 1,
+                              onClick: ($event) => move(index, 1)
+                            }, "↓", 8, ["aria-label", "disabled", "onClick"])
+                          ])
+                        ]),
+                        createVNode("div", { class: "field-row__switches" }, [
+                          createVNode(Field, {
+                            modelValue: field.isEnabled,
+                            "onUpdate:modelValue": ($event) => field.isEnabled = $event,
+                            label: unref(t)("admin.field_enabled"),
+                            type: "checkbox",
+                            disabled: field.isLocked
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"]),
+                          createVNode(Field, {
+                            modelValue: field.isRequired,
+                            "onUpdate:modelValue": ($event) => field.isRequired = $event,
+                            label: unref(t)("admin.field_required"),
+                            type: "checkbox",
+                            disabled: field.isLocked
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "disabled"]),
+                          createVNode(Field, {
+                            modelValue: field.maxLength,
+                            "onUpdate:modelValue": ($event) => field.maxLength = $event,
+                            label: unref(t)("admin.field_max_length"),
+                            type: "number"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                        ]),
+                        createVNode("div", { class: "field-row__locales" }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.locales, (locale) => {
+                            return openBlock(), createBlock("div", {
+                              key: locale,
+                              class: "locale",
+                              dir: DIRS[locale] ?? "auto"
+                            }, [
+                              createVNode("span", { class: "locale__tag" }, toDisplayString(locale.toUpperCase()), 1),
+                              createVNode(Field, {
+                                modelValue: field.labels[locale].label,
+                                "onUpdate:modelValue": ($event) => field.labels[locale].label = $event,
+                                label: unref(t)("admin.field_label"),
+                                dir: DIRS[locale]
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"]),
+                              createVNode(Field, {
+                                modelValue: field.labels[locale].placeholder,
+                                "onUpdate:modelValue": ($event) => field.labels[locale].placeholder = $event,
+                                label: unref(t)("admin.field_placeholder"),
+                                dir: DIRS[locale]
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"]),
+                              createVNode(Field, {
+                                modelValue: field.labels[locale].help,
+                                "onUpdate:modelValue": ($event) => field.labels[locale].help = $event,
+                                label: unref(t)("admin.field_help"),
+                                dir: DIRS[locale]
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"])
+                            ], 8, ["dir"]);
+                          }), 128))
+                        ])
+                      ]);
+                    }), 128))
+                  ])
+                ]),
+                _: 1
+              }, 8, ["title", "hint"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$X = _sfc_main$X.setup;
+_sfc_main$X.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/LeadFields.vue");
+  return _sfc_setup$X ? _sfc_setup$X(props, ctx) : void 0;
+};
+const LeadFields = /* @__PURE__ */ _export_sfc(_sfc_main$X, [["__scopeId", "data-v-4196502c"]]);
+const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: LeadFields
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$W = {
+  __name: "Index",
+  __ssrInlineRender: true,
+  props: {
+    leads: { type: Object, required: true },
+    filters: { type: Object, default: () => ({}) },
+    statuses: { type: Array, default: () => [] },
+    campaigns: { type: Array, default: () => [] },
+    sources: { type: Array, default: () => [] },
+    can: { type: Object, default: () => ({}) },
+    selected: { type: Object, default: null }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { dateTime } = useFormat();
+    const filters = reactive({
+      q: props.filters.q ?? "",
+      from: props.filters.from ?? "",
+      to: props.filters.to ?? "",
+      campaign: props.filters.campaign ?? "",
+      source: props.filters.source ?? "",
+      status: props.filters.status ?? "",
+      crm: props.filters.crm ?? ""
+    });
+    let timer = null;
+    watch(
+      filters,
+      () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          router.get("/admin/leads", clean(), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+          });
+        }, 300);
+      },
+      { deep: true }
+    );
+    function clean() {
+      return Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== "" && v !== null));
+    }
+    function reset() {
+      Object.keys(filters).forEach((k) => filters[k] = "");
+    }
+    function exportUrl() {
+      const params = new URLSearchParams(clean()).toString();
+      return `/admin/leads/export${params ? `?${params}` : ""}`;
+    }
+    function setStatus(lead, status) {
+      router.patch(`/admin/leads/${lead.id}`, { status }, { preserveScroll: true, preserveState: true });
+    }
+    function resync(lead) {
+      router.post(`/admin/leads/${lead.id}/resync`, {}, { preserveScroll: true, preserveState: true });
+    }
+    function closePanel() {
+      router.get("/admin/leads", clean(), { preserveState: true, preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.leads")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.filter")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<button class="btn btn--ghost" type="button" data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.reset"))}</button>`);
+                  if (__props.can.export) {
+                    _push3(`<a class="btn btn--secondary"${ssrRenderAttr("href", exportUrl())} data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.export_csv"))}</a>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    createVNode("button", {
+                      class: "btn btn--ghost",
+                      type: "button",
+                      onClick: reset
+                    }, toDisplayString(unref(t)("admin.reset")), 1),
+                    __props.can.export ? (openBlock(), createBlock("a", {
+                      key: 0,
+                      class: "btn btn--secondary",
+                      href: exportUrl()
+                    }, toDisplayString(unref(t)("admin.export_csv")), 9, ["href"])) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="filters" data-v-9c30a146${_scopeId2}>`);
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.q,
+                    "onUpdate:modelValue": ($event) => filters.q = $event,
+                    label: unref(t)("admin.search")
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.from,
+                    "onUpdate:modelValue": ($event) => filters.from = $event,
+                    label: unref(t)("admin.lead_date"),
+                    type: "date"
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.to,
+                    "onUpdate:modelValue": ($event) => filters.to = $event,
+                    label: unref(t)("admin.lead_date"),
+                    type: "date"
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.campaign,
+                    "onUpdate:modelValue": ($event) => filters.campaign = $event,
+                    label: unref(t)("admin.lead_campaign"),
+                    type: "select",
+                    options: __props.campaigns.map((c) => ({ value: c.id, label: c.slug }))
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.source,
+                    "onUpdate:modelValue": ($event) => filters.source = $event,
+                    label: unref(t)("admin.lead_source"),
+                    type: "select",
+                    options: __props.sources.map((s) => ({ value: s, label: s }))
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.status,
+                    "onUpdate:modelValue": ($event) => filters.status = $event,
+                    label: unref(t)("admin.lead_status"),
+                    type: "select",
+                    options: __props.statuses.map((s) => ({ value: s, label: unref(t)(`admin.status_${s}`) }))
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: filters.crm,
+                    "onUpdate:modelValue": ($event) => filters.crm = $event,
+                    label: unref(t)("admin.crm_state"),
+                    type: "select",
+                    options: ["pending", "synced", "failed"].map((s) => ({ value: s, label: unref(t)(`admin.crm_${s}`) }))
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "filters" }, [
+                      createVNode(Field, {
+                        modelValue: filters.q,
+                        "onUpdate:modelValue": ($event) => filters.q = $event,
+                        label: unref(t)("admin.search")
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                      createVNode(Field, {
+                        modelValue: filters.from,
+                        "onUpdate:modelValue": ($event) => filters.from = $event,
+                        label: unref(t)("admin.lead_date"),
+                        type: "date"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                      createVNode(Field, {
+                        modelValue: filters.to,
+                        "onUpdate:modelValue": ($event) => filters.to = $event,
+                        label: unref(t)("admin.lead_date"),
+                        type: "date"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                      createVNode(Field, {
+                        modelValue: filters.campaign,
+                        "onUpdate:modelValue": ($event) => filters.campaign = $event,
+                        label: unref(t)("admin.lead_campaign"),
+                        type: "select",
+                        options: __props.campaigns.map((c) => ({ value: c.id, label: c.slug }))
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                      createVNode(Field, {
+                        modelValue: filters.source,
+                        "onUpdate:modelValue": ($event) => filters.source = $event,
+                        label: unref(t)("admin.lead_source"),
+                        type: "select",
+                        options: __props.sources.map((s) => ({ value: s, label: s }))
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                      createVNode(Field, {
+                        modelValue: filters.status,
+                        "onUpdate:modelValue": ($event) => filters.status = $event,
+                        label: unref(t)("admin.lead_status"),
+                        type: "select",
+                        options: __props.statuses.map((s) => ({ value: s, label: unref(t)(`admin.status_${s}`) }))
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                      createVNode(Field, {
+                        modelValue: filters.crm,
+                        "onUpdate:modelValue": ($event) => filters.crm = $event,
+                        label: unref(t)("admin.crm_state"),
+                        type: "select",
+                        options: ["pending", "synced", "failed"].map((s) => ({ value: s, label: unref(t)(`admin.crm_${s}`) }))
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: `${unref(t)("admin.leads")} (${__props.leads.total})`
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.leads.data.length) {
+                    _push3(`<p class="empty" data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<div class="table-wrap" data-v-9c30a146${_scopeId2}><table class="table" data-v-9c30a146${_scopeId2}><thead data-v-9c30a146${_scopeId2}><tr data-v-9c30a146${_scopeId2}><th data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_date"))}</th><th data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</th><th data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_message"))}</th><th data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_source"))}</th><th data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_status"))}</th><th data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_state"))}</th></tr></thead><tbody data-v-9c30a146${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.leads.data, (lead) => {
+                      _push3(`<tr data-v-9c30a146${_scopeId2}><td class="nowrap" data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(dateTime)(lead.createdAt))}</td><td data-v-9c30a146${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/leads/${lead.id}`,
+                        class: "table__link latin"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(lead.contact)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(lead.contact), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`</td><td class="table__msg" data-v-9c30a146${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</td><td data-v-9c30a146${_scopeId2}>${ssrInterpolate(lead.campaign ?? lead.source ?? "—")}</td><td data-v-9c30a146${_scopeId2}>`);
+                      if (__props.can.updateStatus) {
+                        _push3(`<select class="table__select"${ssrRenderAttr("value", lead.status)}${ssrRenderAttr("aria-label", unref(t)("admin.lead_status"))} data-v-9c30a146${_scopeId2}><!--[-->`);
+                        ssrRenderList(__props.statuses, (s) => {
+                          _push3(`<option${ssrRenderAttr("value", s)} data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${s}`))}</option>`);
+                        });
+                        _push3(`<!--]--></select>`);
+                      } else {
+                        _push3(`<span data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span>`);
+                      }
+                      _push3(`</td><td data-v-9c30a146${_scopeId2}><span class="${ssrRenderClass([`chip--${lead.crmStatus}`, "chip"])}" data-v-9c30a146${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></td></tr>`);
+                    });
+                    _push3(`<!--]--></tbody></table></div>`);
+                  }
+                  if (__props.leads.last_page > 1) {
+                    _push3(`<nav class="pager" aria-label="pagination" data-v-9c30a146${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.leads.links, (link) => {
+                      _push3(ssrRenderComponent(unref(Link), {
+                        key: link.label,
+                        href: link.url ?? "#",
+                        class: ["pager__link", { "is-current": link.active, "is-disabled": !link.url }]
+                      }, null, _parent3, _scopeId2));
+                    });
+                    _push3(`<!--]--></nav>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    !__props.leads.data.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("div", {
+                      key: 1,
+                      class: "table-wrap"
+                    }, [
+                      createVNode("table", { class: "table" }, [
+                        createVNode("thead", null, [
+                          createVNode("tr", null, [
+                            createVNode("th", null, toDisplayString(unref(t)("admin.lead_date")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.lead_contact")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.lead_message")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.lead_source")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.lead_status")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.crm_state")), 1)
+                          ])
+                        ]),
+                        createVNode("tbody", null, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.leads.data, (lead) => {
+                            return openBlock(), createBlock("tr", {
+                              key: lead.id
+                            }, [
+                              createVNode("td", { class: "nowrap" }, toDisplayString(unref(dateTime)(lead.createdAt)), 1),
+                              createVNode("td", null, [
+                                createVNode(unref(Link), {
+                                  href: `/admin/leads/${lead.id}`,
+                                  class: "table__link latin"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(lead.contact), 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["href"])
+                              ]),
+                              createVNode("td", { class: "table__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                              createVNode("td", null, toDisplayString(lead.campaign ?? lead.source ?? "—"), 1),
+                              createVNode("td", null, [
+                                __props.can.updateStatus ? (openBlock(), createBlock("select", {
+                                  key: 0,
+                                  class: "table__select",
+                                  value: lead.status,
+                                  "aria-label": unref(t)("admin.lead_status"),
+                                  onChange: ($event) => setStatus(lead, $event.target.value)
+                                }, [
+                                  (openBlock(true), createBlock(Fragment, null, renderList(__props.statuses, (s) => {
+                                    return openBlock(), createBlock("option", {
+                                      key: s,
+                                      value: s
+                                    }, toDisplayString(unref(t)(`admin.status_${s}`)), 9, ["value"]);
+                                  }), 128))
+                                ], 40, ["value", "aria-label", "onChange"])) : (openBlock(), createBlock("span", { key: 1 }, toDisplayString(unref(t)(`admin.status_${lead.status}`)), 1))
+                              ]),
+                              createVNode("td", null, [
+                                createVNode("span", {
+                                  class: ["chip", `chip--${lead.crmStatus}`]
+                                }, toDisplayString(unref(t)(`admin.crm_${lead.crmStatus}`)), 3)
+                              ])
+                            ]);
+                          }), 128))
+                        ])
+                      ])
+                    ])),
+                    __props.leads.last_page > 1 ? (openBlock(), createBlock("nav", {
+                      key: 2,
+                      class: "pager",
+                      "aria-label": "pagination"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.leads.links, (link) => {
+                        return openBlock(), createBlock(unref(Link), {
+                          key: link.label,
+                          href: link.url ?? "#",
+                          class: ["pager__link", { "is-current": link.active, "is-disabled": !link.url }],
+                          innerHTML: link.label
+                        }, null, 8, ["href", "class", "innerHTML"]);
+                      }), 128))
+                    ])) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            if (__props.selected) {
+              _push2(`<aside class="drawer" role="dialog" aria-modal="false" data-v-9c30a146${_scopeId}><header class="drawer__head" data-v-9c30a146${_scopeId}><h2 class="drawer__title latin" data-v-9c30a146${_scopeId}>${ssrInterpolate(__props.selected.contact)}</h2><button class="drawer__close" type="button"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-9c30a146${_scopeId}> ✕ </button></header><div class="drawer__body" data-v-9c30a146${_scopeId}><dl class="pairs" data-v-9c30a146${_scopeId}><dt data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_date"))}</dt><dd data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(dateTime)(__props.selected.createdAt))}</dd><dt data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_message"))}</dt><dd data-v-9c30a146${_scopeId}>${ssrInterpolate(__props.selected.message ?? "—")}</dd><dt data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_status"))}</dt><dd data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)(`admin.status_${__props.selected.status}`))}</dd><dt data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_campaign"))}</dt><dd data-v-9c30a146${_scopeId}>${ssrInterpolate(__props.selected.campaign ?? "—")}</dd><dt data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.sectors"))}</dt><dd data-v-9c30a146${_scopeId}>${ssrInterpolate(__props.selected.sectorHint ?? "—")}</dd></dl><h3 class="drawer__sub" data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution"))}</h3><dl class="pairs" data-v-9c30a146${_scopeId}><dt data-v-9c30a146${_scopeId}>Page</dt><dd class="ltr" data-v-9c30a146${_scopeId}>${ssrInterpolate(__props.selected.pageUrl ?? "—")}</dd><dt data-v-9c30a146${_scopeId}>Referrer</dt><dd class="ltr" data-v-9c30a146${_scopeId}>${ssrInterpolate(__props.selected.referrer ?? "—")}</dd><!--[-->`);
+              ssrRenderList(__props.selected.utm, (value, key) => {
+                _push2(`<dt data-v-9c30a146${_scopeId}>${ssrInterpolate(key)}</dt>`);
+              });
+              _push2(`<!--]--><!--[-->`);
+              ssrRenderList(__props.selected.utm, (value, key) => {
+                _push2(`<dd class="ltr" data-v-9c30a146${_scopeId}>${ssrInterpolate(value ?? "—")}</dd>`);
+              });
+              _push2(`<!--]--></dl><h3 class="drawer__sub" data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_log"))}</h3><p class="drawer__crm" data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)(`admin.crm_${__props.selected.crmStatus}`))} `);
+              if (__props.selected.crmProvider) {
+                _push2(`<span class="latin" data-v-9c30a146${_scopeId}>· ${ssrInterpolate(__props.selected.crmProvider)}</span>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</p>`);
+              if (__props.can.updateStatus && __props.selected.crmStatus !== "synced") {
+                _push2(`<button class="btn btn--secondary" type="button" data-v-9c30a146${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_resync"))}</button>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (__props.selected.syncLogs?.length) {
+                _push2(`<ul class="logs" data-v-9c30a146${_scopeId}><!--[-->`);
+                ssrRenderList(__props.selected.syncLogs, (log) => {
+                  _push2(`<li class="logs__row" data-v-9c30a146${_scopeId}><span class="tabular" data-v-9c30a146${_scopeId}>#${ssrInterpolate(log.attempt)}</span><span class="latin" data-v-9c30a146${_scopeId}>${ssrInterpolate(log.provider)}</span><span class="tabular" data-v-9c30a146${_scopeId}>${ssrInterpolate(log.httpStatus ?? "—")}</span><span class="logs__error" data-v-9c30a146${_scopeId}>${ssrInterpolate(log.error ?? "")}</span></li>`);
+                });
+                _push2(`<!--]--></ul>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div></aside>`);
+            } else {
+              _push2(`<!---->`);
+            }
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.filter")
+              }, {
+                actions: withCtx(() => [
+                  createVNode("button", {
+                    class: "btn btn--ghost",
+                    type: "button",
+                    onClick: reset
+                  }, toDisplayString(unref(t)("admin.reset")), 1),
+                  __props.can.export ? (openBlock(), createBlock("a", {
+                    key: 0,
+                    class: "btn btn--secondary",
+                    href: exportUrl()
+                  }, toDisplayString(unref(t)("admin.export_csv")), 9, ["href"])) : createCommentVNode("", true)
+                ]),
+                default: withCtx(() => [
+                  createVNode("div", { class: "filters" }, [
+                    createVNode(Field, {
+                      modelValue: filters.q,
+                      "onUpdate:modelValue": ($event) => filters.q = $event,
+                      label: unref(t)("admin.search")
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                    createVNode(Field, {
+                      modelValue: filters.from,
+                      "onUpdate:modelValue": ($event) => filters.from = $event,
+                      label: unref(t)("admin.lead_date"),
+                      type: "date"
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                    createVNode(Field, {
+                      modelValue: filters.to,
+                      "onUpdate:modelValue": ($event) => filters.to = $event,
+                      label: unref(t)("admin.lead_date"),
+                      type: "date"
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                    createVNode(Field, {
+                      modelValue: filters.campaign,
+                      "onUpdate:modelValue": ($event) => filters.campaign = $event,
+                      label: unref(t)("admin.lead_campaign"),
+                      type: "select",
+                      options: __props.campaigns.map((c) => ({ value: c.id, label: c.slug }))
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                    createVNode(Field, {
+                      modelValue: filters.source,
+                      "onUpdate:modelValue": ($event) => filters.source = $event,
+                      label: unref(t)("admin.lead_source"),
+                      type: "select",
+                      options: __props.sources.map((s) => ({ value: s, label: s }))
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                    createVNode(Field, {
+                      modelValue: filters.status,
+                      "onUpdate:modelValue": ($event) => filters.status = $event,
+                      label: unref(t)("admin.lead_status"),
+                      type: "select",
+                      options: __props.statuses.map((s) => ({ value: s, label: unref(t)(`admin.status_${s}`) }))
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                    createVNode(Field, {
+                      modelValue: filters.crm,
+                      "onUpdate:modelValue": ($event) => filters.crm = $event,
+                      label: unref(t)("admin.crm_state"),
+                      type: "select",
+                      options: ["pending", "synced", "failed"].map((s) => ({ value: s, label: unref(t)(`admin.crm_${s}`) }))
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"])
+                  ])
+                ]),
+                _: 1
+              }, 8, ["title"]),
+              createVNode(Panel, {
+                title: `${unref(t)("admin.leads")} (${__props.leads.total})`
+              }, {
+                default: withCtx(() => [
+                  !__props.leads.data.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("div", {
+                    key: 1,
+                    class: "table-wrap"
+                  }, [
+                    createVNode("table", { class: "table" }, [
+                      createVNode("thead", null, [
+                        createVNode("tr", null, [
+                          createVNode("th", null, toDisplayString(unref(t)("admin.lead_date")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.lead_contact")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.lead_message")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.lead_source")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.lead_status")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.crm_state")), 1)
+                        ])
+                      ]),
+                      createVNode("tbody", null, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.leads.data, (lead) => {
+                          return openBlock(), createBlock("tr", {
+                            key: lead.id
+                          }, [
+                            createVNode("td", { class: "nowrap" }, toDisplayString(unref(dateTime)(lead.createdAt)), 1),
+                            createVNode("td", null, [
+                              createVNode(unref(Link), {
+                                href: `/admin/leads/${lead.id}`,
+                                class: "table__link latin"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(lead.contact), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["href"])
+                            ]),
+                            createVNode("td", { class: "table__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                            createVNode("td", null, toDisplayString(lead.campaign ?? lead.source ?? "—"), 1),
+                            createVNode("td", null, [
+                              __props.can.updateStatus ? (openBlock(), createBlock("select", {
+                                key: 0,
+                                class: "table__select",
+                                value: lead.status,
+                                "aria-label": unref(t)("admin.lead_status"),
+                                onChange: ($event) => setStatus(lead, $event.target.value)
+                              }, [
+                                (openBlock(true), createBlock(Fragment, null, renderList(__props.statuses, (s) => {
+                                  return openBlock(), createBlock("option", {
+                                    key: s,
+                                    value: s
+                                  }, toDisplayString(unref(t)(`admin.status_${s}`)), 9, ["value"]);
+                                }), 128))
+                              ], 40, ["value", "aria-label", "onChange"])) : (openBlock(), createBlock("span", { key: 1 }, toDisplayString(unref(t)(`admin.status_${lead.status}`)), 1))
+                            ]),
+                            createVNode("td", null, [
+                              createVNode("span", {
+                                class: ["chip", `chip--${lead.crmStatus}`]
+                              }, toDisplayString(unref(t)(`admin.crm_${lead.crmStatus}`)), 3)
+                            ])
+                          ]);
+                        }), 128))
+                      ])
+                    ])
+                  ])),
+                  __props.leads.last_page > 1 ? (openBlock(), createBlock("nav", {
+                    key: 2,
+                    class: "pager",
+                    "aria-label": "pagination"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.leads.links, (link) => {
+                      return openBlock(), createBlock(unref(Link), {
+                        key: link.label,
+                        href: link.url ?? "#",
+                        class: ["pager__link", { "is-current": link.active, "is-disabled": !link.url }],
+                        innerHTML: link.label
+                      }, null, 8, ["href", "class", "innerHTML"]);
+                    }), 128))
+                  ])) : createCommentVNode("", true)
+                ]),
+                _: 1
+              }, 8, ["title"]),
+              __props.selected ? (openBlock(), createBlock("aside", {
+                key: 0,
+                class: "drawer",
+                role: "dialog",
+                "aria-modal": "false"
+              }, [
+                createVNode("header", { class: "drawer__head" }, [
+                  createVNode("h2", { class: "drawer__title latin" }, toDisplayString(__props.selected.contact), 1),
+                  createVNode("button", {
+                    class: "drawer__close",
+                    type: "button",
+                    "aria-label": unref(t)("common.close"),
+                    onClick: closePanel
+                  }, " ✕ ", 8, ["aria-label"])
+                ]),
+                createVNode("div", { class: "drawer__body" }, [
+                  createVNode("dl", { class: "pairs" }, [
+                    createVNode("dt", null, toDisplayString(unref(t)("admin.lead_date")), 1),
+                    createVNode("dd", null, toDisplayString(unref(dateTime)(__props.selected.createdAt)), 1),
+                    createVNode("dt", null, toDisplayString(unref(t)("admin.lead_message")), 1),
+                    createVNode("dd", null, toDisplayString(__props.selected.message ?? "—"), 1),
+                    createVNode("dt", null, toDisplayString(unref(t)("admin.lead_status")), 1),
+                    createVNode("dd", null, toDisplayString(unref(t)(`admin.status_${__props.selected.status}`)), 1),
+                    createVNode("dt", null, toDisplayString(unref(t)("admin.lead_campaign")), 1),
+                    createVNode("dd", null, toDisplayString(__props.selected.campaign ?? "—"), 1),
+                    createVNode("dt", null, toDisplayString(unref(t)("admin.sectors")), 1),
+                    createVNode("dd", null, toDisplayString(__props.selected.sectorHint ?? "—"), 1)
+                  ]),
+                  createVNode("h3", { class: "drawer__sub" }, toDisplayString(unref(t)("admin.attribution")), 1),
+                  createVNode("dl", { class: "pairs" }, [
+                    createVNode("dt", null, "Page"),
+                    createVNode("dd", { class: "ltr" }, toDisplayString(__props.selected.pageUrl ?? "—"), 1),
+                    createVNode("dt", null, "Referrer"),
+                    createVNode("dd", { class: "ltr" }, toDisplayString(__props.selected.referrer ?? "—"), 1),
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.selected.utm, (value, key) => {
+                      return openBlock(), createBlock("dt", { key }, toDisplayString(key), 1);
+                    }), 128)),
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.selected.utm, (value, key) => {
+                      return openBlock(), createBlock("dd", {
+                        key: `v-${key}`,
+                        class: "ltr"
+                      }, toDisplayString(value ?? "—"), 1);
+                    }), 128))
+                  ]),
+                  createVNode("h3", { class: "drawer__sub" }, toDisplayString(unref(t)("admin.crm_log")), 1),
+                  createVNode("p", { class: "drawer__crm" }, [
+                    createTextVNode(toDisplayString(unref(t)(`admin.crm_${__props.selected.crmStatus}`)) + " ", 1),
+                    __props.selected.crmProvider ? (openBlock(), createBlock("span", {
+                      key: 0,
+                      class: "latin"
+                    }, "· " + toDisplayString(__props.selected.crmProvider), 1)) : createCommentVNode("", true)
+                  ]),
+                  __props.can.updateStatus && __props.selected.crmStatus !== "synced" ? (openBlock(), createBlock("button", {
+                    key: 0,
+                    class: "btn btn--secondary",
+                    type: "button",
+                    onClick: ($event) => resync(__props.selected)
+                  }, toDisplayString(unref(t)("admin.crm_resync")), 9, ["onClick"])) : createCommentVNode("", true),
+                  __props.selected.syncLogs?.length ? (openBlock(), createBlock("ul", {
+                    key: 1,
+                    class: "logs"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.selected.syncLogs, (log) => {
+                      return openBlock(), createBlock("li", {
+                        key: log.id,
+                        class: "logs__row"
+                      }, [
+                        createVNode("span", { class: "tabular" }, "#" + toDisplayString(log.attempt), 1),
+                        createVNode("span", { class: "latin" }, toDisplayString(log.provider), 1),
+                        createVNode("span", { class: "tabular" }, toDisplayString(log.httpStatus ?? "—"), 1),
+                        createVNode("span", { class: "logs__error" }, toDisplayString(log.error ?? ""), 1)
+                      ]);
+                    }), 128))
+                  ])) : createCommentVNode("", true)
+                ])
+              ])) : createCommentVNode("", true)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$W = _sfc_main$W.setup;
+_sfc_main$W.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Leads/Index.vue");
+  return _sfc_setup$W ? _sfc_setup$W(props, ctx) : void 0;
+};
+const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$W, [["__scopeId", "data-v-9c30a146"]]);
+const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index$2
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$V = {
+  __name: "Button",
+  __ssrInlineRender: true,
+  props: {
+    variant: {
+      type: String,
+      default: "primary",
+      validator: (v) => ["primary", "secondary", "ghost", "cta", "cta-lg", "link"].includes(v)
+    },
+    href: { type: String, default: null },
+    // External links get a full page load; internal ones stay in Inertia.
+    external: { type: Boolean, default: false },
+    type: { type: String, default: "button" },
+    disabled: { type: Boolean, default: false },
+    loading: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const tag = computed(() => {
+      if (props.href === null) return "button";
+      return props.external ? "a" : Link;
+    });
+    const classes = computed(() => ["btn", `btn--${props.variant}`]);
+    const isInert = computed(() => props.disabled || props.loading);
+    return (_ctx, _push, _parent, _attrs) => {
+      ssrRenderVNode(_push, createVNode(resolveDynamicComponent(tag.value), mergeProps({
+        class: classes.value,
+        href: __props.href ?? void 0,
+        type: __props.href === null ? __props.type : void 0,
+        disabled: __props.href === null ? isInert.value : void 0,
+        "aria-disabled": __props.href !== null && isInert.value ? "true" : void 0,
+        "aria-busy": __props.loading ? "true" : void 0,
+        rel: __props.external ? "noopener noreferrer" : void 0,
+        target: __props.external ? "_blank" : void 0
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            ssrRenderSlot(_ctx.$slots, "icon-start", {}, null, _push2, _parent2, _scopeId);
+            ssrRenderSlot(_ctx.$slots, "default", {}, null, _push2, _parent2, _scopeId);
+            ssrRenderSlot(_ctx.$slots, "icon-end", {}, null, _push2, _parent2, _scopeId);
+          } else {
+            return [
+              renderSlot(_ctx.$slots, "icon-start"),
+              renderSlot(_ctx.$slots, "default"),
+              renderSlot(_ctx.$slots, "icon-end")
+            ];
+          }
+        }),
+        _: 3
+      }), _parent);
+    };
+  }
+};
+const _sfc_setup$V = _sfc_main$V.setup;
+_sfc_main$V.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Button.vue");
+  return _sfc_setup$V ? _sfc_setup$V(props, ctx) : void 0;
+};
+const _sfc_main$U = {
+  __name: "Login",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const { t } = useTranslation();
+    const form = useForm({
+      email: "",
+      password: "",
+      remember: false
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      _push(ssrRenderComponent(unref(Head), {
+        title: unref(t)("admin.sign_in")
+      }, null, _parent));
+      _push(`<div class="login" data-v-b2b9b1a9><div class="login__card" data-v-b2b9b1a9>`);
+      _push(ssrRenderComponent(Logo, {
+        lockup: "stacked",
+        tone: "navy",
+        class: "login__logo"
+      }, null, _parent));
+      _push(`<h1 class="login__title" data-v-b2b9b1a9>${ssrInterpolate(unref(t)("admin.sign_in"))}</h1><form class="login__form" data-v-b2b9b1a9>`);
+      _push(ssrRenderComponent(Field, {
+        modelValue: unref(form).email,
+        "onUpdate:modelValue": ($event) => unref(form).email = $event,
+        label: unref(t)("admin.email"),
+        type: "email",
+        dir: "ltr",
+        error: unref(form).errors.email,
+        required: ""
+      }, null, _parent));
+      _push(ssrRenderComponent(Field, {
+        modelValue: unref(form).password,
+        "onUpdate:modelValue": ($event) => unref(form).password = $event,
+        label: unref(t)("admin.password"),
+        type: "password",
+        dir: "ltr",
+        error: unref(form).errors.password,
+        required: ""
+      }, null, _parent));
+      _push(ssrRenderComponent(Field, {
+        modelValue: unref(form).remember,
+        "onUpdate:modelValue": ($event) => unref(form).remember = $event,
+        label: unref(t)("admin.remember"),
+        type: "checkbox"
+      }, null, _parent));
+      _push(ssrRenderComponent(_sfc_main$V, {
+        type: "submit",
+        variant: "primary",
+        loading: unref(form).processing
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.sign_in"))}`);
+          } else {
+            return [
+              createTextVNode(toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.sign_in")), 1)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</form></div></div><!--]-->`);
+    };
+  }
+};
+const _sfc_setup$U = _sfc_main$U.setup;
+_sfc_main$U.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Login.vue");
+  return _sfc_setup$U ? _sfc_setup$U(props, ctx) : void 0;
+};
+const Login = /* @__PURE__ */ _export_sfc(_sfc_main$U, [["__scopeId", "data-v-b2b9b1a9"]]);
+const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Login
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$T = {
+  __name: "Navigation",
+  __ssrInlineRender: true,
+  props: {
+    navigations: { type: Array, default: () => [] },
+    locales: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const DIRS = { ar: "rtl", en: "ltr" };
+    const state = reactive(
+      Object.fromEntries(
+        props.navigations.map((nav) => [
+          nav.id,
+          nav.items.map((item) => ({
+            id: item.id,
+            url: item.url ?? "",
+            isActive: item.isActive,
+            labels: { ...item.labels }
+          }))
+        ])
+      )
+    );
+    function addItem(navId) {
+      state[navId].push({
+        id: null,
+        url: "",
+        isActive: true,
+        labels: Object.fromEntries(props.locales.map((l) => [l, ""]))
+      });
+    }
+    function removeItem(navId, index) {
+      state[navId].splice(index, 1);
+    }
+    function move(navId, index, delta) {
+      const next = index + delta;
+      if (next < 0 || next >= state[navId].length) return;
+      const list = state[navId];
+      [list[index], list[next]] = [list[next], list[index]];
+    }
+    function save(navId) {
+      router.put(`/admin/navigation/${navId}`, { items: state[navId] }, { preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.navigation")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<!--[-->`);
+            ssrRenderList(__props.navigations, (nav) => {
+              _push2(ssrRenderComponent(Panel, {
+                key: nav.id,
+                title: nav.key
+              }, {
+                actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(`<button class="btn btn--ghost" type="button" data-v-7004d226${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button><button class="btn btn--cta" type="button" data-v-7004d226${_scopeId2}>${ssrInterpolate(unref(t)("admin.save"))}</button>`);
+                  } else {
+                    return [
+                      createVNode("button", {
+                        class: "btn btn--ghost",
+                        type: "button",
+                        onClick: ($event) => addItem(nav.id)
+                      }, toDisplayString(unref(t)("admin.create")), 9, ["onClick"]),
+                      createVNode("button", {
+                        class: "btn btn--cta",
+                        type: "button",
+                        onClick: ($event) => save(nav.id)
+                      }, toDisplayString(unref(t)("admin.save")), 9, ["onClick"])
+                    ];
+                  }
+                }),
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    if (!state[nav.id].length) {
+                      _push3(`<p class="empty" data-v-7004d226${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    } else {
+                      _push3(`<ol class="items" data-v-7004d226${_scopeId2}><!--[-->`);
+                      ssrRenderList(state[nav.id], (item, index) => {
+                        _push3(`<li class="item" data-v-7004d226${_scopeId2}><div class="item__fields" data-v-7004d226${_scopeId2}><!--[-->`);
+                        ssrRenderList(__props.locales, (locale) => {
+                          _push3(ssrRenderComponent(Field, {
+                            key: locale,
+                            modelValue: item.labels[locale],
+                            "onUpdate:modelValue": ($event) => item.labels[locale] = $event,
+                            label: `${unref(t)("admin.navigation")} · ${locale.toUpperCase()}`,
+                            dir: DIRS[locale]
+                          }, null, _parent3, _scopeId2));
+                        });
+                        _push3(`<!--]-->`);
+                        _push3(ssrRenderComponent(Field, {
+                          modelValue: item.url,
+                          "onUpdate:modelValue": ($event) => item.url = $event,
+                          label: "url",
+                          dir: "ltr",
+                          required: ""
+                        }, null, _parent3, _scopeId2));
+                        _push3(ssrRenderComponent(Field, {
+                          modelValue: item.isActive,
+                          "onUpdate:modelValue": ($event) => item.isActive = $event,
+                          label: unref(t)("admin.active"),
+                          type: "checkbox"
+                        }, null, _parent3, _scopeId2));
+                        _push3(`</div><div class="item__tools" data-v-7004d226${_scopeId2}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-7004d226${_scopeId2}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === state[nav.id].length - 1) ? " disabled" : ""} data-v-7004d226${_scopeId2}>↓</button><button class="btn btn--ghost danger" type="button" data-v-7004d226${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></li>`);
+                      });
+                      _push3(`<!--]--></ol>`);
+                    }
+                  } else {
+                    return [
+                      !state[nav.id].length ? (openBlock(), createBlock("p", {
+                        key: 0,
+                        class: "empty"
+                      }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ol", {
+                        key: 1,
+                        class: "items"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(state[nav.id], (item, index) => {
+                          return openBlock(), createBlock("li", {
+                            key: index,
+                            class: "item"
+                          }, [
+                            createVNode("div", { class: "item__fields" }, [
+                              (openBlock(true), createBlock(Fragment, null, renderList(__props.locales, (locale) => {
+                                return openBlock(), createBlock(Field, {
+                                  key: locale,
+                                  modelValue: item.labels[locale],
+                                  "onUpdate:modelValue": ($event) => item.labels[locale] = $event,
+                                  label: `${unref(t)("admin.navigation")} · ${locale.toUpperCase()}`,
+                                  dir: DIRS[locale]
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"]);
+                              }), 128)),
+                              createVNode(Field, {
+                                modelValue: item.url,
+                                "onUpdate:modelValue": ($event) => item.url = $event,
+                                label: "url",
+                                dir: "ltr",
+                                required: ""
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                              createVNode(Field, {
+                                modelValue: item.isActive,
+                                "onUpdate:modelValue": ($event) => item.isActive = $event,
+                                label: unref(t)("admin.active"),
+                                type: "checkbox"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                            ]),
+                            createVNode("div", { class: "item__tools" }, [
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                "aria-label": unref(t)("admin.move_up"),
+                                disabled: index === 0,
+                                onClick: ($event) => move(nav.id, index, -1)
+                              }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                "aria-label": unref(t)("admin.move_down"),
+                                disabled: index === state[nav.id].length - 1,
+                                onClick: ($event) => move(nav.id, index, 1)
+                              }, "↓", 8, ["aria-label", "disabled", "onClick"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => removeItem(nav.id, index)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ])
+                          ]);
+                        }), 128))
+                      ]))
+                    ];
+                  }
+                }),
+                _: 2
+              }, _parent2, _scopeId));
+            });
+            _push2(`<!--]-->`);
+          } else {
+            return [
+              (openBlock(true), createBlock(Fragment, null, renderList(__props.navigations, (nav) => {
+                return openBlock(), createBlock(Panel, {
+                  key: nav.id,
+                  title: nav.key
+                }, {
+                  actions: withCtx(() => [
+                    createVNode("button", {
+                      class: "btn btn--ghost",
+                      type: "button",
+                      onClick: ($event) => addItem(nav.id)
+                    }, toDisplayString(unref(t)("admin.create")), 9, ["onClick"]),
+                    createVNode("button", {
+                      class: "btn btn--cta",
+                      type: "button",
+                      onClick: ($event) => save(nav.id)
+                    }, toDisplayString(unref(t)("admin.save")), 9, ["onClick"])
+                  ]),
+                  default: withCtx(() => [
+                    !state[nav.id].length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ol", {
+                      key: 1,
+                      class: "items"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(state[nav.id], (item, index) => {
+                        return openBlock(), createBlock("li", {
+                          key: index,
+                          class: "item"
+                        }, [
+                          createVNode("div", { class: "item__fields" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.locales, (locale) => {
+                              return openBlock(), createBlock(Field, {
+                                key: locale,
+                                modelValue: item.labels[locale],
+                                "onUpdate:modelValue": ($event) => item.labels[locale] = $event,
+                                label: `${unref(t)("admin.navigation")} · ${locale.toUpperCase()}`,
+                                dir: DIRS[locale]
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "dir"]);
+                            }), 128)),
+                            createVNode(Field, {
+                              modelValue: item.url,
+                              "onUpdate:modelValue": ($event) => item.url = $event,
+                              label: "url",
+                              dir: "ltr",
+                              required: ""
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                            createVNode(Field, {
+                              modelValue: item.isActive,
+                              "onUpdate:modelValue": ($event) => item.isActive = $event,
+                              label: unref(t)("admin.active"),
+                              type: "checkbox"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                          ]),
+                          createVNode("div", { class: "item__tools" }, [
+                            createVNode("button", {
+                              class: "btn btn--ghost",
+                              type: "button",
+                              "aria-label": unref(t)("admin.move_up"),
+                              disabled: index === 0,
+                              onClick: ($event) => move(nav.id, index, -1)
+                            }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                            createVNode("button", {
+                              class: "btn btn--ghost",
+                              type: "button",
+                              "aria-label": unref(t)("admin.move_down"),
+                              disabled: index === state[nav.id].length - 1,
+                              onClick: ($event) => move(nav.id, index, 1)
+                            }, "↓", 8, ["aria-label", "disabled", "onClick"]),
+                            createVNode("button", {
+                              class: "btn btn--ghost danger",
+                              type: "button",
+                              onClick: ($event) => removeItem(nav.id, index)
+                            }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                          ])
+                        ]);
+                      }), 128))
+                    ]))
+                  ]),
+                  _: 2
+                }, 1032, ["title"]);
+              }), 128))
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$T = _sfc_main$T.setup;
+_sfc_main$T.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Navigation.vue");
+  return _sfc_setup$T ? _sfc_setup$T(props, ctx) : void 0;
+};
+const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["__scopeId", "data-v-7004d226"]]);
+const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Navigation
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$S = {
+  __name: "Edit",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    locales: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const FIELDS = {
+      title: "text",
+      subtitle: "text",
+      excerpt: "textarea",
+      meta_title: "text",
+      meta_description: "textarea",
+      keywords: "text"
+    };
+    function blankTranslations() {
+      return Object.fromEntries(
+        props.locales.map((l) => [l, Object.fromEntries(Object.keys(FIELDS).map((f) => [f, ""]))])
+      );
+    }
+    const form = useForm({
+      slug: props.page?.slug ?? "",
+      template: props.page?.template ?? "default",
+      is_indexable: props.page?.is_indexable ?? true,
+      translations: props.page?.translations ?? blankTranslations()
+    });
+    function submit() {
+      if (props.page) {
+        form.patch(`/admin/pages/${props.page.id}`, { preserveScroll: true });
+      } else {
+        form.post("/admin/pages");
+      }
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: __props.page ? __props.page.slug : unref(t)("admin.create")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<form data-v-17c730d0${_scopeId}>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.shared_fields")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (__props.page) {
+                    _push3(`<a class="btn btn--ghost"${ssrRenderAttr("href", __props.page.previewUrl)} target="_blank" rel="noopener" data-v-17c730d0${_scopeId2}>${ssrInterpolate(unref(t)("admin.preview"))}</a>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  if (__props.page) {
+                    _push3(ssrRenderComponent(unref(Link), {
+                      href: `/admin/sections/page/${__props.page.id}`,
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`${ssrInterpolate(unref(t)("admin.sections"))}`);
+                        } else {
+                          return [
+                            createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    __props.page ? (openBlock(), createBlock("a", {
+                      key: 0,
+                      class: "btn btn--ghost",
+                      href: __props.page.previewUrl,
+                      target: "_blank",
+                      rel: "noopener"
+                    }, toDisplayString(unref(t)("admin.preview")), 9, ["href"])) : createCommentVNode("", true),
+                    __props.page ? (openBlock(), createBlock(unref(Link), {
+                      key: 1,
+                      href: `/admin/sections/page/${__props.page.id}`,
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="grid" data-v-17c730d0${_scopeId2}>`);
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).slug,
+                    "onUpdate:modelValue": ($event) => unref(form).slug = $event,
+                    label: "slug",
+                    type: "slug",
+                    dir: "ltr",
+                    error: unref(form).errors.slug,
+                    required: ""
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).template,
+                    "onUpdate:modelValue": ($event) => unref(form).template = $event,
+                    label: "template",
+                    dir: "ltr",
+                    error: unref(form).errors.template
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).is_indexable,
+                    "onUpdate:modelValue": ($event) => unref(form).is_indexable = $event,
+                    label: unref(t)("admin.indexable"),
+                    type: "checkbox"
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "grid" }, [
+                      createVNode(Field, {
+                        modelValue: unref(form).slug,
+                        "onUpdate:modelValue": ($event) => unref(form).slug = $event,
+                        label: "slug",
+                        type: "slug",
+                        dir: "ltr",
+                        error: unref(form).errors.slug,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).template,
+                        "onUpdate:modelValue": ($event) => unref(form).template = $event,
+                        label: "template",
+                        dir: "ltr",
+                        error: unref(form).errors.template
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).is_indexable,
+                        "onUpdate:modelValue": ($event) => unref(form).is_indexable = $event,
+                        label: unref(t)("admin.indexable"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.per_locale")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(BilingualFields, {
+                    modelValue: unref(form).translations,
+                    "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                    locales: __props.locales,
+                    fields: FIELDS,
+                    errors: unref(form).errors
+                  }, null, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(BilingualFields, {
+                      modelValue: unref(form).translations,
+                      "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                      locales: __props.locales,
+                      fields: FIELDS,
+                      errors: unref(form).errors
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "locales", "errors"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`<div class="bar" data-v-17c730d0${_scopeId}><button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-17c730d0${_scopeId}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button>`);
+            _push2(ssrRenderComponent(unref(Link), {
+              href: "/admin/pages",
+              class: "btn btn--ghost"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`${ssrInterpolate(unref(t)("admin.cancel"))}`);
+                } else {
+                  return [
+                    createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</div></form>`);
+          } else {
+            return [
+              createVNode("form", {
+                onSubmit: withModifiers(submit, ["prevent"])
+              }, [
+                createVNode(Panel, {
+                  title: unref(t)("admin.shared_fields")
+                }, {
+                  actions: withCtx(() => [
+                    __props.page ? (openBlock(), createBlock("a", {
+                      key: 0,
+                      class: "btn btn--ghost",
+                      href: __props.page.previewUrl,
+                      target: "_blank",
+                      rel: "noopener"
+                    }, toDisplayString(unref(t)("admin.preview")), 9, ["href"])) : createCommentVNode("", true),
+                    __props.page ? (openBlock(), createBlock(unref(Link), {
+                      key: 1,
+                      href: `/admin/sections/page/${__props.page.id}`,
+                      class: "btn btn--secondary"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.sections")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true)
+                  ]),
+                  default: withCtx(() => [
+                    createVNode("div", { class: "grid" }, [
+                      createVNode(Field, {
+                        modelValue: unref(form).slug,
+                        "onUpdate:modelValue": ($event) => unref(form).slug = $event,
+                        label: "slug",
+                        type: "slug",
+                        dir: "ltr",
+                        error: unref(form).errors.slug,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).template,
+                        "onUpdate:modelValue": ($event) => unref(form).template = $event,
+                        label: "template",
+                        dir: "ltr",
+                        error: unref(form).errors.template
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).is_indexable,
+                        "onUpdate:modelValue": ($event) => unref(form).is_indexable = $event,
+                        label: unref(t)("admin.indexable"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode(Panel, {
+                  title: unref(t)("admin.per_locale")
+                }, {
+                  default: withCtx(() => [
+                    createVNode(BilingualFields, {
+                      modelValue: unref(form).translations,
+                      "onUpdate:modelValue": ($event) => unref(form).translations = $event,
+                      locales: __props.locales,
+                      fields: FIELDS,
+                      errors: unref(form).errors
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "locales", "errors"])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode("div", { class: "bar" }, [
+                  createVNode("button", {
+                    class: "btn btn--cta",
+                    type: "submit",
+                    disabled: unref(form).processing
+                  }, toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"]),
+                  createVNode(unref(Link), {
+                    href: "/admin/pages",
+                    class: "btn btn--ghost"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                    ]),
+                    _: 1
+                  })
+                ])
+              ], 32)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$S = _sfc_main$S.setup;
+_sfc_main$S.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Pages/Edit.vue");
+  return _sfc_setup$S ? _sfc_setup$S(props, ctx) : void 0;
+};
+const Edit$1 = /* @__PURE__ */ _export_sfc(_sfc_main$S, [["__scopeId", "data-v-17c730d0"]]);
+const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Edit$1
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$R = {
+  __name: "Index",
+  __ssrInlineRender: true,
+  props: {
+    pages: { type: Array, default: () => [] },
+    locales: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    function togglePublish(page) {
+      router.post(
+        `/admin/pages/${page.id}/publish`,
+        { published: page.status !== "published" },
+        { preserveScroll: true }
+      );
+    }
+    function destroy(page) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/pages/${page.id}`);
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.pages")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.pages")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(unref(Link), {
+                    href: "/admin/pages/create",
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(unref(t)("admin.create"))}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(unref(Link), {
+                      href: "/admin/pages/create",
+                      class: "btn btn--cta"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.pages.length) {
+                    _push3(`<p class="empty" data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<div class="table-wrap" data-v-931dad69${_scopeId2}><table class="table" data-v-931dad69${_scopeId2}><thead data-v-931dad69${_scopeId2}><tr data-v-931dad69${_scopeId2}><th data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.pages"))}</th><th data-v-931dad69${_scopeId2}>slug</th><th data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.sections"))}</th><th data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.published"))}</th><th data-v-931dad69${_scopeId2}></th></tr></thead><tbody data-v-931dad69${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.pages, (page) => {
+                      _push3(`<tr data-v-931dad69${_scopeId2}><td data-v-931dad69${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/pages/${page.id}/edit`,
+                        class: "table__link"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(page.title ?? page.slug)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`<!--[-->`);
+                      ssrRenderList(__props.locales.filter((l) => !page.locales.includes(l)), (loc) => {
+                        _push3(`<span class="chip chip--warn" data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.translation_missing"))}: ${ssrInterpolate(loc)}</span>`);
+                      });
+                      _push3(`<!--]--></td><td class="latin" data-v-931dad69${_scopeId2}>${ssrInterpolate(page.slug)}</td><td data-v-931dad69${_scopeId2}>`);
+                      _push3(ssrRenderComponent(unref(Link), {
+                        href: `/admin/sections/page/${page.id}`,
+                        class: "table__link"
+                      }, {
+                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                          if (_push4) {
+                            _push4(`${ssrInterpolate(page.sections)}`);
+                          } else {
+                            return [
+                              createTextVNode(toDisplayString(page.sections), 1)
+                            ];
+                          }
+                        }),
+                        _: 2
+                      }, _parent3, _scopeId2));
+                      _push3(`</td><td data-v-931dad69${_scopeId2}><span class="${ssrRenderClass([page.status === "published" ? "chip--ok" : "", "chip"])}" data-v-931dad69${_scopeId2}>${ssrInterpolate(page.status === "published" ? unref(t)("admin.published") : unref(t)("admin.draft"))}</span></td><td class="actions" data-v-931dad69${_scopeId2}><button class="btn btn--ghost" type="button" data-v-931dad69${_scopeId2}>${ssrInterpolate(page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish"))}</button><a class="btn btn--ghost"${ssrRenderAttr("href", page.previewUrl)} target="_blank" rel="noopener" data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.preview"))}</a><button class="btn btn--ghost danger" type="button" data-v-931dad69${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button></td></tr>`);
+                    });
+                    _push3(`<!--]--></tbody></table></div>`);
+                  }
+                } else {
+                  return [
+                    !__props.pages.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("div", {
+                      key: 1,
+                      class: "table-wrap"
+                    }, [
+                      createVNode("table", { class: "table" }, [
+                        createVNode("thead", null, [
+                          createVNode("tr", null, [
+                            createVNode("th", null, toDisplayString(unref(t)("admin.pages")), 1),
+                            createVNode("th", null, "slug"),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.sections")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.published")), 1),
+                            createVNode("th")
+                          ])
+                        ]),
+                        createVNode("tbody", null, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.pages, (page) => {
+                            return openBlock(), createBlock("tr", {
+                              key: page.id
+                            }, [
+                              createVNode("td", null, [
+                                createVNode(unref(Link), {
+                                  href: `/admin/pages/${page.id}/edit`,
+                                  class: "table__link"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["href"]),
+                                (openBlock(true), createBlock(Fragment, null, renderList(__props.locales.filter((l) => !page.locales.includes(l)), (loc) => {
+                                  return openBlock(), createBlock("span", {
+                                    key: loc,
+                                    class: "chip chip--warn"
+                                  }, toDisplayString(unref(t)("admin.translation_missing")) + ": " + toDisplayString(loc), 1);
+                                }), 128))
+                              ]),
+                              createVNode("td", { class: "latin" }, toDisplayString(page.slug), 1),
+                              createVNode("td", null, [
+                                createVNode(unref(Link), {
+                                  href: `/admin/sections/page/${page.id}`,
+                                  class: "table__link"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(page.sections), 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["href"])
+                              ]),
+                              createVNode("td", null, [
+                                createVNode("span", {
+                                  class: ["chip", page.status === "published" ? "chip--ok" : ""]
+                                }, toDisplayString(page.status === "published" ? unref(t)("admin.published") : unref(t)("admin.draft")), 3)
+                              ]),
+                              createVNode("td", { class: "actions" }, [
+                                createVNode("button", {
+                                  class: "btn btn--ghost",
+                                  type: "button",
+                                  onClick: ($event) => togglePublish(page)
+                                }, toDisplayString(page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish")), 9, ["onClick"]),
+                                createVNode("a", {
+                                  class: "btn btn--ghost",
+                                  href: page.previewUrl,
+                                  target: "_blank",
+                                  rel: "noopener"
+                                }, toDisplayString(unref(t)("admin.preview")), 9, ["href"]),
+                                createVNode("button", {
+                                  class: "btn btn--ghost danger",
+                                  type: "button",
+                                  onClick: ($event) => destroy(page)
+                                }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                              ])
+                            ]);
+                          }), 128))
+                        ])
+                      ])
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.pages")
+              }, {
+                actions: withCtx(() => [
+                  createVNode(unref(Link), {
+                    href: "/admin/pages/create",
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                    ]),
+                    _: 1
+                  })
+                ]),
+                default: withCtx(() => [
+                  !__props.pages.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("div", {
+                    key: 1,
+                    class: "table-wrap"
+                  }, [
+                    createVNode("table", { class: "table" }, [
+                      createVNode("thead", null, [
+                        createVNode("tr", null, [
+                          createVNode("th", null, toDisplayString(unref(t)("admin.pages")), 1),
+                          createVNode("th", null, "slug"),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.sections")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.published")), 1),
+                          createVNode("th")
+                        ])
+                      ]),
+                      createVNode("tbody", null, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.pages, (page) => {
+                          return openBlock(), createBlock("tr", {
+                            key: page.id
+                          }, [
+                            createVNode("td", null, [
+                              createVNode(unref(Link), {
+                                href: `/admin/pages/${page.id}/edit`,
+                                class: "table__link"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["href"]),
+                              (openBlock(true), createBlock(Fragment, null, renderList(__props.locales.filter((l) => !page.locales.includes(l)), (loc) => {
+                                return openBlock(), createBlock("span", {
+                                  key: loc,
+                                  class: "chip chip--warn"
+                                }, toDisplayString(unref(t)("admin.translation_missing")) + ": " + toDisplayString(loc), 1);
+                              }), 128))
+                            ]),
+                            createVNode("td", { class: "latin" }, toDisplayString(page.slug), 1),
+                            createVNode("td", null, [
+                              createVNode(unref(Link), {
+                                href: `/admin/sections/page/${page.id}`,
+                                class: "table__link"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(page.sections), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["href"])
+                            ]),
+                            createVNode("td", null, [
+                              createVNode("span", {
+                                class: ["chip", page.status === "published" ? "chip--ok" : ""]
+                              }, toDisplayString(page.status === "published" ? unref(t)("admin.published") : unref(t)("admin.draft")), 3)
+                            ]),
+                            createVNode("td", { class: "actions" }, [
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                onClick: ($event) => togglePublish(page)
+                              }, toDisplayString(page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish")), 9, ["onClick"]),
+                              createVNode("a", {
+                                class: "btn btn--ghost",
+                                href: page.previewUrl,
+                                target: "_blank",
+                                rel: "noopener"
+                              }, toDisplayString(unref(t)("admin.preview")), 9, ["href"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => destroy(page)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ])
+                          ]);
+                        }), 128))
+                      ])
+                    ])
+                  ]))
+                ]),
+                _: 1
+              }, 8, ["title"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$R = _sfc_main$R.setup;
+_sfc_main$R.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Pages/Index.vue");
+  return _sfc_setup$R ? _sfc_setup$R(props, ctx) : void 0;
+};
+const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["__scopeId", "data-v-931dad69"]]);
+const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index$1
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$Q = {
+  __name: "Profile",
+  __ssrInlineRender: true,
+  props: {
+    tab: { type: String, default: "details" },
+    profile: { type: Object, required: true },
+    errors: { type: Object, default: () => ({}) }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { date, dateTime } = useFormat();
+    const details = reactive({ name: props.profile.name, email: props.profile.email });
+    const secret = reactive({ current_password: "", password: "", password_confirmation: "" });
+    const busy = ref(null);
+    computed(
+      () => (props.profile.name ?? "").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("")
+    );
+    const roleLabel = computed(() => {
+      const role = props.profile.roles?.[0];
+      return role ? t(`admin.role_${role.replace(/-/g, "_")}`) : "";
+    });
+    function saveDetails() {
+      busy.value = "details";
+      router.put("/admin/profile", details, {
+        preserveScroll: true,
+        onFinish: () => busy.value = null
+      });
+    }
+    function savePassword() {
+      busy.value = "password";
+      router.put("/admin/profile/password", secret, {
+        preserveScroll: true,
+        onSuccess: () => {
+          secret.current_password = "";
+          secret.password = "";
+          secret.password_confirmation = "";
+        },
+        onFinish: () => busy.value = null
+      });
+    }
+    function upload(collection, event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      busy.value = collection;
+      router.post(
+        "/admin/profile/image",
+        { collection, file },
+        {
+          forceFormData: true,
+          preserveScroll: true,
+          onFinish: () => {
+            busy.value = null;
+            event.target.value = "";
+          }
+        }
+      );
+    }
+    function removeImage(collection) {
+      router.delete(`/admin/profile/image/${collection}`, { preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.profile")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Workspace, { editable: "" }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (__props.tab === "details") {
+                    _push3(ssrRenderComponent(Panel, {
+                      title: unref(t)("admin.tab_details")
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`<div class="grid" data-v-c5983eaf${_scopeId3}>`);
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: details.name,
+                            "onUpdate:modelValue": ($event) => details.name = $event,
+                            label: unref(t)("admin.name"),
+                            error: __props.errors.name
+                          }, null, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: details.email,
+                            "onUpdate:modelValue": ($event) => details.email = $event,
+                            label: unref(t)("admin.email"),
+                            type: "email",
+                            dir: "ltr",
+                            error: __props.errors.email
+                          }, null, _parent4, _scopeId3));
+                          _push4(`</div><div class="bar" data-v-c5983eaf${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(busy.value) ? " disabled" : ""} data-v-c5983eaf${_scopeId3}>${ssrInterpolate(busy.value === "details" ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button></div>`);
+                        } else {
+                          return [
+                            createVNode("div", { class: "grid" }, [
+                              createVNode(Field, {
+                                modelValue: details.name,
+                                "onUpdate:modelValue": ($event) => details.name = $event,
+                                label: unref(t)("admin.name"),
+                                error: __props.errors.name
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                              createVNode(Field, {
+                                modelValue: details.email,
+                                "onUpdate:modelValue": ($event) => details.email = $event,
+                                label: unref(t)("admin.email"),
+                                type: "email",
+                                dir: "ltr",
+                                error: __props.errors.email
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"])
+                            ]),
+                            createVNode("div", { class: "bar" }, [
+                              createVNode("button", {
+                                class: "btn btn--cta",
+                                type: "button",
+                                disabled: busy.value,
+                                onClick: saveDetails
+                              }, toDisplayString(busy.value === "details" ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"])
+                            ])
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else if (__props.tab === "appearance") {
+                    _push3(ssrRenderComponent(Panel, {
+                      title: unref(t)("admin.tab_appearance")
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`<p class="intro" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.tab_appearance_intro"))}</p><div class="slots" data-v-c5983eaf${_scopeId3}><div class="slot" data-v-c5983eaf${_scopeId3}><h3 class="slot__title" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.avatar_add"))}</h3><div class="slot__frame" data-v-c5983eaf${_scopeId3}>`);
+                          if (__props.profile.avatar) {
+                            _push4(`<img class="slot__img"${ssrRenderAttr("src", __props.profile.avatar)} alt="" data-v-c5983eaf${_scopeId3}>`);
+                          } else {
+                            _push4(`<span class="slot__empty" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.avatar_none"))}</span>`);
+                          }
+                          _push4(`</div><div class="slot__actions" data-v-c5983eaf${_scopeId3}><label class="btn btn--ghost slot__upload" data-v-c5983eaf${_scopeId3}><span data-v-c5983eaf${_scopeId3}>${ssrInterpolate(busy.value === "avatar" ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*" data-v-c5983eaf${_scopeId3}></label>`);
+                          if (__props.profile.avatar) {
+                            _push4(`<button class="btn btn--ghost slot__del" type="button" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.delete"))}</button>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`</div></div><div class="slot" data-v-c5983eaf${_scopeId3}><h3 class="slot__title" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.cover_add"))}</h3><div class="slot__frame slot__frame--wide" data-v-c5983eaf${_scopeId3}>`);
+                          if (__props.profile.cover) {
+                            _push4(`<img class="slot__img"${ssrRenderAttr("src", __props.profile.cover)} alt="" data-v-c5983eaf${_scopeId3}>`);
+                          } else {
+                            _push4(`<span class="slot__empty" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.cover_none"))}</span>`);
+                          }
+                          _push4(`</div><div class="slot__actions" data-v-c5983eaf${_scopeId3}><label class="btn btn--ghost slot__upload" data-v-c5983eaf${_scopeId3}><span data-v-c5983eaf${_scopeId3}>${ssrInterpolate(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*" data-v-c5983eaf${_scopeId3}></label>`);
+                          if (__props.profile.cover) {
+                            _push4(`<button class="btn btn--ghost slot__del" type="button" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.delete"))}</button>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`</div></div></div>`);
+                        } else {
+                          return [
+                            createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.tab_appearance_intro")), 1),
+                            createVNode("div", { class: "slots" }, [
+                              createVNode("div", { class: "slot" }, [
+                                createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)("admin.avatar_add")), 1),
+                                createVNode("div", { class: "slot__frame" }, [
+                                  __props.profile.avatar ? (openBlock(), createBlock("img", {
+                                    key: 0,
+                                    class: "slot__img",
+                                    src: __props.profile.avatar,
+                                    alt: ""
+                                  }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                    key: 1,
+                                    class: "slot__empty"
+                                  }, toDisplayString(unref(t)("admin.avatar_none")), 1))
+                                ]),
+                                createVNode("div", { class: "slot__actions" }, [
+                                  createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                    createVNode("span", null, toDisplayString(busy.value === "avatar" ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                    createVNode("input", {
+                                      type: "file",
+                                      accept: "image/*",
+                                      onChange: (e) => upload("avatar", e)
+                                    }, null, 40, ["onChange"])
+                                  ]),
+                                  __props.profile.avatar ? (openBlock(), createBlock("button", {
+                                    key: 0,
+                                    class: "btn btn--ghost slot__del",
+                                    type: "button",
+                                    onClick: ($event) => removeImage("avatar")
+                                  }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                                ])
+                              ]),
+                              createVNode("div", { class: "slot" }, [
+                                createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)("admin.cover_add")), 1),
+                                createVNode("div", { class: "slot__frame slot__frame--wide" }, [
+                                  __props.profile.cover ? (openBlock(), createBlock("img", {
+                                    key: 0,
+                                    class: "slot__img",
+                                    src: __props.profile.cover,
+                                    alt: ""
+                                  }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                    key: 1,
+                                    class: "slot__empty"
+                                  }, toDisplayString(unref(t)("admin.cover_none")), 1))
+                                ]),
+                                createVNode("div", { class: "slot__actions" }, [
+                                  createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                    createVNode("span", null, toDisplayString(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                    createVNode("input", {
+                                      type: "file",
+                                      accept: "image/*",
+                                      onChange: (e) => upload("cover", e)
+                                    }, null, 40, ["onChange"])
+                                  ]),
+                                  __props.profile.cover ? (openBlock(), createBlock("button", {
+                                    key: 0,
+                                    class: "btn btn--ghost slot__del",
+                                    type: "button",
+                                    onClick: ($event) => removeImage("cover")
+                                  }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                                ])
+                              ])
+                            ])
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else if (__props.tab === "password") {
+                    _push3(ssrRenderComponent(Panel, {
+                      title: unref(t)("admin.change_password")
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`<p class="intro" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.password_hint"))}</p><div class="grid" data-v-c5983eaf${_scopeId3}>`);
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: secret.current_password,
+                            "onUpdate:modelValue": ($event) => secret.current_password = $event,
+                            label: unref(t)("admin.current_password"),
+                            type: "password",
+                            dir: "ltr",
+                            error: __props.errors.current_password
+                          }, null, _parent4, _scopeId3));
+                          _push4(`<span data-v-c5983eaf${_scopeId3}></span>`);
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: secret.password,
+                            "onUpdate:modelValue": ($event) => secret.password = $event,
+                            label: unref(t)("admin.new_password"),
+                            type: "password",
+                            dir: "ltr",
+                            error: __props.errors.password
+                          }, null, _parent4, _scopeId3));
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: secret.password_confirmation,
+                            "onUpdate:modelValue": ($event) => secret.password_confirmation = $event,
+                            label: unref(t)("admin.confirm_password"),
+                            type: "password",
+                            dir: "ltr"
+                          }, null, _parent4, _scopeId3));
+                          _push4(`</div><div class="bar" data-v-c5983eaf${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(busy.value) ? " disabled" : ""} data-v-c5983eaf${_scopeId3}>${ssrInterpolate(busy.value === "password" ? unref(t)("admin.saving") : unref(t)("admin.change_password"))}</button></div>`);
+                        } else {
+                          return [
+                            createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.password_hint")), 1),
+                            createVNode("div", { class: "grid" }, [
+                              createVNode(Field, {
+                                modelValue: secret.current_password,
+                                "onUpdate:modelValue": ($event) => secret.current_password = $event,
+                                label: unref(t)("admin.current_password"),
+                                type: "password",
+                                dir: "ltr",
+                                error: __props.errors.current_password
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                              createVNode("span"),
+                              createVNode(Field, {
+                                modelValue: secret.password,
+                                "onUpdate:modelValue": ($event) => secret.password = $event,
+                                label: unref(t)("admin.new_password"),
+                                type: "password",
+                                dir: "ltr",
+                                error: __props.errors.password
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                              createVNode(Field, {
+                                modelValue: secret.password_confirmation,
+                                "onUpdate:modelValue": ($event) => secret.password_confirmation = $event,
+                                label: unref(t)("admin.confirm_password"),
+                                type: "password",
+                                dir: "ltr"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                            ]),
+                            createVNode("div", { class: "bar" }, [
+                              createVNode("button", {
+                                class: "btn btn--cta",
+                                type: "button",
+                                disabled: busy.value,
+                                onClick: savePassword
+                              }, toDisplayString(busy.value === "password" ? unref(t)("admin.saving") : unref(t)("admin.change_password")), 9, ["disabled"])
+                            ])
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  } else {
+                    _push3(ssrRenderComponent(Panel, {
+                      title: unref(t)("admin.tab_security")
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`<dl class="facts" data-v-c5983eaf${_scopeId3}><dt data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.last_login"))}</dt><dd data-v-c5983eaf${_scopeId3}>${ssrInterpolate(__props.profile.lastLoginAt ? unref(dateTime)(__props.profile.lastLoginAt) : "—")}</dd><dt data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.member_since"))}</dt><dd data-v-c5983eaf${_scopeId3}>${ssrInterpolate(__props.profile.createdAt ? unref(date)(__props.profile.createdAt) : "—")}</dd><dt data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.role"))}</dt><dd data-v-c5983eaf${_scopeId3}>${ssrInterpolate(roleLabel.value)}</dd></dl><p class="pending" data-v-c5983eaf${_scopeId3}>${ssrInterpolate(unref(t)("admin.twofa_pending"))}</p>`);
+                        } else {
+                          return [
+                            createVNode("dl", { class: "facts" }, [
+                              createVNode("dt", null, toDisplayString(unref(t)("admin.last_login")), 1),
+                              createVNode("dd", null, toDisplayString(__props.profile.lastLoginAt ? unref(dateTime)(__props.profile.lastLoginAt) : "—"), 1),
+                              createVNode("dt", null, toDisplayString(unref(t)("admin.member_since")), 1),
+                              createVNode("dd", null, toDisplayString(__props.profile.createdAt ? unref(date)(__props.profile.createdAt) : "—"), 1),
+                              createVNode("dt", null, toDisplayString(unref(t)("admin.role")), 1),
+                              createVNode("dd", null, toDisplayString(roleLabel.value), 1)
+                            ]),
+                            createVNode("p", { class: "pending" }, toDisplayString(unref(t)("admin.twofa_pending")), 1)
+                          ];
+                        }
+                      }),
+                      _: 1
+                    }, _parent3, _scopeId2));
+                  }
+                } else {
+                  return [
+                    __props.tab === "details" ? (openBlock(), createBlock(Panel, {
+                      key: 0,
+                      title: unref(t)("admin.tab_details")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "grid" }, [
+                          createVNode(Field, {
+                            modelValue: details.name,
+                            "onUpdate:modelValue": ($event) => details.name = $event,
+                            label: unref(t)("admin.name"),
+                            error: __props.errors.name
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                          createVNode(Field, {
+                            modelValue: details.email,
+                            "onUpdate:modelValue": ($event) => details.email = $event,
+                            label: unref(t)("admin.email"),
+                            type: "email",
+                            dir: "ltr",
+                            error: __props.errors.email
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"])
+                        ]),
+                        createVNode("div", { class: "bar" }, [
+                          createVNode("button", {
+                            class: "btn btn--cta",
+                            type: "button",
+                            disabled: busy.value,
+                            onClick: saveDetails
+                          }, toDisplayString(busy.value === "details" ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"])
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"])) : __props.tab === "appearance" ? (openBlock(), createBlock(Panel, {
+                      key: 1,
+                      title: unref(t)("admin.tab_appearance")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.tab_appearance_intro")), 1),
+                        createVNode("div", { class: "slots" }, [
+                          createVNode("div", { class: "slot" }, [
+                            createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)("admin.avatar_add")), 1),
+                            createVNode("div", { class: "slot__frame" }, [
+                              __props.profile.avatar ? (openBlock(), createBlock("img", {
+                                key: 0,
+                                class: "slot__img",
+                                src: __props.profile.avatar,
+                                alt: ""
+                              }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                key: 1,
+                                class: "slot__empty"
+                              }, toDisplayString(unref(t)("admin.avatar_none")), 1))
+                            ]),
+                            createVNode("div", { class: "slot__actions" }, [
+                              createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                createVNode("span", null, toDisplayString(busy.value === "avatar" ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                createVNode("input", {
+                                  type: "file",
+                                  accept: "image/*",
+                                  onChange: (e) => upload("avatar", e)
+                                }, null, 40, ["onChange"])
+                              ]),
+                              __props.profile.avatar ? (openBlock(), createBlock("button", {
+                                key: 0,
+                                class: "btn btn--ghost slot__del",
+                                type: "button",
+                                onClick: ($event) => removeImage("avatar")
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                            ])
+                          ]),
+                          createVNode("div", { class: "slot" }, [
+                            createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)("admin.cover_add")), 1),
+                            createVNode("div", { class: "slot__frame slot__frame--wide" }, [
+                              __props.profile.cover ? (openBlock(), createBlock("img", {
+                                key: 0,
+                                class: "slot__img",
+                                src: __props.profile.cover,
+                                alt: ""
+                              }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                key: 1,
+                                class: "slot__empty"
+                              }, toDisplayString(unref(t)("admin.cover_none")), 1))
+                            ]),
+                            createVNode("div", { class: "slot__actions" }, [
+                              createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                                createVNode("span", null, toDisplayString(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                                createVNode("input", {
+                                  type: "file",
+                                  accept: "image/*",
+                                  onChange: (e) => upload("cover", e)
+                                }, null, 40, ["onChange"])
+                              ]),
+                              __props.profile.cover ? (openBlock(), createBlock("button", {
+                                key: 0,
+                                class: "btn btn--ghost slot__del",
+                                type: "button",
+                                onClick: ($event) => removeImage("cover")
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                            ])
+                          ])
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"])) : __props.tab === "password" ? (openBlock(), createBlock(Panel, {
+                      key: 2,
+                      title: unref(t)("admin.change_password")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.password_hint")), 1),
+                        createVNode("div", { class: "grid" }, [
+                          createVNode(Field, {
+                            modelValue: secret.current_password,
+                            "onUpdate:modelValue": ($event) => secret.current_password = $event,
+                            label: unref(t)("admin.current_password"),
+                            type: "password",
+                            dir: "ltr",
+                            error: __props.errors.current_password
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                          createVNode("span"),
+                          createVNode(Field, {
+                            modelValue: secret.password,
+                            "onUpdate:modelValue": ($event) => secret.password = $event,
+                            label: unref(t)("admin.new_password"),
+                            type: "password",
+                            dir: "ltr",
+                            error: __props.errors.password
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                          createVNode(Field, {
+                            modelValue: secret.password_confirmation,
+                            "onUpdate:modelValue": ($event) => secret.password_confirmation = $event,
+                            label: unref(t)("admin.confirm_password"),
+                            type: "password",
+                            dir: "ltr"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                        ]),
+                        createVNode("div", { class: "bar" }, [
+                          createVNode("button", {
+                            class: "btn btn--cta",
+                            type: "button",
+                            disabled: busy.value,
+                            onClick: savePassword
+                          }, toDisplayString(busy.value === "password" ? unref(t)("admin.saving") : unref(t)("admin.change_password")), 9, ["disabled"])
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"])) : (openBlock(), createBlock(Panel, {
+                      key: 3,
+                      title: unref(t)("admin.tab_security")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("dl", { class: "facts" }, [
+                          createVNode("dt", null, toDisplayString(unref(t)("admin.last_login")), 1),
+                          createVNode("dd", null, toDisplayString(__props.profile.lastLoginAt ? unref(dateTime)(__props.profile.lastLoginAt) : "—"), 1),
+                          createVNode("dt", null, toDisplayString(unref(t)("admin.member_since")), 1),
+                          createVNode("dd", null, toDisplayString(__props.profile.createdAt ? unref(date)(__props.profile.createdAt) : "—"), 1),
+                          createVNode("dt", null, toDisplayString(unref(t)("admin.role")), 1),
+                          createVNode("dd", null, toDisplayString(roleLabel.value), 1)
+                        ]),
+                        createVNode("p", { class: "pending" }, toDisplayString(unref(t)("admin.twofa_pending")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["title"]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Workspace, { editable: "" }, {
+                default: withCtx(() => [
+                  __props.tab === "details" ? (openBlock(), createBlock(Panel, {
+                    key: 0,
+                    title: unref(t)("admin.tab_details")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("div", { class: "grid" }, [
+                        createVNode(Field, {
+                          modelValue: details.name,
+                          "onUpdate:modelValue": ($event) => details.name = $event,
+                          label: unref(t)("admin.name"),
+                          error: __props.errors.name
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                        createVNode(Field, {
+                          modelValue: details.email,
+                          "onUpdate:modelValue": ($event) => details.email = $event,
+                          label: unref(t)("admin.email"),
+                          type: "email",
+                          dir: "ltr",
+                          error: __props.errors.email
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"])
+                      ]),
+                      createVNode("div", { class: "bar" }, [
+                        createVNode("button", {
+                          class: "btn btn--cta",
+                          type: "button",
+                          disabled: busy.value,
+                          onClick: saveDetails
+                        }, toDisplayString(busy.value === "details" ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"])
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"])) : __props.tab === "appearance" ? (openBlock(), createBlock(Panel, {
+                    key: 1,
+                    title: unref(t)("admin.tab_appearance")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.tab_appearance_intro")), 1),
+                      createVNode("div", { class: "slots" }, [
+                        createVNode("div", { class: "slot" }, [
+                          createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)("admin.avatar_add")), 1),
+                          createVNode("div", { class: "slot__frame" }, [
+                            __props.profile.avatar ? (openBlock(), createBlock("img", {
+                              key: 0,
+                              class: "slot__img",
+                              src: __props.profile.avatar,
+                              alt: ""
+                            }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                              key: 1,
+                              class: "slot__empty"
+                            }, toDisplayString(unref(t)("admin.avatar_none")), 1))
+                          ]),
+                          createVNode("div", { class: "slot__actions" }, [
+                            createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                              createVNode("span", null, toDisplayString(busy.value === "avatar" ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                              createVNode("input", {
+                                type: "file",
+                                accept: "image/*",
+                                onChange: (e) => upload("avatar", e)
+                              }, null, 40, ["onChange"])
+                            ]),
+                            __props.profile.avatar ? (openBlock(), createBlock("button", {
+                              key: 0,
+                              class: "btn btn--ghost slot__del",
+                              type: "button",
+                              onClick: ($event) => removeImage("avatar")
+                            }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                          ])
+                        ]),
+                        createVNode("div", { class: "slot" }, [
+                          createVNode("h3", { class: "slot__title" }, toDisplayString(unref(t)("admin.cover_add")), 1),
+                          createVNode("div", { class: "slot__frame slot__frame--wide" }, [
+                            __props.profile.cover ? (openBlock(), createBlock("img", {
+                              key: 0,
+                              class: "slot__img",
+                              src: __props.profile.cover,
+                              alt: ""
+                            }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                              key: 1,
+                              class: "slot__empty"
+                            }, toDisplayString(unref(t)("admin.cover_none")), 1))
+                          ]),
+                          createVNode("div", { class: "slot__actions" }, [
+                            createVNode("label", { class: "btn btn--ghost slot__upload" }, [
+                              createVNode("span", null, toDisplayString(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                              createVNode("input", {
+                                type: "file",
+                                accept: "image/*",
+                                onChange: (e) => upload("cover", e)
+                              }, null, 40, ["onChange"])
+                            ]),
+                            __props.profile.cover ? (openBlock(), createBlock("button", {
+                              key: 0,
+                              class: "btn btn--ghost slot__del",
+                              type: "button",
+                              onClick: ($event) => removeImage("cover")
+                            }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                          ])
+                        ])
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"])) : __props.tab === "password" ? (openBlock(), createBlock(Panel, {
+                    key: 2,
+                    title: unref(t)("admin.change_password")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.password_hint")), 1),
+                      createVNode("div", { class: "grid" }, [
+                        createVNode(Field, {
+                          modelValue: secret.current_password,
+                          "onUpdate:modelValue": ($event) => secret.current_password = $event,
+                          label: unref(t)("admin.current_password"),
+                          type: "password",
+                          dir: "ltr",
+                          error: __props.errors.current_password
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                        createVNode("span"),
+                        createVNode(Field, {
+                          modelValue: secret.password,
+                          "onUpdate:modelValue": ($event) => secret.password = $event,
+                          label: unref(t)("admin.new_password"),
+                          type: "password",
+                          dir: "ltr",
+                          error: __props.errors.password
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                        createVNode(Field, {
+                          modelValue: secret.password_confirmation,
+                          "onUpdate:modelValue": ($event) => secret.password_confirmation = $event,
+                          label: unref(t)("admin.confirm_password"),
+                          type: "password",
+                          dir: "ltr"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                      ]),
+                      createVNode("div", { class: "bar" }, [
+                        createVNode("button", {
+                          class: "btn btn--cta",
+                          type: "button",
+                          disabled: busy.value,
+                          onClick: savePassword
+                        }, toDisplayString(busy.value === "password" ? unref(t)("admin.saving") : unref(t)("admin.change_password")), 9, ["disabled"])
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"])) : (openBlock(), createBlock(Panel, {
+                    key: 3,
+                    title: unref(t)("admin.tab_security")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("dl", { class: "facts" }, [
+                        createVNode("dt", null, toDisplayString(unref(t)("admin.last_login")), 1),
+                        createVNode("dd", null, toDisplayString(__props.profile.lastLoginAt ? unref(dateTime)(__props.profile.lastLoginAt) : "—"), 1),
+                        createVNode("dt", null, toDisplayString(unref(t)("admin.member_since")), 1),
+                        createVNode("dd", null, toDisplayString(__props.profile.createdAt ? unref(date)(__props.profile.createdAt) : "—"), 1),
+                        createVNode("dt", null, toDisplayString(unref(t)("admin.role")), 1),
+                        createVNode("dd", null, toDisplayString(roleLabel.value), 1)
+                      ]),
+                      createVNode("p", { class: "pending" }, toDisplayString(unref(t)("admin.twofa_pending")), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["title"]))
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$Q = _sfc_main$Q.setup;
+_sfc_main$Q.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Profile.vue");
+  return _sfc_setup$Q ? _sfc_setup$Q(props, ctx) : void 0;
+};
+const Profile = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-c5983eaf"]]);
+const __vite_glob_0_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Profile
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$P = {
+  __name: "Redirects",
+  __ssrInlineRender: true,
+  props: {
+    redirects: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { number } = useFormat();
+    const STATUSES = [
+      { value: 301, label: "301 — دائم" },
+      { value: 302, label: "302 — مؤقت" },
+      { value: 307, label: "307" },
+      { value: 308, label: "308" }
+    ];
+    const state = reactive(props.redirects.map((r) => ({ ...r })));
+    function add() {
+      state.push({ id: null, from: "", to: "", status: 301, hits: 0, isActive: true });
+    }
+    function remove(index) {
+      state.splice(index, 1);
+    }
+    function save() {
+      router.put("/admin/redirects", { redirects: state }, { preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.redirects")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<p class="notice" data-v-1f23add1${_scopeId}>${ssrInterpolate(unref(t)("admin.redirects_hint"))}</p>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.redirects")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<button class="btn btn--ghost" type="button" data-v-1f23add1${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button><button class="btn btn--cta" type="button" data-v-1f23add1${_scopeId2}>${ssrInterpolate(unref(t)("admin.save"))}</button>`);
+                } else {
+                  return [
+                    createVNode("button", {
+                      class: "btn btn--ghost",
+                      type: "button",
+                      onClick: add
+                    }, toDisplayString(unref(t)("admin.create")), 1),
+                    createVNode("button", {
+                      class: "btn btn--cta",
+                      type: "button",
+                      onClick: save
+                    }, toDisplayString(unref(t)("admin.save")), 1)
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!state.length) {
+                    _push3(`<p class="empty" data-v-1f23add1${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<ul class="rows" data-v-1f23add1${_scopeId2}><!--[-->`);
+                    ssrRenderList(state, (row, index) => {
+                      _push3(`<li class="row" data-v-1f23add1${_scopeId2}>`);
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: row.from,
+                        "onUpdate:modelValue": ($event) => row.from = $event,
+                        label: unref(t)("admin.redirect_from"),
+                        dir: "ltr",
+                        required: ""
+                      }, null, _parent3, _scopeId2));
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: row.to,
+                        "onUpdate:modelValue": ($event) => row.to = $event,
+                        label: unref(t)("admin.redirect_to"),
+                        dir: "ltr",
+                        required: ""
+                      }, null, _parent3, _scopeId2));
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: row.status,
+                        "onUpdate:modelValue": ($event) => row.status = $event,
+                        label: unref(t)("admin.redirect_status"),
+                        type: "select",
+                        options: STATUSES
+                      }, null, _parent3, _scopeId2));
+                      _push3(ssrRenderComponent(Field, {
+                        modelValue: row.isActive,
+                        "onUpdate:modelValue": ($event) => row.isActive = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, _parent3, _scopeId2));
+                      _push3(`<div class="row__meta" data-v-1f23add1${_scopeId2}><span class="row__hits tabular" data-v-1f23add1${_scopeId2}>${ssrInterpolate(unref(t)("admin.redirect_hits"))}: ${ssrInterpolate(unref(number)(row.hits))}</span><button class="btn btn--ghost danger" type="button" data-v-1f23add1${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></li>`);
+                    });
+                    _push3(`<!--]--></ul>`);
+                  }
+                } else {
+                  return [
+                    !state.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "rows"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(state, (row, index) => {
+                        return openBlock(), createBlock("li", {
+                          key: index,
+                          class: "row"
+                        }, [
+                          createVNode(Field, {
+                            modelValue: row.from,
+                            "onUpdate:modelValue": ($event) => row.from = $event,
+                            label: unref(t)("admin.redirect_from"),
+                            dir: "ltr",
+                            required: ""
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                          createVNode(Field, {
+                            modelValue: row.to,
+                            "onUpdate:modelValue": ($event) => row.to = $event,
+                            label: unref(t)("admin.redirect_to"),
+                            dir: "ltr",
+                            required: ""
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                          createVNode(Field, {
+                            modelValue: row.status,
+                            "onUpdate:modelValue": ($event) => row.status = $event,
+                            label: unref(t)("admin.redirect_status"),
+                            type: "select",
+                            options: STATUSES
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                          createVNode(Field, {
+                            modelValue: row.isActive,
+                            "onUpdate:modelValue": ($event) => row.isActive = $event,
+                            label: unref(t)("admin.active"),
+                            type: "checkbox"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                          createVNode("div", { class: "row__meta" }, [
+                            createVNode("span", { class: "row__hits tabular" }, toDisplayString(unref(t)("admin.redirect_hits")) + ": " + toDisplayString(unref(number)(row.hits)), 1),
+                            createVNode("button", {
+                              class: "btn btn--ghost danger",
+                              type: "button",
+                              onClick: ($event) => remove(index)
+                            }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                          ])
+                        ]);
+                      }), 128))
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode("p", { class: "notice" }, toDisplayString(unref(t)("admin.redirects_hint")), 1),
+              createVNode(Panel, {
+                title: unref(t)("admin.redirects")
+              }, {
+                actions: withCtx(() => [
+                  createVNode("button", {
+                    class: "btn btn--ghost",
+                    type: "button",
+                    onClick: add
+                  }, toDisplayString(unref(t)("admin.create")), 1),
+                  createVNode("button", {
+                    class: "btn btn--cta",
+                    type: "button",
+                    onClick: save
+                  }, toDisplayString(unref(t)("admin.save")), 1)
+                ]),
+                default: withCtx(() => [
+                  !state.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                    key: 1,
+                    class: "rows"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(state, (row, index) => {
+                      return openBlock(), createBlock("li", {
+                        key: index,
+                        class: "row"
+                      }, [
+                        createVNode(Field, {
+                          modelValue: row.from,
+                          "onUpdate:modelValue": ($event) => row.from = $event,
+                          label: unref(t)("admin.redirect_from"),
+                          dir: "ltr",
+                          required: ""
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                        createVNode(Field, {
+                          modelValue: row.to,
+                          "onUpdate:modelValue": ($event) => row.to = $event,
+                          label: unref(t)("admin.redirect_to"),
+                          dir: "ltr",
+                          required: ""
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                        createVNode(Field, {
+                          modelValue: row.status,
+                          "onUpdate:modelValue": ($event) => row.status = $event,
+                          label: unref(t)("admin.redirect_status"),
+                          type: "select",
+                          options: STATUSES
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                        createVNode(Field, {
+                          modelValue: row.isActive,
+                          "onUpdate:modelValue": ($event) => row.isActive = $event,
+                          label: unref(t)("admin.active"),
+                          type: "checkbox"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                        createVNode("div", { class: "row__meta" }, [
+                          createVNode("span", { class: "row__hits tabular" }, toDisplayString(unref(t)("admin.redirect_hits")) + ": " + toDisplayString(unref(number)(row.hits)), 1),
+                          createVNode("button", {
+                            class: "btn btn--ghost danger",
+                            type: "button",
+                            onClick: ($event) => remove(index)
+                          }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                        ])
+                      ]);
+                    }), 128))
+                  ]))
+                ]),
+                _: 1
+              }, 8, ["title"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$P = _sfc_main$P.setup;
+_sfc_main$P.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Redirects.vue");
+  return _sfc_setup$P ? _sfc_setup$P(props, ctx) : void 0;
+};
+const Redirects = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["__scopeId", "data-v-1f23add1"]]);
+const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Redirects
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$O = {
+  __name: "Builder",
+  __ssrInlineRender: true,
+  props: {
+    ownerType: { type: String, required: true },
+    ownerId: { type: Number, required: true },
+    ownerLabel: { type: String, default: null },
+    sections: { type: Array, default: () => [] },
+    types: { type: Array, default: () => [] },
+    locales: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const FIELDS = {
+      heading: "text",
+      subheading: "text",
+      body: "richtext",
+      cta_label: "text",
+      cta_url: "text"
+    };
+    const ITEM_SCHEMAS = {
+      cards: [
+        { key: "icon", label: "icon" },
+        { key: "title", label: "title" },
+        { key: "body", label: "body", type: "textarea" }
+      ],
+      accordion: [
+        { key: "question", label: "question" },
+        { key: "answer", label: "answer", type: "textarea" }
+      ],
+      timeline: [
+        { key: "year", label: "year" },
+        { key: "title", label: "title" },
+        { key: "body", label: "body", type: "textarea" }
+      ]
+    };
+    const IMAGE_TYPES = ["hero", "media_split", "testimonial"];
+    const open = ref(props.sections.length ? props.sections[0].id : null);
+    const dragging = ref(null);
+    const uploading = ref(null);
+    const addForm = useForm({ type: props.types[0] ?? "rich_text" });
+    function addSection() {
+      addForm.post(`/admin/sections/${props.ownerType}/${props.ownerId}`, { preserveScroll: true });
+    }
+    function saveSection(section) {
+      router.patch(
+        `/admin/sections/${section.id}`,
+        {
+          is_active: section.isActive,
+          settings: section.settings,
+          translations: section.translations
+        },
+        { preserveScroll: true }
+      );
+    }
+    function removeSection(section) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/sections/${section.id}`, { preserveScroll: true });
+    }
+    function persistOrder(order) {
+      router.post(
+        `/admin/sections/${props.ownerType}/${props.ownerId}/reorder`,
+        { order },
+        { preserveScroll: true }
+      );
+    }
+    function move(index, delta) {
+      const next = index + delta;
+      if (next < 0 || next >= props.sections.length) return;
+      const ids = props.sections.map((s) => s.id);
+      [ids[index], ids[next]] = [ids[next], ids[index]];
+      persistOrder(ids);
+    }
+    function onDrop(index) {
+      if (dragging.value === null || dragging.value === index) return;
+      const ids = props.sections.map((s) => s.id);
+      const [moved] = ids.splice(dragging.value, 1);
+      ids.splice(index, 0, moved);
+      dragging.value = null;
+      persistOrder(ids);
+    }
+    function itemSchema(section) {
+      return ITEM_SCHEMAS[section.type] ?? null;
+    }
+    function items(section) {
+      section.settings = section.settings ?? {};
+      section.settings.items = section.settings.items ?? [];
+      return section.settings.items;
+    }
+    function addItem(section) {
+      const blank = {};
+      itemSchema(section).forEach((f) => {
+        blank[f.key] = "";
+      });
+      items(section).push(blank);
+    }
+    function removeItem(section, index) {
+      items(section).splice(index, 1);
+    }
+    function moveItem(section, index, delta) {
+      const list = items(section);
+      const next = index + delta;
+      if (next < 0 || next >= list.length) return;
+      [list[index], list[next]] = [list[next], list[index]];
+    }
+    function uploadKey(section, collection) {
+      return `${section.id}-${collection}`;
+    }
+    function uploadMedia(section, collection, event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      uploading.value = uploadKey(section, collection);
+      router.post(
+        "/admin/media",
+        { entity: "section", id: section.id, collection, file },
+        {
+          forceFormData: true,
+          preserveScroll: true,
+          onFinish: () => {
+            uploading.value = null;
+            event.target.value = "";
+          }
+        }
+      );
+    }
+    function removeMedia(id) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/media/${id}`, { preserveScroll: true });
+    }
+    function settingsText(section) {
+      return JSON.stringify(section.settings ?? {}, null, 2);
+    }
+    function updateSettings(section, text) {
+      try {
+        section.settings = text.trim() === "" ? {} : JSON.parse(text);
+        section.settingsError = null;
+      } catch {
+        section.settingsError = "JSON";
+      }
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: `${unref(t)("admin.sections")} — ${__props.ownerLabel ?? ""}`
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.add_section"),
+              hint: unref(t)("admin.order_hint")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<form class="add" data-v-e079d442${_scopeId2}>`);
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(addForm).type,
+                    "onUpdate:modelValue": ($event) => unref(addForm).type = $event,
+                    label: unref(t)("admin.add_section"),
+                    type: "select",
+                    options: __props.types.map((ty) => ({ value: ty, label: ty }))
+                  }, null, _parent3, _scopeId2));
+                  _push3(`<button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-e079d442${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button></form>`);
+                } else {
+                  return [
+                    createVNode("form", {
+                      class: "add",
+                      onSubmit: withModifiers(addSection, ["prevent"])
+                    }, [
+                      createVNode(Field, {
+                        modelValue: unref(addForm).type,
+                        "onUpdate:modelValue": ($event) => unref(addForm).type = $event,
+                        label: unref(t)("admin.add_section"),
+                        type: "select",
+                        options: __props.types.map((ty) => ({ value: ty, label: ty }))
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                      createVNode("button", {
+                        class: "btn btn--cta",
+                        type: "submit",
+                        disabled: unref(addForm).processing
+                      }, toDisplayString(unref(t)("admin.create")), 9, ["disabled"])
+                    ], 32)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            if (!__props.sections.length) {
+              _push2(`<p class="empty" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<ol class="list" data-v-e079d442${_scopeId}><!--[-->`);
+            ssrRenderList(__props.sections, (section, index) => {
+              _push2(`<li class="item" draggable="true" data-v-e079d442${_scopeId}><header class="item__head" data-v-e079d442${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-e079d442${_scopeId}><span class="item__type latin" data-v-e079d442${_scopeId}>${ssrInterpolate(section.type)}</span>`);
+              if (!section.isActive) {
+                _push2(`<span class="chip" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</button><div class="item__tools" data-v-e079d442${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-e079d442${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-e079d442${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></header>`);
+              if (open.value === section.id) {
+                _push2(`<div class="item__body" data-v-e079d442${_scopeId}>`);
+                _push2(ssrRenderComponent(Field, {
+                  modelValue: section.isActive,
+                  "onUpdate:modelValue": ($event) => section.isActive = $event,
+                  label: unref(t)("admin.active"),
+                  type: "checkbox"
+                }, null, _parent2, _scopeId));
+                _push2(ssrRenderComponent(BilingualFields, {
+                  modelValue: section.translations,
+                  "onUpdate:modelValue": ($event) => section.translations = $event,
+                  locales: __props.locales,
+                  fields: FIELDS
+                }, null, _parent2, _scopeId));
+                if (IMAGE_TYPES.includes(section.type)) {
+                  _push2(`<div class="media" data-v-e079d442${_scopeId}><p class="media__label" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.section_image"))}</p>`);
+                  if (section.media?.image?.length) {
+                    _push2(`<ul class="media__list" data-v-e079d442${_scopeId}><!--[-->`);
+                    ssrRenderList(section.media.image, (m) => {
+                      _push2(`<li data-v-e079d442${_scopeId}><img${ssrRenderAttr("src", m.url)}${ssrRenderAttr("alt", m.name)} class="media__thumb" data-v-e079d442${_scopeId}><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></li>`);
+                    });
+                    _push2(`<!--]--></ul>`);
+                  } else {
+                    _push2(`<!---->`);
+                  }
+                  _push2(`<label class="media__upload" data-v-e079d442${_scopeId}><span data-v-e079d442${_scopeId}>${ssrInterpolate(uploading.value === uploadKey(section, "image") ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*" data-v-e079d442${_scopeId}></label></div>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (section.type === "gallery") {
+                  _push2(`<div class="media" data-v-e079d442${_scopeId}><p class="media__label" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.section_gallery"))}</p>`);
+                  if (section.media?.gallery?.length) {
+                    _push2(`<ul class="media__list" data-v-e079d442${_scopeId}><!--[-->`);
+                    ssrRenderList(section.media.gallery, (m) => {
+                      _push2(`<li data-v-e079d442${_scopeId}><img${ssrRenderAttr("src", m.url)}${ssrRenderAttr("alt", m.name)} class="media__thumb" data-v-e079d442${_scopeId}><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></li>`);
+                    });
+                    _push2(`<!--]--></ul>`);
+                  } else {
+                    _push2(`<!---->`);
+                  }
+                  _push2(`<label class="media__upload" data-v-e079d442${_scopeId}><span data-v-e079d442${_scopeId}>${ssrInterpolate(uploading.value === uploadKey(section, "gallery") ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*" data-v-e079d442${_scopeId}></label></div>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (itemSchema(section)) {
+                  _push2(`<div class="items" data-v-e079d442${_scopeId}><div class="items__head" data-v-e079d442${_scopeId}><p class="media__label" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--ghost" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</button></div><!--[-->`);
+                  ssrRenderList(items(section), (item, i) => {
+                    _push2(`<div class="items__row" data-v-e079d442${_scopeId}><!--[-->`);
+                    ssrRenderList(itemSchema(section), (f) => {
+                      _push2(ssrRenderComponent(Field, {
+                        key: f.key,
+                        modelValue: item[f.key],
+                        "onUpdate:modelValue": ($event) => item[f.key] = $event,
+                        label: f.label,
+                        type: f.type ?? "text",
+                        rows: 2
+                      }, null, _parent2, _scopeId));
+                    });
+                    _push2(`<!--]--><div class="items__tools" data-v-e079d442${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-e079d442${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-e079d442${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></div>`);
+                  });
+                  _push2(`<!--]--></div>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`<details class="advanced" data-v-e079d442${_scopeId}><summary data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
+                _push2(ssrRenderComponent(Field, {
+                  label: "settings",
+                  type: "textarea",
+                  dir: "ltr",
+                  "model-value": settingsText(section),
+                  error: section.settingsError,
+                  "onUpdate:modelValue": (v) => updateSettings(section, v)
+                }, null, _parent2, _scopeId));
+                _push2(`</details><button class="btn btn--cta" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</button></div>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</li>`);
+            });
+            _push2(`<!--]--></ol>`);
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.add_section"),
+                hint: unref(t)("admin.order_hint")
+              }, {
+                default: withCtx(() => [
+                  createVNode("form", {
+                    class: "add",
+                    onSubmit: withModifiers(addSection, ["prevent"])
+                  }, [
+                    createVNode(Field, {
+                      modelValue: unref(addForm).type,
+                      "onUpdate:modelValue": ($event) => unref(addForm).type = $event,
+                      label: unref(t)("admin.add_section"),
+                      type: "select",
+                      options: __props.types.map((ty) => ({ value: ty, label: ty }))
+                    }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                    createVNode("button", {
+                      class: "btn btn--cta",
+                      type: "submit",
+                      disabled: unref(addForm).processing
+                    }, toDisplayString(unref(t)("admin.create")), 9, ["disabled"])
+                  ], 32)
+                ]),
+                _: 1
+              }, 8, ["title", "hint"]),
+              !__props.sections.length ? (openBlock(), createBlock("p", {
+                key: 0,
+                class: "empty"
+              }, toDisplayString(unref(t)("admin.no_records")), 1)) : createCommentVNode("", true),
+              createVNode("ol", { class: "list" }, [
+                (openBlock(true), createBlock(Fragment, null, renderList(__props.sections, (section, index) => {
+                  return openBlock(), createBlock("li", {
+                    key: section.id,
+                    class: "item",
+                    draggable: "true",
+                    onDragstart: ($event) => dragging.value = index,
+                    onDragover: withModifiers(() => {
+                    }, ["prevent"]),
+                    onDrop: withModifiers(($event) => onDrop(index), ["prevent"])
+                  }, [
+                    createVNode("header", { class: "item__head" }, [
+                      createVNode("button", {
+                        class: "item__toggle",
+                        type: "button",
+                        "aria-expanded": open.value === section.id,
+                        onClick: ($event) => open.value = open.value === section.id ? null : section.id
+                      }, [
+                        createVNode("span", { class: "item__type latin" }, toDisplayString(section.type), 1),
+                        !section.isActive ? (openBlock(), createBlock("span", {
+                          key: 0,
+                          class: "chip"
+                        }, toDisplayString(unref(t)("admin.inactive")), 1)) : createCommentVNode("", true)
+                      ], 8, ["aria-expanded", "onClick"]),
+                      createVNode("div", { class: "item__tools" }, [
+                        createVNode("button", {
+                          class: "btn btn--ghost",
+                          type: "button",
+                          "aria-label": unref(t)("admin.move_up"),
+                          disabled: index === 0,
+                          onClick: ($event) => move(index, -1)
+                        }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                        createVNode("button", {
+                          class: "btn btn--ghost",
+                          type: "button",
+                          "aria-label": unref(t)("admin.move_down"),
+                          disabled: index === __props.sections.length - 1,
+                          onClick: ($event) => move(index, 1)
+                        }, "↓", 8, ["aria-label", "disabled", "onClick"]),
+                        createVNode("button", {
+                          class: "btn btn--ghost danger",
+                          type: "button",
+                          onClick: ($event) => removeSection(section)
+                        }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                      ])
+                    ]),
+                    open.value === section.id ? (openBlock(), createBlock("div", {
+                      key: 0,
+                      class: "item__body"
+                    }, [
+                      createVNode(Field, {
+                        modelValue: section.isActive,
+                        "onUpdate:modelValue": ($event) => section.isActive = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"]),
+                      createVNode(BilingualFields, {
+                        modelValue: section.translations,
+                        "onUpdate:modelValue": ($event) => section.translations = $event,
+                        locales: __props.locales,
+                        fields: FIELDS
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "locales"]),
+                      IMAGE_TYPES.includes(section.type) ? (openBlock(), createBlock("div", {
+                        key: 0,
+                        class: "media"
+                      }, [
+                        createVNode("p", { class: "media__label" }, toDisplayString(unref(t)("admin.section_image")), 1),
+                        section.media?.image?.length ? (openBlock(), createBlock("ul", {
+                          key: 0,
+                          class: "media__list"
+                        }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(section.media.image, (m) => {
+                            return openBlock(), createBlock("li", {
+                              key: m.id
+                            }, [
+                              createVNode("img", {
+                                src: m.url,
+                                alt: m.name,
+                                class: "media__thumb"
+                              }, null, 8, ["src", "alt"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => removeMedia(m.id)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ]);
+                          }), 128))
+                        ])) : createCommentVNode("", true),
+                        createVNode("label", { class: "media__upload" }, [
+                          createVNode("span", null, toDisplayString(uploading.value === uploadKey(section, "image") ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                          createVNode("input", {
+                            type: "file",
+                            accept: "image/*",
+                            onChange: (e) => uploadMedia(section, "image", e)
+                          }, null, 40, ["onChange"])
+                        ])
+                      ])) : createCommentVNode("", true),
+                      section.type === "gallery" ? (openBlock(), createBlock("div", {
+                        key: 1,
+                        class: "media"
+                      }, [
+                        createVNode("p", { class: "media__label" }, toDisplayString(unref(t)("admin.section_gallery")), 1),
+                        section.media?.gallery?.length ? (openBlock(), createBlock("ul", {
+                          key: 0,
+                          class: "media__list"
+                        }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(section.media.gallery, (m) => {
+                            return openBlock(), createBlock("li", {
+                              key: m.id
+                            }, [
+                              createVNode("img", {
+                                src: m.url,
+                                alt: m.name,
+                                class: "media__thumb"
+                              }, null, 8, ["src", "alt"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => removeMedia(m.id)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ]);
+                          }), 128))
+                        ])) : createCommentVNode("", true),
+                        createVNode("label", { class: "media__upload" }, [
+                          createVNode("span", null, toDisplayString(uploading.value === uploadKey(section, "gallery") ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
+                          createVNode("input", {
+                            type: "file",
+                            accept: "image/*",
+                            onChange: (e) => uploadMedia(section, "gallery", e)
+                          }, null, 40, ["onChange"])
+                        ])
+                      ])) : createCommentVNode("", true),
+                      itemSchema(section) ? (openBlock(), createBlock("div", {
+                        key: 2,
+                        class: "items"
+                      }, [
+                        createVNode("div", { class: "items__head" }, [
+                          createVNode("p", { class: "media__label" }, toDisplayString(unref(t)("admin.section_items")), 1),
+                          createVNode("button", {
+                            class: "btn btn--ghost",
+                            type: "button",
+                            onClick: ($event) => addItem(section)
+                          }, toDisplayString(unref(t)("admin.add_item")), 9, ["onClick"])
+                        ]),
+                        (openBlock(true), createBlock(Fragment, null, renderList(items(section), (item, i) => {
+                          return openBlock(), createBlock("div", {
+                            key: i,
+                            class: "items__row"
+                          }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(itemSchema(section), (f) => {
+                              return openBlock(), createBlock(Field, {
+                                key: f.key,
+                                modelValue: item[f.key],
+                                "onUpdate:modelValue": ($event) => item[f.key] = $event,
+                                label: f.label,
+                                type: f.type ?? "text",
+                                rows: 2
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type"]);
+                            }), 128)),
+                            createVNode("div", { class: "items__tools" }, [
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                "aria-label": unref(t)("admin.move_up"),
+                                disabled: i === 0,
+                                onClick: ($event) => moveItem(section, i, -1)
+                              }, "↑", 8, ["aria-label", "disabled", "onClick"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost",
+                                type: "button",
+                                "aria-label": unref(t)("admin.move_down"),
+                                disabled: i === items(section).length - 1,
+                                onClick: ($event) => moveItem(section, i, 1)
+                              }, "↓", 8, ["aria-label", "disabled", "onClick"]),
+                              createVNode("button", {
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => removeItem(section, i)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ])
+                          ]);
+                        }), 128))
+                      ])) : createCommentVNode("", true),
+                      createVNode("details", { class: "advanced" }, [
+                        createVNode("summary", null, toDisplayString(unref(t)("admin.advanced_json")), 1),
+                        createVNode(Field, {
+                          label: "settings",
+                          type: "textarea",
+                          dir: "ltr",
+                          "model-value": settingsText(section),
+                          error: section.settingsError,
+                          "onUpdate:modelValue": (v) => updateSettings(section, v)
+                        }, null, 8, ["model-value", "error", "onUpdate:modelValue"])
+                      ]),
+                      createVNode("button", {
+                        class: "btn btn--cta",
+                        type: "button",
+                        onClick: ($event) => saveSection(section)
+                      }, toDisplayString(unref(t)("admin.save")), 9, ["onClick"])
+                    ])) : createCommentVNode("", true)
+                  ], 40, ["onDragstart", "onDragover", "onDrop"]);
+                }), 128))
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$O = _sfc_main$O.setup;
+_sfc_main$O.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Sections/Builder.vue");
+  return _sfc_setup$O ? _sfc_setup$O(props, ctx) : void 0;
+};
+const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["__scopeId", "data-v-e079d442"]]);
+const __vite_glob_0_14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Builder
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$N = {
+  __name: "Keywords",
+  __ssrInlineRender: true,
+  props: {
+    locales: { type: Array, default: () => [] },
+    report: { type: Object, default: () => ({}) },
+    groups: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { number } = useFormat();
+    const locale = ref(props.locales[0] ?? "ar");
+    const terms = ref("");
+    const group = ref("");
+    const processing = ref(false);
+    const filter = ref("all");
+    const rows = computed(() => props.report[locale.value] ?? []);
+    const gaps = computed(() => rows.value.filter((r) => !r.covered));
+    const weak = computed(() => rows.value.filter((r) => r.covered && !r.strong));
+    const strong = computed(() => rows.value.filter((r) => r.strong));
+    const shown = computed(() => {
+      if (filter.value === "gaps") return gaps.value;
+      if (filter.value === "weak") return weak.value;
+      if (filter.value === "strong") return strong.value;
+      return [...gaps.value, ...weak.value, ...strong.value];
+    });
+    function add() {
+      if (!terms.value.trim()) return;
+      processing.value = true;
+      router.post(
+        "/admin/seo/keywords",
+        { locale: locale.value, terms: terms.value, group: group.value || null },
+        {
+          preserveScroll: true,
+          onSuccess: () => terms.value = "",
+          onFinish: () => processing.value = false
+        }
+      );
+    }
+    function remove(row) {
+      router.delete(`/admin/seo/keywords/${row.id}`, { preserveScroll: true });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("settings.screen.keywords")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Workspace, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(Panel, {
+                    title: unref(t)("settings.screen.keywords")
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<p class="intro" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.intro"))}</p><p class="honest" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.honest"))}</p><div class="add" data-v-6f7b571d${_scopeId3}><div class="add__row" data-v-6f7b571d${_scopeId3}>`);
+                        _push4(ssrRenderComponent(Field, {
+                          modelValue: locale.value,
+                          "onUpdate:modelValue": ($event) => locale.value = $event,
+                          label: unref(t)("admin.language"),
+                          type: "select",
+                          options: __props.locales.map((l) => ({ value: l, label: l }))
+                        }, null, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(Field, {
+                          modelValue: group.value,
+                          "onUpdate:modelValue": ($event) => group.value = $event,
+                          label: unref(t)("settings.keywords.group"),
+                          hint: unref(t)("settings.keywords.group_hint"),
+                          type: "text",
+                          list: __props.groups
+                        }, null, _parent4, _scopeId3));
+                        _push4(`</div>`);
+                        _push4(ssrRenderComponent(Field, {
+                          modelValue: terms.value,
+                          "onUpdate:modelValue": ($event) => terms.value = $event,
+                          label: unref(t)("settings.keywords.bulk"),
+                          hint: unref(t)("settings.keywords.bulk_hint"),
+                          type: "textarea",
+                          rows: 4,
+                          dir: locale.value === "en" ? "ltr" : null
+                        }, null, _parent4, _scopeId3));
+                        _push4(`<button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-6f7b571d${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("admin.saving") : unref(t)("settings.keywords.add"))}</button></div><div class="tally" role="group" data-v-6f7b571d${_scopeId3}><button class="${ssrRenderClass([{ "is-active": filter.value === "all" }, "tally__cell"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(rows.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.all"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "gaps" }, "tally__cell tally__cell--gap"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(gaps.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.gaps"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "weak" }, "tally__cell tally__cell--weak"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(weak.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.weak"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "strong" }, "tally__cell tally__cell--strong"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(strong.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.strong"))}</span></button></div>`);
+                        if (!rows.value.length) {
+                          _push4(`<p class="empty" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.none"))}</p>`);
+                        } else {
+                          _push4(`<ul class="terms" data-v-6f7b571d${_scopeId3}><!--[-->`);
+                          ssrRenderList(shown.value, (row) => {
+                            _push4(`<li class="${ssrRenderClass([row.strong ? "is-strong" : row.covered ? "is-weak" : "is-gap", "term"])}" data-v-6f7b571d${_scopeId3}><div class="term__head" data-v-6f7b571d${_scopeId3}><span class="term__text" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(row.term)}</span>`);
+                            if (row.group) {
+                              _push4(`<span class="term__group" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(row.group)}</span>`);
+                            } else {
+                              _push4(`<!---->`);
+                            }
+                            _push4(`<span class="term__state" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap"))}</span><button class="term__del" type="button" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div>`);
+                            if (!row.covered) {
+                              _push4(`<p class="term__advice" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.gap_advice"))}</p>`);
+                            } else {
+                              _push4(`<ul class="hits" data-v-6f7b571d${_scopeId3}><!--[-->`);
+                              ssrRenderList(row.pages, (page) => {
+                                _push4(`<li class="hit" data-v-6f7b571d${_scopeId3}>`);
+                                _push4(ssrRenderComponent(unref(Link), {
+                                  class: "link-weave",
+                                  href: `/admin/pages/${page.id}/edit`
+                                }, {
+                                  default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                                    if (_push5) {
+                                      _push5(`${ssrInterpolate(page.title ?? page.slug)}`);
+                                    } else {
+                                      return [
+                                        createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                                      ];
+                                    }
+                                  }),
+                                  _: 2
+                                }, _parent4, _scopeId3));
+                                _push4(`<span class="${ssrRenderClass([{ "is-title": page.inTitle }, "hit__where"])}" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(page.inTitle ? unref(t)("settings.keywords.in_title") : unref(t)("settings.keywords.in_body"))}</span></li>`);
+                              });
+                              _push4(`<!--]--></ul>`);
+                            }
+                            _push4(`</li>`);
+                          });
+                          _push4(`<!--]--></ul>`);
+                        }
+                      } else {
+                        return [
+                          createVNode("p", { class: "intro" }, toDisplayString(unref(t)("settings.keywords.intro")), 1),
+                          createVNode("p", { class: "honest" }, toDisplayString(unref(t)("settings.keywords.honest")), 1),
+                          createVNode("div", { class: "add" }, [
+                            createVNode("div", { class: "add__row" }, [
+                              createVNode(Field, {
+                                modelValue: locale.value,
+                                "onUpdate:modelValue": ($event) => locale.value = $event,
+                                label: unref(t)("admin.language"),
+                                type: "select",
+                                options: __props.locales.map((l) => ({ value: l, label: l }))
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                              createVNode(Field, {
+                                modelValue: group.value,
+                                "onUpdate:modelValue": ($event) => group.value = $event,
+                                label: unref(t)("settings.keywords.group"),
+                                hint: unref(t)("settings.keywords.group_hint"),
+                                type: "text",
+                                list: __props.groups
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "list"])
+                            ]),
+                            createVNode(Field, {
+                              modelValue: terms.value,
+                              "onUpdate:modelValue": ($event) => terms.value = $event,
+                              label: unref(t)("settings.keywords.bulk"),
+                              hint: unref(t)("settings.keywords.bulk_hint"),
+                              type: "textarea",
+                              rows: 4,
+                              dir: locale.value === "en" ? "ltr" : null
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "dir"]),
+                            createVNode("button", {
+                              class: "btn btn--cta",
+                              type: "button",
+                              disabled: processing.value,
+                              onClick: add
+                            }, toDisplayString(processing.value ? unref(t)("admin.saving") : unref(t)("settings.keywords.add")), 9, ["disabled"])
+                          ]),
+                          createVNode("div", {
+                            class: "tally",
+                            role: "group"
+                          }, [
+                            createVNode("button", {
+                              class: ["tally__cell", { "is-active": filter.value === "all" }],
+                              type: "button",
+                              onClick: ($event) => filter.value = "all"
+                            }, [
+                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(rows.value.length)), 1),
+                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.all")), 1)
+                            ], 10, ["onClick"]),
+                            createVNode("button", {
+                              class: ["tally__cell tally__cell--gap", { "is-active": filter.value === "gaps" }],
+                              type: "button",
+                              onClick: ($event) => filter.value = "gaps"
+                            }, [
+                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(gaps.value.length)), 1),
+                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.gaps")), 1)
+                            ], 10, ["onClick"]),
+                            createVNode("button", {
+                              class: ["tally__cell tally__cell--weak", { "is-active": filter.value === "weak" }],
+                              type: "button",
+                              onClick: ($event) => filter.value = "weak"
+                            }, [
+                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(weak.value.length)), 1),
+                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.weak")), 1)
+                            ], 10, ["onClick"]),
+                            createVNode("button", {
+                              class: ["tally__cell tally__cell--strong", { "is-active": filter.value === "strong" }],
+                              type: "button",
+                              onClick: ($event) => filter.value = "strong"
+                            }, [
+                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(strong.value.length)), 1),
+                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.strong")), 1)
+                            ], 10, ["onClick"])
+                          ]),
+                          !rows.value.length ? (openBlock(), createBlock("p", {
+                            key: 0,
+                            class: "empty"
+                          }, toDisplayString(unref(t)("settings.keywords.none")), 1)) : (openBlock(), createBlock("ul", {
+                            key: 1,
+                            class: "terms"
+                          }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(shown.value, (row) => {
+                              return openBlock(), createBlock("li", {
+                                key: row.id,
+                                class: ["term", row.strong ? "is-strong" : row.covered ? "is-weak" : "is-gap"]
+                              }, [
+                                createVNode("div", { class: "term__head" }, [
+                                  createVNode("span", { class: "term__text" }, toDisplayString(row.term), 1),
+                                  row.group ? (openBlock(), createBlock("span", {
+                                    key: 0,
+                                    class: "term__group"
+                                  }, toDisplayString(row.group), 1)) : createCommentVNode("", true),
+                                  createVNode("span", { class: "term__state" }, toDisplayString(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap")), 1),
+                                  createVNode("button", {
+                                    class: "term__del",
+                                    type: "button",
+                                    onClick: ($event) => remove(row)
+                                  }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                                ]),
+                                !row.covered ? (openBlock(), createBlock("p", {
+                                  key: 0,
+                                  class: "term__advice"
+                                }, toDisplayString(unref(t)("settings.keywords.gap_advice")), 1)) : (openBlock(), createBlock("ul", {
+                                  key: 1,
+                                  class: "hits"
+                                }, [
+                                  (openBlock(true), createBlock(Fragment, null, renderList(row.pages, (page) => {
+                                    return openBlock(), createBlock("li", {
+                                      key: page.id,
+                                      class: "hit"
+                                    }, [
+                                      createVNode(unref(Link), {
+                                        class: "link-weave",
+                                        href: `/admin/pages/${page.id}/edit`
+                                      }, {
+                                        default: withCtx(() => [
+                                          createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                                        ]),
+                                        _: 2
+                                      }, 1032, ["href"]),
+                                      createVNode("span", {
+                                        class: ["hit__where", { "is-title": page.inTitle }]
+                                      }, toDisplayString(page.inTitle ? unref(t)("settings.keywords.in_title") : unref(t)("settings.keywords.in_body")), 3)
+                                    ]);
+                                  }), 128))
+                                ]))
+                              ], 2);
+                            }), 128))
+                          ]))
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(Panel, {
+                      title: unref(t)("settings.screen.keywords")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("settings.keywords.intro")), 1),
+                        createVNode("p", { class: "honest" }, toDisplayString(unref(t)("settings.keywords.honest")), 1),
+                        createVNode("div", { class: "add" }, [
+                          createVNode("div", { class: "add__row" }, [
+                            createVNode(Field, {
+                              modelValue: locale.value,
+                              "onUpdate:modelValue": ($event) => locale.value = $event,
+                              label: unref(t)("admin.language"),
+                              type: "select",
+                              options: __props.locales.map((l) => ({ value: l, label: l }))
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                            createVNode(Field, {
+                              modelValue: group.value,
+                              "onUpdate:modelValue": ($event) => group.value = $event,
+                              label: unref(t)("settings.keywords.group"),
+                              hint: unref(t)("settings.keywords.group_hint"),
+                              type: "text",
+                              list: __props.groups
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "list"])
+                          ]),
+                          createVNode(Field, {
+                            modelValue: terms.value,
+                            "onUpdate:modelValue": ($event) => terms.value = $event,
+                            label: unref(t)("settings.keywords.bulk"),
+                            hint: unref(t)("settings.keywords.bulk_hint"),
+                            type: "textarea",
+                            rows: 4,
+                            dir: locale.value === "en" ? "ltr" : null
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "dir"]),
+                          createVNode("button", {
+                            class: "btn btn--cta",
+                            type: "button",
+                            disabled: processing.value,
+                            onClick: add
+                          }, toDisplayString(processing.value ? unref(t)("admin.saving") : unref(t)("settings.keywords.add")), 9, ["disabled"])
+                        ]),
+                        createVNode("div", {
+                          class: "tally",
+                          role: "group"
+                        }, [
+                          createVNode("button", {
+                            class: ["tally__cell", { "is-active": filter.value === "all" }],
+                            type: "button",
+                            onClick: ($event) => filter.value = "all"
+                          }, [
+                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(rows.value.length)), 1),
+                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.all")), 1)
+                          ], 10, ["onClick"]),
+                          createVNode("button", {
+                            class: ["tally__cell tally__cell--gap", { "is-active": filter.value === "gaps" }],
+                            type: "button",
+                            onClick: ($event) => filter.value = "gaps"
+                          }, [
+                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(gaps.value.length)), 1),
+                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.gaps")), 1)
+                          ], 10, ["onClick"]),
+                          createVNode("button", {
+                            class: ["tally__cell tally__cell--weak", { "is-active": filter.value === "weak" }],
+                            type: "button",
+                            onClick: ($event) => filter.value = "weak"
+                          }, [
+                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(weak.value.length)), 1),
+                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.weak")), 1)
+                          ], 10, ["onClick"]),
+                          createVNode("button", {
+                            class: ["tally__cell tally__cell--strong", { "is-active": filter.value === "strong" }],
+                            type: "button",
+                            onClick: ($event) => filter.value = "strong"
+                          }, [
+                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(strong.value.length)), 1),
+                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.strong")), 1)
+                          ], 10, ["onClick"])
+                        ]),
+                        !rows.value.length ? (openBlock(), createBlock("p", {
+                          key: 0,
+                          class: "empty"
+                        }, toDisplayString(unref(t)("settings.keywords.none")), 1)) : (openBlock(), createBlock("ul", {
+                          key: 1,
+                          class: "terms"
+                        }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(shown.value, (row) => {
+                            return openBlock(), createBlock("li", {
+                              key: row.id,
+                              class: ["term", row.strong ? "is-strong" : row.covered ? "is-weak" : "is-gap"]
+                            }, [
+                              createVNode("div", { class: "term__head" }, [
+                                createVNode("span", { class: "term__text" }, toDisplayString(row.term), 1),
+                                row.group ? (openBlock(), createBlock("span", {
+                                  key: 0,
+                                  class: "term__group"
+                                }, toDisplayString(row.group), 1)) : createCommentVNode("", true),
+                                createVNode("span", { class: "term__state" }, toDisplayString(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap")), 1),
+                                createVNode("button", {
+                                  class: "term__del",
+                                  type: "button",
+                                  onClick: ($event) => remove(row)
+                                }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                              ]),
+                              !row.covered ? (openBlock(), createBlock("p", {
+                                key: 0,
+                                class: "term__advice"
+                              }, toDisplayString(unref(t)("settings.keywords.gap_advice")), 1)) : (openBlock(), createBlock("ul", {
+                                key: 1,
+                                class: "hits"
+                              }, [
+                                (openBlock(true), createBlock(Fragment, null, renderList(row.pages, (page) => {
+                                  return openBlock(), createBlock("li", {
+                                    key: page.id,
+                                    class: "hit"
+                                  }, [
+                                    createVNode(unref(Link), {
+                                      class: "link-weave",
+                                      href: `/admin/pages/${page.id}/edit`
+                                    }, {
+                                      default: withCtx(() => [
+                                        createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["href"]),
+                                    createVNode("span", {
+                                      class: ["hit__where", { "is-title": page.inTitle }]
+                                    }, toDisplayString(page.inTitle ? unref(t)("settings.keywords.in_title") : unref(t)("settings.keywords.in_body")), 3)
+                                  ]);
+                                }), 128))
+                              ]))
+                            ], 2);
+                          }), 128))
+                        ]))
+                      ]),
+                      _: 1
+                    }, 8, ["title"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Workspace, null, {
+                default: withCtx(() => [
+                  createVNode(Panel, {
+                    title: unref(t)("settings.screen.keywords")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("settings.keywords.intro")), 1),
+                      createVNode("p", { class: "honest" }, toDisplayString(unref(t)("settings.keywords.honest")), 1),
+                      createVNode("div", { class: "add" }, [
+                        createVNode("div", { class: "add__row" }, [
+                          createVNode(Field, {
+                            modelValue: locale.value,
+                            "onUpdate:modelValue": ($event) => locale.value = $event,
+                            label: unref(t)("admin.language"),
+                            type: "select",
+                            options: __props.locales.map((l) => ({ value: l, label: l }))
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "options"]),
+                          createVNode(Field, {
+                            modelValue: group.value,
+                            "onUpdate:modelValue": ($event) => group.value = $event,
+                            label: unref(t)("settings.keywords.group"),
+                            hint: unref(t)("settings.keywords.group_hint"),
+                            type: "text",
+                            list: __props.groups
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "list"])
+                        ]),
+                        createVNode(Field, {
+                          modelValue: terms.value,
+                          "onUpdate:modelValue": ($event) => terms.value = $event,
+                          label: unref(t)("settings.keywords.bulk"),
+                          hint: unref(t)("settings.keywords.bulk_hint"),
+                          type: "textarea",
+                          rows: 4,
+                          dir: locale.value === "en" ? "ltr" : null
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "dir"]),
+                        createVNode("button", {
+                          class: "btn btn--cta",
+                          type: "button",
+                          disabled: processing.value,
+                          onClick: add
+                        }, toDisplayString(processing.value ? unref(t)("admin.saving") : unref(t)("settings.keywords.add")), 9, ["disabled"])
+                      ]),
+                      createVNode("div", {
+                        class: "tally",
+                        role: "group"
+                      }, [
+                        createVNode("button", {
+                          class: ["tally__cell", { "is-active": filter.value === "all" }],
+                          type: "button",
+                          onClick: ($event) => filter.value = "all"
+                        }, [
+                          createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(rows.value.length)), 1),
+                          createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.all")), 1)
+                        ], 10, ["onClick"]),
+                        createVNode("button", {
+                          class: ["tally__cell tally__cell--gap", { "is-active": filter.value === "gaps" }],
+                          type: "button",
+                          onClick: ($event) => filter.value = "gaps"
+                        }, [
+                          createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(gaps.value.length)), 1),
+                          createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.gaps")), 1)
+                        ], 10, ["onClick"]),
+                        createVNode("button", {
+                          class: ["tally__cell tally__cell--weak", { "is-active": filter.value === "weak" }],
+                          type: "button",
+                          onClick: ($event) => filter.value = "weak"
+                        }, [
+                          createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(weak.value.length)), 1),
+                          createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.weak")), 1)
+                        ], 10, ["onClick"]),
+                        createVNode("button", {
+                          class: ["tally__cell tally__cell--strong", { "is-active": filter.value === "strong" }],
+                          type: "button",
+                          onClick: ($event) => filter.value = "strong"
+                        }, [
+                          createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(strong.value.length)), 1),
+                          createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.keywords.strong")), 1)
+                        ], 10, ["onClick"])
+                      ]),
+                      !rows.value.length ? (openBlock(), createBlock("p", {
+                        key: 0,
+                        class: "empty"
+                      }, toDisplayString(unref(t)("settings.keywords.none")), 1)) : (openBlock(), createBlock("ul", {
+                        key: 1,
+                        class: "terms"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(shown.value, (row) => {
+                          return openBlock(), createBlock("li", {
+                            key: row.id,
+                            class: ["term", row.strong ? "is-strong" : row.covered ? "is-weak" : "is-gap"]
+                          }, [
+                            createVNode("div", { class: "term__head" }, [
+                              createVNode("span", { class: "term__text" }, toDisplayString(row.term), 1),
+                              row.group ? (openBlock(), createBlock("span", {
+                                key: 0,
+                                class: "term__group"
+                              }, toDisplayString(row.group), 1)) : createCommentVNode("", true),
+                              createVNode("span", { class: "term__state" }, toDisplayString(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap")), 1),
+                              createVNode("button", {
+                                class: "term__del",
+                                type: "button",
+                                onClick: ($event) => remove(row)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
+                            ]),
+                            !row.covered ? (openBlock(), createBlock("p", {
+                              key: 0,
+                              class: "term__advice"
+                            }, toDisplayString(unref(t)("settings.keywords.gap_advice")), 1)) : (openBlock(), createBlock("ul", {
+                              key: 1,
+                              class: "hits"
+                            }, [
+                              (openBlock(true), createBlock(Fragment, null, renderList(row.pages, (page) => {
+                                return openBlock(), createBlock("li", {
+                                  key: page.id,
+                                  class: "hit"
+                                }, [
+                                  createVNode(unref(Link), {
+                                    class: "link-weave",
+                                    href: `/admin/pages/${page.id}/edit`
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(toDisplayString(page.title ?? page.slug), 1)
+                                    ]),
+                                    _: 2
+                                  }, 1032, ["href"]),
+                                  createVNode("span", {
+                                    class: ["hit__where", { "is-title": page.inTitle }]
+                                  }, toDisplayString(page.inTitle ? unref(t)("settings.keywords.in_title") : unref(t)("settings.keywords.in_body")), 3)
+                                ]);
+                              }), 128))
+                            ]))
+                          ], 2);
+                        }), 128))
+                      ]))
+                    ]),
+                    _: 1
+                  }, 8, ["title"])
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$N = _sfc_main$N.setup;
+_sfc_main$N.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Seo/Keywords.vue");
+  return _sfc_setup$N ? _sfc_setup$N(props, ctx) : void 0;
+};
+const Keywords = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["__scopeId", "data-v-6f7b571d"]]);
+const __vite_glob_0_15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Keywords
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$M = {
+  __name: "Screen",
+  __ssrInlineRender: true,
+  props: {
+    screen: { type: String, required: true },
+    fields: { type: Array, default: () => [] },
+    robotsPreview: { type: String, default: null },
+    sitemapUrl: { type: String, default: null },
+    isProduction: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const values = reactive(
+      Object.fromEntries(props.fields.map((f) => [f.id, serialise(f)]))
+    );
+    const processing = ref(false);
+    function serialise(field) {
+      if (field.type === "list") {
+        return JSON.stringify(field.value ?? [], null, 2);
+      }
+      if (field.type === "boolean") {
+        return Boolean(field.value);
+      }
+      return field.value ?? "";
+    }
+    function deserialise(field, raw) {
+      if (field.type === "list") {
+        try {
+          return JSON.parse(raw || "[]");
+        } catch {
+          return raw;
+        }
+      }
+      return raw === "" ? null : raw;
+    }
+    const controls = {
+      boolean: "checkbox",
+      textarea: "textarea",
+      list: "textarea",
+      code: "textarea",
+      url: "url",
+      email: "email",
+      tel: "tel",
+      text: "text"
+    };
+    function control(field) {
+      return controls[field.type] ?? "text";
+    }
+    function direction(field) {
+      if (["url", "email", "tel", "code", "list"].includes(field.type)) return "ltr";
+      if (field.key.endsWith(".en")) return "ltr";
+      if (field.key.startsWith("tracking.")) return "ltr";
+      return null;
+    }
+    function status(field) {
+      if (!field.pattern) return null;
+      const value = String(values[field.id] ?? "").trim();
+      if (value === "") return null;
+      return new RegExp(field.pattern).test(value) ? "ok" : "warn";
+    }
+    const title = computed(() => t(`settings.screen.${props.screen}`));
+    const intro = computed(() => t(`settings.screen.${props.screen}_hint`));
+    function save() {
+      processing.value = true;
+      router.put(
+        "/admin/settings",
+        {
+          settings: props.fields.map((f) => ({
+            id: f.id,
+            value: deserialise(f, values[f.id])
+          }))
+        },
+        {
+          preserveScroll: true,
+          onFinish: () => processing.value = false
+        }
+      );
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({ title: title.value }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Workspace, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(Panel, { title: title.value }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<p class="intro" data-v-bce278b6${_scopeId3}>${ssrInterpolate(intro.value)}</p>`);
+                        if (__props.screen === "robots") {
+                          _push4(`<!--[-->`);
+                          if (!__props.isProduction) {
+                            _push4(`<p class="notice" data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.robots.staging_notice"))}</p>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`<p class="sitemap" data-v-bce278b6${_scopeId3}><strong data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.robots.sitemap"))}:</strong><a class="link-weave latin"${ssrRenderAttr("href", __props.sitemapUrl)} target="_blank" rel="noopener" data-v-bce278b6${_scopeId3}>${ssrInterpolate(__props.sitemapUrl)}</a><span class="sitemap__hint" data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.robots.sitemap_hint"))}</span></p><!--]-->`);
+                        } else {
+                          _push4(`<!---->`);
+                        }
+                        _push4(`<div class="grid" data-v-bce278b6${_scopeId3}><!--[-->`);
+                        ssrRenderList(__props.fields, (field) => {
+                          _push4(`<div class="${ssrRenderClass({ "grid__wide": ["textarea", "code", "list"].includes(field.type) })}" data-v-bce278b6${_scopeId3}>`);
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: values[field.id],
+                            "onUpdate:modelValue": ($event) => values[field.id] = $event,
+                            label: unref(t)(`settings.${field.key}`),
+                            hint: unref(t)(`settings.${field.key}_hint`),
+                            type: control(field),
+                            dir: direction(field),
+                            placeholder: field.placeholder ?? void 0,
+                            rows: field.type === "code" || field.type === "list" ? 10 : 3
+                          }, null, _parent4, _scopeId3));
+                          if (status(field) === "ok") {
+                            _push4(`<p class="check check--ok" data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.format_ok"))}</p>`);
+                          } else if (status(field) === "warn") {
+                            _push4(`<p class="check check--warn" data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.format_warn", { example: field.placeholder }))}</p>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`</div>`);
+                        });
+                        _push4(`<!--]--></div>`);
+                        if (__props.screen === "robots" && __props.robotsPreview) {
+                          _push4(`<!--[--><h3 class="preview__title" data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.robots.preview"))}</h3><pre class="preview latin" data-v-bce278b6${_scopeId3}>${ssrInterpolate(__props.robotsPreview)}</pre><a class="link-weave" href="/robots.txt" target="_blank" rel="noopener" data-v-bce278b6${_scopeId3}>${ssrInterpolate(unref(t)("settings.robots.open"))}</a><!--]-->`);
+                        } else {
+                          _push4(`<!---->`);
+                        }
+                        _push4(`<div class="bar" data-v-bce278b6${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-bce278b6${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button></div>`);
+                      } else {
+                        return [
+                          createVNode("p", { class: "intro" }, toDisplayString(intro.value), 1),
+                          __props.screen === "robots" ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                            !__props.isProduction ? (openBlock(), createBlock("p", {
+                              key: 0,
+                              class: "notice"
+                            }, toDisplayString(unref(t)("settings.robots.staging_notice")), 1)) : createCommentVNode("", true),
+                            createVNode("p", { class: "sitemap" }, [
+                              createVNode("strong", null, toDisplayString(unref(t)("settings.robots.sitemap")) + ":", 1),
+                              createVNode("a", {
+                                class: "link-weave latin",
+                                href: __props.sitemapUrl,
+                                target: "_blank",
+                                rel: "noopener"
+                              }, toDisplayString(__props.sitemapUrl), 9, ["href"]),
+                              createVNode("span", { class: "sitemap__hint" }, toDisplayString(unref(t)("settings.robots.sitemap_hint")), 1)
+                            ])
+                          ], 64)) : createCommentVNode("", true),
+                          createVNode("div", { class: "grid" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.fields, (field) => {
+                              return openBlock(), createBlock("div", {
+                                key: field.id,
+                                class: { "grid__wide": ["textarea", "code", "list"].includes(field.type) }
+                              }, [
+                                createVNode(Field, {
+                                  modelValue: values[field.id],
+                                  "onUpdate:modelValue": ($event) => values[field.id] = $event,
+                                  label: unref(t)(`settings.${field.key}`),
+                                  hint: unref(t)(`settings.${field.key}_hint`),
+                                  type: control(field),
+                                  dir: direction(field),
+                                  placeholder: field.placeholder ?? void 0,
+                                  rows: field.type === "code" || field.type === "list" ? 10 : 3
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "type", "dir", "placeholder", "rows"]),
+                                status(field) === "ok" ? (openBlock(), createBlock("p", {
+                                  key: 0,
+                                  class: "check check--ok"
+                                }, toDisplayString(unref(t)("settings.format_ok")), 1)) : status(field) === "warn" ? (openBlock(), createBlock("p", {
+                                  key: 1,
+                                  class: "check check--warn"
+                                }, toDisplayString(unref(t)("settings.format_warn", { example: field.placeholder })), 1)) : createCommentVNode("", true)
+                              ], 2);
+                            }), 128))
+                          ]),
+                          __props.screen === "robots" && __props.robotsPreview ? (openBlock(), createBlock(Fragment, { key: 1 }, [
+                            createVNode("h3", { class: "preview__title" }, toDisplayString(unref(t)("settings.robots.preview")), 1),
+                            createVNode("pre", { class: "preview latin" }, toDisplayString(__props.robotsPreview), 1),
+                            createVNode("a", {
+                              class: "link-weave",
+                              href: "/robots.txt",
+                              target: "_blank",
+                              rel: "noopener"
+                            }, toDisplayString(unref(t)("settings.robots.open")), 1)
+                          ], 64)) : createCommentVNode("", true),
+                          createVNode("div", { class: "bar" }, [
+                            createVNode("button", {
+                              class: "btn btn--cta",
+                              type: "button",
+                              disabled: processing.value,
+                              onClick: save
+                            }, toDisplayString(processing.value ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"])
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(Panel, { title: title.value }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(intro.value), 1),
+                        __props.screen === "robots" ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                          !__props.isProduction ? (openBlock(), createBlock("p", {
+                            key: 0,
+                            class: "notice"
+                          }, toDisplayString(unref(t)("settings.robots.staging_notice")), 1)) : createCommentVNode("", true),
+                          createVNode("p", { class: "sitemap" }, [
+                            createVNode("strong", null, toDisplayString(unref(t)("settings.robots.sitemap")) + ":", 1),
+                            createVNode("a", {
+                              class: "link-weave latin",
+                              href: __props.sitemapUrl,
+                              target: "_blank",
+                              rel: "noopener"
+                            }, toDisplayString(__props.sitemapUrl), 9, ["href"]),
+                            createVNode("span", { class: "sitemap__hint" }, toDisplayString(unref(t)("settings.robots.sitemap_hint")), 1)
+                          ])
+                        ], 64)) : createCommentVNode("", true),
+                        createVNode("div", { class: "grid" }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.fields, (field) => {
+                            return openBlock(), createBlock("div", {
+                              key: field.id,
+                              class: { "grid__wide": ["textarea", "code", "list"].includes(field.type) }
+                            }, [
+                              createVNode(Field, {
+                                modelValue: values[field.id],
+                                "onUpdate:modelValue": ($event) => values[field.id] = $event,
+                                label: unref(t)(`settings.${field.key}`),
+                                hint: unref(t)(`settings.${field.key}_hint`),
+                                type: control(field),
+                                dir: direction(field),
+                                placeholder: field.placeholder ?? void 0,
+                                rows: field.type === "code" || field.type === "list" ? 10 : 3
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "type", "dir", "placeholder", "rows"]),
+                              status(field) === "ok" ? (openBlock(), createBlock("p", {
+                                key: 0,
+                                class: "check check--ok"
+                              }, toDisplayString(unref(t)("settings.format_ok")), 1)) : status(field) === "warn" ? (openBlock(), createBlock("p", {
+                                key: 1,
+                                class: "check check--warn"
+                              }, toDisplayString(unref(t)("settings.format_warn", { example: field.placeholder })), 1)) : createCommentVNode("", true)
+                            ], 2);
+                          }), 128))
+                        ]),
+                        __props.screen === "robots" && __props.robotsPreview ? (openBlock(), createBlock(Fragment, { key: 1 }, [
+                          createVNode("h3", { class: "preview__title" }, toDisplayString(unref(t)("settings.robots.preview")), 1),
+                          createVNode("pre", { class: "preview latin" }, toDisplayString(__props.robotsPreview), 1),
+                          createVNode("a", {
+                            class: "link-weave",
+                            href: "/robots.txt",
+                            target: "_blank",
+                            rel: "noopener"
+                          }, toDisplayString(unref(t)("settings.robots.open")), 1)
+                        ], 64)) : createCommentVNode("", true),
+                        createVNode("div", { class: "bar" }, [
+                          createVNode("button", {
+                            class: "btn btn--cta",
+                            type: "button",
+                            disabled: processing.value,
+                            onClick: save
+                          }, toDisplayString(processing.value ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"])
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Workspace, null, {
+                default: withCtx(() => [
+                  createVNode(Panel, { title: title.value }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(intro.value), 1),
+                      __props.screen === "robots" ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                        !__props.isProduction ? (openBlock(), createBlock("p", {
+                          key: 0,
+                          class: "notice"
+                        }, toDisplayString(unref(t)("settings.robots.staging_notice")), 1)) : createCommentVNode("", true),
+                        createVNode("p", { class: "sitemap" }, [
+                          createVNode("strong", null, toDisplayString(unref(t)("settings.robots.sitemap")) + ":", 1),
+                          createVNode("a", {
+                            class: "link-weave latin",
+                            href: __props.sitemapUrl,
+                            target: "_blank",
+                            rel: "noopener"
+                          }, toDisplayString(__props.sitemapUrl), 9, ["href"]),
+                          createVNode("span", { class: "sitemap__hint" }, toDisplayString(unref(t)("settings.robots.sitemap_hint")), 1)
+                        ])
+                      ], 64)) : createCommentVNode("", true),
+                      createVNode("div", { class: "grid" }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.fields, (field) => {
+                          return openBlock(), createBlock("div", {
+                            key: field.id,
+                            class: { "grid__wide": ["textarea", "code", "list"].includes(field.type) }
+                          }, [
+                            createVNode(Field, {
+                              modelValue: values[field.id],
+                              "onUpdate:modelValue": ($event) => values[field.id] = $event,
+                              label: unref(t)(`settings.${field.key}`),
+                              hint: unref(t)(`settings.${field.key}_hint`),
+                              type: control(field),
+                              dir: direction(field),
+                              placeholder: field.placeholder ?? void 0,
+                              rows: field.type === "code" || field.type === "list" ? 10 : 3
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint", "type", "dir", "placeholder", "rows"]),
+                            status(field) === "ok" ? (openBlock(), createBlock("p", {
+                              key: 0,
+                              class: "check check--ok"
+                            }, toDisplayString(unref(t)("settings.format_ok")), 1)) : status(field) === "warn" ? (openBlock(), createBlock("p", {
+                              key: 1,
+                              class: "check check--warn"
+                            }, toDisplayString(unref(t)("settings.format_warn", { example: field.placeholder })), 1)) : createCommentVNode("", true)
+                          ], 2);
+                        }), 128))
+                      ]),
+                      __props.screen === "robots" && __props.robotsPreview ? (openBlock(), createBlock(Fragment, { key: 1 }, [
+                        createVNode("h3", { class: "preview__title" }, toDisplayString(unref(t)("settings.robots.preview")), 1),
+                        createVNode("pre", { class: "preview latin" }, toDisplayString(__props.robotsPreview), 1),
+                        createVNode("a", {
+                          class: "link-weave",
+                          href: "/robots.txt",
+                          target: "_blank",
+                          rel: "noopener"
+                        }, toDisplayString(unref(t)("settings.robots.open")), 1)
+                      ], 64)) : createCommentVNode("", true),
+                      createVNode("div", { class: "bar" }, [
+                        createVNode("button", {
+                          class: "btn btn--cta",
+                          type: "button",
+                          disabled: processing.value,
+                          onClick: save
+                        }, toDisplayString(processing.value ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"])
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"])
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$M = _sfc_main$M.setup;
+_sfc_main$M.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Settings/Screen.vue");
+  return _sfc_setup$M ? _sfc_setup$M(props, ctx) : void 0;
+};
+const Screen = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-bce278b6"]]);
+const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Screen
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$L = {
+  __name: "Edit",
+  __ssrInlineRender: true,
+  props: {
+    user: { type: Object, default: null },
+    roles: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const form = useForm({
+      name: props.user?.name ?? "",
+      email: props.user?.email ?? "",
+      password: "",
+      is_active: props.user?.isActive ?? true,
+      roles: props.user?.roles ?? []
+    });
+    function toggleRole(role) {
+      form.roles = form.roles.includes(role) ? form.roles.filter((r) => r !== role) : [...form.roles, role];
+    }
+    function submit() {
+      if (props.user) {
+        form.patch(`/admin/users/${props.user.id}`, { preserveScroll: true, onSuccess: () => form.reset("password") });
+      } else {
+        form.post("/admin/users");
+      }
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: __props.user ? __props.user.name : unref(t)("admin.create")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<form data-v-63ed2dcc${_scopeId}>`);
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.users")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="grid" data-v-63ed2dcc${_scopeId2}>`);
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).name,
+                    "onUpdate:modelValue": ($event) => unref(form).name = $event,
+                    label: unref(t)("admin.users"),
+                    error: unref(form).errors.name,
+                    required: ""
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).email,
+                    "onUpdate:modelValue": ($event) => unref(form).email = $event,
+                    label: unref(t)("admin.email"),
+                    type: "email",
+                    dir: "ltr",
+                    error: unref(form).errors.email,
+                    required: ""
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).password,
+                    "onUpdate:modelValue": ($event) => unref(form).password = $event,
+                    label: unref(t)("admin.password"),
+                    type: "password",
+                    dir: "ltr",
+                    error: unref(form).errors.password,
+                    required: !__props.user
+                  }, null, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Field, {
+                    modelValue: unref(form).is_active,
+                    "onUpdate:modelValue": ($event) => unref(form).is_active = $event,
+                    label: unref(t)("admin.active"),
+                    type: "checkbox"
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "grid" }, [
+                      createVNode(Field, {
+                        modelValue: unref(form).name,
+                        "onUpdate:modelValue": ($event) => unref(form).name = $event,
+                        label: unref(t)("admin.users"),
+                        error: unref(form).errors.name,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).email,
+                        "onUpdate:modelValue": ($event) => unref(form).email = $event,
+                        label: unref(t)("admin.email"),
+                        type: "email",
+                        dir: "ltr",
+                        error: unref(form).errors.email,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).password,
+                        "onUpdate:modelValue": ($event) => unref(form).password = $event,
+                        label: unref(t)("admin.password"),
+                        type: "password",
+                        dir: "ltr",
+                        error: unref(form).errors.password,
+                        required: !__props.user
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error", "required"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).is_active,
+                        "onUpdate:modelValue": ($event) => unref(form).is_active = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.roles")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (unref(form).errors.roles) {
+                    _push3(`<p class="err" data-v-63ed2dcc${_scopeId2}>${ssrInterpolate(unref(form).errors.roles)}</p>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(`<ul class="roles" data-v-63ed2dcc${_scopeId2}><!--[-->`);
+                  ssrRenderList(__props.roles, (role) => {
+                    _push3(`<li data-v-63ed2dcc${_scopeId2}><label class="roles__item" data-v-63ed2dcc${_scopeId2}><input type="checkbox"${ssrIncludeBooleanAttr(unref(form).roles.includes(role)) ? " checked" : ""} data-v-63ed2dcc${_scopeId2}><span data-v-63ed2dcc${_scopeId2}>${ssrInterpolate(unref(t)(`admin.role_${role}`))}</span></label></li>`);
+                  });
+                  _push3(`<!--]--></ul>`);
+                } else {
+                  return [
+                    unref(form).errors.roles ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "err"
+                    }, toDisplayString(unref(form).errors.roles), 1)) : createCommentVNode("", true),
+                    createVNode("ul", { class: "roles" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.roles, (role) => {
+                        return openBlock(), createBlock("li", { key: role }, [
+                          createVNode("label", { class: "roles__item" }, [
+                            createVNode("input", {
+                              type: "checkbox",
+                              checked: unref(form).roles.includes(role),
+                              onChange: ($event) => toggleRole(role)
+                            }, null, 40, ["checked", "onChange"]),
+                            createVNode("span", null, toDisplayString(unref(t)(`admin.role_${role}`)), 1)
+                          ])
+                        ]);
+                      }), 128))
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`<div class="bar" data-v-63ed2dcc${_scopeId}><button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-63ed2dcc${_scopeId}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button>`);
+            _push2(ssrRenderComponent(unref(Link), {
+              href: "/admin/users",
+              class: "btn btn--ghost"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`${ssrInterpolate(unref(t)("admin.cancel"))}`);
+                } else {
+                  return [
+                    createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</div></form>`);
+          } else {
+            return [
+              createVNode("form", {
+                onSubmit: withModifiers(submit, ["prevent"])
+              }, [
+                createVNode(Panel, {
+                  title: unref(t)("admin.users")
+                }, {
+                  default: withCtx(() => [
+                    createVNode("div", { class: "grid" }, [
+                      createVNode(Field, {
+                        modelValue: unref(form).name,
+                        "onUpdate:modelValue": ($event) => unref(form).name = $event,
+                        label: unref(t)("admin.users"),
+                        error: unref(form).errors.name,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).email,
+                        "onUpdate:modelValue": ($event) => unref(form).email = $event,
+                        label: unref(t)("admin.email"),
+                        type: "email",
+                        dir: "ltr",
+                        error: unref(form).errors.email,
+                        required: ""
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).password,
+                        "onUpdate:modelValue": ($event) => unref(form).password = $event,
+                        label: unref(t)("admin.password"),
+                        type: "password",
+                        dir: "ltr",
+                        error: unref(form).errors.password,
+                        required: !__props.user
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "error", "required"]),
+                      createVNode(Field, {
+                        modelValue: unref(form).is_active,
+                        "onUpdate:modelValue": ($event) => unref(form).is_active = $event,
+                        label: unref(t)("admin.active"),
+                        type: "checkbox"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue", "label"])
+                    ])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode(Panel, {
+                  title: unref(t)("admin.roles")
+                }, {
+                  default: withCtx(() => [
+                    unref(form).errors.roles ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "err"
+                    }, toDisplayString(unref(form).errors.roles), 1)) : createCommentVNode("", true),
+                    createVNode("ul", { class: "roles" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.roles, (role) => {
+                        return openBlock(), createBlock("li", { key: role }, [
+                          createVNode("label", { class: "roles__item" }, [
+                            createVNode("input", {
+                              type: "checkbox",
+                              checked: unref(form).roles.includes(role),
+                              onChange: ($event) => toggleRole(role)
+                            }, null, 40, ["checked", "onChange"]),
+                            createVNode("span", null, toDisplayString(unref(t)(`admin.role_${role}`)), 1)
+                          ])
+                        ]);
+                      }), 128))
+                    ])
+                  ]),
+                  _: 1
+                }, 8, ["title"]),
+                createVNode("div", { class: "bar" }, [
+                  createVNode("button", {
+                    class: "btn btn--cta",
+                    type: "submit",
+                    disabled: unref(form).processing
+                  }, toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"]),
+                  createVNode(unref(Link), {
+                    href: "/admin/users",
+                    class: "btn btn--ghost"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.cancel")), 1)
+                    ]),
+                    _: 1
+                  })
+                ])
+              ], 32)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$L = _sfc_main$L.setup;
+_sfc_main$L.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Users/Edit.vue");
+  return _sfc_setup$L ? _sfc_setup$L(props, ctx) : void 0;
+};
+const Edit = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["__scopeId", "data-v-63ed2dcc"]]);
+const __vite_glob_0_17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Edit
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$K = {
+  __name: "Index",
+  __ssrInlineRender: true,
+  props: {
+    users: { type: Array, default: () => [] },
+    roles: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const { dateTime } = useFormat();
+    function disable(user) {
+      if (!confirm(t("admin.confirm_delete"))) return;
+      router.delete(`/admin/users/${user.id}`);
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.users")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.users")
+            }, {
+              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(unref(Link), {
+                    href: "/admin/users/create",
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(unref(t)("admin.create"))}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(unref(Link), {
+                      href: "/admin/users/create",
+                      class: "btn btn--cta"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="table-wrap" data-v-d6860b89${_scopeId2}><table class="table" data-v-d6860b89${_scopeId2}><thead data-v-d6860b89${_scopeId2}><tr data-v-d6860b89${_scopeId2}><th data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(t)("admin.users"))}</th><th data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(t)("admin.email"))}</th><th data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(t)("admin.roles"))}</th><th data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(t)("admin.active"))}</th><th data-v-d6860b89${_scopeId2}></th></tr></thead><tbody data-v-d6860b89${_scopeId2}><!--[-->`);
+                  ssrRenderList(__props.users, (user) => {
+                    _push3(`<tr data-v-d6860b89${_scopeId2}><td data-v-d6860b89${_scopeId2}>`);
+                    _push3(ssrRenderComponent(unref(Link), {
+                      href: `/admin/users/${user.id}/edit`,
+                      class: "table__link"
+                    }, {
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`${ssrInterpolate(user.name)}`);
+                        } else {
+                          return [
+                            createTextVNode(toDisplayString(user.name), 1)
+                          ];
+                        }
+                      }),
+                      _: 2
+                    }, _parent3, _scopeId2));
+                    _push3(`</td><td class="latin" data-v-d6860b89${_scopeId2}>${ssrInterpolate(user.email)}</td><td data-v-d6860b89${_scopeId2}><!--[-->`);
+                    ssrRenderList(user.roles, (role) => {
+                      _push3(`<span class="chip" data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(t)(`admin.role_${role}`))}</span>`);
+                    });
+                    _push3(`<!--]--></td><td data-v-d6860b89${_scopeId2}><span class="${ssrRenderClass([user.isActive ? "chip--ok" : "chip--warn", "chip"])}" data-v-d6860b89${_scopeId2}>${ssrInterpolate(user.isActive ? unref(t)("admin.active") : unref(t)("admin.inactive"))}</span><p class="muted" data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(dateTime)(user.lastLoginAt))}</p></td><td data-v-d6860b89${_scopeId2}>`);
+                    if (user.isActive) {
+                      _push3(`<button class="btn btn--ghost danger" type="button" data-v-d6860b89${_scopeId2}>${ssrInterpolate(unref(t)("admin.delete"))}</button>`);
+                    } else {
+                      _push3(`<!---->`);
+                    }
+                    _push3(`</td></tr>`);
+                  });
+                  _push3(`<!--]--></tbody></table></div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "table-wrap" }, [
+                      createVNode("table", { class: "table" }, [
+                        createVNode("thead", null, [
+                          createVNode("tr", null, [
+                            createVNode("th", null, toDisplayString(unref(t)("admin.users")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.email")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.roles")), 1),
+                            createVNode("th", null, toDisplayString(unref(t)("admin.active")), 1),
+                            createVNode("th")
+                          ])
+                        ]),
+                        createVNode("tbody", null, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.users, (user) => {
+                            return openBlock(), createBlock("tr", {
+                              key: user.id
+                            }, [
+                              createVNode("td", null, [
+                                createVNode(unref(Link), {
+                                  href: `/admin/users/${user.id}/edit`,
+                                  class: "table__link"
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(user.name), 1)
+                                  ]),
+                                  _: 2
+                                }, 1032, ["href"])
+                              ]),
+                              createVNode("td", { class: "latin" }, toDisplayString(user.email), 1),
+                              createVNode("td", null, [
+                                (openBlock(true), createBlock(Fragment, null, renderList(user.roles, (role) => {
+                                  return openBlock(), createBlock("span", {
+                                    key: role,
+                                    class: "chip"
+                                  }, toDisplayString(unref(t)(`admin.role_${role}`)), 1);
+                                }), 128))
+                              ]),
+                              createVNode("td", null, [
+                                createVNode("span", {
+                                  class: ["chip", user.isActive ? "chip--ok" : "chip--warn"]
+                                }, toDisplayString(user.isActive ? unref(t)("admin.active") : unref(t)("admin.inactive")), 3),
+                                createVNode("p", { class: "muted" }, toDisplayString(unref(dateTime)(user.lastLoginAt)), 1)
+                              ]),
+                              createVNode("td", null, [
+                                user.isActive ? (openBlock(), createBlock("button", {
+                                  key: 0,
+                                  class: "btn btn--ghost danger",
+                                  type: "button",
+                                  onClick: ($event) => disable(user)
+                                }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                              ])
+                            ]);
+                          }), 128))
+                        ])
+                      ])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.users")
+              }, {
+                actions: withCtx(() => [
+                  createVNode(unref(Link), {
+                    href: "/admin/users/create",
+                    class: "btn btn--cta"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t)("admin.create")), 1)
+                    ]),
+                    _: 1
+                  })
+                ]),
+                default: withCtx(() => [
+                  createVNode("div", { class: "table-wrap" }, [
+                    createVNode("table", { class: "table" }, [
+                      createVNode("thead", null, [
+                        createVNode("tr", null, [
+                          createVNode("th", null, toDisplayString(unref(t)("admin.users")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.email")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.roles")), 1),
+                          createVNode("th", null, toDisplayString(unref(t)("admin.active")), 1),
+                          createVNode("th")
+                        ])
+                      ]),
+                      createVNode("tbody", null, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.users, (user) => {
+                          return openBlock(), createBlock("tr", {
+                            key: user.id
+                          }, [
+                            createVNode("td", null, [
+                              createVNode(unref(Link), {
+                                href: `/admin/users/${user.id}/edit`,
+                                class: "table__link"
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(user.name), 1)
+                                ]),
+                                _: 2
+                              }, 1032, ["href"])
+                            ]),
+                            createVNode("td", { class: "latin" }, toDisplayString(user.email), 1),
+                            createVNode("td", null, [
+                              (openBlock(true), createBlock(Fragment, null, renderList(user.roles, (role) => {
+                                return openBlock(), createBlock("span", {
+                                  key: role,
+                                  class: "chip"
+                                }, toDisplayString(unref(t)(`admin.role_${role}`)), 1);
+                              }), 128))
+                            ]),
+                            createVNode("td", null, [
+                              createVNode("span", {
+                                class: ["chip", user.isActive ? "chip--ok" : "chip--warn"]
+                              }, toDisplayString(user.isActive ? unref(t)("admin.active") : unref(t)("admin.inactive")), 3),
+                              createVNode("p", { class: "muted" }, toDisplayString(unref(dateTime)(user.lastLoginAt)), 1)
+                            ]),
+                            createVNode("td", null, [
+                              user.isActive ? (openBlock(), createBlock("button", {
+                                key: 0,
+                                class: "btn btn--ghost danger",
+                                type: "button",
+                                onClick: ($event) => disable(user)
+                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])) : createCommentVNode("", true)
+                            ])
+                          ]);
+                        }), 128))
+                      ])
+                    ])
+                  ])
+                ]),
+                _: 1
+              }, 8, ["title"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$K = _sfc_main$K.setup;
+_sfc_main$K.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Users/Index.vue");
+  return _sfc_setup$K ? _sfc_setup$K(props, ctx) : void 0;
+};
+const Index = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["__scopeId", "data-v-d6860b89"]]);
+const __vite_glob_0_18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Index
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$J = {
+  __name: "Container",
+  __ssrInlineRender: true,
+  props: {
+    as: { type: String, default: "div" }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      ssrRenderVNode(_push, createVNode(resolveDynamicComponent(__props.as), mergeProps({ class: "container" }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            ssrRenderSlot(_ctx.$slots, "default", {}, null, _push2, _parent2, _scopeId);
+          } else {
+            return [
+              renderSlot(_ctx.$slots, "default")
+            ];
+          }
+        }),
+        _: 3
+      }), _parent);
+    };
+  }
+};
+const _sfc_setup$J = _sfc_main$J.setup;
+_sfc_main$J.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Container.vue");
+  return _sfc_setup$J ? _sfc_setup$J(props, ctx) : void 0;
+};
+const CONTACT = "contact";
+const MESSAGE = "message";
+const honeypotName = "company_website";
+const _sfc_main$I = {
+  __name: "LeadField",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    reassurance: { type: String, default: null },
+    submitLabel: { type: String, default: null },
+    // Which sector page this was submitted from — a hint for sales, not a claim.
+    sectorHint: { type: String, default: null },
+    campaign: { type: String, default: null },
+    // `inline` sits inside a CTA band; `stacked` is the standalone block.
+    layout: {
+      type: String,
+      default: "stacked",
+      validator: (v) => ["stacked", "inline"].includes(v)
+    }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const page = usePage();
+    const fields = computed(() => page.props.leadFields ?? []);
+    const contactField = computed(
+      () => fields.value.find((f) => f.key === CONTACT) ?? {
+        key: CONTACT,
+        type: "text",
+        required: true,
+        label: t("leads.placeholder"),
+        placeholder: t("leads.placeholder")
+      }
+    );
+    const messageField = computed(() => fields.value.find((f) => f.key === MESSAGE) ?? null);
+    const extraFields = computed(() => fields.value.filter((f) => f.key !== CONTACT && f.key !== MESSAGE));
+    const values = reactive({
+      [CONTACT]: "",
+      ...Object.fromEntries(fields.value.map((f) => [f.key, f.type === "checkbox" ? false : ""]))
+    });
+    const showMessage = ref(false);
+    const processing = ref(false);
+    const submitted = ref(false);
+    const errors = ref({});
+    ref(Date.now());
+    const honeypot = ref("");
+    const uid = Math.random().toString(36).slice(2, 8);
+    const fieldId = (key) => `lead-${uid}-${key}`;
+    const errorId = (key) => `${fieldId(key)}-error`;
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({
+        class: ["lead", `lead--${__props.layout}`]
+      }, _attrs))} data-v-f610a11e>`);
+      if (submitted.value) {
+        _push(`<div class="lead__done" role="status" aria-live="polite" data-v-f610a11e><p class="lead__done-text" data-v-f610a11e>${ssrInterpolate(unref(t)("leads.success"))}</p><div class="lead-success-thread" aria-hidden="true" data-v-f610a11e></div></div>`);
+      } else {
+        _push(`<form novalidate data-v-f610a11e>`);
+        if (__props.heading) {
+          _push(`<p class="lead__heading" data-v-f610a11e>${ssrInterpolate(__props.heading)}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (__props.reassurance) {
+          _push(`<p class="lead__reassurance" data-v-f610a11e>${ssrInterpolate(__props.reassurance)}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (extraFields.value.length) {
+          _push(`<div class="lead__extras" data-v-f610a11e><!--[-->`);
+          ssrRenderList(extraFields.value, (field) => {
+            _push(`<div class="lead__extra" data-v-f610a11e><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-f610a11e>${ssrInterpolate(field.label)} `);
+            if (!field.required) {
+              _push(`<span class="lead__optional" data-v-f610a11e>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
+            } else {
+              _push(`<!---->`);
+            }
+            _push(`</label>`);
+            if (field.type === "select") {
+              _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-f610a11e><option value="" data-v-f610a11e${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
+              ssrRenderList(field.options, (opt) => {
+                _push(`<option${ssrRenderAttr("value", opt.value)} data-v-f610a11e${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
+              });
+              _push(`<!--]--></select>`);
+            } else if (field.type === "checkbox") {
+              _push(`<label class="lead__check" data-v-f610a11e><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-f610a11e><span data-v-f610a11e>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
+            } else if (field.type === "textarea") {
+              _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-f610a11e>${ssrInterpolate(values[field.key])}</textarea>`);
+            } else {
+              _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)} class="lead-input"${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")} dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-f610a11e>`);
+            }
+            if (errors.value[field.key]) {
+              _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-f610a11e>${ssrInterpolate(errors.value[field.key])}</p>`);
+            } else {
+              _push(`<!---->`);
+            }
+            _push(`</div>`);
+          });
+          _push(`<!--]--></div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (contactField.value) {
+          _push(`<div class="lead__row" data-v-f610a11e><div class="lead__field" data-v-f610a11e><label class="visually-hidden"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-f610a11e>${ssrInterpolate(contactField.value.label)}</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-f610a11e></div>`);
+          _push(ssrRenderComponent(_sfc_main$V, {
+            type: "submit",
+            variant: __props.layout === "inline" ? "cta-lg" : "cta",
+            loading: processing.value,
+            class: "lead__submit"
+          }, {
+            default: withCtx((_, _push2, _parent2, _scopeId) => {
+              if (_push2) {
+                _push2(`${ssrInterpolate(processing.value ? unref(t)("leads.submitting") : __props.submitLabel ?? unref(t)("leads.submit"))}`);
+              } else {
+                return [
+                  createTextVNode(toDisplayString(processing.value ? unref(t)("leads.submitting") : __props.submitLabel ?? unref(t)("leads.submit")), 1)
+                ];
+              }
+            }),
+            _: 1
+          }, _parent));
+          _push(`</div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (errors.value[CONTACT]) {
+          _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-f610a11e>${ssrInterpolate(errors.value[CONTACT])}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (messageField.value) {
+          _push(`<!--[-->`);
+          if (!showMessage.value) {
+            _push(`<button type="button" class="lead__toggle link-weave" data-v-f610a11e>${ssrInterpolate(unref(t)("leads.add_message"))}</button>`);
+          } else {
+            _push(`<div class="lead__message" data-v-f610a11e><label class="visually-hidden"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-f610a11e>${ssrInterpolate(messageField.value.label)}</label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="1" dir="auto"${ssrRenderAttr("placeholder", messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-f610a11e>${ssrInterpolate(values[MESSAGE])}</textarea>`);
+            if (errors.value[MESSAGE]) {
+              _push(`<p class="lead-error" data-v-f610a11e>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
+            } else {
+              _push(`<!---->`);
+            }
+            _push(`</div>`);
+          }
+          _push(`<!--]-->`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`<div class="lead__trap" aria-hidden="true" data-v-f610a11e><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-f610a11e>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-f610a11e></div></form>`);
+      }
+      _push(`</div>`);
+    };
+  }
+};
+const _sfc_setup$I = _sfc_main$I.setup;
+_sfc_main$I.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/forms/LeadField.vue");
+  return _sfc_setup$I ? _sfc_setup$I(props, ctx) : void 0;
+};
+const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["__scopeId", "data-v-f610a11e"]]);
+const _sfc_main$H = {
+  __name: "LeadModal",
+  __ssrInlineRender: true,
+  props: {
+    open: { type: Boolean, default: false },
+    heading: { type: String, default: null },
+    reassurance: { type: String, default: null },
+    submitLabel: { type: String, default: null },
+    sectorHint: { type: String, default: null },
+    campaign: { type: String, default: null }
+  },
+  emits: ["close"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const { t } = useTranslation();
+    const dialog = ref(null);
+    watch(
+      () => props.open,
+      async (open) => {
+        await nextTick();
+        const el = dialog.value;
+        if (!el) return;
+        if (open && !el.open) {
+          el.showModal();
+          el.querySelector('input[name="contact"]')?.focus();
+        } else if (!open && el.open) {
+          el.close();
+        }
+      }
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<dialog${ssrRenderAttrs(mergeProps({
+        ref_key: "dialog",
+        ref: dialog,
+        class: "modal",
+        "aria-label": __props.heading ?? unref(t)("leads.submit")
+      }, _attrs))} data-v-62156b2a><div class="modal__panel" data-v-62156b2a><div class="modal__bar" data-v-62156b2a><button type="button" class="modal__close"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-62156b2a><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" data-v-62156b2a><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-v-62156b2a></path></svg></button></div>`);
+      _push(ssrRenderComponent(LeadField, {
+        layout: "stacked",
+        heading: __props.heading,
+        reassurance: __props.reassurance,
+        "submit-label": __props.submitLabel,
+        "sector-hint": __props.sectorHint,
+        campaign: __props.campaign
+      }, null, _parent));
+      _push(`</div></dialog>`);
+    };
+  }
+};
+const _sfc_setup$H = _sfc_main$H.setup;
+_sfc_main$H.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/forms/LeadModal.vue");
+  return _sfc_setup$H ? _sfc_setup$H(props, ctx) : void 0;
+};
+const LeadModal = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["__scopeId", "data-v-62156b2a"]]);
+const _sfc_main$G = {
+  __name: "ContactDock",
+  __ssrInlineRender: true,
+  props: {
+    /** Campaign pages allow no outbound links except legal (§11.3). */
+    channels: { type: Boolean, default: true },
+    campaign: { type: String, default: null }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const page = usePage();
+    const settings = computed(() => page.props.settings ?? {});
+    const locale = computed(() => page.props.locale);
+    const enabled = computed(() => settings.value["site.contact_dock"] !== false);
+    const phone = computed(() => props.channels ? settings.value["contact.phone"] ?? null : null);
+    const whatsapp = computed(() => props.channels ? settings.value["contact.whatsapp"] ?? null : null);
+    const whatsappHref = computed(
+      () => whatsapp.value ? `https://wa.me/${String(whatsapp.value).replace(/\D/g, "")}` : null
+    );
+    const heading = computed(() => settings.value[`contact.dock_heading.${locale.value}`] ?? null);
+    const reassurance = computed(() => settings.value[`contact.dock_note.${locale.value}`] ?? null);
+    const modalOpen = ref(false);
+    const dismissed = ref(false);
+    const formOnScreen = ref(false);
+    const visible = computed(() => enabled.value && !dismissed.value && !formOnScreen.value);
+    let observer = null;
+    onMounted(() => {
+      if (typeof IntersectionObserver === "undefined") return;
+      const forms = document.querySelectorAll(".lead");
+      if (forms.length === 0) return;
+      const showing = /* @__PURE__ */ new Set();
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) showing.add(entry.target);
+            else showing.delete(entry.target);
+          }
+          formOnScreen.value = showing.size > 0;
+        },
+        { rootMargin: "-10% 0px -10% 0px" }
+      );
+      forms.forEach((form) => observer.observe(form));
+    });
+    onBeforeUnmount(() => observer?.disconnect());
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      if (visible.value) {
+        _push(`<div class="dock" data-v-1fdf5bb7><button type="button" class="dock__cta" data-v-1fdf5bb7><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" data-v-1fdf5bb7><path d="M4 6h16v11H9l-5 4V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" data-v-1fdf5bb7></path></svg> ${ssrInterpolate(unref(t)("leads.dock_cta"))}</button>`);
+        if (phone.value) {
+          _push(`<a class="dock__channel"${ssrRenderAttr("href", `tel:${phone.value}`)}${ssrRenderAttr("aria-label", unref(t)("contact.phone"))} data-v-1fdf5bb7><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" data-v-1fdf5bb7><path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 006.5 6.5L17 13l4 1.5v3a2 2 0 01-2.2 2A17 17 0 013.1 5.2 2 2 0 015 3h1.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" data-v-1fdf5bb7></path></svg></a>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (whatsappHref.value) {
+          _push(`<a class="dock__channel"${ssrRenderAttr("href", whatsappHref.value)} target="_blank" rel="noopener noreferrer"${ssrRenderAttr("aria-label", unref(t)("contact.whatsapp"))} data-v-1fdf5bb7><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" data-v-1fdf5bb7><path d="M3.5 20.5l1.3-4.4A8.2 8.2 0 1120.5 12a8.4 8.4 0 01-12.4 7.2l-4.6 1.3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" data-v-1fdf5bb7></path><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-v-1fdf5bb7></path></svg><span class="visually-hidden" data-v-1fdf5bb7>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`<button type="button" class="dock__dismiss"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-1fdf5bb7><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" data-v-1fdf5bb7><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-v-1fdf5bb7></path></svg></button></div>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(ssrRenderComponent(LeadModal, {
+        open: modalOpen.value,
+        heading: heading.value,
+        reassurance: reassurance.value,
+        campaign: __props.campaign,
+        onClose: ($event) => modalOpen.value = false
+      }, null, _parent));
+      _push(`<!--]-->`);
+    };
+  }
+};
+const _sfc_setup$G = _sfc_main$G.setup;
+_sfc_main$G.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ContactDock.vue");
+  return _sfc_setup$G ? _sfc_setup$G(props, ctx) : void 0;
+};
+const ContactDock = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["__scopeId", "data-v-1fdf5bb7"]]);
+const _sfc_main$F = {
+  __name: "CampaignLayout",
+  __ssrInlineRender: true,
+  props: {
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false },
+    /** Slug attributed to every lead submitted from this page (§8.3). */
+    campaign: { type: String, default: null }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const inertia = usePage();
+    const locale = computed(() => inertia.props.locale);
+    const legalLinks = computed(() => inertia.props.navigation?.footer_legal ?? []);
+    const alternates = computed(() => props.seo.alternates ?? []);
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      _push(ssrRenderComponent(unref(Head), {
+        title: __props.seo.fullTitle
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (__props.seo.description) {
+              _push2(`<meta head-key="description" name="description"${ssrRenderAttr("content", __props.seo.description)} data-v-b4b37c6b${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.canonical) {
+              _push2(`<link head-key="canonical" rel="canonical"${ssrRenderAttr("href", __props.seo.canonical)} data-v-b4b37c6b${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.robots) {
+              _push2(`<meta head-key="robots" name="robots"${ssrRenderAttr("content", __props.seo.robots)} data-v-b4b37c6b${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<!--[-->`);
+            ssrRenderList(alternates.value, (alt) => {
+              _push2(`<link${ssrRenderAttr("head-key", `alt-${alt.hreflang}`)} rel="alternate"${ssrRenderAttr("hreflang", alt.hreflang)}${ssrRenderAttr("href", alt.href)} data-v-b4b37c6b${_scopeId}>`);
+            });
+            _push2(`<!--]--><meta head-key="og:title" property="og:title"${ssrRenderAttr("content", __props.seo.fullTitle)} data-v-b4b37c6b${_scopeId}>`);
+          } else {
+            return [
+              __props.seo.description ? (openBlock(), createBlock("meta", {
+                key: 0,
+                "head-key": "description",
+                name: "description",
+                content: __props.seo.description
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              __props.seo.canonical ? (openBlock(), createBlock("link", {
+                key: 1,
+                "head-key": "canonical",
+                rel: "canonical",
+                href: __props.seo.canonical
+              }, null, 8, ["href"])) : createCommentVNode("", true),
+              __props.seo.robots ? (openBlock(), createBlock("meta", {
+                key: 2,
+                "head-key": "robots",
+                name: "robots",
+                content: __props.seo.robots
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              (openBlock(true), createBlock(Fragment, null, renderList(alternates.value, (alt) => {
+                return openBlock(), createBlock("link", {
+                  key: alt.hreflang,
+                  "head-key": `alt-${alt.hreflang}`,
+                  rel: "alternate",
+                  hreflang: alt.hreflang,
+                  href: alt.href
+                }, null, 8, ["head-key", "hreflang", "href"]);
+              }), 128)),
+              createVNode("meta", {
+                "head-key": "og:title",
+                property: "og:title",
+                content: __props.seo.fullTitle
+              }, null, 8, ["content"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      if (__props.previewing) {
+        _push(`<p class="preview-bar" role="status" data-v-b4b37c6b>${ssrInterpolate(unref(t)("admin.preview_notice"))}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<header class="chead" data-v-b4b37c6b>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(unref(Link), {
+              href: `/${locale.value}`,
+              "aria-label": unref(t)("common.home")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(Logo, {
+                    lockup: "horizontal",
+                    tone: "navy"
+                  }, null, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(Logo, {
+                      lockup: "horizontal",
+                      tone: "navy"
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(unref(Link), {
+                href: `/${locale.value}`,
+                "aria-label": unref(t)("common.home")
+              }, {
+                default: withCtx(() => [
+                  createVNode(Logo, {
+                    lockup: "horizontal",
+                    tone: "navy"
+                  })
+                ]),
+                _: 1
+              }, 8, ["href", "aria-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</header><main id="main" data-v-b4b37c6b>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</main><footer class="cfoot" data-v-b4b37c6b>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (legalLinks.value.length) {
+              _push2(`<nav aria-label="legal" class="cfoot__legal" data-v-b4b37c6b${_scopeId}><!--[-->`);
+              ssrRenderList(legalLinks.value, (item) => {
+                _push2(ssrRenderComponent(unref(Link), {
+                  key: item.id,
+                  href: item.url,
+                  class: "cfoot__link link-weave"
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(item.label)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></nav>`);
+            } else {
+              _push2(`<!---->`);
+            }
+          } else {
+            return [
+              legalLinks.value.length ? (openBlock(), createBlock("nav", {
+                key: 0,
+                "aria-label": "legal",
+                class: "cfoot__legal"
+              }, [
+                (openBlock(true), createBlock(Fragment, null, renderList(legalLinks.value, (item) => {
+                  return openBlock(), createBlock(unref(Link), {
+                    key: item.id,
+                    href: item.url,
+                    class: "cfoot__link link-weave"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(item.label), 1)
+                    ]),
+                    _: 2
+                  }, 1032, ["href"]);
+                }), 128))
+              ])) : createCommentVNode("", true)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</footer>`);
+      if (!__props.previewing) {
+        _push(ssrRenderComponent(ContactDock, {
+          channels: false,
+          campaign: __props.campaign
+        }, null, _parent));
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<!--]-->`);
+    };
+  }
+};
+const _sfc_setup$F = _sfc_main$F.setup;
+_sfc_main$F.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/CampaignLayout.vue");
+  return _sfc_setup$F ? _sfc_setup$F(props, ctx) : void 0;
+};
+const CampaignLayout = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["__scopeId", "data-v-b4b37c6b"]]);
+function useReveal(options = {}) {
+  const { stagger = 60, threshold = 0.15, rootMargin = "0px 0px -10% 0px" } = options;
+  const root = ref(null);
+  let observer = null;
+  function prefersReducedMotion() {
+    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+  onMounted(() => {
+    if (root.value === null) return;
+    const targets = root.value.matches?.(".reveal") ? [root.value] : Array.from(root.value.querySelectorAll(".reveal"));
+    if (targets.length === 0) return;
+    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
+      targets.forEach((el) => el.classList.add("is-revealed"));
+      return;
+    }
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const group = entry.target.parentElement;
+          const index = group ? Array.from(group.querySelectorAll(":scope > .reveal")).indexOf(entry.target) : 0;
+          entry.target.style.setProperty(
+            "--reveal-delay",
+            `${Math.max(index, 0) * stagger}ms`
+          );
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold, rootMargin }
+    );
+    targets.forEach((el) => observer.observe(el));
+  });
+  onUnmounted(() => observer?.disconnect());
+  return { root };
+}
+const _sfc_main$E = {
+  __name: "CardsGrid",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    subheading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-f98da4e4>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-f98da4e4${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (__props.subheading) {
+                _push2(`<p class="cards__sub reveal" data-v-f98da4e4${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="cards" data-v-f98da4e4${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item, i) => {
+                _push2(`<li class="card reveal" data-v-f98da4e4${_scopeId}>`);
+                if (item.icon) {
+                  _push2(`<span class="cards__icon" aria-hidden="true" data-v-f98da4e4${_scopeId}>${ssrInterpolate(item.icon)}</span>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (item.title) {
+                  _push2(`<h3 class="cards__title" data-v-f98da4e4${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (item.body) {
+                  _push2(`<p class="cards__body" data-v-f98da4e4${_scopeId}>${ssrInterpolate(item.body)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                __props.subheading ? (openBlock(), createBlock("p", {
+                  key: 1,
+                  class: "cards__sub reveal"
+                }, toDisplayString(__props.subheading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "cards" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item, i) => {
+                    return openBlock(), createBlock("li", {
+                      key: i,
+                      class: "card reveal"
+                    }, [
+                      item.icon ? (openBlock(), createBlock("span", {
+                        key: 0,
+                        class: "cards__icon",
+                        "aria-hidden": "true"
+                      }, toDisplayString(item.icon), 1)) : createCommentVNode("", true),
+                      item.title ? (openBlock(), createBlock("h3", {
+                        key: 1,
+                        class: "cards__title"
+                      }, toDisplayString(item.title), 1)) : createCommentVNode("", true),
+                      item.body ? (openBlock(), createBlock("p", {
+                        key: 2,
+                        class: "cards__body"
+                      }, toDisplayString(item.body), 1)) : createCommentVNode("", true)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$E = _sfc_main$E.setup;
+_sfc_main$E.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CardsGrid.vue");
+  return _sfc_setup$E ? _sfc_setup$E(props, ctx) : void 0;
+};
+const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["__scopeId", "data-v-f98da4e4"]]);
+const _sfc_main$D = {
+  __name: "PartnersLogos",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section partners"
+        }, _attrs))} data-v-0f6222e7>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="partners__heading reveal" data-v-0f6222e7${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="partners__grid" data-v-0f6222e7${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (partner) => {
+                _push2(`<li class="partners__item reveal" data-v-0f6222e7${_scopeId}>`);
+                if (partner.logo) {
+                  _push2(`<img class="partners__logo"${ssrRenderAttr("src", partner.logo.url)}${ssrRenderAttr("alt", partner.name)}${ssrRenderAttr("width", partner.logo.width ?? void 0)}${ssrRenderAttr("height", partner.logo.height ?? void 0)} loading="lazy" decoding="async" data-v-0f6222e7${_scopeId}>`);
+                } else {
+                  _push2(`<span class="partners__name" data-v-0f6222e7${_scopeId}>${ssrInterpolate(partner.name)}</span>`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "partners__heading reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "partners__grid" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (partner) => {
+                    return openBlock(), createBlock("li", {
+                      key: partner.id,
+                      class: "partners__item reveal"
+                    }, [
+                      partner.logo ? (openBlock(), createBlock("img", {
+                        key: 0,
+                        class: "partners__logo",
+                        src: partner.logo.url,
+                        alt: partner.name,
+                        width: partner.logo.width ?? void 0,
+                        height: partner.logo.height ?? void 0,
+                        loading: "lazy",
+                        decoding: "async"
+                      }, null, 8, ["src", "alt", "width", "height"])) : (openBlock(), createBlock("span", {
+                        key: 1,
+                        class: "partners__name"
+                      }, toDisplayString(partner.name), 1))
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$D = _sfc_main$D.setup;
+_sfc_main$D.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/PartnersLogos.vue");
+  return _sfc_setup$D ? _sfc_setup$D(props, ctx) : void 0;
+};
+const PartnersLogos = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-0f6222e7"]]);
+const _sfc_main$C = {
+  __name: "SaduDivider",
+  __ssrInlineRender: true,
+  props: {
+    variant: {
+      type: String,
+      default: "sadu",
+      validator: (v) => ["sadu", "plain"].includes(v)
+    }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.variant === "sadu") {
+        _push(`<hr${ssrRenderAttrs(mergeProps({
+          class: "sadu-divider",
+          role: "presentation",
+          "aria-hidden": "true"
+        }, _attrs))} data-v-af5428cc>`);
+      } else {
+        _push(`<hr${ssrRenderAttrs(mergeProps({
+          class: "plain-divider",
+          role: "presentation",
+          "aria-hidden": "true"
+        }, _attrs))} data-v-af5428cc>`);
+      }
+    };
+  }
+};
+const _sfc_setup$C = _sfc_main$C.setup;
+_sfc_main$C.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/SaduDivider.vue");
+  return _sfc_setup$C ? _sfc_setup$C(props, ctx) : void 0;
+};
+const SaduDivider = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["__scopeId", "data-v-af5428cc"]]);
+const _sfc_main$B = {
+  __name: "Campaign",
+  __ssrInlineRender: true,
+  props: {
+    campaign: { type: Object, required: true },
+    sections: { type: Array, default: () => [] },
+    previewing: { type: Boolean, default: false },
+    seo: { type: Object, default: () => ({}) }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const hero = computed(() => section("hero"));
+    const points = computed(() => section("cards"));
+    const proof = computed(() => section("logos"));
+    const form = computed(() => section("contact_block"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(CampaignLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing,
+        campaign: __props.campaign.slug
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<section class="chero on-dark" data-v-366d3954${_scopeId}>`);
+            _push2(ssrRenderComponent(_sfc_main$J, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (hero.value.heading ?? __props.campaign.title) {
+                    _push3(`<h1 class="display" data-v-366d3954${_scopeId2}>${ssrInterpolate(hero.value.heading ?? __props.campaign.title)}</h1>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  if (hero.value.subheading) {
+                    _push3(`<p class="chero__sub" data-v-366d3954${_scopeId2}>${ssrInterpolate(hero.value.subheading)}</p>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                } else {
+                  return [
+                    hero.value.heading ?? __props.campaign.title ? (openBlock(), createBlock("h1", {
+                      key: 0,
+                      class: "display"
+                    }, toDisplayString(hero.value.heading ?? __props.campaign.title), 1)) : createCommentVNode("", true),
+                    hero.value.subheading ? (openBlock(), createBlock("p", {
+                      key: 1,
+                      class: "chero__sub"
+                    }, toDisplayString(hero.value.subheading), 1)) : createCommentVNode("", true)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</section>`);
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CardsGrid, {
+              heading: points.value.heading,
+              items: points.value.settings?.items ?? []
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PartnersLogos, {
+              heading: proof.value.heading,
+              items: proof.value.settings?.logos ?? []
+            }, null, _parent2, _scopeId));
+            _push2(`<section class="section cform" data-v-366d3954${_scopeId}>`);
+            _push2(ssrRenderComponent(_sfc_main$J, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="cform__inner" data-v-366d3954${_scopeId2}>`);
+                  _push3(ssrRenderComponent(LeadField, {
+                    layout: "stacked",
+                    heading: form.value.heading,
+                    reassurance: form.value.subheading,
+                    "submit-label": form.value.ctaLabel,
+                    campaign: __props.campaign.slug
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "cform__inner" }, [
+                      createVNode(LeadField, {
+                        layout: "stacked",
+                        heading: form.value.heading,
+                        reassurance: form.value.subheading,
+                        "submit-label": form.value.ctaLabel,
+                        campaign: __props.campaign.slug
+                      }, null, 8, ["heading", "reassurance", "submit-label", "campaign"])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</section>`);
+          } else {
+            return [
+              createVNode("section", { class: "chero on-dark" }, [
+                createVNode(_sfc_main$J, null, {
+                  default: withCtx(() => [
+                    hero.value.heading ?? __props.campaign.title ? (openBlock(), createBlock("h1", {
+                      key: 0,
+                      class: "display"
+                    }, toDisplayString(hero.value.heading ?? __props.campaign.title), 1)) : createCommentVNode("", true),
+                    hero.value.subheading ? (openBlock(), createBlock("p", {
+                      key: 1,
+                      class: "chero__sub"
+                    }, toDisplayString(hero.value.subheading), 1)) : createCommentVNode("", true)
+                  ]),
+                  _: 1
+                })
+              ]),
+              createVNode(SaduDivider),
+              createVNode(CardsGrid, {
+                heading: points.value.heading,
+                items: points.value.settings?.items ?? []
+              }, null, 8, ["heading", "items"]),
+              createVNode(PartnersLogos, {
+                heading: proof.value.heading,
+                items: proof.value.settings?.logos ?? []
+              }, null, 8, ["heading", "items"]),
+              createVNode("section", { class: "section cform" }, [
+                createVNode(_sfc_main$J, null, {
+                  default: withCtx(() => [
+                    createVNode("div", { class: "cform__inner" }, [
+                      createVNode(LeadField, {
+                        layout: "stacked",
+                        heading: form.value.heading,
+                        reassurance: form.value.subheading,
+                        "submit-label": form.value.ctaLabel,
+                        campaign: __props.campaign.slug
+                      }, null, 8, ["heading", "reassurance", "submit-label", "campaign"])
+                    ])
+                  ]),
+                  _: 1
+                })
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$B = _sfc_main$B.setup;
+_sfc_main$B.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Campaign.vue");
+  return _sfc_setup$B ? _sfc_setup$B(props, ctx) : void 0;
+};
+const Campaign = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["__scopeId", "data-v-366d3954"]]);
+const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Campaign
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$A = {
+  __name: "LangSwitch",
+  __ssrInlineRender: true,
+  props: {
+    variant: {
+      type: String,
+      default: "inline",
+      validator: (v) => ["inline", "dropdown"].includes(v)
+    }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const page = usePage();
+    const locales = computed(() => page.props.locales ?? []);
+    const others = computed(() => locales.value.filter((l) => !l.current));
+    return (_ctx, _push, _parent, _attrs) => {
+      if (others.value.length) {
+        _push(`<nav${ssrRenderAttrs(mergeProps({
+          class: "lang-switch",
+          "aria-label": unref(t)("common.switch_language")
+        }, _attrs))} data-v-087c82be><!--[-->`);
+        ssrRenderList(others.value, (locale) => {
+          _push(`<a${ssrRenderAttr("href", locale.url)}${ssrRenderAttr("lang", locale.code)}${ssrRenderAttr("dir", locale.dir)} class="lang-switch__link link-weave"${ssrRenderAttr("hreflang", locale.code)} data-v-087c82be>${ssrInterpolate(locale.label)}</a>`);
+        });
+        _push(`<!--]--></nav>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$A = _sfc_main$A.setup;
+_sfc_main$A.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/LangSwitch.vue");
+  return _sfc_setup$A ? _sfc_setup$A(props, ctx) : void 0;
+};
+const LangSwitch = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-087c82be"]]);
+const _sfc_main$z = {
+  __name: "SiteHeader",
+  __ssrInlineRender: true,
+  props: {
+    /**
+     * True only on pages whose first element is a full-bleed dark hero that
+     * the header is meant to float over — currently just the home page.
+     *
+     * Everywhere else the header MUST paint its own background: white text on
+     * a white page renders an invisible header, which is exactly what happened
+     * before this prop existed.
+     */
+    overHero: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const page = usePage();
+    const scrolled = ref(false);
+    const menuOpen = ref(false);
+    const locale = computed(() => page.props.locale);
+    const homeUrl = computed(() => `/${locale.value}`);
+    const items = computed(() => page.props.navigation?.header ?? []);
+    const solid = computed(() => !props.overHero || scrolled.value || menuOpen.value);
+    function onScroll() {
+      scrolled.value = window.scrollY > 24;
+    }
+    onMounted(() => {
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    });
+    onUnmounted(() => window.removeEventListener("scroll", onScroll));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<header${ssrRenderAttrs(mergeProps({
+        class: ["header", { "header--solid": solid.value }]
+      }, _attrs))} data-v-8f60633b>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="header__bar" data-v-8f60633b${_scopeId}>`);
+            _push2(ssrRenderComponent(unref(Link), {
+              href: homeUrl.value,
+              class: "header__logo",
+              "aria-label": unref(t)("common.home")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(Logo, {
+                    lockup: "horizontal",
+                    tone: solid.value ? "navy" : "white"
+                  }, null, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(Logo, {
+                      lockup: "horizontal",
+                      tone: solid.value ? "navy" : "white"
+                    }, null, 8, ["tone"])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            if (items.value.length) {
+              _push2(`<nav class="header__nav"${ssrRenderAttr("aria-label", unref(t)("common.menu"))} data-v-8f60633b${_scopeId}><!--[-->`);
+              ssrRenderList(items.value, (item) => {
+                _push2(ssrRenderComponent(unref(Link), {
+                  key: item.id,
+                  href: item.url,
+                  class: "header__link link-weave"
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(item.label)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></nav>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<div class="header__actions" data-v-8f60633b${_scopeId}>`);
+            _push2(ssrRenderComponent(LangSwitch, null, null, _parent2, _scopeId));
+            _push2(`</div><button class="header__toggle" type="button"${ssrRenderAttr("aria-expanded", menuOpen.value)} aria-controls="header-mobile-nav"${ssrRenderAttr("aria-label", menuOpen.value ? unref(t)("common.close_menu") : unref(t)("common.open_menu"))} data-v-8f60633b${_scopeId}><span class="header__toggle-bar" aria-hidden="true" data-v-8f60633b${_scopeId}></span><span class="header__toggle-bar" aria-hidden="true" data-v-8f60633b${_scopeId}></span></button></div><nav id="header-mobile-nav" class="header__mobile"${ssrRenderAttr("aria-label", unref(t)("common.menu"))} style="${ssrRenderStyle(menuOpen.value ? null : { display: "none" })}" data-v-8f60633b${_scopeId}><!--[-->`);
+            ssrRenderList(items.value, (item) => {
+              _push2(ssrRenderComponent(unref(Link), {
+                key: item.id,
+                href: item.url,
+                class: "header__mobile-link",
+                onClick: ($event) => menuOpen.value = false
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(`${ssrInterpolate(item.label)}`);
+                  } else {
+                    return [
+                      createTextVNode(toDisplayString(item.label), 1)
+                    ];
+                  }
+                }),
+                _: 2
+              }, _parent2, _scopeId));
+            });
+            _push2(`<!--]--></nav>`);
+          } else {
+            return [
+              createVNode("div", { class: "header__bar" }, [
+                createVNode(unref(Link), {
+                  href: homeUrl.value,
+                  class: "header__logo",
+                  "aria-label": unref(t)("common.home")
+                }, {
+                  default: withCtx(() => [
+                    createVNode(Logo, {
+                      lockup: "horizontal",
+                      tone: solid.value ? "navy" : "white"
+                    }, null, 8, ["tone"])
+                  ]),
+                  _: 1
+                }, 8, ["href", "aria-label"]),
+                items.value.length ? (openBlock(), createBlock("nav", {
+                  key: 0,
+                  class: "header__nav",
+                  "aria-label": unref(t)("common.menu")
+                }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(items.value, (item) => {
+                    return openBlock(), createBlock(unref(Link), {
+                      key: item.id,
+                      href: item.url,
+                      class: "header__link link-weave"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ]),
+                      _: 2
+                    }, 1032, ["href"]);
+                  }), 128))
+                ], 8, ["aria-label"])) : createCommentVNode("", true),
+                createVNode("div", { class: "header__actions" }, [
+                  createVNode(LangSwitch)
+                ]),
+                createVNode("button", {
+                  class: "header__toggle",
+                  type: "button",
+                  "aria-expanded": menuOpen.value,
+                  "aria-controls": "header-mobile-nav",
+                  "aria-label": menuOpen.value ? unref(t)("common.close_menu") : unref(t)("common.open_menu"),
+                  onClick: ($event) => menuOpen.value = !menuOpen.value
+                }, [
+                  createVNode("span", {
+                    class: "header__toggle-bar",
+                    "aria-hidden": "true"
+                  }),
+                  createVNode("span", {
+                    class: "header__toggle-bar",
+                    "aria-hidden": "true"
+                  })
+                ], 8, ["aria-expanded", "aria-label", "onClick"])
+              ]),
+              withDirectives(createVNode("nav", {
+                id: "header-mobile-nav",
+                class: "header__mobile",
+                "aria-label": unref(t)("common.menu")
+              }, [
+                (openBlock(true), createBlock(Fragment, null, renderList(items.value, (item) => {
+                  return openBlock(), createBlock(unref(Link), {
+                    key: item.id,
+                    href: item.url,
+                    class: "header__mobile-link",
+                    onClick: ($event) => menuOpen.value = false
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(item.label), 1)
+                    ]),
+                    _: 2
+                  }, 1032, ["href", "onClick"]);
+                }), 128))
+              ], 8, ["aria-label"]), [
+                [vShow, menuOpen.value]
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</header>`);
+    };
+  }
+};
+const _sfc_setup$z = _sfc_main$z.setup;
+_sfc_main$z.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SiteHeader.vue");
+  return _sfc_setup$z ? _sfc_setup$z(props, ctx) : void 0;
+};
+const SiteHeader = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["__scopeId", "data-v-8f60633b"]]);
+const _sfc_main$y = {
+  __name: "SiteFooter",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const { t } = useTranslation();
+    const page = usePage();
+    const settings = computed(() => page.props.settings ?? {});
+    const locale = computed(() => page.props.locale);
+    const mainLinks = computed(() => page.props.navigation?.footer_main ?? []);
+    const legalLinks = computed(() => page.props.navigation?.footer_legal ?? []);
+    const email = computed(() => settings.value["contact.email"] ?? null);
+    const phone = computed(() => settings.value["contact.phone"] ?? null);
+    const storeUrl = computed(() => settings.value["store.url"] ?? null);
+    const storeLabel = computed(() => settings.value[`store.label.${locale.value}`] ?? null);
+    const social = computed(() => settings.value["contact.social"] ?? []);
+    const copyright = computed(() => settings.value[`site.copyright.${locale.value}`] ?? null);
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<footer${ssrRenderAttrs(mergeProps({ class: "footer on-dark" }, _attrs))} data-v-3d80bdb6>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="footer__grid" data-v-3d80bdb6${_scopeId}><div class="footer__brand" data-v-3d80bdb6${_scopeId}>`);
+            _push2(ssrRenderComponent(Logo, {
+              lockup: "stacked",
+              tone: "white"
+            }, null, _parent2, _scopeId));
+            _push2(`</div>`);
+            if (mainLinks.value.length) {
+              _push2(`<nav class="footer__col"${ssrRenderAttr("aria-label", unref(t)("common.menu"))} data-v-3d80bdb6${_scopeId}><!--[-->`);
+              ssrRenderList(mainLinks.value, (item) => {
+                _push2(ssrRenderComponent(unref(Link), {
+                  key: item.id,
+                  href: item.url,
+                  class: "footer__link link-weave"
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(item.label)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></nav>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (email.value || phone.value) {
+              _push2(`<div class="footer__col" data-v-3d80bdb6${_scopeId}>`);
+              if (email.value) {
+                _push2(`<a class="footer__link link-weave latin"${ssrRenderAttr("href", `mailto:${email.value}`)} data-v-3d80bdb6${_scopeId}>${ssrInterpolate(email.value)}</a>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (phone.value) {
+                _push2(`<a class="footer__link link-weave latin"${ssrRenderAttr("href", `tel:${phone.value}`)} data-v-3d80bdb6${_scopeId}>${ssrInterpolate(phone.value)}</a>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (social.value.length || storeUrl.value) {
+              _push2(`<div class="footer__col" data-v-3d80bdb6${_scopeId}><!--[-->`);
+              ssrRenderList(social.value, (channel) => {
+                _push2(`<a class="footer__link link-weave"${ssrRenderAttr("href", channel.url)} rel="noopener noreferrer" target="_blank" data-v-3d80bdb6${_scopeId}>${ssrInterpolate(channel.label)} <span class="visually-hidden" data-v-3d80bdb6${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+              });
+              _push2(`<!--]-->`);
+              if (storeUrl.value && storeLabel.value) {
+                _push2(`<a class="footer__link link-weave"${ssrRenderAttr("href", storeUrl.value)} rel="noopener noreferrer" target="_blank" data-v-3d80bdb6${_scopeId}>${ssrInterpolate(storeLabel.value)} <span class="visually-hidden" data-v-3d80bdb6${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div><div class="footer__base" data-v-3d80bdb6${_scopeId}>`);
+            if (copyright.value) {
+              _push2(`<p class="footer__copyright" data-v-3d80bdb6${_scopeId}>${ssrInterpolate(copyright.value)}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (legalLinks.value.length) {
+              _push2(`<nav class="footer__legal" aria-label="legal" data-v-3d80bdb6${_scopeId}><!--[-->`);
+              ssrRenderList(legalLinks.value, (item) => {
+                _push2(ssrRenderComponent(unref(Link), {
+                  key: item.id,
+                  href: item.url,
+                  class: "footer__link link-weave"
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(item.label)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></nav>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+          } else {
+            return [
+              createVNode("div", { class: "footer__grid" }, [
+                createVNode("div", { class: "footer__brand" }, [
+                  createVNode(Logo, {
+                    lockup: "stacked",
+                    tone: "white"
+                  })
+                ]),
+                mainLinks.value.length ? (openBlock(), createBlock("nav", {
+                  key: 0,
+                  class: "footer__col",
+                  "aria-label": unref(t)("common.menu")
+                }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(mainLinks.value, (item) => {
+                    return openBlock(), createBlock(unref(Link), {
+                      key: item.id,
+                      href: item.url,
+                      class: "footer__link link-weave"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ]),
+                      _: 2
+                    }, 1032, ["href"]);
+                  }), 128))
+                ], 8, ["aria-label"])) : createCommentVNode("", true),
+                email.value || phone.value ? (openBlock(), createBlock("div", {
+                  key: 1,
+                  class: "footer__col"
+                }, [
+                  email.value ? (openBlock(), createBlock("a", {
+                    key: 0,
+                    class: "footer__link link-weave latin",
+                    href: `mailto:${email.value}`
+                  }, toDisplayString(email.value), 9, ["href"])) : createCommentVNode("", true),
+                  phone.value ? (openBlock(), createBlock("a", {
+                    key: 1,
+                    class: "footer__link link-weave latin",
+                    href: `tel:${phone.value}`
+                  }, toDisplayString(phone.value), 9, ["href"])) : createCommentVNode("", true)
+                ])) : createCommentVNode("", true),
+                social.value.length || storeUrl.value ? (openBlock(), createBlock("div", {
+                  key: 2,
+                  class: "footer__col"
+                }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(social.value, (channel) => {
+                    return openBlock(), createBlock("a", {
+                      key: channel.url,
+                      class: "footer__link link-weave",
+                      href: channel.url,
+                      rel: "noopener noreferrer",
+                      target: "_blank"
+                    }, [
+                      createTextVNode(toDisplayString(channel.label) + " ", 1),
+                      createVNode("span", { class: "visually-hidden" }, toDisplayString(unref(t)("common.external_link")), 1)
+                    ], 8, ["href"]);
+                  }), 128)),
+                  storeUrl.value && storeLabel.value ? (openBlock(), createBlock("a", {
+                    key: 0,
+                    class: "footer__link link-weave",
+                    href: storeUrl.value,
+                    rel: "noopener noreferrer",
+                    target: "_blank"
+                  }, [
+                    createTextVNode(toDisplayString(storeLabel.value) + " ", 1),
+                    createVNode("span", { class: "visually-hidden" }, toDisplayString(unref(t)("common.external_link")), 1)
+                  ], 8, ["href"])) : createCommentVNode("", true)
+                ])) : createCommentVNode("", true)
+              ]),
+              createVNode("div", { class: "footer__base" }, [
+                copyright.value ? (openBlock(), createBlock("p", {
+                  key: 0,
+                  class: "footer__copyright"
+                }, toDisplayString(copyright.value), 1)) : createCommentVNode("", true),
+                legalLinks.value.length ? (openBlock(), createBlock("nav", {
+                  key: 1,
+                  class: "footer__legal",
+                  "aria-label": "legal"
+                }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(legalLinks.value, (item) => {
+                    return openBlock(), createBlock(unref(Link), {
+                      key: item.id,
+                      href: item.url,
+                      class: "footer__link link-weave"
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(item.label), 1)
+                      ]),
+                      _: 2
+                    }, 1032, ["href"]);
+                  }), 128))
+                ])) : createCommentVNode("", true)
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</footer>`);
+    };
+  }
+};
+const _sfc_setup$y = _sfc_main$y.setup;
+_sfc_main$y.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SiteFooter.vue");
+  return _sfc_setup$y ? _sfc_setup$y(props, ctx) : void 0;
+};
+const SiteFooter = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["__scopeId", "data-v-3d80bdb6"]]);
+const _sfc_main$x = {
+  __name: "PublicLayout",
+  __ssrInlineRender: true,
+  props: {
+    seo: { type: Object, default: () => ({}) },
+    /**
+     * Set only by pages that open with a full-bleed dark hero the header is
+     * meant to float over. Off by default so a new page can never ship with an
+     * invisible white-on-white header.
+     */
+    overHero: { type: Boolean, default: false },
+    /** True when reached through a draft's secret preview link (§9.1). */
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const alternates = computed(() => props.seo.alternates ?? []);
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      _push(ssrRenderComponent(unref(Head), {
+        title: __props.seo.fullTitle
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (__props.seo.description) {
+              _push2(`<meta head-key="description" name="description"${ssrRenderAttr("content", __props.seo.description)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.keywords) {
+              _push2(`<meta head-key="keywords" name="keywords"${ssrRenderAttr("content", __props.seo.keywords)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.canonical) {
+              _push2(`<link head-key="canonical" rel="canonical"${ssrRenderAttr("href", __props.seo.canonical)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.robots) {
+              _push2(`<meta head-key="robots" name="robots"${ssrRenderAttr("content", __props.seo.robots)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<!--[-->`);
+            ssrRenderList(alternates.value, (alt) => {
+              _push2(`<link${ssrRenderAttr("head-key", `alt-${alt.hreflang}`)} rel="alternate"${ssrRenderAttr("hreflang", alt.hreflang)}${ssrRenderAttr("href", alt.href)} data-v-e5d25155${_scopeId}>`);
+            });
+            _push2(`<!--]--><meta head-key="og:type" property="og:type" content="website" data-v-e5d25155${_scopeId}><meta head-key="og:title" property="og:title"${ssrRenderAttr("content", __props.seo.fullTitle)} data-v-e5d25155${_scopeId}>`);
+            if (__props.seo.description) {
+              _push2(`<meta head-key="og:description" property="og:description"${ssrRenderAttr("content", __props.seo.description)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.canonical) {
+              _push2(`<meta head-key="og:url" property="og:url"${ssrRenderAttr("content", __props.seo.canonical)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.image) {
+              _push2(`<meta head-key="og:image" property="og:image"${ssrRenderAttr("content", __props.seo.image)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.seo.siteName) {
+              _push2(`<meta head-key="og:site_name" property="og:site_name"${ssrRenderAttr("content", __props.seo.siteName)} data-v-e5d25155${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<meta head-key="twitter:card" name="twitter:card"${ssrRenderAttr("content", __props.seo.image ? "summary_large_image" : "summary")} data-v-e5d25155${_scopeId}>`);
+          } else {
+            return [
+              __props.seo.description ? (openBlock(), createBlock("meta", {
+                key: 0,
+                "head-key": "description",
+                name: "description",
+                content: __props.seo.description
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              __props.seo.keywords ? (openBlock(), createBlock("meta", {
+                key: 1,
+                "head-key": "keywords",
+                name: "keywords",
+                content: __props.seo.keywords
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              __props.seo.canonical ? (openBlock(), createBlock("link", {
+                key: 2,
+                "head-key": "canonical",
+                rel: "canonical",
+                href: __props.seo.canonical
+              }, null, 8, ["href"])) : createCommentVNode("", true),
+              __props.seo.robots ? (openBlock(), createBlock("meta", {
+                key: 3,
+                "head-key": "robots",
+                name: "robots",
+                content: __props.seo.robots
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              (openBlock(true), createBlock(Fragment, null, renderList(alternates.value, (alt) => {
+                return openBlock(), createBlock("link", {
+                  key: alt.hreflang,
+                  "head-key": `alt-${alt.hreflang}`,
+                  rel: "alternate",
+                  hreflang: alt.hreflang,
+                  href: alt.href
+                }, null, 8, ["head-key", "hreflang", "href"]);
+              }), 128)),
+              createVNode("meta", {
+                "head-key": "og:type",
+                property: "og:type",
+                content: "website"
+              }),
+              createVNode("meta", {
+                "head-key": "og:title",
+                property: "og:title",
+                content: __props.seo.fullTitle
+              }, null, 8, ["content"]),
+              __props.seo.description ? (openBlock(), createBlock("meta", {
+                key: 4,
+                "head-key": "og:description",
+                property: "og:description",
+                content: __props.seo.description
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              __props.seo.canonical ? (openBlock(), createBlock("meta", {
+                key: 5,
+                "head-key": "og:url",
+                property: "og:url",
+                content: __props.seo.canonical
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              __props.seo.image ? (openBlock(), createBlock("meta", {
+                key: 6,
+                "head-key": "og:image",
+                property: "og:image",
+                content: __props.seo.image
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              __props.seo.siteName ? (openBlock(), createBlock("meta", {
+                key: 7,
+                "head-key": "og:site_name",
+                property: "og:site_name",
+                content: __props.seo.siteName
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              createVNode("meta", {
+                "head-key": "twitter:card",
+                name: "twitter:card",
+                content: __props.seo.image ? "summary_large_image" : "summary"
+              }, null, 8, ["content"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      if (__props.previewing) {
+        _push(`<p class="preview-bar" role="status" data-v-e5d25155>${ssrInterpolate(unref(t)("admin.preview_notice"))}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(ssrRenderComponent(SiteHeader, {
+        "over-hero": __props.overHero && !__props.previewing
+      }, null, _parent));
+      _push(`<main id="main" data-v-e5d25155>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</main>`);
+      _push(ssrRenderComponent(SiteFooter, null, null, _parent));
+      if (!__props.previewing) {
+        _push(ssrRenderComponent(ContactDock, null, null, _parent));
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<!--]-->`);
+    };
+  }
+};
+const _sfc_setup$x = _sfc_main$x.setup;
+_sfc_main$x.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/PublicLayout.vue");
+  return _sfc_setup$x ? _sfc_setup$x(props, ctx) : void 0;
+};
+const PublicLayout = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["__scopeId", "data-v-e5d25155"]]);
+const _sfc_main$w = {
+  __name: "Breadcrumb",
+  __ssrInlineRender: true,
+  props: {
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length > 1) {
+        _push(`<nav${ssrRenderAttrs(mergeProps({
+          class: "crumbs",
+          "aria-label": unref(t)("common.breadcrumb")
+        }, _attrs))} data-v-ee8cd4ee>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(`<ol class="crumbs__list" data-v-ee8cd4ee${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item, i) => {
+                _push2(`<li class="crumbs__item" data-v-ee8cd4ee${_scopeId}>`);
+                if (item.url) {
+                  _push2(ssrRenderComponent(unref(Link), {
+                    href: item.url,
+                    class: "crumbs__link link-weave"
+                  }, {
+                    default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                      if (_push3) {
+                        _push3(`${ssrInterpolate(item.label)}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(item.label), 1)
+                        ];
+                      }
+                    }),
+                    _: 2
+                  }, _parent2, _scopeId));
+                } else {
+                  _push2(`<span aria-current="page" data-v-ee8cd4ee${_scopeId}>${ssrInterpolate(item.label)}</span>`);
+                }
+                if (i < __props.items.length - 1) {
+                  _push2(`<span class="crumbs__sep" aria-hidden="true" data-v-ee8cd4ee${_scopeId}>/</span>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ol>`);
+            } else {
+              return [
+                createVNode("ol", { class: "crumbs__list" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item, i) => {
+                    return openBlock(), createBlock("li", {
+                      key: i,
+                      class: "crumbs__item"
+                    }, [
+                      item.url ? (openBlock(), createBlock(unref(Link), {
+                        key: 0,
+                        href: item.url,
+                        class: "crumbs__link link-weave"
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(item.label), 1)
+                        ]),
+                        _: 2
+                      }, 1032, ["href"])) : (openBlock(), createBlock("span", {
+                        key: 1,
+                        "aria-current": "page"
+                      }, toDisplayString(item.label), 1)),
+                      i < __props.items.length - 1 ? (openBlock(), createBlock("span", {
+                        key: 2,
+                        class: "crumbs__sep",
+                        "aria-hidden": "true"
+                      }, "/")) : createCommentVNode("", true)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</nav>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$w = _sfc_main$w.setup;
+_sfc_main$w.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Breadcrumb.vue");
+  return _sfc_setup$w ? _sfc_setup$w(props, ctx) : void 0;
+};
+const Breadcrumb = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["__scopeId", "data-v-ee8cd4ee"]]);
+const _sfc_main$v = {
+  __name: "MapBlock",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    address: { type: String, default: null },
+    hours: { type: String, default: null },
+    // A full Google Maps embed URL, if the client pasted one.
+    embedUrl: { type: String, default: null },
+    // Otherwise a plain search query, e.g. "أمد الحرف، حي العقيق، الرياض".
+    query: { type: String, default: null },
+    // Where "open in Maps" goes.
+    linkUrl: { type: String, default: null }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const loaded = ref(false);
+    const src = computed(() => {
+      if (props.embedUrl) return props.embedUrl;
+      if (!props.query) return null;
+      return `https://www.google.com/maps?q=${encodeURIComponent(props.query)}&output=embed`;
+    });
+    const externalUrl = computed(
+      () => props.linkUrl ?? (props.query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.query)}` : null)
+    );
+    const hasContent = computed(() => Boolean(props.address || src.value));
+    return (_ctx, _push, _parent, _attrs) => {
+      if (hasContent.value) {
+        _push(`<section${ssrRenderAttrs(mergeProps({ class: "section map" }, _attrs))} data-v-4d6329c4>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(`<div class="map__grid" data-v-4d6329c4${_scopeId}><div class="map__info" data-v-4d6329c4${_scopeId}>`);
+              if (__props.heading) {
+                _push2(`<h2 data-v-4d6329c4${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (__props.address) {
+                _push2(`<address class="map__address" data-v-4d6329c4${_scopeId}>${ssrInterpolate(__props.address)}</address>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (__props.hours) {
+                _push2(`<p class="map__hours" data-v-4d6329c4${_scopeId}>${ssrInterpolate(__props.hours)}</p>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (externalUrl.value) {
+                _push2(`<a class="btn btn--secondary map__open"${ssrRenderAttr("href", externalUrl.value)} rel="noopener noreferrer" target="_blank" data-v-4d6329c4${_scopeId}>${ssrInterpolate(unref(t)("contact.open_in_maps"))} <span class="visually-hidden" data-v-4d6329c4${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div>`);
+              if (src.value) {
+                _push2(`<div class="map__frame" data-v-4d6329c4${_scopeId}>`);
+                if (loaded.value) {
+                  _push2(`<iframe class="map__iframe"${ssrRenderAttr("src", src.value)}${ssrRenderAttr("title", __props.heading ?? unref(t)("contact.map"))} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen data-v-4d6329c4${_scopeId}></iframe>`);
+                } else {
+                  _push2(`<button type="button" class="map__placeholder" data-v-4d6329c4${_scopeId}><span class="map__pin" aria-hidden="true" data-v-4d6329c4${_scopeId}></span><span class="map__cta" data-v-4d6329c4${_scopeId}>${ssrInterpolate(unref(t)("contact.load_map"))}</span><span class="map__note" data-v-4d6329c4${_scopeId}>${ssrInterpolate(unref(t)("contact.map_privacy"))}</span></button>`);
+                }
+                _push2(`</div>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div>`);
+            } else {
+              return [
+                createVNode("div", { class: "map__grid" }, [
+                  createVNode("div", { class: "map__info" }, [
+                    __props.heading ? (openBlock(), createBlock("h2", { key: 0 }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                    __props.address ? (openBlock(), createBlock("address", {
+                      key: 1,
+                      class: "map__address"
+                    }, toDisplayString(__props.address), 1)) : createCommentVNode("", true),
+                    __props.hours ? (openBlock(), createBlock("p", {
+                      key: 2,
+                      class: "map__hours"
+                    }, toDisplayString(__props.hours), 1)) : createCommentVNode("", true),
+                    externalUrl.value ? (openBlock(), createBlock("a", {
+                      key: 3,
+                      class: "btn btn--secondary map__open",
+                      href: externalUrl.value,
+                      rel: "noopener noreferrer",
+                      target: "_blank"
+                    }, [
+                      createTextVNode(toDisplayString(unref(t)("contact.open_in_maps")) + " ", 1),
+                      createVNode("span", { class: "visually-hidden" }, toDisplayString(unref(t)("common.external_link")), 1)
+                    ], 8, ["href"])) : createCommentVNode("", true)
+                  ]),
+                  src.value ? (openBlock(), createBlock("div", {
+                    key: 0,
+                    class: "map__frame"
+                  }, [
+                    loaded.value ? (openBlock(), createBlock("iframe", {
+                      key: 0,
+                      class: "map__iframe",
+                      src: src.value,
+                      title: __props.heading ?? unref(t)("contact.map"),
+                      loading: "lazy",
+                      referrerpolicy: "no-referrer-when-downgrade",
+                      allowfullscreen: ""
+                    }, null, 8, ["src", "title"])) : (openBlock(), createBlock("button", {
+                      key: 1,
+                      type: "button",
+                      class: "map__placeholder",
+                      onClick: ($event) => loaded.value = true
+                    }, [
+                      createVNode("span", {
+                        class: "map__pin",
+                        "aria-hidden": "true"
+                      }),
+                      createVNode("span", { class: "map__cta" }, toDisplayString(unref(t)("contact.load_map")), 1),
+                      createVNode("span", { class: "map__note" }, toDisplayString(unref(t)("contact.map_privacy")), 1)
+                    ], 8, ["onClick"]))
+                  ])) : createCommentVNode("", true)
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$v = _sfc_main$v.setup;
+_sfc_main$v.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/MapBlock.vue");
+  return _sfc_setup$v ? _sfc_setup$v(props, ctx) : void 0;
+};
+const MapBlock = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["__scopeId", "data-v-4d6329c4"]]);
+const _sfc_main$u = {
+  __name: "RichText",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    body: { type: String, default: null }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.body || __props.heading) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-1c531767>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(`<div class="prose reveal" data-v-1c531767${_scopeId}>`);
+              if (__props.heading) {
+                _push2(`<h2 data-v-1c531767${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              if (__props.body) {
+                _push2(`<div class="prose__body" data-v-1c531767${_scopeId}>${__props.body ?? ""}</div>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div>`);
+            } else {
+              return [
+                createVNode("div", { class: "prose reveal" }, [
+                  __props.heading ? (openBlock(), createBlock("h2", { key: 0 }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                  __props.body ? (openBlock(), createBlock("div", {
+                    key: 1,
+                    class: "prose__body",
+                    innerHTML: __props.body
+                  }, null, 8, ["innerHTML"])) : createCommentVNode("", true)
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$u = _sfc_main$u.setup;
+_sfc_main$u.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/RichText.vue");
+  return _sfc_setup$u ? _sfc_setup$u(props, ctx) : void 0;
+};
+const RichText = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["__scopeId", "data-v-1c531767"]]);
+const _sfc_main$t = {
+  __name: "MediaSplit",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    body: { type: String, default: null },
+    ctaLabel: { type: String, default: null },
+    ctaUrl: { type: String, default: null },
+    image: { type: Object, default: null },
+    flip: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({
+        ref_key: "root",
+        ref: root,
+        class: "section"
+      }, _attrs))} data-v-d54890b4>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="${ssrRenderClass([{ "split--flip": __props.flip }, "split"])}" data-v-d54890b4${_scopeId}><div class="split__copy reveal" data-v-d54890b4${_scopeId}>`);
+            if (__props.heading) {
+              _push2(`<h2 data-v-d54890b4${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.body) {
+              _push2(`<p class="split__body" data-v-d54890b4${_scopeId}>${ssrInterpolate(__props.body)}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.ctaLabel) {
+              _push2(ssrRenderComponent(_sfc_main$V, {
+                variant: "secondary",
+                href: __props.ctaUrl,
+                class: "split__cta"
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(`${ssrInterpolate(__props.ctaLabel)}`);
+                  } else {
+                    return [
+                      createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+            if (__props.image) {
+              _push2(`<div class="split__media reveal" data-v-d54890b4${_scopeId}><img${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} loading="lazy" decoding="async" data-v-d54890b4${_scopeId}></div>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+          } else {
+            return [
+              createVNode("div", {
+                class: ["split", { "split--flip": __props.flip }]
+              }, [
+                createVNode("div", { class: "split__copy reveal" }, [
+                  __props.heading ? (openBlock(), createBlock("h2", { key: 0 }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                  __props.body ? (openBlock(), createBlock("p", {
+                    key: 1,
+                    class: "split__body"
+                  }, toDisplayString(__props.body), 1)) : createCommentVNode("", true),
+                  __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$V, {
+                    key: 2,
+                    variant: "secondary",
+                    href: __props.ctaUrl,
+                    class: "split__cta"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["href"])) : createCommentVNode("", true)
+                ]),
+                __props.image ? (openBlock(), createBlock("div", {
+                  key: 0,
+                  class: "split__media reveal"
+                }, [
+                  createVNode("img", {
+                    src: __props.image.webp ?? __props.image.url,
+                    alt: __props.image.alt ?? "",
+                    width: __props.image.width ?? void 0,
+                    height: __props.image.height ?? void 0,
+                    loading: "lazy",
+                    decoding: "async"
+                  }, null, 8, ["src", "alt", "width", "height"])
+                ])) : createCommentVNode("", true)
+              ], 2)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</section>`);
+    };
+  }
+};
+const _sfc_setup$t = _sfc_main$t.setup;
+_sfc_main$t.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/MediaSplit.vue");
+  return _sfc_setup$t ? _sfc_setup$t(props, ctx) : void 0;
+};
+const MediaSplit = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["__scopeId", "data-v-d54890b4"]]);
+const _sfc_main$s = {
+  __name: "IntroStatement",
+  __ssrInlineRender: true,
+  props: {
+    body: { type: String, default: null }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.body) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section intro"
+        }, _attrs))} data-v-8254a29f>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(`<p class="intro__text reveal" data-v-8254a29f${_scopeId}>${ssrInterpolate(__props.body)}</p>`);
+            } else {
+              return [
+                createVNode("p", { class: "intro__text reveal" }, toDisplayString(__props.body), 1)
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$s = _sfc_main$s.setup;
+_sfc_main$s.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/IntroStatement.vue");
+  return _sfc_setup$s ? _sfc_setup$s(props, ctx) : void 0;
+};
+const IntroStatement = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["__scopeId", "data-v-8254a29f"]]);
+const _sfc_main$r = {
+  __name: "FaqAccordion",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-3d3d6cd3>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-3d3d6cd3${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<div class="faq" data-v-3d3d6cd3${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item, i) => {
+                _push2(`<details class="faq__item reveal" data-v-3d3d6cd3${_scopeId}><summary class="faq__q" data-v-3d3d6cd3${_scopeId}><span data-v-3d3d6cd3${_scopeId}>${ssrInterpolate(item.question)}</span><span class="faq__marker" aria-hidden="true" data-v-3d3d6cd3${_scopeId}></span></summary><div class="faq__a" data-v-3d3d6cd3${_scopeId}>${ssrInterpolate(item.answer)}</div></details>`);
+              });
+              _push2(`<!--]--></div>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("div", { class: "faq" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item, i) => {
+                    return openBlock(), createBlock("details", {
+                      key: i,
+                      class: "faq__item reveal"
+                    }, [
+                      createVNode("summary", { class: "faq__q" }, [
+                        createVNode("span", null, toDisplayString(item.question), 1),
+                        createVNode("span", {
+                          class: "faq__marker",
+                          "aria-hidden": "true"
+                        })
+                      ]),
+                      createVNode("div", { class: "faq__a" }, toDisplayString(item.answer), 1)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$r = _sfc_main$r.setup;
+_sfc_main$r.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/FaqAccordion.vue");
+  return _sfc_setup$r ? _sfc_setup$r(props, ctx) : void 0;
+};
+const FaqAccordion = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["__scopeId", "data-v-3d3d6cd3"]]);
+const _sfc_main$q = {
+  __name: "VideoBlock",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    src: { type: String, default: null },
+    poster: { type: String, default: null },
+    captionsSrc: { type: String, default: null }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.src) {
+        _push(`<section${ssrRenderAttrs(mergeProps({ class: "section" }, _attrs))} data-v-af1de7f2>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 data-v-af1de7f2${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<video class="video" controls playsinline preload="none"${ssrRenderAttr("poster", __props.poster ?? void 0)} data-v-af1de7f2${_scopeId}><source${ssrRenderAttr("src", __props.src)} data-v-af1de7f2${_scopeId}>`);
+              if (__props.captionsSrc) {
+                _push2(`<track kind="captions"${ssrRenderAttr("src", __props.captionsSrc)} default data-v-af1de7f2${_scopeId}>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</video>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", { key: 0 }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("video", {
+                  class: "video",
+                  controls: "",
+                  playsinline: "",
+                  preload: "none",
+                  poster: __props.poster ?? void 0
+                }, [
+                  createVNode("source", { src: __props.src }, null, 8, ["src"]),
+                  __props.captionsSrc ? (openBlock(), createBlock("track", {
+                    key: 0,
+                    kind: "captions",
+                    src: __props.captionsSrc,
+                    default: ""
+                  }, null, 8, ["src"])) : createCommentVNode("", true)
+                ], 8, ["poster"])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$q = _sfc_main$q.setup;
+_sfc_main$q.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/VideoBlock.vue");
+  return _sfc_setup$q ? _sfc_setup$q(props, ctx) : void 0;
+};
+const VideoBlock = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["__scopeId", "data-v-af1de7f2"]]);
+const _sfc_main$p = {
+  __name: "Gallery",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    images: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.images.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-d80777d3>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-d80777d3${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="gallery" data-v-d80777d3${_scopeId}><!--[-->`);
+              ssrRenderList(__props.images, (image, i) => {
+                _push2(`<li class="gallery__item reveal" data-v-d80777d3${_scopeId}><img${ssrRenderAttr("src", image.webp ?? image.url)}${ssrRenderAttr("alt", image.alt ?? "")}${ssrRenderAttr("width", image.width ?? void 0)}${ssrRenderAttr("height", image.height ?? void 0)} loading="lazy" decoding="async" data-v-d80777d3${_scopeId}>`);
+                if (image.caption) {
+                  _push2(`<p class="gallery__caption" data-v-d80777d3${_scopeId}>${ssrInterpolate(image.caption)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "gallery" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.images, (image, i) => {
+                    return openBlock(), createBlock("li", {
+                      key: i,
+                      class: "gallery__item reveal"
+                    }, [
+                      createVNode("img", {
+                        src: image.webp ?? image.url,
+                        alt: image.alt ?? "",
+                        width: image.width ?? void 0,
+                        height: image.height ?? void 0,
+                        loading: "lazy",
+                        decoding: "async"
+                      }, null, 8, ["src", "alt", "width", "height"]),
+                      image.caption ? (openBlock(), createBlock("p", {
+                        key: 0,
+                        class: "gallery__caption"
+                      }, toDisplayString(image.caption), 1)) : createCommentVNode("", true)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$p = _sfc_main$p.setup;
+_sfc_main$p.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/Gallery.vue");
+  return _sfc_setup$p ? _sfc_setup$p(props, ctx) : void 0;
+};
+const Gallery = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-d80777d3"]]);
+const _sfc_main$o = {
+  __name: "Timeline",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-a35a1775>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-a35a1775${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ol class="timeline" data-v-a35a1775${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item, i) => {
+                _push2(`<li class="timeline__item reveal" data-v-a35a1775${_scopeId}>`);
+                if (item.year) {
+                  _push2(`<span class="timeline__year tabular" data-v-a35a1775${_scopeId}>${ssrInterpolate(item.year)}</span>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (item.title) {
+                  _push2(`<h3 class="timeline__title" data-v-a35a1775${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (item.body) {
+                  _push2(`<p class="timeline__body" data-v-a35a1775${_scopeId}>${ssrInterpolate(item.body)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ol>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ol", { class: "timeline" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item, i) => {
+                    return openBlock(), createBlock("li", {
+                      key: i,
+                      class: "timeline__item reveal"
+                    }, [
+                      item.year ? (openBlock(), createBlock("span", {
+                        key: 0,
+                        class: "timeline__year tabular"
+                      }, toDisplayString(item.year), 1)) : createCommentVNode("", true),
+                      item.title ? (openBlock(), createBlock("h3", {
+                        key: 1,
+                        class: "timeline__title"
+                      }, toDisplayString(item.title), 1)) : createCommentVNode("", true),
+                      item.body ? (openBlock(), createBlock("p", {
+                        key: 2,
+                        class: "timeline__body"
+                      }, toDisplayString(item.body), 1)) : createCommentVNode("", true)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$o = _sfc_main$o.setup;
+_sfc_main$o.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/Timeline.vue");
+  return _sfc_setup$o ? _sfc_setup$o(props, ctx) : void 0;
+};
+const Timeline = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-a35a1775"]]);
+const _sfc_main$n = {
+  __name: "Testimonial",
+  __ssrInlineRender: true,
+  props: {
+    body: { type: String, default: null },
+    attribution: { type: String, default: null },
+    role: { type: String, default: null }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.body) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section quote"
+        }, _attrs))} data-v-996c6c07>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(`<figure class="quote__figure reveal" data-v-996c6c07${_scopeId}><blockquote class="quote__text" data-v-996c6c07${_scopeId}>${ssrInterpolate(__props.body)}</blockquote>`);
+              if (__props.attribution) {
+                _push2(`<figcaption class="quote__by" data-v-996c6c07${_scopeId}>${ssrInterpolate(__props.attribution)} `);
+                if (__props.role) {
+                  _push2(`<span class="quote__role" data-v-996c6c07${_scopeId}>— ${ssrInterpolate(__props.role)}</span>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</figcaption>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</figure>`);
+            } else {
+              return [
+                createVNode("figure", { class: "quote__figure reveal" }, [
+                  createVNode("blockquote", { class: "quote__text" }, toDisplayString(__props.body), 1),
+                  __props.attribution ? (openBlock(), createBlock("figcaption", {
+                    key: 0,
+                    class: "quote__by"
+                  }, [
+                    createTextVNode(toDisplayString(__props.attribution) + " ", 1),
+                    __props.role ? (openBlock(), createBlock("span", {
+                      key: 0,
+                      class: "quote__role"
+                    }, "— " + toDisplayString(__props.role), 1)) : createCommentVNode("", true)
+                  ])) : createCommentVNode("", true)
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$n = _sfc_main$n.setup;
+_sfc_main$n.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/Testimonial.vue");
+  return _sfc_setup$n ? _sfc_setup$n(props, ctx) : void 0;
+};
+const Testimonial = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["__scopeId", "data-v-996c6c07"]]);
+const _sfc_main$m = {
+  __name: "CtaBand",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    reassurance: { type: String, default: null },
+    submitLabel: { type: String, default: null },
+    sectorHint: { type: String, default: null },
+    campaign: { type: String, default: null }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "section band on-dark" }, _attrs))} data-v-dfddb4ee>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="band__inner" data-v-dfddb4ee${_scopeId}>`);
+            _push2(ssrRenderComponent(LeadField, {
+              layout: "inline",
+              heading: __props.heading,
+              reassurance: __props.reassurance,
+              "submit-label": __props.submitLabel,
+              "sector-hint": __props.sectorHint,
+              campaign: __props.campaign
+            }, null, _parent2, _scopeId));
+            _push2(`</div>`);
+          } else {
+            return [
+              createVNode("div", { class: "band__inner" }, [
+                createVNode(LeadField, {
+                  layout: "inline",
+                  heading: __props.heading,
+                  reassurance: __props.reassurance,
+                  "submit-label": __props.submitLabel,
+                  "sector-hint": __props.sectorHint,
+                  campaign: __props.campaign
+                }, null, 8, ["heading", "reassurance", "submit-label", "sector-hint", "campaign"])
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</section>`);
+    };
+  }
+};
+const _sfc_setup$m = _sfc_main$m.setup;
+_sfc_main$m.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CtaBand.vue");
+  return _sfc_setup$m ? _sfc_setup$m(props, ctx) : void 0;
+};
+const CtaBand = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["__scopeId", "data-v-dfddb4ee"]]);
+const _sfc_main$l = {
+  __name: "SectionRenderer",
+  __ssrInlineRender: true,
+  props: {
+    sections: { type: Array, default: () => [] },
+    // Section types the parent page renders itself; skipped here.
+    skip: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const COMPONENTS = {
+      rich_text: RichText,
+      intro_statement: IntroStatement,
+      media_split: MediaSplit,
+      cards: CardsGrid,
+      accordion: FaqAccordion,
+      video: VideoBlock,
+      gallery: Gallery,
+      timeline: Timeline,
+      testimonial: Testimonial,
+      cta_band: CtaBand
+    };
+    const renderable = computed(
+      () => props.sections.filter((s) => COMPONENTS[s.type] && !props.skip.includes(s.type))
+    );
+    function propsFor(section) {
+      const base = {
+        heading: section.heading,
+        subheading: section.subheading,
+        body: section.body,
+        ctaLabel: section.ctaLabel,
+        ctaUrl: section.ctaUrl
+      };
+      return { ...base, ...section.settings ?? {} };
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      ssrRenderList(renderable.value, (section) => {
+        ssrRenderVNode(_push, createVNode(resolveDynamicComponent(COMPONENTS[section.type]), mergeProps({
+          key: section.id
+        }, { ref_for: true }, propsFor(section)), null), _parent);
+      });
+      _push(`<!--]-->`);
+    };
+  }
+};
+const _sfc_setup$l = _sfc_main$l.setup;
+_sfc_main$l.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SectionRenderer.vue");
+  return _sfc_setup$l ? _sfc_setup$l(props, ctx) : void 0;
+};
+const _sfc_main$k = {
+  __name: "Contact",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const inertia = usePage();
+    const settings = computed(() => inertia.props.settings ?? {});
+    const locale = computed(() => inertia.props.locale);
+    const formCopy = computed(() => props.sections.find((s) => s.type === "contact_block") ?? {});
+    const mapCopy = computed(() => props.sections.find((s) => s.type === "map") ?? {});
+    const email = computed(() => settings.value["contact.email"] ?? null);
+    const phone = computed(() => settings.value["contact.phone"] ?? null);
+    const whatsapp = computed(() => settings.value["contact.whatsapp"] ?? null);
+    const social = computed(() => settings.value["contact.social"] ?? []);
+    const address = computed(() => settings.value[`contact.address.${locale.value}`] ?? null);
+    const hours = computed(() => settings.value[`contact.hours.${locale.value}`] ?? null);
+    const mapQuery = computed(() => settings.value["contact.map_query"] ?? null);
+    const mapEmbed = computed(() => settings.value["contact.map_embed_url"] ?? null);
+    const mapLink = computed(() => settings.value["contact.map_url"] ?? null);
+    const whatsappHref = computed(
+      () => whatsapp.value ? `https://wa.me/${String(whatsapp.value).replace(/\D/g, "")}` : null
+    );
+    const channels = computed(
+      () => [
+        email.value && { label: t("contact.email"), value: email.value, href: `mailto:${email.value}`, latin: true },
+        phone.value && { label: t("contact.phone"), value: phone.value, href: `tel:${phone.value}`, latin: true },
+        whatsapp.value && {
+          label: t("contact.whatsapp"),
+          value: whatsapp.value,
+          href: whatsappHref.value,
+          latin: true,
+          external: true
+        }
+      ].filter(Boolean)
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(`<section class="section intro" data-v-ad849110${_scopeId}>`);
+            _push2(ssrRenderComponent(_sfc_main$J, null, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (__props.page?.title) {
+                    _push3(`<h1 data-v-ad849110${_scopeId2}>${ssrInterpolate(__props.page.title)}</h1>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  if (__props.page?.subtitle) {
+                    _push3(`<p class="intro__sub" data-v-ad849110${_scopeId2}>${ssrInterpolate(__props.page.subtitle)}</p>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(`<div class="grid" data-v-ad849110${_scopeId2}><div class="grid__form" data-v-ad849110${_scopeId2}>`);
+                  _push3(ssrRenderComponent(LeadField, {
+                    layout: "stacked",
+                    heading: formCopy.value.heading,
+                    reassurance: formCopy.value.subheading,
+                    "submit-label": formCopy.value.ctaLabel
+                  }, null, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                  if (channels.value.length || social.value.length) {
+                    _push3(`<aside class="grid__aside" data-v-ad849110${_scopeId2}><h2 class="aside__title" data-v-ad849110${_scopeId2}>${ssrInterpolate(unref(t)("contact.direct_channels"))}</h2>`);
+                    if (channels.value.length) {
+                      _push3(`<dl class="channels" data-v-ad849110${_scopeId2}><!--[-->`);
+                      ssrRenderList(channels.value, (channel) => {
+                        _push3(`<!--[--><dt class="channels__label" data-v-ad849110${_scopeId2}>${ssrInterpolate(channel.label)}</dt><dd class="channels__value" data-v-ad849110${_scopeId2}><a class="${ssrRenderClass([{ latin: channel.latin }, "link-weave"])}"${ssrRenderAttr("href", channel.href)}${ssrRenderAttr("rel", channel.external ? "noopener noreferrer" : void 0)}${ssrRenderAttr("target", channel.external ? "_blank" : void 0)} data-v-ad849110${_scopeId2}>${ssrInterpolate(channel.value)}</a></dd><!--]-->`);
+                      });
+                      _push3(`<!--]--></dl>`);
+                    } else {
+                      _push3(`<!---->`);
+                    }
+                    if (social.value.length) {
+                      _push3(`<!--[--><h2 class="aside__title aside__title--spaced" data-v-ad849110${_scopeId2}>${ssrInterpolate(unref(t)("contact.social"))}</h2><ul class="social" data-v-ad849110${_scopeId2}><!--[-->`);
+                      ssrRenderList(social.value, (channel) => {
+                        _push3(`<li data-v-ad849110${_scopeId2}><a class="link-weave"${ssrRenderAttr("href", channel.url)} rel="noopener noreferrer" target="_blank" data-v-ad849110${_scopeId2}>${ssrInterpolate(channel.label)} <span class="visually-hidden" data-v-ad849110${_scopeId2}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a></li>`);
+                      });
+                      _push3(`<!--]--></ul><!--]-->`);
+                    } else {
+                      _push3(`<!---->`);
+                    }
+                    _push3(`</aside>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    __props.page?.title ? (openBlock(), createBlock("h1", { key: 0 }, toDisplayString(__props.page.title), 1)) : createCommentVNode("", true),
+                    __props.page?.subtitle ? (openBlock(), createBlock("p", {
+                      key: 1,
+                      class: "intro__sub"
+                    }, toDisplayString(__props.page.subtitle), 1)) : createCommentVNode("", true),
+                    createVNode("div", { class: "grid" }, [
+                      createVNode("div", { class: "grid__form" }, [
+                        createVNode(LeadField, {
+                          layout: "stacked",
+                          heading: formCopy.value.heading,
+                          reassurance: formCopy.value.subheading,
+                          "submit-label": formCopy.value.ctaLabel
+                        }, null, 8, ["heading", "reassurance", "submit-label"])
+                      ]),
+                      channels.value.length || social.value.length ? (openBlock(), createBlock("aside", {
+                        key: 0,
+                        class: "grid__aside"
+                      }, [
+                        createVNode("h2", { class: "aside__title" }, toDisplayString(unref(t)("contact.direct_channels")), 1),
+                        channels.value.length ? (openBlock(), createBlock("dl", {
+                          key: 0,
+                          class: "channels"
+                        }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(channels.value, (channel) => {
+                            return openBlock(), createBlock(Fragment, {
+                              key: channel.label
+                            }, [
+                              createVNode("dt", { class: "channels__label" }, toDisplayString(channel.label), 1),
+                              createVNode("dd", { class: "channels__value" }, [
+                                createVNode("a", {
+                                  class: ["link-weave", { latin: channel.latin }],
+                                  href: channel.href,
+                                  rel: channel.external ? "noopener noreferrer" : void 0,
+                                  target: channel.external ? "_blank" : void 0
+                                }, toDisplayString(channel.value), 11, ["href", "rel", "target"])
+                              ])
+                            ], 64);
+                          }), 128))
+                        ])) : createCommentVNode("", true),
+                        social.value.length ? (openBlock(), createBlock(Fragment, { key: 1 }, [
+                          createVNode("h2", { class: "aside__title aside__title--spaced" }, toDisplayString(unref(t)("contact.social")), 1),
+                          createVNode("ul", { class: "social" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(social.value, (channel) => {
+                              return openBlock(), createBlock("li", {
+                                key: channel.url
+                              }, [
+                                createVNode("a", {
+                                  class: "link-weave",
+                                  href: channel.url,
+                                  rel: "noopener noreferrer",
+                                  target: "_blank"
+                                }, [
+                                  createTextVNode(toDisplayString(channel.label) + " ", 1),
+                                  createVNode("span", { class: "visually-hidden" }, toDisplayString(unref(t)("common.external_link")), 1)
+                                ], 8, ["href"])
+                              ]);
+                            }), 128))
+                          ])
+                        ], 64)) : createCommentVNode("", true)
+                      ])) : createCommentVNode("", true)
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(`</section>`);
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(MapBlock, {
+              heading: mapCopy.value.heading ?? unref(t)("contact.map"),
+              address: address.value,
+              hours: hours.value,
+              "embed-url": mapEmbed.value,
+              query: mapQuery.value,
+              "link-url": mapLink.value
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["contact_block", "map"]
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode("section", { class: "section intro" }, [
+                createVNode(_sfc_main$J, null, {
+                  default: withCtx(() => [
+                    __props.page?.title ? (openBlock(), createBlock("h1", { key: 0 }, toDisplayString(__props.page.title), 1)) : createCommentVNode("", true),
+                    __props.page?.subtitle ? (openBlock(), createBlock("p", {
+                      key: 1,
+                      class: "intro__sub"
+                    }, toDisplayString(__props.page.subtitle), 1)) : createCommentVNode("", true),
+                    createVNode("div", { class: "grid" }, [
+                      createVNode("div", { class: "grid__form" }, [
+                        createVNode(LeadField, {
+                          layout: "stacked",
+                          heading: formCopy.value.heading,
+                          reassurance: formCopy.value.subheading,
+                          "submit-label": formCopy.value.ctaLabel
+                        }, null, 8, ["heading", "reassurance", "submit-label"])
+                      ]),
+                      channels.value.length || social.value.length ? (openBlock(), createBlock("aside", {
+                        key: 0,
+                        class: "grid__aside"
+                      }, [
+                        createVNode("h2", { class: "aside__title" }, toDisplayString(unref(t)("contact.direct_channels")), 1),
+                        channels.value.length ? (openBlock(), createBlock("dl", {
+                          key: 0,
+                          class: "channels"
+                        }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(channels.value, (channel) => {
+                            return openBlock(), createBlock(Fragment, {
+                              key: channel.label
+                            }, [
+                              createVNode("dt", { class: "channels__label" }, toDisplayString(channel.label), 1),
+                              createVNode("dd", { class: "channels__value" }, [
+                                createVNode("a", {
+                                  class: ["link-weave", { latin: channel.latin }],
+                                  href: channel.href,
+                                  rel: channel.external ? "noopener noreferrer" : void 0,
+                                  target: channel.external ? "_blank" : void 0
+                                }, toDisplayString(channel.value), 11, ["href", "rel", "target"])
+                              ])
+                            ], 64);
+                          }), 128))
+                        ])) : createCommentVNode("", true),
+                        social.value.length ? (openBlock(), createBlock(Fragment, { key: 1 }, [
+                          createVNode("h2", { class: "aside__title aside__title--spaced" }, toDisplayString(unref(t)("contact.social")), 1),
+                          createVNode("ul", { class: "social" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(social.value, (channel) => {
+                              return openBlock(), createBlock("li", {
+                                key: channel.url
+                              }, [
+                                createVNode("a", {
+                                  class: "link-weave",
+                                  href: channel.url,
+                                  rel: "noopener noreferrer",
+                                  target: "_blank"
+                                }, [
+                                  createTextVNode(toDisplayString(channel.label) + " ", 1),
+                                  createVNode("span", { class: "visually-hidden" }, toDisplayString(unref(t)("common.external_link")), 1)
+                                ], 8, ["href"])
+                              ]);
+                            }), 128))
+                          ])
+                        ], 64)) : createCommentVNode("", true)
+                      ])) : createCommentVNode("", true)
+                    ])
+                  ]),
+                  _: 1
+                })
+              ]),
+              createVNode(SaduDivider),
+              createVNode(MapBlock, {
+                heading: mapCopy.value.heading ?? unref(t)("contact.map"),
+                address: address.value,
+                hours: hours.value,
+                "embed-url": mapEmbed.value,
+                query: mapQuery.value,
+                "link-url": mapLink.value
+              }, null, 8, ["heading", "address", "hours", "embed-url", "query", "link-url"]),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["contact_block", "map"]
+              }, null, 8, ["sections"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$k = _sfc_main$k.setup;
+_sfc_main$k.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Contact.vue");
+  return _sfc_setup$k ? _sfc_setup$k(props, ctx) : void 0;
+};
+const Contact = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["__scopeId", "data-v-ad849110"]]);
+const __vite_glob_0_20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Contact
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$j = {
+  __name: "Hero",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    subheading: { type: String, default: null },
+    ctaLabel: { type: String, default: null },
+    ctaUrl: { type: String, default: null },
+    secondaryLabel: { type: String, default: null },
+    secondaryUrl: { type: String, default: null },
+    image: { type: Object, default: null }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "hero on-dark" }, _attrs))} data-v-7f1479d8>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="hero__grid" data-v-7f1479d8${_scopeId}><div class="hero__copy" data-v-7f1479d8${_scopeId}>`);
+            if (__props.heading) {
+              _push2(`<h1 class="display hero__heading" data-v-7f1479d8${_scopeId}>${ssrInterpolate(__props.heading)}</h1>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.subheading) {
+              _push2(`<p class="hero__sub" data-v-7f1479d8${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.ctaLabel || __props.secondaryLabel) {
+              _push2(`<div class="hero__actions" data-v-7f1479d8${_scopeId}>`);
+              if (__props.ctaLabel) {
+                _push2(ssrRenderComponent(_sfc_main$V, {
+                  variant: "cta-lg",
+                  href: __props.ctaUrl
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(__props.ctaLabel)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                      ];
+                    }
+                  }),
+                  _: 1
+                }, _parent2, _scopeId));
+              } else {
+                _push2(`<!---->`);
+              }
+              if (__props.secondaryLabel) {
+                _push2(ssrRenderComponent(_sfc_main$V, {
+                  variant: "secondary",
+                  href: __props.secondaryUrl
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(__props.secondaryLabel)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(__props.secondaryLabel), 1)
+                      ];
+                    }
+                  }),
+                  _: 1
+                }, _parent2, _scopeId));
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+            if (__props.image) {
+              _push2(`<div class="hero__media" data-v-7f1479d8${_scopeId}><img${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} fetchpriority="high" decoding="async" data-v-7f1479d8${_scopeId}></div>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+          } else {
+            return [
+              createVNode("div", { class: "hero__grid" }, [
+                createVNode("div", { class: "hero__copy" }, [
+                  __props.heading ? (openBlock(), createBlock("h1", {
+                    key: 0,
+                    class: "display hero__heading"
+                  }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                  __props.subheading ? (openBlock(), createBlock("p", {
+                    key: 1,
+                    class: "hero__sub"
+                  }, toDisplayString(__props.subheading), 1)) : createCommentVNode("", true),
+                  __props.ctaLabel || __props.secondaryLabel ? (openBlock(), createBlock("div", {
+                    key: 2,
+                    class: "hero__actions"
+                  }, [
+                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$V, {
+                      key: 0,
+                      variant: "cta-lg",
+                      href: __props.ctaUrl
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true),
+                    __props.secondaryLabel ? (openBlock(), createBlock(_sfc_main$V, {
+                      key: 1,
+                      variant: "secondary",
+                      href: __props.secondaryUrl
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(__props.secondaryLabel), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["href"])) : createCommentVNode("", true)
+                  ])) : createCommentVNode("", true)
+                ]),
+                __props.image ? (openBlock(), createBlock("div", {
+                  key: 0,
+                  class: "hero__media"
+                }, [
+                  createVNode("img", {
+                    src: __props.image.webp ?? __props.image.url,
+                    alt: __props.image.alt ?? "",
+                    width: __props.image.width ?? void 0,
+                    height: __props.image.height ?? void 0,
+                    fetchpriority: "high",
+                    decoding: "async"
+                  }, null, 8, ["src", "alt", "width", "height"])
+                ])) : createCommentVNode("", true)
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</section>`);
+    };
+  }
+};
+const _sfc_setup$j = _sfc_main$j.setup;
+_sfc_main$j.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/Hero.vue");
+  return _sfc_setup$j ? _sfc_setup$j(props, ctx) : void 0;
+};
+const Hero = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["__scopeId", "data-v-7f1479d8"]]);
+const _sfc_main$i = {
+  __name: "SolutionsGrid",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-21c4a2b5>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-21c4a2b5${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="grid" data-v-21c4a2b5${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item) => {
+                _push2(`<li class="reveal" data-v-21c4a2b5${_scopeId}>`);
+                _push2(ssrRenderComponent(unref(Link), {
+                  href: item.url,
+                  class: "card card--link solution"
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      if (item.icon) {
+                        _push3(`<span class="solution__icon" aria-hidden="true" data-v-21c4a2b5${_scopeId2}>${ssrInterpolate(item.icon)}</span>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      _push3(`<h3 class="solution__name" data-v-21c4a2b5${_scopeId2}>${ssrInterpolate(item.name)}</h3>`);
+                      if (item.summary) {
+                        _push3(`<p class="solution__summary" data-v-21c4a2b5${_scopeId2}>${ssrInterpolate(item.summary)}</p>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                      _push3(`<span class="solution__more" data-v-21c4a2b5${_scopeId2}>${ssrInterpolate(unref(t)("common.learn_more"))}</span>`);
+                    } else {
+                      return [
+                        item.icon ? (openBlock(), createBlock("span", {
+                          key: 0,
+                          class: "solution__icon",
+                          "aria-hidden": "true"
+                        }, toDisplayString(item.icon), 1)) : createCommentVNode("", true),
+                        createVNode("h3", { class: "solution__name" }, toDisplayString(item.name), 1),
+                        item.summary ? (openBlock(), createBlock("p", {
+                          key: 1,
+                          class: "solution__summary"
+                        }, toDisplayString(item.summary), 1)) : createCommentVNode("", true),
+                        createVNode("span", { class: "solution__more" }, toDisplayString(unref(t)("common.learn_more")), 1)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "grid" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item) => {
+                    return openBlock(), createBlock("li", {
+                      key: item.id,
+                      class: "reveal"
+                    }, [
+                      createVNode(unref(Link), {
+                        href: item.url,
+                        class: "card card--link solution"
+                      }, {
+                        default: withCtx(() => [
+                          item.icon ? (openBlock(), createBlock("span", {
+                            key: 0,
+                            class: "solution__icon",
+                            "aria-hidden": "true"
+                          }, toDisplayString(item.icon), 1)) : createCommentVNode("", true),
+                          createVNode("h3", { class: "solution__name" }, toDisplayString(item.name), 1),
+                          item.summary ? (openBlock(), createBlock("p", {
+                            key: 1,
+                            class: "solution__summary"
+                          }, toDisplayString(item.summary), 1)) : createCommentVNode("", true),
+                          createVNode("span", { class: "solution__more" }, toDisplayString(unref(t)("common.learn_more")), 1)
+                        ]),
+                        _: 2
+                      }, 1032, ["href"])
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$i = _sfc_main$i.setup;
+_sfc_main$i.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SolutionsGrid.vue");
+  return _sfc_setup$i ? _sfc_setup$i(props, ctx) : void 0;
+};
+const SolutionsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["__scopeId", "data-v-21c4a2b5"]]);
+const _sfc_main$h = {
+  __name: "SectorSpotlight",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section sectors"
+        }, _attrs))} data-v-eeaafbeb>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-eeaafbeb${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="sectors__grid" data-v-eeaafbeb${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item) => {
+                _push2(`<li class="reveal" data-v-eeaafbeb${_scopeId}>`);
+                _push2(ssrRenderComponent(unref(Link), {
+                  href: item.url,
+                  class: "card card--link sector"
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`<h3 class="sector__name" data-v-eeaafbeb${_scopeId2}>${ssrInterpolate(item.name)}</h3>`);
+                      if (item.summary) {
+                        _push3(`<p class="sector__summary" data-v-eeaafbeb${_scopeId2}>${ssrInterpolate(item.summary)}</p>`);
+                      } else {
+                        _push3(`<!---->`);
+                      }
+                    } else {
+                      return [
+                        createVNode("h3", { class: "sector__name" }, toDisplayString(item.name), 1),
+                        item.summary ? (openBlock(), createBlock("p", {
+                          key: 0,
+                          class: "sector__summary"
+                        }, toDisplayString(item.summary), 1)) : createCommentVNode("", true)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "sectors__grid" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item) => {
+                    return openBlock(), createBlock("li", {
+                      key: item.id,
+                      class: "reveal"
+                    }, [
+                      createVNode(unref(Link), {
+                        href: item.url,
+                        class: "card card--link sector"
+                      }, {
+                        default: withCtx(() => [
+                          createVNode("h3", { class: "sector__name" }, toDisplayString(item.name), 1),
+                          item.summary ? (openBlock(), createBlock("p", {
+                            key: 0,
+                            class: "sector__summary"
+                          }, toDisplayString(item.summary), 1)) : createCommentVNode("", true)
+                        ]),
+                        _: 2
+                      }, 1032, ["href"])
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$h = _sfc_main$h.setup;
+_sfc_main$h.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SectorSpotlight.vue");
+  return _sfc_setup$h ? _sfc_setup$h(props, ctx) : void 0;
+};
+const SectorSpotlight = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["__scopeId", "data-v-eeaafbeb"]]);
+function useCountUp(target, duration = 900) {
+  const el = ref(null);
+  const display = ref(target);
+  let observer = null;
+  let frame = null;
+  function prefersReducedMotion() {
+    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+  function run() {
+    const from = 0;
+    const start = performance.now();
+    const isInteger = Number.isInteger(target);
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = from + (target - from) * eased;
+      display.value = isInteger ? Math.round(value) : Math.round(value * 10) / 10;
+      if (progress < 1) {
+        frame = requestAnimationFrame(step);
+      }
+    }
+    frame = requestAnimationFrame(step);
+  }
+  onMounted(() => {
+    if (el.value === null) return;
+    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") return;
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          display.value = 0;
+          run();
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(el.value);
+  });
+  onUnmounted(() => {
+    observer?.disconnect();
+    if (frame !== null) cancelAnimationFrame(frame);
+  });
+  return { el, display };
+}
+const _sfc_main$g = {
+  __name: "ImpactStat",
+  __ssrInlineRender: true,
+  props: {
+    value: { type: Number, required: true },
+    suffix: { type: String, default: null },
+    label: { type: String, default: null },
+    note: { type: String, default: null }
+  },
+  setup(__props) {
+    const props = __props;
+    const { el, display } = useCountUp(props.value);
+    const { number } = useFormat();
+    const formatted = computed(() => number(display.value));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({
+        ref_key: "el",
+        ref: el,
+        class: "stat reveal"
+      }, _attrs))} data-v-b2ad7924><p class="stat__value tabular" data-v-b2ad7924><span data-v-b2ad7924>${ssrInterpolate(formatted.value)}</span>`);
+      if (__props.suffix) {
+        _push(`<span class="stat__suffix" data-v-b2ad7924>${ssrInterpolate(__props.suffix)}</span>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</p>`);
+      if (__props.label) {
+        _push(`<p class="stat__label" data-v-b2ad7924>${ssrInterpolate(__props.label)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (__props.note) {
+        _push(`<p class="stat__note" data-v-b2ad7924>${ssrInterpolate(__props.note)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`</div>`);
+    };
+  }
+};
+const _sfc_setup$g = _sfc_main$g.setup;
+_sfc_main$g.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ImpactStat.vue");
+  return _sfc_setup$g ? _sfc_setup$g(props, ctx) : void 0;
+};
+const ImpactStat = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["__scopeId", "data-v-b2ad7924"]]);
+const _sfc_main$f = {
+  __name: "ImpactStats",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] },
+    ctaLabel: { type: String, default: null },
+    ctaUrl: { type: String, default: null }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section impact sadu-ground"
+        }, _attrs))} data-v-52442568>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-52442568${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<div class="impact__grid" data-v-52442568${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (item) => {
+                _push2(ssrRenderComponent(ImpactStat, {
+                  key: item.id,
+                  value: item.value,
+                  suffix: item.suffix,
+                  label: item.label,
+                  note: item.note
+                }, null, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></div>`);
+              if (__props.ctaLabel) {
+                _push2(`<div class="impact__cta reveal" data-v-52442568${_scopeId}>`);
+                _push2(ssrRenderComponent(_sfc_main$V, {
+                  variant: "secondary",
+                  href: __props.ctaUrl
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(__props.ctaLabel)}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                      ];
+                    }
+                  }),
+                  _: 1
+                }, _parent2, _scopeId));
+                _push2(`</div>`);
+              } else {
+                _push2(`<!---->`);
+              }
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("div", { class: "impact__grid" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (item) => {
+                    return openBlock(), createBlock(ImpactStat, {
+                      key: item.id,
+                      value: item.value,
+                      suffix: item.suffix,
+                      label: item.label,
+                      note: item.note
+                    }, null, 8, ["value", "suffix", "label", "note"]);
+                  }), 128))
+                ]),
+                __props.ctaLabel ? (openBlock(), createBlock("div", {
+                  key: 1,
+                  class: "impact__cta reveal"
+                }, [
+                  createVNode(_sfc_main$V, {
+                    variant: "secondary",
+                    href: __props.ctaUrl
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["href"])
+                ])) : createCommentVNode("", true)
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$f = _sfc_main$f.setup;
+_sfc_main$f.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ImpactStats.vue");
+  return _sfc_setup$f ? _sfc_setup$f(props, ctx) : void 0;
+};
+const ImpactStats = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["__scopeId", "data-v-52442568"]]);
+const _sfc_main$e = {
+  __name: "StoryCarousel",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-708507cb>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-708507cb${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true)
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`<ul class="rail" tabindex="0"${ssrRenderAttr("aria-label", __props.heading ?? void 0)} data-v-708507cb><!--[-->`);
+        ssrRenderList(__props.items, (story) => {
+          _push(`<li class="rail__item" data-v-708507cb><figure class="story" data-v-708507cb>`);
+          if (story.image) {
+            _push(`<img class="story__image"${ssrRenderAttr("src", story.image.webp ?? story.image.url)}${ssrRenderAttr("alt", story.image.alt ?? "")}${ssrRenderAttr("width", story.image.width ?? void 0)}${ssrRenderAttr("height", story.image.height ?? void 0)} loading="lazy" decoding="async" data-v-708507cb>`);
+          } else {
+            _push(`<!---->`);
+          }
+          _push(`<figcaption class="story__body" data-v-708507cb>`);
+          if (story.quote) {
+            _push(`<blockquote class="story__quote" data-v-708507cb>${ssrInterpolate(story.quote)}</blockquote>`);
+          } else {
+            _push(`<!---->`);
+          }
+          if (story.attribution) {
+            _push(`<p class="story__attribution" data-v-708507cb>${ssrInterpolate(story.attribution)}</p>`);
+          } else {
+            _push(`<!---->`);
+          }
+          _push(`</figcaption></figure></li>`);
+        });
+        _push(`<!--]--></ul></section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$e = _sfc_main$e.setup;
+_sfc_main$e.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/StoryCarousel.vue");
+  return _sfc_setup$e ? _sfc_setup$e(props, ctx) : void 0;
+};
+const StoryCarousel = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["__scopeId", "data-v-708507cb"]]);
+const _sfc_main$d = {
+  __name: "Home",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    solutions: { type: Array, default: () => [] },
+    sectors: { type: Array, default: () => [] },
+    impact: { type: Array, default: () => [] },
+    stories: { type: Array, default: () => [] },
+    partners: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const hero = computed(() => section("hero"));
+    const intro = computed(() => section("intro_statement"));
+    const solutionsCopy = computed(() => section("solutions_grid"));
+    const sectorsCopy = computed(() => section("sector_spotlight"));
+    const impactCopy = computed(() => section("stats"));
+    const storiesCopy = computed(() => section("story_carousel"));
+    const partnersCopy = computed(() => section("logos"));
+    const ctaCopy = computed(() => section("cta_band"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        "over-hero": "",
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Hero, {
+              heading: hero.value.heading ?? __props.page?.title,
+              subheading: hero.value.subheading ?? __props.page?.subtitle,
+              "cta-label": hero.value.ctaLabel,
+              "cta-url": hero.value.ctaUrl,
+              "secondary-label": hero.value.settings?.secondaryLabel,
+              "secondary-url": hero.value.settings?.secondaryUrl,
+              image: hero.value.settings?.image
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(IntroStatement, {
+              body: intro.value.body
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SolutionsGrid, {
+              heading: solutionsCopy.value.heading,
+              items: __props.solutions
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SectorSpotlight, {
+              heading: sectorsCopy.value.heading,
+              items: __props.sectors
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(ImpactStats, {
+              heading: impactCopy.value.heading,
+              items: __props.impact,
+              "cta-label": impactCopy.value.ctaLabel,
+              "cta-url": impactCopy.value.ctaUrl
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(StoryCarousel, {
+              heading: storiesCopy.value.heading,
+              items: __props.stories
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PartnersLogos, {
+              heading: partnersCopy.value.heading,
+              items: __props.partners
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Hero, {
+                heading: hero.value.heading ?? __props.page?.title,
+                subheading: hero.value.subheading ?? __props.page?.subtitle,
+                "cta-label": hero.value.ctaLabel,
+                "cta-url": hero.value.ctaUrl,
+                "secondary-label": hero.value.settings?.secondaryLabel,
+                "secondary-url": hero.value.settings?.secondaryUrl,
+                image: hero.value.settings?.image
+              }, null, 8, ["heading", "subheading", "cta-label", "cta-url", "secondary-label", "secondary-url", "image"]),
+              createVNode(SaduDivider),
+              createVNode(IntroStatement, {
+                body: intro.value.body
+              }, null, 8, ["body"]),
+              createVNode(SolutionsGrid, {
+                heading: solutionsCopy.value.heading,
+                items: __props.solutions
+              }, null, 8, ["heading", "items"]),
+              createVNode(SectorSpotlight, {
+                heading: sectorsCopy.value.heading,
+                items: __props.sectors
+              }, null, 8, ["heading", "items"]),
+              createVNode(ImpactStats, {
+                heading: impactCopy.value.heading,
+                items: __props.impact,
+                "cta-label": impactCopy.value.ctaLabel,
+                "cta-url": impactCopy.value.ctaUrl
+              }, null, 8, ["heading", "items", "cta-label", "cta-url"]),
+              createVNode(StoryCarousel, {
+                heading: storiesCopy.value.heading,
+                items: __props.stories
+              }, null, 8, ["heading", "items"]),
+              createVNode(PartnersLogos, {
+                heading: partnersCopy.value.heading,
+                items: __props.partners
+              }, null, 8, ["heading", "items"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$d = _sfc_main$d.setup;
+_sfc_main$d.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Home.vue");
+  return _sfc_setup$d ? _sfc_setup$d(props, ctx) : void 0;
+};
+const __vite_glob_0_21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$d
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$c = {
+  __name: "PageHero",
+  __ssrInlineRender: true,
+  props: {
+    title: { type: String, default: null },
+    subtitle: { type: String, default: null },
+    ctaLabel: { type: String, default: null },
+    ctaUrl: { type: String, default: null },
+    image: { type: Object, default: null }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "phero on-dark" }, _attrs))} data-v-da2be4f7>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="phero__grid" data-v-da2be4f7${_scopeId}><div data-v-da2be4f7${_scopeId}>`);
+            if (__props.title) {
+              _push2(`<h1 data-v-da2be4f7${_scopeId}>${ssrInterpolate(__props.title)}</h1>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.subtitle) {
+              _push2(`<p class="phero__sub" data-v-da2be4f7${_scopeId}>${ssrInterpolate(__props.subtitle)}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.ctaLabel) {
+              _push2(ssrRenderComponent(_sfc_main$V, {
+                variant: "cta-lg",
+                href: __props.ctaUrl,
+                class: "phero__cta"
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(`${ssrInterpolate(__props.ctaLabel)}`);
+                  } else {
+                    return [
+                      createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+            if (__props.image) {
+              _push2(`<img class="phero__image"${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} fetchpriority="high" decoding="async" data-v-da2be4f7${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</div>`);
+          } else {
+            return [
+              createVNode("div", { class: "phero__grid" }, [
+                createVNode("div", null, [
+                  __props.title ? (openBlock(), createBlock("h1", { key: 0 }, toDisplayString(__props.title), 1)) : createCommentVNode("", true),
+                  __props.subtitle ? (openBlock(), createBlock("p", {
+                    key: 1,
+                    class: "phero__sub"
+                  }, toDisplayString(__props.subtitle), 1)) : createCommentVNode("", true),
+                  __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$V, {
+                    key: 2,
+                    variant: "cta-lg",
+                    href: __props.ctaUrl,
+                    class: "phero__cta"
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(__props.ctaLabel), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["href"])) : createCommentVNode("", true)
+                ]),
+                __props.image ? (openBlock(), createBlock("img", {
+                  key: 0,
+                  class: "phero__image",
+                  src: __props.image.webp ?? __props.image.url,
+                  alt: __props.image.alt ?? "",
+                  width: __props.image.width ?? void 0,
+                  height: __props.image.height ?? void 0,
+                  fetchpriority: "high",
+                  decoding: "async"
+                }, null, 8, ["src", "alt", "width", "height"])) : createCommentVNode("", true)
+              ])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</section>`);
+    };
+  }
+};
+const _sfc_setup$c = _sfc_main$c.setup;
+_sfc_main$c.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/PageHero.vue");
+  return _sfc_setup$c ? _sfc_setup$c(props, ctx) : void 0;
+};
+const PageHero = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["__scopeId", "data-v-da2be4f7"]]);
+const _sfc_main$b = {
+  __name: "Badge",
+  __ssrInlineRender: true,
+  props: {
+    variant: {
+      type: String,
+      default: "default",
+      validator: (v) => ["default", "accent", "sector", "year", "status"].includes(v)
+    }
+  },
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<span${ssrRenderAttrs(mergeProps({
+        class: ["badge", __props.variant === "accent" ? "badge--accent" : null]
+      }, _attrs))}>`);
+      ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
+      _push(`</span>`);
+    };
+  }
+};
+const _sfc_setup$b = _sfc_main$b.setup;
+_sfc_main$b.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Badge.vue");
+  return _sfc_setup$b ? _sfc_setup$b(props, ctx) : void 0;
+};
+const _sfc_main$a = {
+  __name: "ReportsList",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-5c619492>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-5c619492${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="reports" data-v-5c619492${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (report) => {
+                _push2(`<li class="card report reveal" data-v-5c619492${_scopeId}>`);
+                if (report.cover) {
+                  _push2(`<img class="report__cover"${ssrRenderAttr("src", report.cover.webp ?? report.cover.url)}${ssrRenderAttr("alt", report.cover.alt ?? "")}${ssrRenderAttr("width", report.cover.width ?? void 0)}${ssrRenderAttr("height", report.cover.height ?? void 0)} loading="lazy" decoding="async" data-v-5c619492${_scopeId}>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (report.year) {
+                  _push2(ssrRenderComponent(_sfc_main$b, { class: "tabular" }, {
+                    default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                      if (_push3) {
+                        _push3(`${ssrInterpolate(report.year)}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(report.year), 1)
+                        ];
+                      }
+                    }),
+                    _: 2
+                  }, _parent2, _scopeId));
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`<h3 class="report__title" data-v-5c619492${_scopeId}>${ssrInterpolate(report.title)}</h3>`);
+                if (report.summary) {
+                  _push2(`<p class="report__summary" data-v-5c619492${_scopeId}>${ssrInterpolate(report.summary)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (report.fileUrl) {
+                  _push2(`<a class="report__link link-weave"${ssrRenderAttr("href", report.fileUrl)} download data-v-5c619492${_scopeId}>${ssrInterpolate(unref(t)("impact.download"))} `);
+                  if (report.fileSize) {
+                    _push2(`<span class="report__size latin" data-v-5c619492${_scopeId}> (${ssrInterpolate(report.fileSize)}) </span>`);
+                  } else {
+                    _push2(`<!---->`);
+                  }
+                  _push2(`</a>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "reports" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (report) => {
+                    return openBlock(), createBlock("li", {
+                      key: report.id,
+                      class: "card report reveal"
+                    }, [
+                      report.cover ? (openBlock(), createBlock("img", {
+                        key: 0,
+                        class: "report__cover",
+                        src: report.cover.webp ?? report.cover.url,
+                        alt: report.cover.alt ?? "",
+                        width: report.cover.width ?? void 0,
+                        height: report.cover.height ?? void 0,
+                        loading: "lazy",
+                        decoding: "async"
+                      }, null, 8, ["src", "alt", "width", "height"])) : createCommentVNode("", true),
+                      report.year ? (openBlock(), createBlock(_sfc_main$b, {
+                        key: 1,
+                        class: "tabular"
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(report.year), 1)
+                        ]),
+                        _: 2
+                      }, 1024)) : createCommentVNode("", true),
+                      createVNode("h3", { class: "report__title" }, toDisplayString(report.title), 1),
+                      report.summary ? (openBlock(), createBlock("p", {
+                        key: 2,
+                        class: "report__summary"
+                      }, toDisplayString(report.summary), 1)) : createCommentVNode("", true),
+                      report.fileUrl ? (openBlock(), createBlock("a", {
+                        key: 3,
+                        class: "report__link link-weave",
+                        href: report.fileUrl,
+                        download: ""
+                      }, [
+                        createTextVNode(toDisplayString(unref(t)("impact.download")) + " ", 1),
+                        report.fileSize ? (openBlock(), createBlock("span", {
+                          key: 0,
+                          class: "report__size latin"
+                        }, " (" + toDisplayString(report.fileSize) + ") ", 1)) : createCommentVNode("", true)
+                      ], 8, ["href"])) : createCommentVNode("", true)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$a = _sfc_main$a.setup;
+_sfc_main$a.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ReportsList.vue");
+  return _sfc_setup$a ? _sfc_setup$a(props, ctx) : void 0;
+};
+const ReportsList = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["__scopeId", "data-v-5c619492"]]);
+const _sfc_main$9 = {
+  __name: "Impact",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    impact: { type: Array, default: () => [] },
+    stories: { type: Array, default: () => [] },
+    reports: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const statsCopy = computed(() => section("stats"));
+    const storiesCopy = computed(() => section("story_carousel"));
+    const reportsCopy = computed(() => section("reports_list"));
+    const ctaCopy = computed(() => section("cta_band"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.page?.title,
+              subtitle: __props.page?.subtitle
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(ImpactStats, {
+              heading: statsCopy.value.heading,
+              items: __props.impact
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(StoryCarousel, {
+              heading: storiesCopy.value.heading,
+              items: __props.stories
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(ReportsList, {
+              heading: reportsCopy.value.heading,
+              items: __props.reports
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.page?.title,
+                subtitle: __props.page?.subtitle
+              }, null, 8, ["title", "subtitle"]),
+              createVNode(SaduDivider),
+              createVNode(ImpactStats, {
+                heading: statsCopy.value.heading,
+                items: __props.impact
+              }, null, 8, ["heading", "items"]),
+              createVNode(StoryCarousel, {
+                heading: storiesCopy.value.heading,
+                items: __props.stories
+              }, null, 8, ["heading", "items"]),
+              createVNode(ReportsList, {
+                heading: reportsCopy.value.heading,
+                items: __props.reports
+              }, null, 8, ["heading", "items"]),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$9 = _sfc_main$9.setup;
+_sfc_main$9.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Impact.vue");
+  return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
+};
+const __vite_glob_0_22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$9
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$8 = {
+  __name: "Page",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, required: true },
+    sections: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const ctaCopy = computed(() => props.sections.find((s) => s.type === "cta_band") ?? {});
+    const narrow = computed(() => props.page.narrow === true);
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            if (!narrow.value) {
+              _push2(ssrRenderComponent(PageHero, {
+                title: __props.page.title,
+                subtitle: __props.page.subtitle
+              }, null, _parent2, _scopeId));
+            } else {
+              _push2(`<header class="legal-head" data-v-d363a75a${_scopeId}><div class="container" data-v-d363a75a${_scopeId}><h1 data-v-d363a75a${_scopeId}>${ssrInterpolate(__props.page.title)}</h1>`);
+              if (__props.page.subtitle) {
+                _push2(`<p class="legal-head__sub" data-v-d363a75a${_scopeId}>${ssrInterpolate(__props.page.subtitle)}</p>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`</div></header>`);
+            }
+            if (!narrow.value) {
+              _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            if (!narrow.value && ctaCopy.value.heading) {
+              _push2(ssrRenderComponent(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              !narrow.value ? (openBlock(), createBlock(PageHero, {
+                key: 0,
+                title: __props.page.title,
+                subtitle: __props.page.subtitle
+              }, null, 8, ["title", "subtitle"])) : (openBlock(), createBlock("header", {
+                key: 1,
+                class: "legal-head"
+              }, [
+                createVNode("div", { class: "container" }, [
+                  createVNode("h1", null, toDisplayString(__props.page.title), 1),
+                  __props.page.subtitle ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "legal-head__sub"
+                  }, toDisplayString(__props.page.subtitle), 1)) : createCommentVNode("", true)
+                ])
+              ])),
+              !narrow.value ? (openBlock(), createBlock(SaduDivider, { key: 2 })) : createCommentVNode("", true),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              !narrow.value && ctaCopy.value.heading ? (openBlock(), createBlock(CtaBand, {
+                key: 3,
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])) : createCommentVNode("", true)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$8 = _sfc_main$8.setup;
+_sfc_main$8.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Page.vue");
+  return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
+};
+const Page = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-d363a75a"]]);
+const __vite_glob_0_23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Page
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$7 = {
+  __name: "Partners",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    partners: { type: Array, default: () => [] },
+    accreditations: { type: Array, default: () => [] },
+    clients: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    function groupCopy(group) {
+      return props.sections.find((s) => s.type === "logos" && s.settings?.group === group) ?? {};
+    }
+    const ctaCopy = computed(() => props.sections.find((s) => s.type === "cta_band") ?? {});
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.page?.title,
+              subtitle: __props.page?.subtitle
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PartnersLogos, {
+              heading: groupCopy("partner").heading,
+              items: __props.partners
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PartnersLogos, {
+              heading: groupCopy("accreditation").heading,
+              items: __props.accreditations
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PartnersLogos, {
+              heading: groupCopy("client").heading,
+              items: __props.clients
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band", "logos"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.page?.title,
+                subtitle: __props.page?.subtitle
+              }, null, 8, ["title", "subtitle"]),
+              createVNode(SaduDivider),
+              createVNode(PartnersLogos, {
+                heading: groupCopy("partner").heading,
+                items: __props.partners
+              }, null, 8, ["heading", "items"]),
+              createVNode(PartnersLogos, {
+                heading: groupCopy("accreditation").heading,
+                items: __props.accreditations
+              }, null, 8, ["heading", "items"]),
+              createVNode(PartnersLogos, {
+                heading: groupCopy("client").heading,
+                items: __props.clients
+              }, null, 8, ["heading", "items"]),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band", "logos"]
+              }, null, 8, ["sections"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$7 = _sfc_main$7.setup;
+_sfc_main$7.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Partners.vue");
+  return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
+};
+const __vite_glob_0_24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$7
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$6 = {
+  __name: "ProductShowcase",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    subheading: { type: String, default: null },
+    items: { type: Array, default: () => [] },
+    categories: { type: Array, default: () => [] },
+    activeCategory: { type: String, default: null },
+    allUrl: { type: String, default: null },
+    totalCount: { type: Number, default: 0 },
+    pagination: { type: Object, default: null },
+    storeLabel: { type: String, default: null }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const { number } = useFormat();
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({
+        ref_key: "root",
+        ref: root,
+        class: "section"
+      }, _attrs))} data-v-24473448>`);
+      _push(ssrRenderComponent(_sfc_main$J, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (__props.heading) {
+              _push2(`<h2 class="reveal" data-v-24473448${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.subheading) {
+              _push2(`<p class="showcase__sub reveal" data-v-24473448${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.categories.length) {
+              _push2(`<nav class="filters reveal"${ssrRenderAttr("aria-label", unref(t)("products.filter_by_category"))} data-v-24473448${_scopeId}>`);
+              if (__props.allUrl) {
+                _push2(ssrRenderComponent(unref(Link), {
+                  class: ["chip", { "is-active": __props.activeCategory === null }],
+                  href: __props.allUrl,
+                  "aria-current": __props.activeCategory === null ? "page" : void 0,
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(unref(t)("common.view_all"))} <span class="chip__count" data-v-24473448${_scopeId2}>${ssrInterpolate(unref(number)(__props.totalCount))}</span>`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(unref(t)("common.view_all")) + " ", 1),
+                        createVNode("span", { class: "chip__count" }, toDisplayString(unref(number)(__props.totalCount)), 1)
+                      ];
+                    }
+                  }),
+                  _: 1
+                }, _parent2, _scopeId));
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<!--[-->`);
+              ssrRenderList(__props.categories, (cat) => {
+                _push2(ssrRenderComponent(unref(Link), {
+                  key: cat.id,
+                  class: ["chip", { "is-active": __props.activeCategory === cat.slug }],
+                  href: cat.url,
+                  "aria-current": __props.activeCategory === cat.slug ? "page" : void 0,
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(cat.name)} <span class="chip__count" data-v-24473448${_scopeId2}>${ssrInterpolate(unref(number)(cat.count))}</span>`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(cat.name) + " ", 1),
+                        createVNode("span", { class: "chip__count" }, toDisplayString(unref(number)(cat.count)), 1)
+                      ];
+                    }
+                  }),
+                  _: 2
+                }, _parent2, _scopeId));
+              });
+              _push2(`<!--]--></nav>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (!__props.items.length) {
+              _push2(`<p class="empty" data-v-24473448${_scopeId}>${ssrInterpolate(unref(t)("products.empty"))}</p>`);
+            } else {
+              _push2(`<ul class="products" data-v-24473448${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (product) => {
+                _push2(`<li class="product reveal" data-v-24473448${_scopeId}><div class="product__frame" data-v-24473448${_scopeId}>`);
+                if (product.image) {
+                  _push2(`<img class="product__image"${ssrRenderAttr("src", product.image.webp ?? product.image.url)}${ssrRenderAttr("alt", product.image.alt ?? product.name)}${ssrRenderAttr("width", product.image.width ?? void 0)}${ssrRenderAttr("height", product.image.height ?? void 0)} loading="lazy" decoding="async" data-v-24473448${_scopeId}>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</div>`);
+                if (product.categoryName) {
+                  _push2(`<p class="product__category" data-v-24473448${_scopeId}>${ssrInterpolate(product.categoryName)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`<h3 class="product__name" data-v-24473448${_scopeId}>${ssrInterpolate(product.name)}</h3>`);
+                if (product.craftTechnique) {
+                  _push2(`<p class="product__craft" data-v-24473448${_scopeId}>${ssrInterpolate(product.craftTechnique)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (product.description) {
+                  _push2(`<p class="product__desc" data-v-24473448${_scopeId}>${ssrInterpolate(product.description)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (product.storeUrl && __props.storeLabel) {
+                  _push2(`<a class="product__store link-weave"${ssrRenderAttr("href", product.storeUrl)} rel="noopener noreferrer" target="_blank" data-v-24473448${_scopeId}>${ssrInterpolate(__props.storeLabel)} <span class="visually-hidden" data-v-24473448${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            }
+            if (__props.pagination && __props.pagination.last > 1) {
+              _push2(`<nav class="pager"${ssrRenderAttr("aria-label", unref(t)("products.pagination"))} data-v-24473448${_scopeId}>`);
+              if (__props.pagination.prev) {
+                _push2(ssrRenderComponent(unref(Link), {
+                  class: "pager__step",
+                  href: __props.pagination.prev,
+                  rel: "prev",
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(unref(t)("common.previous"))}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(unref(t)("common.previous")), 1)
+                      ];
+                    }
+                  }),
+                  _: 1
+                }, _parent2, _scopeId));
+              } else {
+                _push2(`<span class="pager__step is-disabled" aria-hidden="true" data-v-24473448${_scopeId}>${ssrInterpolate(unref(t)("common.previous"))}</span>`);
+              }
+              _push2(`<span class="pager__position" data-v-24473448${_scopeId}>${ssrInterpolate(unref(t)("products.page_of", { current: unref(number)(__props.pagination.current), last: unref(number)(__props.pagination.last) }))}</span>`);
+              if (__props.pagination.next) {
+                _push2(ssrRenderComponent(unref(Link), {
+                  class: "pager__step",
+                  href: __props.pagination.next,
+                  rel: "next",
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                    if (_push3) {
+                      _push3(`${ssrInterpolate(unref(t)("common.next"))}`);
+                    } else {
+                      return [
+                        createTextVNode(toDisplayString(unref(t)("common.next")), 1)
+                      ];
+                    }
+                  }),
+                  _: 1
+                }, _parent2, _scopeId));
+              } else {
+                _push2(`<span class="pager__step is-disabled" aria-hidden="true" data-v-24473448${_scopeId}>${ssrInterpolate(unref(t)("common.next"))}</span>`);
+              }
+              _push2(`</nav>`);
+            } else {
+              _push2(`<!---->`);
+            }
+          } else {
+            return [
+              __props.heading ? (openBlock(), createBlock("h2", {
+                key: 0,
+                class: "reveal"
+              }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+              __props.subheading ? (openBlock(), createBlock("p", {
+                key: 1,
+                class: "showcase__sub reveal"
+              }, toDisplayString(__props.subheading), 1)) : createCommentVNode("", true),
+              __props.categories.length ? (openBlock(), createBlock("nav", {
+                key: 2,
+                class: "filters reveal",
+                "aria-label": unref(t)("products.filter_by_category")
+              }, [
+                __props.allUrl ? (openBlock(), createBlock(unref(Link), {
+                  key: 0,
+                  class: ["chip", { "is-active": __props.activeCategory === null }],
+                  href: __props.allUrl,
+                  "aria-current": __props.activeCategory === null ? "page" : void 0,
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(unref(t)("common.view_all")) + " ", 1),
+                    createVNode("span", { class: "chip__count" }, toDisplayString(unref(number)(__props.totalCount)), 1)
+                  ]),
+                  _: 1
+                }, 8, ["class", "href", "aria-current"])) : createCommentVNode("", true),
+                (openBlock(true), createBlock(Fragment, null, renderList(__props.categories, (cat) => {
+                  return openBlock(), createBlock(unref(Link), {
+                    key: cat.id,
+                    class: ["chip", { "is-active": __props.activeCategory === cat.slug }],
+                    href: cat.url,
+                    "aria-current": __props.activeCategory === cat.slug ? "page" : void 0,
+                    "preserve-scroll": ""
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(cat.name) + " ", 1),
+                      createVNode("span", { class: "chip__count" }, toDisplayString(unref(number)(cat.count)), 1)
+                    ]),
+                    _: 2
+                  }, 1032, ["class", "href", "aria-current"]);
+                }), 128))
+              ], 8, ["aria-label"])) : createCommentVNode("", true),
+              !__props.items.length ? (openBlock(), createBlock("p", {
+                key: 3,
+                class: "empty"
+              }, toDisplayString(unref(t)("products.empty")), 1)) : (openBlock(), createBlock("ul", {
+                key: 4,
+                class: "products"
+              }, [
+                (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (product) => {
+                  return openBlock(), createBlock("li", {
+                    key: product.id,
+                    class: "product reveal"
+                  }, [
+                    createVNode("div", { class: "product__frame" }, [
+                      product.image ? (openBlock(), createBlock("img", {
+                        key: 0,
+                        class: "product__image",
+                        src: product.image.webp ?? product.image.url,
+                        alt: product.image.alt ?? product.name,
+                        width: product.image.width ?? void 0,
+                        height: product.image.height ?? void 0,
+                        loading: "lazy",
+                        decoding: "async"
+                      }, null, 8, ["src", "alt", "width", "height"])) : createCommentVNode("", true)
+                    ]),
+                    product.categoryName ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "product__category"
+                    }, toDisplayString(product.categoryName), 1)) : createCommentVNode("", true),
+                    createVNode("h3", { class: "product__name" }, toDisplayString(product.name), 1),
+                    product.craftTechnique ? (openBlock(), createBlock("p", {
+                      key: 1,
+                      class: "product__craft"
+                    }, toDisplayString(product.craftTechnique), 1)) : createCommentVNode("", true),
+                    product.description ? (openBlock(), createBlock("p", {
+                      key: 2,
+                      class: "product__desc"
+                    }, toDisplayString(product.description), 1)) : createCommentVNode("", true),
+                    product.storeUrl && __props.storeLabel ? (openBlock(), createBlock("a", {
+                      key: 3,
+                      class: "product__store link-weave",
+                      href: product.storeUrl,
+                      rel: "noopener noreferrer",
+                      target: "_blank"
+                    }, [
+                      createTextVNode(toDisplayString(__props.storeLabel) + " ", 1),
+                      createVNode("span", { class: "visually-hidden" }, toDisplayString(unref(t)("common.external_link")), 1)
+                    ], 8, ["href"])) : createCommentVNode("", true)
+                  ]);
+                }), 128))
+              ])),
+              __props.pagination && __props.pagination.last > 1 ? (openBlock(), createBlock("nav", {
+                key: 5,
+                class: "pager",
+                "aria-label": unref(t)("products.pagination")
+              }, [
+                __props.pagination.prev ? (openBlock(), createBlock(unref(Link), {
+                  key: 0,
+                  class: "pager__step",
+                  href: __props.pagination.prev,
+                  rel: "prev",
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(unref(t)("common.previous")), 1)
+                  ]),
+                  _: 1
+                }, 8, ["href"])) : (openBlock(), createBlock("span", {
+                  key: 1,
+                  class: "pager__step is-disabled",
+                  "aria-hidden": "true"
+                }, toDisplayString(unref(t)("common.previous")), 1)),
+                createVNode("span", { class: "pager__position" }, toDisplayString(unref(t)("products.page_of", { current: unref(number)(__props.pagination.current), last: unref(number)(__props.pagination.last) })), 1),
+                __props.pagination.next ? (openBlock(), createBlock(unref(Link), {
+                  key: 2,
+                  class: "pager__step",
+                  href: __props.pagination.next,
+                  rel: "next",
+                  "preserve-scroll": ""
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(unref(t)("common.next")), 1)
+                  ]),
+                  _: 1
+                }, 8, ["href"])) : (openBlock(), createBlock("span", {
+                  key: 3,
+                  class: "pager__step is-disabled",
+                  "aria-hidden": "true"
+                }, toDisplayString(unref(t)("common.next")), 1))
+              ], 8, ["aria-label"])) : createCommentVNode("", true)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</section>`);
+    };
+  }
+};
+const _sfc_setup$6 = _sfc_main$6.setup;
+_sfc_main$6.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ProductShowcase.vue");
+  return _sfc_setup$6 ? _sfc_setup$6(props, ctx) : void 0;
+};
+const ProductShowcase = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-24473448"]]);
+const _sfc_main$5 = {
+  __name: "Products",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    categories: { type: Array, default: () => [] },
+    products: { type: Array, default: () => [] },
+    // Filtering and paging happen on the server (§13) — see ProductShowcase.
+    activeCategory: { type: String, default: null },
+    allUrl: { type: String, default: null },
+    totalCount: { type: Number, default: 0 },
+    pagination: { type: Object, default: null },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    const inertia = usePage();
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const showcaseCopy = computed(() => section("product_showcase"));
+    const ctaCopy = computed(() => section("cta_band"));
+    const storeLabel = computed(
+      () => inertia.props.settings?.[`store.label.${inertia.props.locale}`] ?? null
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.page?.title,
+              subtitle: __props.page?.subtitle
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(ProductShowcase, {
+              heading: showcaseCopy.value.heading,
+              subheading: showcaseCopy.value.subheading,
+              items: __props.products,
+              categories: __props.categories,
+              "active-category": __props.activeCategory,
+              "all-url": __props.allUrl,
+              "total-count": __props.totalCount,
+              pagination: __props.pagination,
+              "store-label": storeLabel.value
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.page?.title,
+                subtitle: __props.page?.subtitle
+              }, null, 8, ["title", "subtitle"]),
+              createVNode(SaduDivider),
+              createVNode(ProductShowcase, {
+                heading: showcaseCopy.value.heading,
+                subheading: showcaseCopy.value.subheading,
+                items: __props.products,
+                categories: __props.categories,
+                "active-category": __props.activeCategory,
+                "all-url": __props.allUrl,
+                "total-count": __props.totalCount,
+                pagination: __props.pagination,
+                "store-label": storeLabel.value
+              }, null, 8, ["heading", "subheading", "items", "categories", "active-category", "all-url", "total-count", "pagination", "store-label"]),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$5 = _sfc_main$5.setup;
+_sfc_main$5.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Products.vue");
+  return _sfc_setup$5 ? _sfc_setup$5(props, ctx) : void 0;
+};
+const __vite_glob_0_25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$5
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$4 = {
+  __name: "Sector",
+  __ssrInlineRender: true,
+  props: {
+    sector: { type: Object, required: true },
+    sections: { type: Array, default: () => [] },
+    solutions: { type: Array, default: () => [] },
+    impact: { type: Array, default: () => [] },
+    clients: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const solutionsCopy = computed(() => section("solutions_grid"));
+    const impactCopy = computed(() => section("stats"));
+    const clientsCopy = computed(() => section("logos"));
+    const ctaCopy = computed(() => section("cta_band"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({ seo: __props.seo }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.sector.name,
+              subtitle: __props.sector.summary,
+              image: __props.sector.image
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SolutionsGrid, {
+              heading: solutionsCopy.value.heading,
+              items: __props.solutions
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(ImpactStats, {
+              heading: impactCopy.value.heading,
+              items: __props.impact
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PartnersLogos, {
+              heading: clientsCopy.value.heading,
+              items: __props.clients
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel,
+              "sector-hint": __props.sector.key
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.sector.name,
+                subtitle: __props.sector.summary,
+                image: __props.sector.image
+              }, null, 8, ["title", "subtitle", "image"]),
+              createVNode(SaduDivider),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              createVNode(SolutionsGrid, {
+                heading: solutionsCopy.value.heading,
+                items: __props.solutions
+              }, null, 8, ["heading", "items"]),
+              createVNode(ImpactStats, {
+                heading: impactCopy.value.heading,
+                items: __props.impact
+              }, null, 8, ["heading", "items"]),
+              createVNode(PartnersLogos, {
+                heading: clientsCopy.value.heading,
+                items: __props.clients
+              }, null, 8, ["heading", "items"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel,
+                "sector-hint": __props.sector.key
+              }, null, 8, ["heading", "reassurance", "submit-label", "sector-hint"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$4 = _sfc_main$4.setup;
+_sfc_main$4.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Sector.vue");
+  return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
+};
+const __vite_glob_0_26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$4
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$3 = {
+  __name: "Solution",
+  __ssrInlineRender: true,
+  props: {
+    solution: { type: Object, required: true },
+    sections: { type: Array, default: () => [] },
+    related: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const relatedCopy = computed(() => section("solutions_grid"));
+    const ctaCopy = computed(() => section("cta_band"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({ seo: __props.seo }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.solution.name,
+              subtitle: __props.solution.summary,
+              image: __props.solution.image
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SolutionsGrid, {
+              heading: relatedCopy.value.heading,
+              items: __props.related
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.solution.name,
+                subtitle: __props.solution.summary,
+                image: __props.solution.image
+              }, null, 8, ["title", "subtitle", "image"]),
+              createVNode(SaduDivider),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              createVNode(SolutionsGrid, {
+                heading: relatedCopy.value.heading,
+                items: __props.related
+              }, null, 8, ["heading", "items"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$3 = _sfc_main$3.setup;
+_sfc_main$3.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Solution.vue");
+  return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
+};
+const __vite_glob_0_27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$3
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$2 = {
+  __name: "Solutions",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    solutions: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const gridCopy = computed(() => section("solutions_grid"));
+    const ctaCopy = computed(() => section("cta_band"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.page?.title,
+              subtitle: __props.page?.subtitle
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SolutionsGrid, {
+              heading: gridCopy.value.heading,
+              items: __props.solutions
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.page?.title,
+                subtitle: __props.page?.subtitle
+              }, null, 8, ["title", "subtitle"]),
+              createVNode(SaduDivider),
+              createVNode(SolutionsGrid, {
+                heading: gridCopy.value.heading,
+                items: __props.solutions
+              }, null, 8, ["heading", "items"]),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$2 = _sfc_main$2.setup;
+_sfc_main$2.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Solutions.vue");
+  return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
+};
+const __vite_glob_0_28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main$2
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$1 = {
+  __name: "TrainingTracks",
+  __ssrInlineRender: true,
+  props: {
+    heading: { type: String, default: null },
+    items: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const { t } = useTranslation();
+    const { root } = useReveal();
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.items.length) {
+        _push(`<section${ssrRenderAttrs(mergeProps({
+          ref_key: "root",
+          ref: root,
+          class: "section"
+        }, _attrs))} data-v-1479e4e5>`);
+        _push(ssrRenderComponent(_sfc_main$J, null, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              if (__props.heading) {
+                _push2(`<h2 class="reveal" data-v-1479e4e5${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              } else {
+                _push2(`<!---->`);
+              }
+              _push2(`<ul class="tracks" data-v-1479e4e5${_scopeId}><!--[-->`);
+              ssrRenderList(__props.items, (program) => {
+                _push2(`<li class="card track reveal" data-v-1479e4e5${_scopeId}>`);
+                if (program.image) {
+                  _push2(`<img class="track__image"${ssrRenderAttr("src", program.image.webp ?? program.image.url)}${ssrRenderAttr("alt", program.image.alt ?? "")}${ssrRenderAttr("width", program.image.width ?? void 0)}${ssrRenderAttr("height", program.image.height ?? void 0)} loading="lazy" decoding="async" data-v-1479e4e5${_scopeId}>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (program.durationWeeks) {
+                  _push2(ssrRenderComponent(_sfc_main$b, { variant: "accent" }, {
+                    default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                      if (_push3) {
+                        _push3(`${ssrInterpolate(unref(t)("training.weeks", { count: program.durationWeeks }))}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(t)("training.weeks", { count: program.durationWeeks })), 1)
+                        ];
+                      }
+                    }),
+                    _: 2
+                  }, _parent2, _scopeId));
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`<h3 class="track__name" data-v-1479e4e5${_scopeId}>${ssrInterpolate(program.name)}</h3>`);
+                if (program.summary) {
+                  _push2(`<p class="track__summary" data-v-1479e4e5${_scopeId}>${ssrInterpolate(program.summary)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                if (program.outcomes) {
+                  _push2(`<p class="track__outcomes" data-v-1479e4e5${_scopeId}>${ssrInterpolate(program.outcomes)}</p>`);
+                } else {
+                  _push2(`<!---->`);
+                }
+                _push2(`</li>`);
+              });
+              _push2(`<!--]--></ul>`);
+            } else {
+              return [
+                __props.heading ? (openBlock(), createBlock("h2", {
+                  key: 0,
+                  class: "reveal"
+                }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true),
+                createVNode("ul", { class: "tracks" }, [
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.items, (program) => {
+                    return openBlock(), createBlock("li", {
+                      key: program.id,
+                      class: "card track reveal"
+                    }, [
+                      program.image ? (openBlock(), createBlock("img", {
+                        key: 0,
+                        class: "track__image",
+                        src: program.image.webp ?? program.image.url,
+                        alt: program.image.alt ?? "",
+                        width: program.image.width ?? void 0,
+                        height: program.image.height ?? void 0,
+                        loading: "lazy",
+                        decoding: "async"
+                      }, null, 8, ["src", "alt", "width", "height"])) : createCommentVNode("", true),
+                      program.durationWeeks ? (openBlock(), createBlock(_sfc_main$b, {
+                        key: 1,
+                        variant: "accent"
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(unref(t)("training.weeks", { count: program.durationWeeks })), 1)
+                        ]),
+                        _: 2
+                      }, 1024)) : createCommentVNode("", true),
+                      createVNode("h3", { class: "track__name" }, toDisplayString(program.name), 1),
+                      program.summary ? (openBlock(), createBlock("p", {
+                        key: 2,
+                        class: "track__summary"
+                      }, toDisplayString(program.summary), 1)) : createCommentVNode("", true),
+                      program.outcomes ? (openBlock(), createBlock("p", {
+                        key: 3,
+                        class: "track__outcomes"
+                      }, toDisplayString(program.outcomes), 1)) : createCommentVNode("", true)
+                    ]);
+                  }), 128))
+                ])
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</section>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$1 = _sfc_main$1.setup;
+_sfc_main$1.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/TrainingTracks.vue");
+  return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
+};
+const TrainingTracks = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-1479e4e5"]]);
+const _sfc_main = {
+  __name: "Training",
+  __ssrInlineRender: true,
+  props: {
+    page: { type: Object, default: null },
+    sections: { type: Array, default: () => [] },
+    programs: { type: Array, default: () => [] },
+    breadcrumbs: { type: Array, default: () => [] },
+    seo: { type: Object, default: () => ({}) },
+    previewing: { type: Boolean, default: false }
+  },
+  setup(__props) {
+    const props = __props;
+    function section(type) {
+      return props.sections.find((s) => s.type === type) ?? {};
+    }
+    const tracksCopy = computed(() => section("training_tracks"));
+    const ctaCopy = computed(() => section("cta_band"));
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(PublicLayout, mergeProps({
+        seo: __props.seo,
+        previewing: __props.previewing
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(PageHero, {
+              title: __props.page?.title,
+              subtitle: __props.page?.subtitle
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(SaduDivider, null, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(TrainingTracks, {
+              heading: tracksCopy.value.heading,
+              items: __props.programs
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(_sfc_main$l, {
+              sections: __props.sections,
+              skip: ["cta_band"]
+            }, null, _parent2, _scopeId));
+            _push2(ssrRenderComponent(CtaBand, {
+              heading: ctaCopy.value.heading,
+              reassurance: ctaCopy.value.subheading,
+              "submit-label": ctaCopy.value.ctaLabel
+            }, null, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Breadcrumb, { items: __props.breadcrumbs }, null, 8, ["items"]),
+              createVNode(PageHero, {
+                title: __props.page?.title,
+                subtitle: __props.page?.subtitle
+              }, null, 8, ["title", "subtitle"]),
+              createVNode(SaduDivider),
+              createVNode(TrainingTracks, {
+                heading: tracksCopy.value.heading,
+                items: __props.programs
+              }, null, 8, ["heading", "items"]),
+              createVNode(_sfc_main$l, {
+                sections: __props.sections,
+                skip: ["cta_band"]
+              }, null, 8, ["sections"]),
+              createVNode(CtaBand, {
+                heading: ctaCopy.value.heading,
+                reassurance: ctaCopy.value.subheading,
+                "submit-label": ctaCopy.value.ctaLabel
+              }, null, 8, ["heading", "reassurance", "submit-label"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Training.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: _sfc_main
+}, Symbol.toStringTag, { value: "Module" }));
+createServer(
+  (page) => createInertiaApp({
+    page,
+    render: renderToString,
+    title: (title) => title,
+    resolve: (name) => {
+      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Admin/Brand.vue": __vite_glob_0_0, "./Pages/Admin/Campaigns/Edit.vue": __vite_glob_0_1, "./Pages/Admin/Campaigns/Index.vue": __vite_glob_0_2, "./Pages/Admin/Content/Edit.vue": __vite_glob_0_3, "./Pages/Admin/Content/Index.vue": __vite_glob_0_4, "./Pages/Admin/Dashboard.vue": __vite_glob_0_5, "./Pages/Admin/LeadFields.vue": __vite_glob_0_6, "./Pages/Admin/Leads/Index.vue": __vite_glob_0_7, "./Pages/Admin/Login.vue": __vite_glob_0_8, "./Pages/Admin/Navigation.vue": __vite_glob_0_9, "./Pages/Admin/Pages/Edit.vue": __vite_glob_0_10, "./Pages/Admin/Pages/Index.vue": __vite_glob_0_11, "./Pages/Admin/Profile.vue": __vite_glob_0_12, "./Pages/Admin/Redirects.vue": __vite_glob_0_13, "./Pages/Admin/Sections/Builder.vue": __vite_glob_0_14, "./Pages/Admin/Seo/Keywords.vue": __vite_glob_0_15, "./Pages/Admin/Settings/Screen.vue": __vite_glob_0_16, "./Pages/Admin/Users/Edit.vue": __vite_glob_0_17, "./Pages/Admin/Users/Index.vue": __vite_glob_0_18, "./Pages/Public/Campaign.vue": __vite_glob_0_19, "./Pages/Public/Contact.vue": __vite_glob_0_20, "./Pages/Public/Home.vue": __vite_glob_0_21, "./Pages/Public/Impact.vue": __vite_glob_0_22, "./Pages/Public/Page.vue": __vite_glob_0_23, "./Pages/Public/Partners.vue": __vite_glob_0_24, "./Pages/Public/Products.vue": __vite_glob_0_25, "./Pages/Public/Sector.vue": __vite_glob_0_26, "./Pages/Public/Solution.vue": __vite_glob_0_27, "./Pages/Public/Solutions.vue": __vite_glob_0_28, "./Pages/Public/Training.vue": __vite_glob_0_29 });
+      return pages[`./Pages/${name}.vue`];
+    },
+    setup({ App, props, plugin }) {
+      return createSSRApp({ render: () => h(App, props) }).use(plugin).use(i18n);
+    }
+  })
+);

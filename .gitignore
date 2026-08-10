@@ -1,0 +1,48 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
+# Timestamped .env copies. The stock rule matches ".env.backup" exactly, so a
+# dated one — which is what any real backup looks like — slipped past it
+# carrying APP_KEY and the IP hash salt.
+.env.backup-*
+.env.*.bak
+
+# Scratch output from one-off scripts in tools/. The scripts themselves are
+# kept; what they print is not.
+/tools/_*
+
+# The raw brand identity kit.
+#
+# Kept out of the repository on purpose, and this is not tidiness. It holds
+# licensed font files (.otf) and the brand guideline in Illustrator source —
+# and §10.3 already records that web-embedding rights for the display face are
+# unverified. Pushing those to a public repository would redistribute
+# someone's licensed font and publish Amad Craft's confidential design source,
+# and git history makes both effectively permanent.
+#
+# The site does not need them to run: the subset woff2 files it actually
+# serves live in public/fonts and are committed. If the kit should travel with
+# the code, make the repository private first and remove this rule.
+/هوية امد الحرف/

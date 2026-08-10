@@ -1,0 +1,234 @@
+/* ============================================================
+   Amad Craft — component layer
+   The signature Sadu thread, buttons, the lead field, cards.
+   Depends on tokens.css + base.css. RTL-first.
+   ============================================================ */
+
+/* ============================================================
+   SIGNATURE — the Sadu thread (§10.1)
+
+   Two crossing hairline zigzags: an actual weave, not a
+   zigzag. Permitted in EXACTLY three places:
+     1. .sadu-divider  — between sections
+     2. .sadu-ground   — faint ground behind the impact numbers
+     3. .link-weave    — hover underline on links / secondary buttons
+   There is no fourth use. Do not add one.
+   ============================================================ */
+
+.sadu-divider {
+  block-size: 8px;
+  border: 0;
+  margin: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23DCAD75' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+}
+
+/* On a navy ground the gold thread needs to sit slightly brighter. */
+.on-dark .sadu-divider { opacity: .85; }
+
+.sadu-ground {
+  position: relative;
+  background-color: var(--gold-100);
+  isolation: isolate;
+}
+.sadu-ground::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23DCAD75' stroke-width='.6'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  opacity: .22;              /* "very faint" — §10.1 */
+  pointer-events: none;
+}
+
+/* Hover underline that weaves in from the inline-start edge. */
+.link-weave {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+.link-weave::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: -6px;
+  block-size: 8px;
+  inline-size: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23D7653B' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23D7653B' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  transition: inline-size var(--dur-el) var(--ease);
+  pointer-events: none;
+}
+.link-weave:hover::after,
+.link-weave:focus-visible::after { inline-size: 100%; }
+
+/* Reduced motion: show the woven state, skip the weaving. */
+@media (prefers-reduced-motion: reduce) {
+  .link-weave:hover::after,
+  .link-weave:focus-visible::after { inline-size: 100%; }
+}
+
+/* ============================================================
+   ui/Button — contrast-safe by construction (§10.2, §10.5)
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-block-size: 48px;          /* ≥ 44px touch target */
+  padding-inline: var(--s-5);
+  padding-block: var(--s-3);
+  border-radius: var(--r-sm);
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-align: center;
+  transition: background-color var(--dur-micro) var(--ease),
+              color var(--dur-micro) var(--ease),
+              box-shadow var(--dur-micro) var(--ease);
+}
+
+.btn--primary          { background: var(--navy-900); color: #fff; }   /* 15:1 */
+.btn--primary:hover    { background: var(--navy-800); }
+
+/* Accent CTA. --action-600 keeps white text at 4.6:1 at any size. */
+.btn--cta              { background: var(--action-600); color: #fff; }
+.btn--cta:hover        { background: #9C4525; }
+
+/* The identity orange is only legible with white text at ≥18px/700 (§10.2). */
+.btn--cta-lg {
+  background: var(--orange-500);
+  color: #fff;
+  font-size: var(--fs-body-lg);
+  font-weight: 700;
+  min-block-size: 56px;
+  padding-inline: var(--s-6);
+}
+.btn--cta-lg:hover     { background: var(--action-600); }
+
+.btn--secondary {
+  background: transparent;
+  color: var(--navy-900);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.btn--secondary:hover  { background: var(--navy-100); }
+
+.btn--ghost            { background: transparent; color: var(--navy-900); }
+.btn--ghost:hover      { background: var(--navy-100); }
+
+.on-dark .btn--secondary {
+  color: var(--text-inverse);
+  box-shadow: inset 0 0 0 1px var(--hairline-inverse);
+}
+.on-dark .btn--secondary:hover { background: rgba(255, 255, 255, .08); }
+.on-dark .btn--ghost   { color: var(--text-inverse); }
+
+.btn[disabled],
+.btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+/* ============================================================
+   forms/LeadField — the single most important control (§10.6)
+   ============================================================ */
+.lead-input {
+  block-size: 56px;
+  inline-size: 100%;
+  font-size: var(--fs-body-lg);      /* 18px — prevents iOS auto-zoom */
+  padding-inline: var(--s-4);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  background: var(--paper);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease),
+              box-shadow var(--dur-micro) var(--ease);
+}
+.lead-input::placeholder { color: var(--muted); }
+.lead-input:hover        { border-color: rgba(0, 37, 70, .28); }
+.lead-input[aria-invalid="true"] {
+  border-color: var(--action-600);
+  box-shadow: inset 0 0 0 1px var(--action-600);
+}
+
+.lead-textarea {
+  min-block-size: 56px;
+  padding-block: var(--s-4);
+  resize: vertical;
+  line-height: var(--lh-body);
+}
+
+.lead-error {
+  color: var(--action-600);
+  font-size: var(--fs-sm);
+}
+.on-dark .lead-error { color: var(--gold-400); }
+
+/* Success state: short message + the Sadu thread weaving underneath. */
+.lead-success-thread {
+  block-size: 8px;
+  inline-size: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23DCAD75' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  animation: sadu-weave var(--dur-reveal) var(--ease) forwards;
+}
+@keyframes sadu-weave { to { inline-size: 100%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-success-thread { inline-size: 100%; animation: none; }
+}
+
+/* ============================================================
+   ui/Card (§10.5)
+   ============================================================ */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  transition: transform var(--dur-el) var(--ease),
+              box-shadow var(--dur-el) var(--ease);
+}
+.card--raised { box-shadow: var(--shadow-card); }
+
+.card--link:hover {
+  transform: translateY(-2px);                     /* the 2px lift */
+  box-shadow: var(--shadow-card), inset 0 0 0 1px var(--hairline);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card--link:hover { transform: none; }
+}
+
+/* ============================================================
+   ui/Badge
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  background: var(--navy-100);
+  color: var(--navy-900);
+}
+.badge--accent { background: var(--gold-100); color: var(--action-600); }
+
+/* ============================================================
+   Scroll reveal (§10.7) — once only, 16px rise, 60ms stagger
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--dur-reveal) var(--ease),
+              transform var(--dur-reveal) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-revealed { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}

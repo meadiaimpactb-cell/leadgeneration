@@ -1,0 +1,115 @@
+/* ============================================================
+   Amad Craft — B2B Corporate Site
+   Design Tokens  ·  resources/css/tokens.css
+
+   Source of truth: PROJECT_BRIEF.md §10 (design system) and §23
+   (approved visual identity). Do not add colours, radii, shadows
+   or durations that are not defined here.
+
+   RTL-first: nothing in this file may use left/right.
+   ============================================================ */
+
+:root {
+  /* ---- Brand core (from the approved identity, §23) ------ */
+  --navy-900:      #002546;   /* Navy Blue    — dominant   */
+  --lavender-500:  #8685D8;   /* Lavender     — secondary  */
+  --orange-500:    #D7653B;   /* Burnt Orange — accent/CTA */
+  --gold-400:      #DCAD75;   /* Light Gold   — premium    */
+
+  /* ---- Accessible derivations (AA-safe, §10.2) ----------- */
+  --navy-800:      #06345C;
+  --navy-700:      #0B4370;
+  --navy-100:      #E3EAF1;
+  --lavender-700:  #5F5EBE;   /* text on white: 4.7:1   */
+  --action-600:    #B4522C;   /* white text on it: 4.6:1 */
+  --gold-100:      #F6ECDD;
+  --sand:          #F3EEE7;
+
+  /* ---- Neutrals ----------------------------------------- */
+  --ink:           #10161C;
+  --muted:         #5A6B7B;
+  --paper:         #FFFFFF;
+  --paper-alt:     #F7F9FB;
+  --hairline:      rgba(0, 37, 70, 0.12);
+  --hairline-inverse: rgba(255, 255, 255, 0.18);
+
+  /* ---- Semantic ----------------------------------------- */
+  --bg:            var(--paper);
+  --bg-inverse:    var(--navy-900);
+  --text:          var(--ink);
+  --text-muted:    var(--muted);
+  --text-inverse:  #FFFFFF;
+  --link:          var(--lavender-700);
+  --focus-ring:    var(--lavender-700);
+  --danger:        var(--action-600);
+  --success:       #1E7A5A;
+
+  /* ---- Typography (§10.3) -------------------------------- */
+  --font-display-ar: "SaudiWeb", "Kefa", system-ui, sans-serif;
+  --font-display-en: "Kefa", "SaudiWeb", Georgia, serif;
+  --font-body-ar:    "IBM Plex Sans Arabic", "SaudiWeb", system-ui, sans-serif;
+  --font-body-en:    "IBM Plex Sans", system-ui, sans-serif;
+
+  --fs-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+  --fs-h1:      clamp(2rem,    1.4rem + 2.4vw, 3.25rem);
+  --fs-h2:      clamp(1.5rem,  1.2rem + 1.4vw, 2.25rem);
+  --fs-h3:      clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  --fs-body-lg: 1.125rem;
+  --fs-body:    1rem;
+  --fs-sm:      0.875rem;
+  --fs-xs:      0.75rem;
+
+  --lh-display: 1.1;
+  --lh-heading: 1.2;
+  --lh-body-ar: 1.85;
+  --lh-body-en: 1.65;
+
+  /* ---- Spacing (base 4, §10.4) --------------------------- */
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-5: 24px;  --s-6: 32px;  --s-7: 40px;  --s-8: 56px;
+  --s-9: 72px;  --s-10: 96px; --s-11: 128px;
+
+  --section-y:  var(--s-9);          /* mobile  */
+  --container:  1320px;
+  --gutter:     16px;
+  --margin:     20px;
+
+  /* ---- Radii & elevation (§10.4) ------------------------- */
+  --r-sm:   4px;    /* inputs, badges          */
+  --r-md:   12px;   /* cards                   */
+  --r-pill: 999px;  /* filters only            */
+  --shadow-card: 0 1px 2px rgba(0, 37, 70, .06), 0 8px 24px rgba(0, 37, 70, .06);
+
+  /* ---- Motion (§10.7) ------------------------------------ */
+  --ease:       cubic-bezier(.2, .7, .3, 1);
+  --dur-micro:  160ms;
+  --dur-el:     300ms;
+  --dur-reveal: 450ms;
+}
+
+/* Grid & spacing step up with the breakpoints in §10.4. */
+@media (min-width: 640px) {
+  :root { --margin: 32px; --gutter: 20px; }
+}
+@media (min-width: 1024px) {
+  :root { --margin: 48px; --gutter: 24px; --section-y: var(--s-11); }
+}
+
+/* ============================================================
+   Language-aware type. Set by <html lang> — see AppLayout.
+   ============================================================ */
+html[lang="ar"] {
+  --font-display: var(--font-display-ar);
+  --font-body:    var(--font-body-ar);
+  --lh-body:      var(--lh-body-ar);
+  --tracking:     0;                 /* never letterspace Arabic */
+  --tracking-heading: 0;
+}
+
+html[lang="en"] {
+  --font-display: var(--font-display-en);
+  --font-body:    var(--font-body-en);
+  --lh-body:      var(--lh-body-en);
+  --tracking:     0;
+  --tracking-heading: -0.02em;
+}

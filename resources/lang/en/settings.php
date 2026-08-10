@@ -1,0 +1,152 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+|--------------------------------------------------------------------------
+| Settings screen — English
+|--------------------------------------------------------------------------
+| Interface labels only (§0.1). Every hint says WHERE the value appears on the
+| site, so the editor knows what will change when they save.
+*/
+
+return [
+    // ---- Screens -------------------------------------------------------
+    'screen.contact' => 'Contact details',
+    'screen.contact_hint' => 'Phone, email, address and map — everything shown in the footer and on the contact page.',
+
+    'screen.site' => 'Site identity',
+    'screen.site_hint' => 'Site name, copyright line, and the English version switch.',
+
+    'screen.store' => 'Store link',
+    'screen.store_hint' => 'The link out to the Zid store. Informational only — nothing is sold on this site.',
+
+    'screen.seo' => 'Appearing in search',
+    'screen.seo_hint' => 'The default description and the image shown when someone shares a link.',
+
+    'screen.keywords' => 'Keywords',
+    'screen.keywords_hint' => 'The words you want buyers to find you by, per page and per language.',
+
+    'screen.tracking' => 'Measurement & tracking',
+    'screen.tracking_hint' => 'Google, Meta and Clarity IDs. Pasted as-is from your own accounts.',
+
+    'screen.robots' => 'robots.txt',
+    'screen.robots_hint' => 'Tells search engines what they may visit. Leave it empty unless an SEO specialist says otherwise.',
+
+    'screen.advanced' => 'Advanced',
+    'screen.advanced_hint' => 'Technical fields. Do not change these without the developer.',
+
+    // ---- Site ----------------------------------------------------------
+    'site.name.ar' => 'Site name (Arabic)',
+    'site.name.ar_hint' => 'Shown in the browser tab and in Google results.',
+    'site.name.en' => 'Site name (English)',
+    'site.name.en_hint' => 'The same, on the English version.',
+    'site.copyright.ar' => 'Copyright line (Arabic)',
+    'site.copyright.ar_hint' => 'Shown at the bottom of the footer.',
+    'site.copyright.en' => 'Copyright line (English)',
+    'site.copyright.en_hint' => 'Shown at the bottom of the English footer.',
+    'site.english_enabled' => 'Enable the English version',
+    'site.english_enabled_hint' => 'Turning this off hides the language switch and makes /en pages unavailable.',
+    'site.contact_dock' => 'Floating contact bar',
+    'site.contact_dock_hint' => 'The button that follows the visitor at the bottom of every page and opens the contact field.',
+
+    // ---- Contact -------------------------------------------------------
+    'contact.email' => 'Email address',
+    'contact.email_hint' => 'Shown in the footer and on the contact page.',
+    'contact.phone' => 'Phone number',
+    'contact.phone_hint' => 'Shown in the footer, and in the floating bar as a one-tap call button.',
+    'contact.whatsapp' => 'WhatsApp number',
+    'contact.whatsapp_hint' => 'Opens a WhatsApp chat directly. Leave empty to hide the button.',
+    'contact.address.ar' => 'Address (Arabic)',
+    'contact.address.ar_hint' => 'Shown beside the map on the contact page.',
+    'contact.address.en' => 'Address (English)',
+    'contact.address.en_hint' => 'The same address, on the English version.',
+    'contact.hours.ar' => 'Opening hours (Arabic)',
+    'contact.hours.ar_hint' => 'E.g. Sunday–Thursday, 9am–5pm. Leave empty to hide.',
+    'contact.hours.en' => 'Opening hours (English)',
+    'contact.hours.en_hint' => 'The same, on the English version.',
+    'contact.social' => 'Social accounts',
+    'contact.social_hint' => 'A name and a link for each account. Shown in the footer and on the contact page.',
+    'contact.map_query' => 'Map search term',
+    'contact.map_query_hint' => 'What you would type into Google Maps to find you. Used when no embed link is set.',
+    'contact.map_embed_url' => 'Map embed link',
+    'contact.map_embed_url_hint' => 'Google Maps → Share → Embed a map → copy only the src link.',
+    'contact.map_url' => 'Map open link',
+    'contact.map_url_hint' => 'The link that opens your location in the maps app when tapped.',
+    'contact.dock_heading.ar' => 'Contact popup heading (Arabic)',
+    'contact.dock_heading.ar_hint' => 'The bold line at the top of the popup the floating bar opens.',
+    'contact.dock_heading.en' => 'Contact popup heading (English)',
+    'contact.dock_heading.en_hint' => 'The same, on the English version.',
+    'contact.dock_note.ar' => 'Reassurance line (Arabic)',
+    'contact.dock_note.ar_hint' => 'A small line under the heading telling the visitor one field is enough.',
+    'contact.dock_note.en' => 'Reassurance line (English)',
+    'contact.dock_note.en_hint' => 'The same, on the English version.',
+
+    // ---- Store ---------------------------------------------------------
+    'store.url' => 'Store address',
+    'store.url_hint' => 'Your Zid storefront. Opens in a new tab.',
+    'store.label.ar' => 'Store button text (Arabic)',
+    'store.label.ar_hint' => 'E.g. "Visit the store". Not "Buy now" — this is a corporate site, not a shop.',
+    'store.label.en' => 'Store button text (English)',
+    'store.label.en_hint' => 'The same, on the English version.',
+
+    // ---- SEO -----------------------------------------------------------
+    'seo.default_description.ar' => 'Default description (Arabic)',
+    'seo.default_description.ar_hint' => 'The two lines under your title in Google results, for any page without its own description. Aim for 120–160 characters.',
+    'seo.default_description.en' => 'Default description (English)',
+    'seo.default_description.en_hint' => 'The same, on the English version.',
+    'seo.default_og_image' => 'Default share image',
+    'seo.default_og_image_hint' => 'The image shown when a link is shared on WhatsApp or X. 1200×630 works best.',
+    'seo.organization_schema' => 'Organization structured data (JSON-LD)',
+    'seo.organization_schema_hint' => 'A technical field describing the company to search engines. Leave empty to have it built automatically.',
+    'seo.robots_txt' => 'robots.txt contents',
+    'seo.robots_txt_hint' => 'Leave empty for the safe defaults. The Sitemap line is appended whatever you write.',
+
+    // ---- Tracking ------------------------------------------------------
+    'tracking.search_console' => 'Google Search Console verification code',
+    'tracking.search_console_hint' => 'Search Console → add property → HTML tag: copy only the content value, not the whole tag.',
+    'tracking.gtm_id' => 'Google Tag Manager ID',
+    'tracking.gtm_id_hint' => 'Starts with GTM-. It switches on the rest of the measurement tools.',
+    'tracking.ga4_id' => 'Google Analytics 4 ID',
+    'tracking.ga4_id_hint' => 'Starts with G-.',
+    'tracking.meta_pixel_id' => 'Meta Pixel ID',
+    'tracking.meta_pixel_id_hint' => 'Digits only, from Meta Events Manager.',
+    'tracking.meta_capi_token' => 'Meta Conversions API token',
+    'tracking.meta_capi_token_hint' => 'A secret used to send conversions from the server. Never exposed to visitors.',
+    'tracking.clarity_id' => 'Microsoft Clarity ID',
+    'tracking.clarity_id_hint' => 'For session recordings and heatmaps.',
+
+    // ---- Keywords screen ------------------------------------------------
+    'keywords.title' => 'Keywords',
+    'keywords.intro' => 'Add every phrase you want buyers to find you by — no limit, and no page to choose first. Paste them however they arrived: one per line, or comma-separated.',
+    'keywords.honest' => 'How this actually works: Google does not read keyword lists. It ranks pages on what they actually say. So the panel searches your published pages for each phrase and tells you where it found it. A phrase that appears on no page means you need content covering it — and writing that is the step that genuinely lifts your ranking.',
+    'keywords.bulk' => 'Keywords',
+    'keywords.bulk_hint' => 'E.g. corporate gifts, government gifts, conference giveaways, Saudi handcraft. No limit.',
+    'keywords.group' => 'Group (optional)',
+    'keywords.group_hint' => 'To cluster keywords — e.g. government entities, or a National Day campaign.',
+    'keywords.add' => 'Add keywords',
+    'keywords.added' => 'No new keywords added (all already present).|One keyword added.|:count keywords added.',
+    'keywords.nothing_added' => 'Nothing added — the box was empty.',
+    'keywords.all' => 'Total',
+    'keywords.gaps' => 'No content covers these',
+    'keywords.weak' => 'In body copy only',
+    'keywords.strong' => 'In a page title',
+    'keywords.state_gap' => 'On no page',
+    'keywords.state_weak' => 'In body copy',
+    'keywords.state_strong' => 'In a page title',
+    'keywords.gap_advice' => 'This phrase appears on no published page. Write content for it, or work it into an existing page’s title and description, before you can rank for it.',
+    'keywords.in_title' => 'In the title',
+    'keywords.in_body' => 'In body copy',
+    'keywords.none' => 'No keywords yet. Paste your list into the box above to start.',
+
+    // ---- robots screen ---------------------------------------------------
+    'robots.preview' => 'The file as a search engine sees it right now',
+    'robots.staging_notice' => 'This is not the production environment, so the file is served closed to indexing whatever you write here. That is deliberate: a test copy must never compete with the live site.',
+    'robots.open' => 'Open the file in a new tab',
+    'robots.sitemap' => 'Sitemap',
+    'robots.sitemap_hint' => 'Built automatically from your published pages. Submit this link to Google Search Console.',
+
+    'saved' => 'Changes saved.',
+    'format_ok' => 'Looks right ✓',
+    'format_warn' => 'That does not look like the expected format. Example: :example — check you copied the ID alone, not the whole snippet. You can still save it.',
+];
