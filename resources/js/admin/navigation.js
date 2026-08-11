@@ -99,7 +99,7 @@ export const NAV_GROUPS = [
             { icon: 'site', label: 'settings.screen.site', href: '/admin/settings/site', can: 'settings.manage' },
             { icon: 'brand', label: 'admin.brand', href: '/admin/brand', can: 'settings.manage' },
             { icon: 'contact', label: 'settings.screen.contact', href: '/admin/settings/contact', can: 'settings.manage' },
-            { icon: 'languages', label: 'admin.languages', href: '/admin/languages', can: 'settings.manage', soon: true },
+            { icon: 'languages', label: 'admin.languages', href: '/admin/languages', can: 'settings.manage' },
             { icon: 'store', label: 'settings.screen.store', href: '/admin/settings/store', can: 'settings.manage' },
             { icon: 'backup', label: 'admin.backups', href: '/admin/backups', can: 'settings.manage', soon: true },
             { icon: 'advanced', label: 'settings.screen.advanced', href: '/admin/settings/advanced', can: 'settings.manage' },

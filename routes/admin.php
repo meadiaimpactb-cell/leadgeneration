@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KeywordController;
+use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\LeadFieldController;
 use App\Http\Controllers\Admin\MediaController;
@@ -140,8 +141,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
          * 404s — see UpcomingScreenController for the list and the phase
          * each one belongs to.
          */
+        // 2.1 — the English site's switch and its translation coverage (§12).
+        Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');
+        Route::put('languages', [LanguageController::class, 'update'])->name('languages.update');
+
         Route::get('media', [UpcomingScreenController::class, 'show'])->defaults('screen', 'media')->name('upcoming.media');
-        Route::get('languages', [UpcomingScreenController::class, 'show'])->defaults('screen', 'languages')->name('upcoming.languages');
         Route::get('backups', [UpcomingScreenController::class, 'show'])->defaults('screen', 'backups')->name('upcoming.backups');
         Route::get('activity', [UpcomingScreenController::class, 'show'])->defaults('screen', 'activity')->name('upcoming.activity');
         Route::get('seo/sitemap', [UpcomingScreenController::class, 'show'])->defaults('screen', 'sitemap')->name('upcoming.sitemap');

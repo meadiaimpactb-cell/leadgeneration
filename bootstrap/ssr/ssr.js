@@ -1,5 +1,5 @@
-import { computed, mergeProps, unref, useSSRContext, ref, withCtx, createVNode, toDisplayString, openBlock, createBlock, createCommentVNode, Fragment, renderList, useId, createTextVNode, withModifiers, reactive, watch, resolveDynamicComponent, renderSlot, nextTick, onMounted, onBeforeUnmount, onUnmounted, withDirectives, vShow, createSlots, createSSRApp, h } from "vue";
-import { ssrRenderAttrs, ssrRenderAttr, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderSlot, ssrRenderStyle, ssrIncludeBooleanAttr, ssrRenderVNode, ssrLooseContain, ssrLooseEqual, ssrRenderDynamicModel } from "vue/server-renderer";
+import { computed, mergeProps, unref, useSSRContext, ref, withCtx, createVNode, toDisplayString, openBlock, createBlock, createCommentVNode, Fragment, renderList, useId, createTextVNode, withModifiers, withDirectives, vModelCheckbox, reactive, watch, resolveDynamicComponent, renderSlot, nextTick, onMounted, onBeforeUnmount, onUnmounted, vShow, createSlots, createSSRApp, h } from "vue";
+import { ssrRenderAttrs, ssrRenderAttr, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderSlot, ssrRenderStyle, ssrIncludeBooleanAttr, ssrLooseContain, ssrRenderVNode, ssrLooseEqual, ssrRenderDynamicModel } from "vue/server-renderer";
 import { usePage, router, Head, Link, useForm, createInertiaApp } from "@inertiajs/vue3";
 import { renderToString } from "@vue/server-renderer";
 import createServer from "@inertiajs/vue3/server";
@@ -30,7 +30,7 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const _sfc_main$1b = {
+const _sfc_main$1c = {
   __name: "Logo",
   __ssrInlineRender: true,
   props: {
@@ -80,14 +80,14 @@ const _sfc_main$1b = {
     };
   }
 };
-const _sfc_setup$1b = _sfc_main$1b.setup;
-_sfc_main$1b.setup = (props, ctx) => {
+const _sfc_setup$1c = _sfc_main$1c.setup;
+_sfc_main$1c.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Logo.vue");
-  return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
+  return _sfc_setup$1c ? _sfc_setup$1c(props, ctx) : void 0;
 };
-const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-ef29b1f9"]]);
-const _sfc_main$1a = {
+const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1c, [["__scopeId", "data-v-ef29b1f9"]]);
+const _sfc_main$1b = {
   __name: "NavIcon",
   __ssrInlineRender: true,
   props: {
@@ -167,13 +167,13 @@ const _sfc_main$1a = {
     };
   }
 };
-const _sfc_setup$1a = _sfc_main$1a.setup;
-_sfc_main$1a.setup = (props, ctx) => {
+const _sfc_setup$1b = _sfc_main$1b.setup;
+_sfc_main$1b.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/NavIcon.vue");
-  return _sfc_setup$1a ? _sfc_setup$1a(props, ctx) : void 0;
+  return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
 };
-const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1a, [["__scopeId", "data-v-64039991"]]);
+const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-64039991"]]);
 const NAV_GROUPS = [
   {
     key: "overview",
@@ -257,7 +257,7 @@ const NAV_GROUPS = [
       { icon: "site", label: "settings.screen.site", href: "/admin/settings/site", can: "settings.manage" },
       { icon: "brand", label: "admin.brand", href: "/admin/brand", can: "settings.manage" },
       { icon: "contact", label: "settings.screen.contact", href: "/admin/settings/contact", can: "settings.manage" },
-      { icon: "languages", label: "admin.languages", href: "/admin/languages", can: "settings.manage", soon: true },
+      { icon: "languages", label: "admin.languages", href: "/admin/languages", can: "settings.manage" },
       { icon: "store", label: "settings.screen.store", href: "/admin/settings/store", can: "settings.manage" },
       { icon: "backup", label: "admin.backups", href: "/admin/backups", can: "settings.manage", soon: true },
       { icon: "advanced", label: "settings.screen.advanced", href: "/admin/settings/advanced", can: "settings.manage" }
@@ -265,7 +265,7 @@ const NAV_GROUPS = [
   }
 ];
 NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href));
-const _sfc_main$19 = {
+const _sfc_main$1a = {
   __name: "AdminLayout",
   __ssrInlineRender: true,
   props: {
@@ -405,13 +405,13 @@ const _sfc_main$19 = {
     };
   }
 };
-const _sfc_setup$19 = _sfc_main$19.setup;
-_sfc_main$19.setup = (props, ctx) => {
+const _sfc_setup$1a = _sfc_main$1a.setup;
+_sfc_main$1a.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AdminLayout.vue");
-  return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
+  return _sfc_setup$1a ? _sfc_setup$1a(props, ctx) : void 0;
 };
-const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-b13ef224"]]);
+const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$1a, [["__scopeId", "data-v-b13ef224"]]);
 const AR = "ar-SA-u-ca-gregory-nu-latn";
 const EN = "en-GB";
 function useFormat() {
@@ -447,7 +447,7 @@ function useFormat() {
   }
   return { number, date, dateTime, dayMonth };
 }
-const _sfc_main$18 = {
+const _sfc_main$19 = {
   __name: "Workspace",
   __ssrInlineRender: true,
   props: {
@@ -579,14 +579,14 @@ const _sfc_main$18 = {
     };
   }
 };
-const _sfc_setup$18 = _sfc_main$18.setup;
-_sfc_main$18.setup = (props, ctx) => {
+const _sfc_setup$19 = _sfc_main$19.setup;
+_sfc_main$19.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Workspace.vue");
-  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
+  return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
 };
-const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-dec49d27"]]);
-const _sfc_main$17 = {
+const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-dec49d27"]]);
+const _sfc_main$18 = {
   __name: "Panel",
   __ssrInlineRender: true,
   props: {
@@ -626,14 +626,14 @@ const _sfc_main$17 = {
     };
   }
 };
-const _sfc_setup$17 = _sfc_main$17.setup;
-_sfc_main$17.setup = (props, ctx) => {
+const _sfc_setup$18 = _sfc_main$18.setup;
+_sfc_main$18.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Panel.vue");
-  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
+  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
 };
-const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-5a439de4"]]);
-const _sfc_main$16 = {
+const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-5a439de4"]]);
+const _sfc_main$17 = {
   __name: "Brand",
   __ssrInlineRender: true,
   props: {
@@ -943,18 +943,18 @@ const _sfc_main$16 = {
     };
   }
 };
-const _sfc_setup$16 = _sfc_main$16.setup;
-_sfc_main$16.setup = (props, ctx) => {
+const _sfc_setup$17 = _sfc_main$17.setup;
+_sfc_main$17.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Brand.vue");
-  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
+  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
 };
-const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$16, [["__scopeId", "data-v-d1bab7a5"]]);
+const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-d1bab7a5"]]);
 const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Brand
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$15 = {
+const _sfc_main$16 = {
   __name: "Field",
   __ssrInlineRender: true,
   props: {
@@ -1014,14 +1014,14 @@ const _sfc_main$15 = {
     };
   }
 };
-const _sfc_setup$15 = _sfc_main$15.setup;
-_sfc_main$15.setup = (props, ctx) => {
+const _sfc_setup$16 = _sfc_main$16.setup;
+_sfc_main$16.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Field.vue");
-  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
+  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
 };
-const Field = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-4723bd15"]]);
-const _sfc_main$14 = {
+const Field = /* @__PURE__ */ _export_sfc(_sfc_main$16, [["__scopeId", "data-v-4723bd15"]]);
+const _sfc_main$15 = {
   __name: "BilingualFields",
   __ssrInlineRender: true,
   props: {
@@ -1080,14 +1080,14 @@ const _sfc_main$14 = {
     };
   }
 };
-const _sfc_setup$14 = _sfc_main$14.setup;
-_sfc_main$14.setup = (props, ctx) => {
+const _sfc_setup$15 = _sfc_main$15.setup;
+_sfc_main$15.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/BilingualFields.vue");
-  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
+  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
 };
-const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-8f821154"]]);
-const _sfc_main$13 = {
+const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-8f821154"]]);
+const _sfc_main$14 = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -1456,18 +1456,18 @@ const _sfc_main$13 = {
     };
   }
 };
-const _sfc_setup$13 = _sfc_main$13.setup;
-_sfc_main$13.setup = (props, ctx) => {
+const _sfc_setup$14 = _sfc_main$14.setup;
+_sfc_main$14.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Edit.vue");
-  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
+  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
 };
-const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-81e9c2fe"]]);
+const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-81e9c2fe"]]);
 const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$3
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$12 = {
+const _sfc_main$13 = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -1731,18 +1731,18 @@ const _sfc_main$12 = {
     };
   }
 };
-const _sfc_setup$12 = _sfc_main$12.setup;
-_sfc_main$12.setup = (props, ctx) => {
+const _sfc_setup$13 = _sfc_main$13.setup;
+_sfc_main$13.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Index.vue");
-  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
+  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
 };
-const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-66c2bead"]]);
+const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-66c2bead"]]);
 const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$4
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$11 = {
+const _sfc_main$12 = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -2200,18 +2200,18 @@ const _sfc_main$11 = {
     };
   }
 };
-const _sfc_setup$11 = _sfc_main$11.setup;
-_sfc_main$11.setup = (props, ctx) => {
+const _sfc_setup$12 = _sfc_main$12.setup;
+_sfc_main$12.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Edit.vue");
-  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
+  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
 };
-const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-ed0bd693"]]);
+const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-ed0bd693"]]);
 const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$2
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$10 = {
+const _sfc_main$11 = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -2553,18 +2553,18 @@ const _sfc_main$10 = {
     };
   }
 };
-const _sfc_setup$10 = _sfc_main$10.setup;
-_sfc_main$10.setup = (props, ctx) => {
+const _sfc_setup$11 = _sfc_main$11.setup;
+_sfc_main$11.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Index.vue");
-  return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
+  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
 };
-const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-83be9b57"]]);
+const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-83be9b57"]]);
 const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$3
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$$ = {
+const _sfc_main$10 = {
   __name: "Dashboard",
   __ssrInlineRender: true,
   props: {
@@ -3004,16 +3004,214 @@ const _sfc_main$$ = {
     };
   }
 };
-const _sfc_setup$$ = _sfc_main$$.setup;
-_sfc_main$$.setup = (props, ctx) => {
+const _sfc_setup$10 = _sfc_main$10.setup;
+_sfc_main$10.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
-  return _sfc_setup$$ ? _sfc_setup$$(props, ctx) : void 0;
+  return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
 };
-const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-711b8eb4"]]);
+const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-711b8eb4"]]);
 const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Dashboard
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$$ = {
+  __name: "Languages",
+  __ssrInlineRender: true,
+  props: {
+    englishEnabled: { type: Boolean, required: true },
+    secondary: { type: String, required: true },
+    coverage: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { number } = useFormat();
+    const form = useForm({ englishEnabled: props.englishEnabled });
+    function save() {
+      form.put("/admin/languages", { preserveScroll: true });
+    }
+    function tone(row) {
+      if (row.percent === null) return "empty";
+      if (row.percent === 100) return "done";
+      if (row.percent === 0) return "none";
+      return "partial";
+    }
+    const label = (key) => t(`admin.${key}`);
+    const overall = computed(() => {
+      const counted = props.coverage.filter((r) => r.percent !== null);
+      if (!counted.length) return null;
+      const total = counted.reduce((sum, r) => sum + r.total, 0);
+      const done = counted.reduce((sum, r) => sum + r.translated, 0);
+      return total === 0 ? null : Math.round(done / total * 100);
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.languages")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.languages_switch"),
+              hint: unref(t)("admin.languages_switch_hint")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<label class="switch" data-v-6adf93fd${_scopeId2}><input${ssrIncludeBooleanAttr(Array.isArray(unref(form).englishEnabled) ? ssrLooseContain(unref(form).englishEnabled, null) : unref(form).englishEnabled) ? " checked" : ""} type="checkbox" data-v-6adf93fd${_scopeId2}><span class="switch__label" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(t)("admin.languages_enable_english"))}</span></label><ul class="effects" data-v-6adf93fd${_scopeId2}><li data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(t)("admin.languages_effect_toggle"))}</li><li data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(t)("admin.languages_effect_routes"))}</li><li data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(t)("admin.languages_effect_sitemap"))}</li></ul><p class="keep" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(t)("admin.languages_effect_keep"))}</p>`);
+                } else {
+                  return [
+                    createVNode("label", { class: "switch" }, [
+                      withDirectives(createVNode("input", {
+                        "onUpdate:modelValue": ($event) => unref(form).englishEnabled = $event,
+                        type: "checkbox",
+                        onChange: save
+                      }, null, 40, ["onUpdate:modelValue"]), [
+                        [vModelCheckbox, unref(form).englishEnabled]
+                      ]),
+                      createVNode("span", { class: "switch__label" }, toDisplayString(unref(t)("admin.languages_enable_english")), 1)
+                    ]),
+                    createVNode("ul", { class: "effects" }, [
+                      createVNode("li", null, toDisplayString(unref(t)("admin.languages_effect_toggle")), 1),
+                      createVNode("li", null, toDisplayString(unref(t)("admin.languages_effect_routes")), 1),
+                      createVNode("li", null, toDisplayString(unref(t)("admin.languages_effect_sitemap")), 1)
+                    ]),
+                    createVNode("p", { class: "keep" }, toDisplayString(unref(t)("admin.languages_effect_keep")), 1)
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.languages_coverage"),
+              hint: unref(t)("admin.languages_coverage_hint")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (overall.value !== null) {
+                    _push3(`<p class="overall" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(t)("admin.languages_overall"))} <strong class="tabular" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(number)(overall.value))}%</strong></p>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(`<ul class="rows" data-v-6adf93fd${_scopeId2}><!--[-->`);
+                  ssrRenderList(__props.coverage, (row) => {
+                    _push3(`<li class="${ssrRenderClass([`row--${tone(row)}`, "row"])}" data-v-6adf93fd${_scopeId2}><span class="row__name" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(label(row.key))}</span><span class="row__bar" aria-hidden="true" data-v-6adf93fd${_scopeId2}><span class="row__fill" style="${ssrRenderStyle({ inlineSize: `${row.percent ?? 0}%` })}" data-v-6adf93fd${_scopeId2}></span></span><span class="row__count tabular" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(unref(number)(row.translated))} / ${ssrInterpolate(unref(number)(row.total))}</span><span class="row__percent tabular" data-v-6adf93fd${_scopeId2}>${ssrInterpolate(row.percent === null ? "—" : `${unref(number)(row.percent)}%`)}</span></li>`);
+                  });
+                  _push3(`<!--]--></ul>`);
+                } else {
+                  return [
+                    overall.value !== null ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "overall"
+                    }, [
+                      createTextVNode(toDisplayString(unref(t)("admin.languages_overall")) + " ", 1),
+                      createVNode("strong", { class: "tabular" }, toDisplayString(unref(number)(overall.value)) + "%", 1)
+                    ])) : createCommentVNode("", true),
+                    createVNode("ul", { class: "rows" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.coverage, (row) => {
+                        return openBlock(), createBlock("li", {
+                          key: row.key,
+                          class: ["row", `row--${tone(row)}`]
+                        }, [
+                          createVNode("span", { class: "row__name" }, toDisplayString(label(row.key)), 1),
+                          createVNode("span", {
+                            class: "row__bar",
+                            "aria-hidden": "true"
+                          }, [
+                            createVNode("span", {
+                              class: "row__fill",
+                              style: { inlineSize: `${row.percent ?? 0}%` }
+                            }, null, 4)
+                          ]),
+                          createVNode("span", { class: "row__count tabular" }, toDisplayString(unref(number)(row.translated)) + " / " + toDisplayString(unref(number)(row.total)), 1),
+                          createVNode("span", { class: "row__percent tabular" }, toDisplayString(row.percent === null ? "—" : `${unref(number)(row.percent)}%`), 1)
+                        ], 2);
+                      }), 128))
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.languages_switch"),
+                hint: unref(t)("admin.languages_switch_hint")
+              }, {
+                default: withCtx(() => [
+                  createVNode("label", { class: "switch" }, [
+                    withDirectives(createVNode("input", {
+                      "onUpdate:modelValue": ($event) => unref(form).englishEnabled = $event,
+                      type: "checkbox",
+                      onChange: save
+                    }, null, 40, ["onUpdate:modelValue"]), [
+                      [vModelCheckbox, unref(form).englishEnabled]
+                    ]),
+                    createVNode("span", { class: "switch__label" }, toDisplayString(unref(t)("admin.languages_enable_english")), 1)
+                  ]),
+                  createVNode("ul", { class: "effects" }, [
+                    createVNode("li", null, toDisplayString(unref(t)("admin.languages_effect_toggle")), 1),
+                    createVNode("li", null, toDisplayString(unref(t)("admin.languages_effect_routes")), 1),
+                    createVNode("li", null, toDisplayString(unref(t)("admin.languages_effect_sitemap")), 1)
+                  ]),
+                  createVNode("p", { class: "keep" }, toDisplayString(unref(t)("admin.languages_effect_keep")), 1)
+                ]),
+                _: 1
+              }, 8, ["title", "hint"]),
+              createVNode(Panel, {
+                title: unref(t)("admin.languages_coverage"),
+                hint: unref(t)("admin.languages_coverage_hint")
+              }, {
+                default: withCtx(() => [
+                  overall.value !== null ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "overall"
+                  }, [
+                    createTextVNode(toDisplayString(unref(t)("admin.languages_overall")) + " ", 1),
+                    createVNode("strong", { class: "tabular" }, toDisplayString(unref(number)(overall.value)) + "%", 1)
+                  ])) : createCommentVNode("", true),
+                  createVNode("ul", { class: "rows" }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.coverage, (row) => {
+                      return openBlock(), createBlock("li", {
+                        key: row.key,
+                        class: ["row", `row--${tone(row)}`]
+                      }, [
+                        createVNode("span", { class: "row__name" }, toDisplayString(label(row.key)), 1),
+                        createVNode("span", {
+                          class: "row__bar",
+                          "aria-hidden": "true"
+                        }, [
+                          createVNode("span", {
+                            class: "row__fill",
+                            style: { inlineSize: `${row.percent ?? 0}%` }
+                          }, null, 4)
+                        ]),
+                        createVNode("span", { class: "row__count tabular" }, toDisplayString(unref(number)(row.translated)) + " / " + toDisplayString(unref(number)(row.total)), 1),
+                        createVNode("span", { class: "row__percent tabular" }, toDisplayString(row.percent === null ? "—" : `${unref(number)(row.percent)}%`), 1)
+                      ], 2);
+                    }), 128))
+                  ])
+                ]),
+                _: 1
+              }, 8, ["title", "hint"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$$ = _sfc_main$$.setup;
+_sfc_main$$.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Languages.vue");
+  return _sfc_setup$$ ? _sfc_setup$$(props, ctx) : void 0;
+};
+const Languages = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-6adf93fd"]]);
+const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Languages
 }, Symbol.toStringTag, { value: "Module" }));
 const _sfc_main$_ = {
   __name: "LeadFields",
@@ -3342,7 +3540,7 @@ _sfc_main$_.setup = (props, ctx) => {
   return _sfc_setup$_ ? _sfc_setup$_(props, ctx) : void 0;
 };
 const LeadFields = /* @__PURE__ */ _export_sfc(_sfc_main$_, [["__scopeId", "data-v-4196502c"]]);
-const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: LeadFields
 }, Symbol.toStringTag, { value: "Module" }));
@@ -3954,7 +4152,7 @@ _sfc_main$Z.setup = (props, ctx) => {
   return _sfc_setup$Z ? _sfc_setup$Z(props, ctx) : void 0;
 };
 const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$Z, [["__scopeId", "data-v-9c30a146"]]);
-const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4090,7 +4288,7 @@ _sfc_main$X.setup = (props, ctx) => {
   return _sfc_setup$X ? _sfc_setup$X(props, ctx) : void 0;
 };
 const Login = /* @__PURE__ */ _export_sfc(_sfc_main$X, [["__scopeId", "data-v-b2b9b1a9"]]);
-const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4371,7 +4569,7 @@ _sfc_main$W.setup = (props, ctx) => {
   return _sfc_setup$W ? _sfc_setup$W(props, ctx) : void 0;
 };
 const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$W, [["__scopeId", "data-v-7004d226"]]);
-const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Navigation
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4670,7 +4868,7 @@ _sfc_main$V.setup = (props, ctx) => {
   return _sfc_setup$V ? _sfc_setup$V(props, ctx) : void 0;
 };
 const Edit$1 = /* @__PURE__ */ _export_sfc(_sfc_main$V, [["__scopeId", "data-v-17c730d0"]]);
-const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$1
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4981,7 +5179,7 @@ _sfc_main$U.setup = (props, ctx) => {
   return _sfc_setup$U ? _sfc_setup$U(props, ctx) : void 0;
 };
 const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$U, [["__scopeId", "data-v-931dad69"]]);
-const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$1
 }, Symbol.toStringTag, { value: "Module" }));
@@ -5656,7 +5854,7 @@ _sfc_main$T.setup = (props, ctx) => {
   return _sfc_setup$T ? _sfc_setup$T(props, ctx) : void 0;
 };
 const Profile = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["__scopeId", "data-v-c5983eaf"]]);
-const __vite_glob_0_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Profile
 }, Symbol.toStringTag, { value: "Module" }));
@@ -5897,7 +6095,7 @@ _sfc_main$S.setup = (props, ctx) => {
   return _sfc_setup$S ? _sfc_setup$S(props, ctx) : void 0;
 };
 const Redirects = /* @__PURE__ */ _export_sfc(_sfc_main$S, [["__scopeId", "data-v-1f23add1"]]);
-const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Redirects
 }, Symbol.toStringTag, { value: "Module" }));
@@ -6430,7 +6628,7 @@ _sfc_main$R.setup = (props, ctx) => {
   return _sfc_setup$R ? _sfc_setup$R(props, ctx) : void 0;
 };
 const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["__scopeId", "data-v-e079d442"]]);
-const __vite_glob_0_14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Builder
 }, Symbol.toStringTag, { value: "Module" }));
@@ -6993,7 +7191,7 @@ _sfc_main$Q.setup = (props, ctx) => {
   return _sfc_setup$Q ? _sfc_setup$Q(props, ctx) : void 0;
 };
 const Keywords = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-6f7b571d"]]);
-const __vite_glob_0_15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Keywords
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7356,7 +7554,7 @@ _sfc_main$P.setup = (props, ctx) => {
   return _sfc_setup$P ? _sfc_setup$P(props, ctx) : void 0;
 };
 const Screen = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["__scopeId", "data-v-bce278b6"]]);
-const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Screen
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7426,7 +7624,7 @@ _sfc_main$O.setup = (props, ctx) => {
   return _sfc_setup$O ? _sfc_setup$O(props, ctx) : void 0;
 };
 const Upcoming = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["__scopeId", "data-v-a1fbe472"]]);
-const __vite_glob_0_17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Upcoming
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7701,7 +7899,7 @@ _sfc_main$N.setup = (props, ctx) => {
   return _sfc_setup$N ? _sfc_setup$N(props, ctx) : void 0;
 };
 const Edit = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["__scopeId", "data-v-63ed2dcc"]]);
-const __vite_glob_0_18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7944,7 +8142,7 @@ _sfc_main$M.setup = (props, ctx) => {
   return _sfc_setup$M ? _sfc_setup$M(props, ctx) : void 0;
 };
 const Index = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-d6860b89"]]);
-const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index
 }, Symbol.toStringTag, { value: "Module" }));
@@ -8942,7 +9140,7 @@ _sfc_main$D.setup = (props, ctx) => {
   return _sfc_setup$D ? _sfc_setup$D(props, ctx) : void 0;
 };
 const Campaign = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-366d3954"]]);
-const __vite_glob_0_20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaign
 }, Symbol.toStringTag, { value: "Module" }));
@@ -11590,7 +11788,7 @@ _sfc_main$l.setup = (props, ctx) => {
   return _sfc_setup$l ? _sfc_setup$l(props, ctx) : void 0;
 };
 const Contact = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["__scopeId", "data-v-ad849110"]]);
-const __vite_glob_0_21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Contact
 }, Symbol.toStringTag, { value: "Module" }));
@@ -12793,7 +12991,7 @@ _sfc_main$d.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Home.vue");
   return _sfc_setup$d ? _sfc_setup$d(props, ctx) : void 0;
 };
-const __vite_glob_0_22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$d
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13163,7 +13361,7 @@ _sfc_main$9.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Impact.vue");
   return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-const __vite_glob_0_23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$9
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13266,7 +13464,7 @@ _sfc_main$8.setup = (props, ctx) => {
   return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
 };
 const Page = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-d363a75a"]]);
-const __vite_glob_0_24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13366,7 +13564,7 @@ _sfc_main$7.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Partners.vue");
   return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
-const __vite_glob_0_25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$7
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13795,7 +13993,7 @@ _sfc_main$5.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Products.vue");
   return _sfc_setup$5 ? _sfc_setup$5(props, ctx) : void 0;
 };
-const __vite_glob_0_26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$5
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13898,7 +14096,7 @@ _sfc_main$4.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Sector.vue");
   return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
 };
-const __vite_glob_0_27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$4
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13979,7 +14177,7 @@ _sfc_main$3.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Solution.vue");
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-const __vite_glob_0_28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$3
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14062,7 +14260,7 @@ _sfc_main$2.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Solutions.vue");
   return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14270,7 +14468,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Training.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const __vite_glob_0_30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14280,7 +14478,7 @@ createServer(
     render: renderToString,
     title: (title) => title,
     resolve: (name) => {
-      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Admin/Brand.vue": __vite_glob_0_0, "./Pages/Admin/Campaigns/Edit.vue": __vite_glob_0_1, "./Pages/Admin/Campaigns/Index.vue": __vite_glob_0_2, "./Pages/Admin/Content/Edit.vue": __vite_glob_0_3, "./Pages/Admin/Content/Index.vue": __vite_glob_0_4, "./Pages/Admin/Dashboard.vue": __vite_glob_0_5, "./Pages/Admin/LeadFields.vue": __vite_glob_0_6, "./Pages/Admin/Leads/Index.vue": __vite_glob_0_7, "./Pages/Admin/Login.vue": __vite_glob_0_8, "./Pages/Admin/Navigation.vue": __vite_glob_0_9, "./Pages/Admin/Pages/Edit.vue": __vite_glob_0_10, "./Pages/Admin/Pages/Index.vue": __vite_glob_0_11, "./Pages/Admin/Profile.vue": __vite_glob_0_12, "./Pages/Admin/Redirects.vue": __vite_glob_0_13, "./Pages/Admin/Sections/Builder.vue": __vite_glob_0_14, "./Pages/Admin/Seo/Keywords.vue": __vite_glob_0_15, "./Pages/Admin/Settings/Screen.vue": __vite_glob_0_16, "./Pages/Admin/Upcoming.vue": __vite_glob_0_17, "./Pages/Admin/Users/Edit.vue": __vite_glob_0_18, "./Pages/Admin/Users/Index.vue": __vite_glob_0_19, "./Pages/Public/Campaign.vue": __vite_glob_0_20, "./Pages/Public/Contact.vue": __vite_glob_0_21, "./Pages/Public/Home.vue": __vite_glob_0_22, "./Pages/Public/Impact.vue": __vite_glob_0_23, "./Pages/Public/Page.vue": __vite_glob_0_24, "./Pages/Public/Partners.vue": __vite_glob_0_25, "./Pages/Public/Products.vue": __vite_glob_0_26, "./Pages/Public/Sector.vue": __vite_glob_0_27, "./Pages/Public/Solution.vue": __vite_glob_0_28, "./Pages/Public/Solutions.vue": __vite_glob_0_29, "./Pages/Public/Training.vue": __vite_glob_0_30 });
+      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Admin/Brand.vue": __vite_glob_0_0, "./Pages/Admin/Campaigns/Edit.vue": __vite_glob_0_1, "./Pages/Admin/Campaigns/Index.vue": __vite_glob_0_2, "./Pages/Admin/Content/Edit.vue": __vite_glob_0_3, "./Pages/Admin/Content/Index.vue": __vite_glob_0_4, "./Pages/Admin/Dashboard.vue": __vite_glob_0_5, "./Pages/Admin/Languages.vue": __vite_glob_0_6, "./Pages/Admin/LeadFields.vue": __vite_glob_0_7, "./Pages/Admin/Leads/Index.vue": __vite_glob_0_8, "./Pages/Admin/Login.vue": __vite_glob_0_9, "./Pages/Admin/Navigation.vue": __vite_glob_0_10, "./Pages/Admin/Pages/Edit.vue": __vite_glob_0_11, "./Pages/Admin/Pages/Index.vue": __vite_glob_0_12, "./Pages/Admin/Profile.vue": __vite_glob_0_13, "./Pages/Admin/Redirects.vue": __vite_glob_0_14, "./Pages/Admin/Sections/Builder.vue": __vite_glob_0_15, "./Pages/Admin/Seo/Keywords.vue": __vite_glob_0_16, "./Pages/Admin/Settings/Screen.vue": __vite_glob_0_17, "./Pages/Admin/Upcoming.vue": __vite_glob_0_18, "./Pages/Admin/Users/Edit.vue": __vite_glob_0_19, "./Pages/Admin/Users/Index.vue": __vite_glob_0_20, "./Pages/Public/Campaign.vue": __vite_glob_0_21, "./Pages/Public/Contact.vue": __vite_glob_0_22, "./Pages/Public/Home.vue": __vite_glob_0_23, "./Pages/Public/Impact.vue": __vite_glob_0_24, "./Pages/Public/Page.vue": __vite_glob_0_25, "./Pages/Public/Partners.vue": __vite_glob_0_26, "./Pages/Public/Products.vue": __vite_glob_0_27, "./Pages/Public/Sector.vue": __vite_glob_0_28, "./Pages/Public/Solution.vue": __vite_glob_0_29, "./Pages/Public/Solutions.vue": __vite_glob_0_30, "./Pages/Public/Training.vue": __vite_glob_0_31 });
       return pages[`./Pages/${name}.vue`];
     },
     setup({ App, props, plugin }) {

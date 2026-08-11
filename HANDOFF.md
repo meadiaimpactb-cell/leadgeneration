@@ -7,8 +7,8 @@ A new session should be able to read this file and continue without the client
 re-explaining anything. Read [PROJECT_BRIEF.md](PROJECT_BRIEF.md) and
 [CLAUDE.md](CLAUDE.md) first; this file only covers work in flight.
 
-**Last updated:** after closing Phase 1 (4/4).
-**Suite at that point:** 254 passing, 865 assertions. Pint clean.
+**Last updated:** after **2.1 Languages** went green.
+**Suite at that point:** 259 passing, 881 assertions. Pint clean.
 
 ---
 
@@ -43,32 +43,54 @@ Old paths 301 via the `redirects` table — see `RedirectsSeeder`.
 | Both admin languages carry the same keys | `AdminSidebarStructureTest::both_admin_languages_carry_the_same_keys` |
 | Segment picker: options, save, reload, clear | `SolutionSegmentTaxonomyTest` (4 tests) |
 
+### Phase 2.1 — Languages ✔
+
+`/admin/languages` replaces its placeholder. The switch and the coverage
+table; bilingual editing already existed through `BilingualFields` on the
+shared content editor.
+
+| What | Test |
+|---|---|
+| Screen reports the live state | `LanguagesScreenTest::the_screen_reports_the_current_state_of_the_english_site` |
+| Drives `site.english_enabled`, does not invent a second flag | `LanguagesScreenTest::the_switch_drives_the_one_setting_the_site_already_reads` |
+| Switching off closes `sitemap-en.xml` | `LanguagesScreenTest::turning_english_off_from_this_screen_closes_the_english_sitemap` |
+| Coverage counted from translations, not stored | `LanguagesScreenTest::coverage_is_counted_from_the_translations_that_exist` |
+| An empty content type reports no percentage | `LanguagesScreenTest::an_empty_content_type_reports_no_percentage_at_all` |
+
 ---
 
 ## 2. In progress right now
 
-**Phase 2.1 — Languages.** Nothing written yet; starting from a clean tree
-apart from the Phase 1 work listed above.
+**Phase 2.2 — CRM connection.** Not started; the tree is clean and committed
+at the end of 2.1.
+
+What already exists and must be reused, not rebuilt:
+
+- `App\Services\Crm\CrmDriver` + `CrmManager`, with `Null`, `Webhook`, `Odoo`
+  and `Zid` drivers. §22.8 forbids coupling to one provider — the screen
+  configures the manager, it does not talk to a provider directly.
+- `App\Jobs\PushLeadToCrm`, queued, with backoff from `config/crm.php`.
+- `crm_sync_logs` table + `CrmSyncLog` model — the send log already records
+  every attempt.
+- `POST /admin/leads/{lead}/resync` already exists for a single lead.
+- `App\Notifications\CrmSyncFailed` exists and is what 2.3 will wire up.
+
+The retry policy the brief asks for (three attempts, increasing gaps, then
+mark "did not reach CRM") is already in `config/crm.php` — check it matches
+before changing anything.
 
 Next step, exactly:
 
-1. Decide and record the storage choice for the English-site switch (see
-   Decisions below — likely a `settings` key, not a new table).
-2. Build `/admin/languages` for real, replacing its placeholder in
-   `UpcomingScreenController::SCREENS` (remove the `languages` entry there and
-   its route in `routes/admin.php`, and drop `soon: true` from
-   `resources/js/admin/navigation.js`).
-3. Switch semantics: when English is off, `LangSwitch` must not render, `/en`
-   must not be indexed, and `sitemap-en.xml` must 404. There is already a test
-   for the last two — `SitemapAndRobotsTest::turning_english_off_removes_it_
-   from_the_index_and_404s_its_sitemap` — so wire the new screen to the same
-   setting that test drives rather than inventing a second flag.
-4. Translation completeness per content type, read from the existing
-   `translatedLocales()` on each model.
-
-Files that will be touched: `app/Http/Controllers/Admin/`, `routes/admin.php`,
-`resources/js/admin/navigation.js`, `resources/js/Pages/Admin/`,
-`resources/lang/{ar,en}/admin.php`.
+1. Build `/admin/integrations/crm`, replacing the `crm` entry in
+   `UpcomingScreenController::SCREENS`, its route in `routes/admin.php`, and
+   the `soon: true` flag in `resources/js/admin/navigation.js`.
+2. Driver picker + credentials, stored as `settings` rows through
+   `SettingsRegistry` (never in code — §22.9).
+3. "Test connection" — a POST that calls the selected driver and reports the
+   result without saving a lead.
+4. Sync status + the log table, paginated.
+5. **Bulk resend** for every failed lead — the single-lead route exists; the
+   bulk one does not. This is what clears the 40 currently stuck.
 
 ---
 
