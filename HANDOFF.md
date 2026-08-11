@@ -176,6 +176,22 @@ locale's content, this is why.
 
 ## 5. Known debts, not blocking
 
+**Found while closing D2c, not fixed.** The partner and artisan heroes serve
+their original `.jpeg` where the government and companies heroes serve `.avif`:
+
+```
+government  /storage/5/1.avif      partners  /storage/7/6.jpeg
+companies   /storage/6/4.avif      artisans  /storage/8/8.jpeg
+```
+
+`SegmentHero` renders `image.webp ?? image.url`, so the fallback is doing its
+job — the conversion is simply absent for media 7 and 8.
+`media-library:regenerate --ids=7,8 --force` reports "All done!" and changes
+nothing, which means the cause is upstream of regeneration and needs a look at
+the conversion registration for that collection. Two pages ship a full-size
+photograph until then. Small, real, and deliberately left open rather than
+half-diagnosed at the end of a session.
+
 - `storage/app/public` is ~5.1 GB / 9,943 files — repeated seeding and test
   runs leak media. A `amad:prune-media` command was offered and not built;
   it deletes, so it needs the client's word.
