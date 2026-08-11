@@ -47,6 +47,8 @@ class Section extends Model implements HasMedia
         'contact_block',
         'map',
         'media_split',
+        // A procedure as steps, not a paragraph about a procedure.
+        'process_steps',
         'solutions_grid',
         'sector_spotlight',
         'story_carousel',

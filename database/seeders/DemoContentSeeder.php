@@ -755,6 +755,20 @@ class DemoContentSeeder extends Seeder
         };
 
         return [
+            // The hero's two actions. The heading and line come from the
+            // sector record itself, so only the buttons live here.
+            ['hero', [
+                'ar' => [null, null, null, 'لنبدأ معًا', '/ar/contact'],
+                'en' => [null, null, null, "Let's begin", '/en/contact'],
+            ], [
+                // settings is one JSON column, not per-locale, so a second
+                // button carries both languages here.
+                'secondaryLabel' => 'زوروا معرضنا',
+                'secondaryUrl' => '/ar/contact',
+                'secondaryLabel_en' => 'Visit our showroom',
+                'secondaryUrl_en' => '/en/contact',
+            ]],
+
             /*
              * The segment's needs, before what we offer.
              *
@@ -773,10 +787,40 @@ class DemoContentSeeder extends Seeder
                 'en' => ["What we offer {$toEn}"],
             ], ['items' => $cards]],
 
-            ['media_split', [
-                'ar' => ["كيف نعمل {$withAr}", null, 'نبدأ باجتماع قصير نفهم فيه المناسبة والجمهور والميزانية. نعود إليكم باقتراح وثلاثة اتجاهات حرفية، ثم عيّنة فعلية تُعتمد باليد. وبعد الاعتماد يبدأ الإنتاج بجدول واضح، وتصلكم القطع مغلّفة وجاهزة.'],
-                'en' => ["How we work {$withEn}", null, 'We begin with a short meeting to understand the occasion, the audience and the budget. We return with a proposal and three craft directions, then a real sample approved in the hand. Once approved, production runs to a clear schedule and the pieces arrive packaged and ready.'],
-            ], ['image' => $this->imagePayload('14.jpeg', 1126, 1036)]],
+            /*
+             * The same four stages that were a paragraph, as the procedure
+             * they describe. Nothing new is written: each step's sentence is
+             * a clause lifted from the paragraph it replaces.
+             */
+            ['process_steps', [
+                'ar' => ["كيف نعمل {$withAr}"],
+                'en' => ["How we work {$withEn}"],
+            ], ['items' => [
+                [
+                    'title' => 'اجتماع قصير',
+                    'body' => 'نفهم فيه المناسبة والجمهور والميزانية.',
+                    'title_en' => 'A short meeting',
+                    'body_en' => 'To understand the occasion, the audience and the budget.',
+                ],
+                [
+                    'title' => 'ثلاثة اتجاهات',
+                    'body' => 'اقتراح مكتوب وثلاثة اتجاهات حرفية بخامات مختلفة.',
+                    'title_en' => 'Three directions',
+                    'body_en' => 'A written proposal and three craft directions in different materials.',
+                ],
+                [
+                    'title' => 'عيّنة تُعتمد باليد',
+                    'body' => 'قطعة فعلية تُعاين وتُعتمد قبل أي إنتاج.',
+                    'title_en' => 'A sample approved in the hand',
+                    'body_en' => 'A real piece, seen and approved before any production begins.',
+                ],
+                [
+                    'title' => 'إنتاج وتسليم',
+                    'body' => 'جدول واضح، وقطع تصل مغلّفة وجاهزة.',
+                    'title_en' => 'Production and delivery',
+                    'body_en' => 'A clear schedule, and pieces that arrive packaged and ready.',
+                ],
+            ]]],
 
             ['accordion', [
                 'ar' => ['أسئلة متكررة'],

@@ -158,6 +158,19 @@
    * and the tooth depth it must clear.                        */
   --seam-gutter: 40px;
 
+  /* ---- The octagon cut (§10.1) --------------------------- *
+   * The site's image signature, taken from the gift boxes and
+   * display cases the company actually makes. Every featured
+   * image, card and map is cut with it — a square corner in a
+   * featured block is the tell that a page was not designed.
+   *
+   * Two depths: `soft` for cards and photographs, `deep` for
+   * the map and anything at full width, where a 14px chamfer
+   * disappears. Symmetrical on both axes, so unlike the hero's
+   * tooth edge it needs no mirroring in LTR.                  */
+  --cut-soft: clamp(10px, 1.6vw, 18px);
+  --cut-deep: clamp(28px, 7vw, 64px);
+
   /* ---- Marquee cadence ----------------------------------- *
    * Slow enough to read a full headline without stopping.     */
   --dur-marquee-news:  46s;

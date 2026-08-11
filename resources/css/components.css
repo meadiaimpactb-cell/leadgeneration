@@ -518,3 +518,113 @@ html[dir="rtl"] .link-weave:focus-visible .arrow { transform: scaleX(-1) transla
   align-items: center;
   gap: var(--s-2);
 }
+
+/* ============================================================
+   THE OCTAGON CUT
+
+   The image signature, from the company's own gift boxes and
+   display cases. `.cut` on any box; `.cut--deep` where the
+   box is large enough that a small chamfer would vanish.
+
+   clip-path, not border-radius: a chamfer is a straight cut,
+   and rounding it turns a made object into a web component.
+   ============================================================ */
+.cut,
+.cut--deep {
+  --c: var(--cut-soft);
+  clip-path: polygon(
+    var(--c) 0, calc(100% - var(--c)) 0,
+    100% var(--c), 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, var(--c) 100%,
+    0 calc(100% - var(--c)), 0 var(--c)
+  );
+}
+
+.cut--deep { --c: var(--cut-deep); }
+
+/*
+ * A cut box with a gold edge. clip-path removes the border
+ * with the corner, so the edge is a second cut box behind the
+ * first — the outer shows only as a hairline around it.
+ */
+.cut-framed {
+  position: relative;
+  background: var(--gold-400);
+  padding: 1px;
+}
+
+.cut-framed > * { display: block; }
+
+/* ============================================================
+   PROCESS TIMELINE
+
+   Four steps on one gold rule, numbered. Built for the
+   government page, where the buyer is purchasing the clarity
+   of the procedure as much as the object — a paragraph
+   describing a process is not a process anyone can check.
+   ============================================================ */
+.steps {
+  display: grid;
+  gap: var(--s-7);
+  grid-template-columns: 1fr;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  counter-increment: step;
+  padding-block-start: var(--s-6);
+}
+
+/* The rule the nodes sit on. Drawn per step rather than once
+   behind them all, so it wraps with the grid instead of
+   running through a gap. */
+.step::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 11px;
+  inset-inline: 0;
+  block-size: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--gold-400) 0 4px,
+    transparent 4px 10px
+  );
+}
+
+.step::after {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 24px;
+  block-size: 24px;
+  display: grid;
+  place-items: center;
+  background: var(--navy-900);
+  color: var(--gold-400);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  border-radius: 50%;
+}
+
+.step__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+}
+
+.step__body {
+  margin-block-start: var(--s-2);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+
+@media (min-width: 768px) {
+  .steps { grid-template-columns: repeat(4, 1fr); gap: var(--s-5); }
+}
