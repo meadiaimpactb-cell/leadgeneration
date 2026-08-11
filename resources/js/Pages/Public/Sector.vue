@@ -26,7 +26,6 @@ import { useTranslation } from '@/Composables/useTranslation';
 const props = defineProps({
     sector: { type: Object, required: true },
     sections: { type: Array, default: () => [] },
-    solutions: { type: Array, default: () => [] },
     impact: { type: Array, default: () => [] },
     clients: { type: Array, default: () => [] },
     /** The other three segments, so the visitor stays on the site. */
@@ -140,6 +139,7 @@ const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band'];
             :eyebrow="ctaCopy.settings?.eyebrow"
             :reassurance="ctaCopy.subheading"
             :note="ctaCopy.body"
+            :first-field-label="ctaCopy.settings?.firstFieldLabel"
             :submit-label="ctaCopy.ctaLabel"
             :sector-hint="sector.key"
         />

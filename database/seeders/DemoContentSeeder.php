@@ -730,7 +730,52 @@ class DemoContentSeeder extends Seeder
          * bought before and is racing a tender deadline — the same four
          * stages would have been the template the client objected to.
          */
+        /*
+         * The four crafts §3 names, as a structure the client fills.
+         *
+         * Deliberately placeholders: §3 is explicit that the targets are four
+         * specific crafts, and naming them myself would be inventing the
+         * company's own sourcing strategy. The grid exists; the names arrive
+         * with the content file.
+         */
+        $targets = $key === Sector::KEY_ARTISANS ? [
+            ['icon' => 'stories', 'title' => 'الحرفة الأولى', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الثانية', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الثالثة', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الرابعة', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
+        ] : [];
+
+        /*
+         * What the artisan gets — the section that replaces the buyer-facing
+         * services grid, which was addressed to someone who is not reading
+         * this page.
+         */
+        $gains = $key === Sector::KEY_ARTISANS ? [
+            ['icon' => 'store', 'title' => 'قناة بيع مؤسسية', 'body' => 'منتجاتكم تصل إلى جهات وشركات لا يصلها الحرفي منفردًا.'],
+            ['icon' => 'training', 'title' => 'تطوير مهني', 'body' => 'تدريب مستمر على الجودة والتغليف والتسعير.'],
+            ['icon' => 'stories', 'title' => 'اسمكم وقصتكم', 'body' => 'القطعة تُعرض باسم صانعها، وقصته تُروى معها.'],
+        ] : [];
+
         $steps = match ($key) {
+            /*
+             * A joining journey, not a purchase. This is the one segment
+             * that is not buying: the reader is deciding whether to work
+             * with us, so the sequence is theirs — from first contact to a
+             * standing relationship — and it is five steps because the
+             * training stage is the one they most need to see named.
+             */
+            Sector::KEY_ARTISANS => [
+                ['title' => 'تواصلوا معنا', 'body' => 'أو زوروا المعرض ومعكم نماذج من أعمالكم.',
+                    'title_en' => 'Get in touch', 'body_en' => 'Or visit the showroom, bringing samples of your work.'],
+                ['title' => 'جلسة تعارف', 'body' => 'نرى أعمالكم ونسمع منكم، وتسألون ما تشاؤون.',
+                    'title_en' => 'A first conversation', 'body_en' => 'We see your work and hear from you, and you ask whatever you need to.'],
+                ['title' => 'تأهيل وتدريب عند الحاجة', 'body' => 'الجودة والتغليف والتسعير — بما ينقص لا بما يُفترض.',
+                    'title_en' => 'Training where it is needed', 'body_en' => 'Quality, packaging and pricing — what is missing, not what is assumed.'],
+                ['title' => 'أول طلبية', 'body' => 'بسعر مكتوب متفق عليه قبل أن تبدأ اليد بالعمل.',
+                    'title_en' => 'A first order', 'body_en' => 'At a written price, agreed before the work begins.'],
+                ['title' => 'شراكة مستمرة', 'body' => 'طلبات مجدولة تعرفون حجمها وموعدها، وقصتكم تُروى مع منتجاتكم.',
+                    'title_en' => 'A standing partnership', 'body_en' => 'Scheduled orders whose size and date you know, and your story told with your work.'],
+            ],
             Sector::KEY_PARTNERS => [
                 ['title' => 'أرسلوا موجز الفعالية', 'body' => 'التاريخ والجمهور والعدد التقريبي يكفي للبدء.',
                     'title_en' => 'Send the brief', 'body_en' => 'The date, the audience and a rough count are enough to start.'],
@@ -771,6 +816,9 @@ class DemoContentSeeder extends Seeder
                 ['question' => 'هل أحتاج سجلًا تجاريًا للبدء؟', 'answer' => 'لا يُشترط للبدء. ونساعدكم على الترتيب النظامي عند الحاجة إليه.'],
                 ['question' => 'من يتحمّل تكلفة الخامات؟', 'answer' => 'يُحدَّد ذلك في الاتفاق قبل البدء، ويختلف بحسب حجم الطلب ونوع الحرفة.'],
                 ['question' => 'متى يصلني المقابل؟', 'answer' => 'جدول الدفع يُكتب ضمن الاتفاق، ويُربط بمراحل التسليم لا بنهايتها فقط.'],
+                ['question' => 'هل أعمل معكم حصريًا أم أستطيع البيع في مكاني؟', 'answer' => 'لا حصرية. تبيعون حيث شئتم، وما تنتجونه لنا يُتفق عليه طلبًا بطلب.'],
+                ['question' => 'هل التدريب مدفوع أم مجاني؟', 'answer' => 'التدريب جزء من التأهيل للعمل معنا. تفاصيل كل مسار تُوضَّح في جلسة التعارف قبل أي التزام.'],
+                ['question' => 'كيف تُعرض منتجاتي وباسم من تُباع؟', 'answer' => 'باسمكم. القطعة تُعرض منسوبة إلى صانعها، وقصته تُروى معها.'],
             ],
             /*
              * The four a private-sector buyer asks that a government one does
@@ -899,6 +947,43 @@ class DemoContentSeeder extends Seeder
                 ], ['items' => $models]],
             ]),
 
+            // Named crafts, not "any artisan": the specificity is the serious
+            // signal, not an exclusion (§3).
+            ...($targets === [] ? [] : [
+                ['cards', [
+                    'ar' => ['من نستهدف', 'نركّز على حرف محددة نتقنها ونعرف سوقها.'],
+                    'en' => ['Who we look for', 'We focus on a few crafts we know well and whose market we understand.'],
+                ], ['items' => $targets]],
+            ]),
+
+            ...($gains === [] ? [] : [
+                ['cards', [
+                    'ar' => ['ماذا تكسبون معنا'],
+                    'en' => ['What you gain with us'],
+                ], ['items' => $gains]],
+            ]),
+
+            /*
+             * The artisans' own words — seeded as an EMPTY container, on purpose.
+             *
+             * The page asks an artisan to trust it, and the one thing that earns
+             * that is another artisan's sentence. Which is exactly why I cannot
+             * write it: a quote attributed to a craftsperson who never said it
+             * is not placeholder copy, it is a fabricated endorsement, and §22.1
+             * forbids inventing content precisely here.
+             *
+             * So the row exists in the section builder with its heading, and
+             * `Testimonial.vue` renders nothing while `body` is null. Amad Craft
+             * pastes a real quote and a real name, and the section appears. Until
+             * then the page is quieter than designed and honest.
+             */
+            ...($key === Sector::KEY_ARTISANS ? [
+                ['testimonial', [
+                    'ar' => ['من الحرفيين أنفسهم'],
+                    'en' => ['In their own words'],
+                ], null],
+            ] : []),
+
             ['accordion', [
                 'ar' => ['أسئلة متكررة'],
                 'en' => ['Frequently asked'],
@@ -907,7 +992,13 @@ class DemoContentSeeder extends Seeder
             ['cta_band', [
                 'ar' => ['نبدأ بمحادثة قصيرة', 'اتركوا وسيلة تواصل واحدة، ونعود إليكم باقتراح مبدئي.', null, 'تواصلوا معي'],
                 'en' => ['It starts with a short conversation', 'Leave one way to reach you and we will come back with an initial proposal.', null, 'Contact me'],
-            ]],
+            ], $key === Sector::KEY_ARTISANS ? [
+                // The label only. Same field, same column, same requirement —
+                // but an individual artisan is not a company, and asking them
+                // to type their craft under "company name" is how a form
+                // starts feeling written for someone else.
+                'firstFieldLabel' => 'الاسم أو اسم المشروع الحرفي',
+            ] : null],
         ];
     }
 

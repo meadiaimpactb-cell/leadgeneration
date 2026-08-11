@@ -7,9 +7,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Resources\ImpactMetricResource;
 use App\Http\Resources\PartnerResource;
 use App\Http\Resources\SectorResource;
-use App\Http\Resources\SolutionResource;
 use App\Models\Sector;
-use App\Models\Solution;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -50,10 +48,14 @@ class SectorController extends PublicController
             'sector' => SectorResource::make($sector),
             'sections' => $this->sections($sector),
 
-            'solutions' => SolutionResource::collection(
-                Solution::query()->visible()->translatedIn($locale)
-                    ->withTranslation()->with('media')->limit(3)->get()
-            ),
+            /*
+             * The solutions collection was sent here and rendered nowhere:
+             * the segment template dropped the buyer-facing services grid
+             * when the four pages were made distinct. It kept arriving in
+             * the page's prop JSON, which meant the artisan page shipped
+             * three services addressed to a buyer, invisible on screen and
+             * fully present in the payload.
+             */
 
             'impact' => ImpactMetricResource::collection($sector->impactMetrics),
             'clients' => PartnerResource::collection($sector->clients),

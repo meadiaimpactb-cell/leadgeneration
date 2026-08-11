@@ -25,6 +25,18 @@ const props = defineProps({
     // Which sector page this was submitted from — a hint for sales, not a claim.
     sectorHint: { type: String, default: null },
     campaign: { type: String, default: null },
+    /**
+     * A page-specific label for the first field.
+     *
+     * The label only — same field, same column, same required flag, same
+     * endpoint. "اسم الشركة" is right for a procurement officer and wrong for
+     * an individual artisan, and asking someone to type their craft under a
+     * heading that says "company" is how a form starts feeling like it was
+     * written for somebody else.
+     *
+     * §6.1 fixes the SHAPE of this form, not the words on it.
+     */
+    firstFieldLabel: { type: String, default: null },
     // `inline` sits inside a CTA band; `stacked` is the standalone block.
     layout: {
         type: String,
@@ -167,9 +179,9 @@ function submit() {
             <!-- Fields the client enabled beyond the brief's two. Absent in
                  the shipped configuration. -->
             <div v-if="extraFields.length" class="lead__extras">
-                <div v-for="field in extraFields" :key="field.key" class="lead__extra">
+                <div v-for="(field, i) in extraFields" :key="field.key" class="lead__extra">
                     <label class="lead__label" :for="fieldId(field.key)">
-                        {{ field.label }}
+                        {{ (i === 0 && firstFieldLabel) ? firstFieldLabel : field.label }}
                         <!-- The marker and the input's own `required` come from
                              the same flag, so what the visitor is told and what
                              the form enforces cannot drift apart. -->

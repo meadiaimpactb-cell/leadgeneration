@@ -159,6 +159,54 @@ class SegmentPagesAreDistinctTest extends TestCase
             'The partner page quotes a percentage — a rate on a public page is a price list.');
     }
 
+    /**
+     * The form's shape is fixed; its wording is not.
+     *
+     * §6.1 fixes three fields and one endpoint everywhere. The artisan page
+     * relabels the first — "اسم الشركة" is wrong for an individual — and this
+     * asserts the relabel happened AND that nothing else about the form did.
+     */
+    #[Test]
+    public function the_artisan_page_relabels_the_first_field_without_changing_it(): void
+    {
+        $body = $this->get('/ar/solutions/artisans')->assertOk()->getContent();
+
+        $this->assertStringContainsString('الاسم أو اسم المشروع الحرفي', $body);
+
+        /*
+         * Counted by matching the class as a TOKEN, not the attribute
+         * verbatim. The email and phone inputs also carry `lead-input--mono`,
+         * so Vue merges them into `class="lead-input lead-input--mono"` and
+         * an exact-string count sees two fields where there are three. This
+         * is the third time a bound class has broken a verbatim match; see
+         * DESIGN_SYSTEM.md.
+         */
+        $this->assertSame(3, preg_match_all('/<input[^>]*class="[^"]*\blead-input\b/', $body),
+            'The artisan page does not carry the same three fields.');
+        $this->assertStringContainsString('name="contact"', $body);
+        $this->assertStringContainsString('autocomplete="email tel"', $body);
+    }
+
+    /**
+     * The artisan is the one segment that is not buying. A section addressed
+     * to a buyer has no business on their page — the buyer-facing services
+     * grid was there, and it was the loudest wrong note on the site.
+     */
+    #[Test]
+    public function the_artisan_page_offers_nothing_addressed_to_a_buyer(): void
+    {
+        $body = $this->get('/ar/solutions/artisans')->assertOk()->getContent();
+
+        // Rendered text only — the page's prop JSON is checked separately.
+        $text = preg_replace('/data-page="[^"]*"/', '', $body) ?? '';
+        $text = preg_replace('/<script[\s\S]*?<\/script>/', '', $text) ?? '';
+
+        foreach (['الهدايا المؤسسية', 'مستلزمات الفعاليات', 'الإنتاج المخصص'] as $buyerService) {
+            $this->assertStringNotContainsString($buyerService, $text,
+                "The artisan page offers «{$buyerService}» — a service for someone who is not reading it.");
+        }
+    }
+
     #[Test]
     public function every_segment_still_renders_in_both_locales(): void
     {

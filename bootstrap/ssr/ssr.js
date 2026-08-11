@@ -8552,6 +8552,18 @@ const _sfc_main$M = {
     // Which sector page this was submitted from — a hint for sales, not a claim.
     sectorHint: { type: String, default: null },
     campaign: { type: String, default: null },
+    /**
+     * A page-specific label for the first field.
+     *
+     * The label only — same field, same column, same required flag, same
+     * endpoint. "اسم الشركة" is right for a procurement officer and wrong for
+     * an individual artisan, and asking someone to type their craft under a
+     * heading that says "company" is how a form starts feeling like it was
+     * written for somebody else.
+     *
+     * §6.1 fixes the SHAPE of this form, not the words on it.
+     */
+    firstFieldLabel: { type: String, default: null },
     // `inline` sits inside a CTA band; `stacked` is the standalone block.
     layout: {
       type: String,
@@ -8590,46 +8602,46 @@ const _sfc_main$M = {
     return (_ctx, _push, _parent, _attrs) => {
       _push(`<div${ssrRenderAttrs(mergeProps({
         class: ["lead", `lead--${__props.layout}`]
-      }, _attrs))} data-v-5bfeeb68>`);
+      }, _attrs))} data-v-d4b0349b>`);
       if (submitted.value) {
-        _push(`<div class="lead__done" role="status" aria-live="polite" data-v-5bfeeb68><p class="lead__done-text" data-v-5bfeeb68>${ssrInterpolate(unref(t)("leads.success"))}</p><div class="lead-success-thread" aria-hidden="true" data-v-5bfeeb68></div></div>`);
+        _push(`<div class="lead__done" role="status" aria-live="polite" data-v-d4b0349b><p class="lead__done-text" data-v-d4b0349b>${ssrInterpolate(unref(t)("leads.success"))}</p><div class="lead-success-thread" aria-hidden="true" data-v-d4b0349b></div></div>`);
       } else {
-        _push(`<form novalidate data-v-5bfeeb68>`);
+        _push(`<form novalidate data-v-d4b0349b>`);
         if (__props.heading) {
-          _push(`<p class="lead__heading" data-v-5bfeeb68>${ssrInterpolate(__props.heading)}</p>`);
+          _push(`<p class="lead__heading" data-v-d4b0349b>${ssrInterpolate(__props.heading)}</p>`);
         } else {
           _push(`<!---->`);
         }
         if (__props.reassurance) {
-          _push(`<p class="lead__reassurance" data-v-5bfeeb68>${ssrInterpolate(__props.reassurance)}</p>`);
+          _push(`<p class="lead__reassurance" data-v-d4b0349b>${ssrInterpolate(__props.reassurance)}</p>`);
         } else {
           _push(`<!---->`);
         }
         if (extraFields.value.length) {
-          _push(`<div class="lead__extras" data-v-5bfeeb68><!--[-->`);
-          ssrRenderList(extraFields.value, (field) => {
-            _push(`<div class="lead__extra" data-v-5bfeeb68><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-5bfeeb68>${ssrInterpolate(field.label)} `);
+          _push(`<div class="lead__extras" data-v-d4b0349b><!--[-->`);
+          ssrRenderList(extraFields.value, (field, i) => {
+            _push(`<div class="lead__extra" data-v-d4b0349b><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-d4b0349b>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
             if (field.required) {
-              _push(`<span class="lead__required" aria-hidden="true" data-v-5bfeeb68>*</span>`);
+              _push(`<span class="lead__required" aria-hidden="true" data-v-d4b0349b>*</span>`);
             } else {
-              _push(`<span class="lead__optional" data-v-5bfeeb68>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
+              _push(`<span class="lead__optional" data-v-d4b0349b>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
             }
             _push(`</label>`);
             if (field.type === "select") {
-              _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-5bfeeb68><option value="" data-v-5bfeeb68${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
+              _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-d4b0349b><option value="" data-v-d4b0349b${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
               ssrRenderList(field.options, (opt) => {
-                _push(`<option${ssrRenderAttr("value", opt.value)} data-v-5bfeeb68${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
+                _push(`<option${ssrRenderAttr("value", opt.value)} data-v-d4b0349b${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
               });
               _push(`<!--]--></select>`);
             } else if (field.type === "checkbox") {
-              _push(`<label class="lead__check" data-v-5bfeeb68><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-5bfeeb68><span data-v-5bfeeb68>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
+              _push(`<label class="lead__check" data-v-d4b0349b><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-d4b0349b><span data-v-d4b0349b>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
             } else if (field.type === "textarea") {
-              _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-5bfeeb68>${ssrInterpolate(values[field.key])}</textarea>`);
+              _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-d4b0349b>${ssrInterpolate(values[field.key])}</textarea>`);
             } else {
-              _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : "auto")} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-5bfeeb68>`);
+              _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : "auto")} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-d4b0349b>`);
             }
             if (errors.value[field.key]) {
-              _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-5bfeeb68>${ssrInterpolate(errors.value[field.key])}</p>`);
+              _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-d4b0349b>${ssrInterpolate(errors.value[field.key])}</p>`);
             } else {
               _push(`<!---->`);
             }
@@ -8640,13 +8652,13 @@ const _sfc_main$M = {
           _push(`<!---->`);
         }
         if (contactField.value) {
-          _push(`<div class="lead__row" data-v-5bfeeb68><div class="lead__field" data-v-5bfeeb68><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-5bfeeb68>${ssrInterpolate(contactField.value.label)} `);
+          _push(`<div class="lead__row" data-v-d4b0349b><div class="lead__field" data-v-d4b0349b><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-d4b0349b>${ssrInterpolate(contactField.value.label)} `);
           if (__props.layout === "inline") {
-            _push(`<span class="lead__required" aria-hidden="true" data-v-5bfeeb68> * </span>`);
+            _push(`<span class="lead__required" aria-hidden="true" data-v-d4b0349b> * </span>`);
           } else {
             _push(`<!---->`);
           }
-          _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-5bfeeb68></div>`);
+          _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-d4b0349b></div>`);
           _push(ssrRenderComponent(_sfc_main$_, {
             type: "submit",
             variant: __props.layout === "inline" ? "cta-lg" : "cta",
@@ -8669,18 +8681,18 @@ const _sfc_main$M = {
           _push(`<!---->`);
         }
         if (errors.value[CONTACT]) {
-          _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-5bfeeb68>${ssrInterpolate(errors.value[CONTACT])}</p>`);
+          _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-d4b0349b>${ssrInterpolate(errors.value[CONTACT])}</p>`);
         } else {
           _push(`<!---->`);
         }
         if (messageField.value) {
           _push(`<!--[-->`);
           if (!showMessage.value) {
-            _push(`<button type="button" class="lead__toggle link-weave" data-v-5bfeeb68>${ssrInterpolate(unref(t)("leads.add_message"))}</button>`);
+            _push(`<button type="button" class="lead__toggle link-weave" data-v-d4b0349b>${ssrInterpolate(unref(t)("leads.add_message"))}</button>`);
           } else {
-            _push(`<div class="lead__message" data-v-5bfeeb68><label class="visually-hidden"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-5bfeeb68>${ssrInterpolate(messageField.value.label)}</label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="1" dir="auto"${ssrRenderAttr("placeholder", messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-5bfeeb68>${ssrInterpolate(values[MESSAGE])}</textarea>`);
+            _push(`<div class="lead__message" data-v-d4b0349b><label class="visually-hidden"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-d4b0349b>${ssrInterpolate(messageField.value.label)}</label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="1" dir="auto"${ssrRenderAttr("placeholder", messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-d4b0349b>${ssrInterpolate(values[MESSAGE])}</textarea>`);
             if (errors.value[MESSAGE]) {
-              _push(`<p class="lead-error" data-v-5bfeeb68>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
+              _push(`<p class="lead-error" data-v-d4b0349b>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
             } else {
               _push(`<!---->`);
             }
@@ -8690,7 +8702,7 @@ const _sfc_main$M = {
         } else {
           _push(`<!---->`);
         }
-        _push(`<div class="lead__trap" aria-hidden="true" data-v-5bfeeb68><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-5bfeeb68>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-5bfeeb68></div></form>`);
+        _push(`<div class="lead__trap" aria-hidden="true" data-v-d4b0349b><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-d4b0349b>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-d4b0349b></div></form>`);
       }
       _push(`</div>`);
     };
@@ -8702,7 +8714,7 @@ _sfc_main$M.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/forms/LeadField.vue");
   return _sfc_setup$M ? _sfc_setup$M(props, ctx) : void 0;
 };
-const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-5bfeeb68"]]);
+const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-d4b0349b"]]);
 const _sfc_main$L = {
   __name: "LeadModal",
   __ssrInlineRender: true,
@@ -11745,39 +11757,42 @@ const _sfc_main$p = {
     campaign: { type: String, default: null },
     eyebrow: { type: String, default: null },
     /** The small line under the submit button — response time, no spam. */
-    note: { type: String, default: null }
+    note: { type: String, default: null },
+    /** Page-specific label for the form's first field. The label only. */
+    firstFieldLabel: { type: String, default: null }
   },
   setup(__props) {
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<section${ssrRenderAttrs(mergeProps({ class: "band-outer" }, _attrs))} data-v-468a3f37>`);
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "band-outer" }, _attrs))} data-v-58316482>`);
       _push(ssrRenderComponent(_sfc_main$N, null, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="band on-dark" data-v-468a3f37${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-468a3f37${_scopeId}></span><div class="band__grid" data-v-468a3f37${_scopeId}><div class="band__pitch" data-v-468a3f37${_scopeId}>`);
+            _push2(`<div class="band on-dark" data-v-58316482${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-58316482${_scopeId}></span><div class="band__grid" data-v-58316482${_scopeId}><div class="band__pitch" data-v-58316482${_scopeId}>`);
             if (__props.eyebrow) {
-              _push2(`<p class="mono-label mono-label--gold" data-v-468a3f37${_scopeId}>${ssrInterpolate(__props.eyebrow)}</p>`);
+              _push2(`<p class="mono-label mono-label--gold" data-v-58316482${_scopeId}>${ssrInterpolate(__props.eyebrow)}</p>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.heading) {
-              _push2(`<h2 class="band__title" data-v-468a3f37${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              _push2(`<h2 class="band__title" data-v-58316482${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.reassurance) {
-              _push2(`<p class="band__note" data-v-468a3f37${_scopeId}>${ssrInterpolate(__props.reassurance)}</p>`);
+              _push2(`<p class="band__note" data-v-58316482${_scopeId}>${ssrInterpolate(__props.reassurance)}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`</div><div class="band__form" data-v-468a3f37${_scopeId}>`);
+            _push2(`</div><div class="band__form" data-v-58316482${_scopeId}>`);
             _push2(ssrRenderComponent(LeadField, {
               layout: "inline",
+              "first-field-label": __props.firstFieldLabel,
               "submit-label": __props.submitLabel,
               "sector-hint": __props.sectorHint,
               campaign: __props.campaign
             }, null, _parent2, _scopeId));
             if (__props.note) {
-              _push2(`<p class="band__submit-note" data-v-468a3f37${_scopeId}>${ssrInterpolate(__props.note)}</p>`);
+              _push2(`<p class="band__submit-note" data-v-58316482${_scopeId}>${ssrInterpolate(__props.note)}</p>`);
             } else {
               _push2(`<!---->`);
             }
@@ -11807,10 +11822,11 @@ const _sfc_main$p = {
                   createVNode("div", { class: "band__form" }, [
                     createVNode(LeadField, {
                       layout: "inline",
+                      "first-field-label": __props.firstFieldLabel,
                       "submit-label": __props.submitLabel,
                       "sector-hint": __props.sectorHint,
                       campaign: __props.campaign
-                    }, null, 8, ["submit-label", "sector-hint", "campaign"]),
+                    }, null, 8, ["first-field-label", "submit-label", "sector-hint", "campaign"]),
                     __props.note ? (openBlock(), createBlock("p", {
                       key: 0,
                       class: "band__submit-note"
@@ -11833,7 +11849,7 @@ _sfc_main$p.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CtaBand.vue");
   return _sfc_setup$p ? _sfc_setup$p(props, ctx) : void 0;
 };
-const CtaBand = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-468a3f37"]]);
+const CtaBand = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-58316482"]]);
 const _sfc_main$o = {
   __name: "SectionRenderer",
   __ssrInlineRender: true,
@@ -14641,7 +14657,6 @@ const _sfc_main$4 = {
   props: {
     sector: { type: Object, required: true },
     sections: { type: Array, default: () => [] },
-    solutions: { type: Array, default: () => [] },
     impact: { type: Array, default: () => [] },
     clients: { type: Array, default: () => [] },
     /** The other three segments, so the visitor stays on the site. */
@@ -14709,20 +14724,20 @@ const _sfc_main$4 = {
               items: __props.impact
             }, null, _parent2, _scopeId));
             if (__props.siblings.length) {
-              _push2(`<section class="section siblings" data-v-a9fdb77f${_scopeId}>`);
+              _push2(`<section class="section siblings" data-v-e375c7f1${_scopeId}>`);
               _push2(ssrRenderComponent(_sfc_main$N, null, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<h2 class="h2 siblings__title" data-v-a9fdb77f${_scopeId2}>${ssrInterpolate(unref(t)("common.other_segments"))}</h2><ul class="siblings__list" data-v-a9fdb77f${_scopeId2}><!--[-->`);
+                    _push3(`<h2 class="h2 siblings__title" data-v-e375c7f1${_scopeId2}>${ssrInterpolate(unref(t)("common.other_segments"))}</h2><ul class="siblings__list" data-v-e375c7f1${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.siblings, (item) => {
-                      _push3(`<li data-v-a9fdb77f${_scopeId2}>`);
+                      _push3(`<li data-v-e375c7f1${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: item.url,
                         class: "sibling"
                       }, {
                         default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                           if (_push4) {
-                            _push4(`<span class="sibling__name" data-v-a9fdb77f${_scopeId3}>${ssrInterpolate(item.name)}</span><span class="arrow" aria-hidden="true" data-v-a9fdb77f${_scopeId3}>→</span>`);
+                            _push4(`<span class="sibling__name" data-v-e375c7f1${_scopeId3}>${ssrInterpolate(item.name)}</span><span class="arrow" aria-hidden="true" data-v-e375c7f1${_scopeId3}>→</span>`);
                           } else {
                             return [
                               createVNode("span", { class: "sibling__name" }, toDisplayString(item.name), 1),
@@ -14776,6 +14791,7 @@ const _sfc_main$4 = {
               eyebrow: ctaCopy.value.settings?.eyebrow,
               reassurance: ctaCopy.value.subheading,
               note: ctaCopy.value.body,
+              "first-field-label": ctaCopy.value.settings?.firstFieldLabel,
               "submit-label": ctaCopy.value.ctaLabel,
               "sector-hint": __props.sector.key
             }, null, _parent2, _scopeId));
@@ -14850,9 +14866,10 @@ const _sfc_main$4 = {
                 eyebrow: ctaCopy.value.settings?.eyebrow,
                 reassurance: ctaCopy.value.subheading,
                 note: ctaCopy.value.body,
+                "first-field-label": ctaCopy.value.settings?.firstFieldLabel,
                 "submit-label": ctaCopy.value.ctaLabel,
                 "sector-hint": __props.sector.key
-              }, null, 8, ["heading", "eyebrow", "reassurance", "note", "submit-label", "sector-hint"])
+              }, null, 8, ["heading", "eyebrow", "reassurance", "note", "first-field-label", "submit-label", "sector-hint"])
             ];
           }
         }),
@@ -14867,7 +14884,7 @@ _sfc_main$4.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Sector.vue");
   return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
 };
-const Sector = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-a9fdb77f"]]);
+const Sector = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-e375c7f1"]]);
 const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Sector

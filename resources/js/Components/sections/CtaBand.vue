@@ -22,6 +22,8 @@ defineProps({
     eyebrow: { type: String, default: null },
     /** The small line under the submit button — response time, no spam. */
     note: { type: String, default: null },
+    /** Page-specific label for the form's first field. The label only. */
+    firstFieldLabel: { type: String, default: null },
 });
 </script>
 
@@ -47,6 +49,7 @@ defineProps({
                         -->
                         <LeadField
                             layout="inline"
+                            :first-field-label="firstFieldLabel"
                             :submit-label="submitLabel"
                             :sector-hint="sectorHint"
                             :campaign="campaign"

@@ -7,8 +7,9 @@ A new session should be able to read this file and continue without the client
 re-explaining anything. Read [PROJECT_BRIEF.md](PROJECT_BRIEF.md) and
 [CLAUDE.md](CLAUDE.md) first; this file only covers work in flight.
 
-**Last updated:** after **2.2 CRM** went green.
-**Suite at that point:** 267 passing, 902 assertions. Pint clean.
+**Last updated:** after **D2c — `/solutions/artisans`** went green, which closes
+all four audience segments.
+**Suite at that point:** 275 passing, 956 assertions. Pint clean.
 
 ---
 
@@ -81,6 +82,15 @@ re-queue path, not a real provider round trip.
 ---
 
 ## 2. In progress right now
+
+**Nothing is half-built.** The design track's four segment pages are closed and
+committed; the admin phases are paused where the client stopped them.
+
+Two candidates for the next session, in the client's own order of asking:
+
+- **Design track D2** continues at `/impact` — see the Design track section.
+- **Phase 2.3 — Notifications**, described immediately below, paused at the
+  client's request after 2.2.
 
 **Phase 2.3 — Notifications.** Not started; the tree is clean and committed
 at the end of 2.2.
@@ -210,10 +220,10 @@ before the form. Commit `f70be63`.
   answer is a sentence and nothing more: §2.2 forbids a commercial function,
   and the site must not grow one by answering a question about it.
 
-**Still open on the design track:** D2 for `/solutions/partners`,
-`/solutions/artisans`, `/impact`, `/training`, `/about`, `/contact`,
-`/products/*`, `/lp/*`, and the 404 page. Each inherits this template; the
-work per page is content angle plus whatever section that segment alone needs.
+**Still open on the design track:** D2 for `/impact`, `/training`, `/about`,
+`/contact`, `/products/*`, `/lp/*`, and the 404 page. Each inherits this
+template; the work per page is content angle plus whatever section that page
+alone needs.
 
 **Not done and not claimable:** screenshots at 360/768/1440 and Lighthouse —
 there is no browser in this environment. Verification here is the
@@ -245,3 +255,41 @@ Note on that last test: reducing a page to "what a visitor reads" needs the
 Inertia `data-page` attribute, `<script>` bodies AND `<style>` bodies stripped
 before the tags. Stripping tags alone leaves what is *between* them, and the
 map embed's URL-encoded `%3A` reads as a percentage.
+
+**D2c — `/solutions/artisans`.** The one segment that is not buying anything.
+Everything else on this site addresses someone with a budget; this page
+addresses someone deciding whether to trust an intermediary with their work.
+
+- **The buyer-facing services grid is gone from this page.** It was offering
+  "الهدايا المؤسسية / مستلزمات الفعاليات / الإنتاج المخصص" to a craftsperson —
+  services for someone who is not the reader. Removed at template level in D1,
+  now guarded.
+- **The process steps were the government page's, copied.** They now read as a
+  joining path: تواصلوا معنا · جلسة تعارف · تأهيل وتدريب عند الحاجة · أول طلبية ·
+  شراكة مستمرة.
+- **من نستهدف** — named crafts rather than "any artisan". The specificity is the
+  serious signal.
+- **ماذا تكسبون معنا** — three cards, and **no figure in any of them**: no
+  commission, no margin, no rate. §2.2, same rule that governs the partner page.
+- **The form's first field is relabelled, not changed.** "اسم الشركة" is wrong
+  for an individual, so `LeadField` grew a `firstFieldLabel` prop and this page
+  passes "الاسم أو اسم المشروع الحرفي". Same three fields, same endpoint,
+  same requirement — the label only.
+- **من الحرفيين أنفسهم is seeded EMPTY, deliberately.** A quote attributed to a
+  craftsperson who never said it is not placeholder copy, it is a fabricated
+  endorsement (§22.1). The section row exists in the builder with its heading;
+  `Testimonial.vue` renders `v-if="body"`, so the page shows nothing until Amad
+  Craft pastes a real quote and a real name. **This is content the client owes
+  us** — it is the single most persuasive element the page could carry.
+
+Guarded by `SegmentPagesAreDistinctTest` (8). The two artisan tests cost three
+attempts each and both failures were mine, worth recording because they will
+recur:
+
+- Counting fields by `class="lead-input"` verbatim finds two of three — Vue
+  merges the bound modifier into `class="lead-input lead-input--mono"`. Match
+  the class as a **token**, not the attribute.
+- The buyer-service strings survived removal from the template because
+  `SectorController` was still passing a `solutions` prop the page no longer
+  rendered. Invisible on screen, fully present in the `data-page` JSON. **A prop
+  that stopped being rendered is still shipped** — deleted at the controller.
