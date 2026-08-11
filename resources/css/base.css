@@ -56,6 +56,29 @@
   font-display: swap;
 }
 
+/*
+ * IBM Plex Mono — the Latin voice of the layout: section numbering, the
+ * lockup's second line, figure captions, phone and email fields. Latin
+ * subset only (14 KB per weight); it never sets Arabic, so no Arabic
+ * coverage is needed or wanted. OFL-1.1, self-hosted like the rest — the
+ * reference file pulled it from Google Fonts, which would leak a visitor's
+ * IP to a third party on every page load.
+ */
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/IBMPlexMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============================================================
    Elements
    ============================================================ */

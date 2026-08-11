@@ -23,10 +23,12 @@ import { statSync } from 'node:fs';
 
 const DIR = 'public/images/partner';
 
-/* 48 px in the strip, so 160 px covers a 3× display without enlarging any
-   source. Every input is already taller than this except the AMAD lockup,
-   which is left at its native height. */
-const TARGET_HEIGHT = 160;
+/* 84 px in the strip, so 252 px would cover a 3× display. 320 is taken
+   instead because several sources are already that tall and downscaling to a
+   round number no larger than the original costs nothing — `withoutEnlargement`
+   still leaves any shorter file at its native height rather than blowing it
+   up, which is what a logo will not survive. */
+const TARGET_HEIGHT = 320;
 
 const LOGOS = [
     ['alinma.avif', 'alinma.webp'],

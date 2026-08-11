@@ -3,7 +3,6 @@ import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import SiteHeader from '@/Components/sections/SiteHeader.vue';
 import SiteFooter from '@/Components/sections/SiteFooter.vue';
-import ContactDock from '@/Components/sections/ContactDock.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -69,6 +68,14 @@ const alternates = computed(() => props.seo.alternates ?? []);
         {{ t('admin.preview_notice') }}
     </p>
 
+    <!--
+        Anything that must sit above the header — currently only the home
+        page's news strip. A slot rather than a component call, so a page that
+        has no strip costs nothing and the layout stays ignorant of what goes
+        in it.
+    -->
+    <slot name="ticker" />
+
     <SiteHeader :over-hero="overHero && !previewing" />
 
     <main id="main">
@@ -77,9 +84,13 @@ const alternates = computed(() => props.seo.alternates ?? []);
 
     <SiteFooter />
 
-    <!-- Not shown over a draft preview: the preview bar already occupies the
-         visitor's attention and an editor is not the audience for a CTA. -->
-    <ContactDock v-if="!previewing" />
+    <!--
+        The floating contact dock is gone at the client's request. The contact
+        paths that remain are the header button, the CTA band above the footer,
+        and the footer's own email and phone — all of which lead to the same
+        single form (§6.1), so nothing was lost but the overlay.
+    -->
+
 </template>
 
 <style scoped>

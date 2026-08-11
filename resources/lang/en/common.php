@@ -27,6 +27,8 @@ return [
     'next' => 'Next',
     'breadcrumb' => 'Breadcrumb',
     'logo_alt' => 'Amad Craft logo',
+    'brand_latin' => 'AMAD CRAFT',
+    'news' => 'Latest news',
     'external_link' => 'Opens in a new window',
     'required' => 'Required',
     'optional' => 'Optional',

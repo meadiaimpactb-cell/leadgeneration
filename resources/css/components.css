@@ -8,11 +8,24 @@
    SIGNATURE — the Sadu thread (§10.1)
 
    Two crossing hairline zigzags: an actual weave, not a
-   zigzag. Permitted in EXACTLY three places:
-     1. .sadu-divider  — between sections
-     2. .sadu-ground   — faint ground behind the impact numbers
-     3. .link-weave    — hover underline on links / secondary buttons
-   There is no fourth use. Do not add one.
+   zigzag.
+
+   §10.1 originally allowed the thread three homes. The client
+   extended that to a fixed set of edge treatments for the v2
+   home page, in writing. The list below is now the whole
+   vocabulary — it is still a closed set, and there is still no
+   use outside it:
+
+     1. .sadu-divider   — between sections
+     2. .sadu-ground    — faint ground behind the impact numbers
+     3. .link-weave     — hover underline on links / secondary buttons
+     4. .sadu-edge      — vertical strip on a dark band's edge
+     5. .sadu-strip     — horizontal strip above the footer
+     6. .sadu-mark      — the small swatch beside a hero eyebrow
+     7. the hero media's clipped tooth edge (in Hero.vue —
+        clip-path cannot be expressed as a background)
+
+   Do not add an eighth.
    ============================================================ */
 
 .sadu-divider {
@@ -71,6 +84,67 @@
 }
 
 /* ============================================================
+   TYPE SCALE — the display face, applied (§10.3)
+
+   The brand face was defined in tokens and then used almost
+   nowhere: headings inherited the body face, so the page read
+   as competent rather than as Amad Craft. These three classes
+   are what carry the identity, and every heading takes one.
+   ============================================================ */
+
+.display {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 700;
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-heading);
+  /* A display line past ~18 characters stops reading as a
+     statement and starts reading as a paragraph. */
+  max-inline-size: 18ch;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+}
+
+/*
+ * The small line above a section heading.
+ *
+ * Cheapest institutional signal in the system: it tells the
+ * reader what kind of thing follows before they read the
+ * heading, and gives the gold somewhere to appear that is not
+ * decoration.
+ */
+.eyebrow {
+  display: block;
+  margin-block-end: var(--s-2);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;          /* 13px */
+  font-weight: 600;
+  letter-spacing: var(--tracking-heading);
+  color: var(--action-600);
+}
+.on-dark .eyebrow { color: var(--gold-400); }
+
+/* Reading measure. Arabic sets wider, so it gets the shorter one. */
+.measure    { max-inline-size: var(--measure); }
+.measure-sm { max-inline-size: 46ch; }
+
+/* A rule that is a rule, not a shadow pretending to be one. */
+.hairline   { border-block-start: var(--border-hairline); }
+
+/* ============================================================
    ui/Button — contrast-safe by construction (§10.2, §10.5)
    ============================================================ */
 .btn {
@@ -108,25 +182,58 @@
 }
 .btn--cta-lg:hover     { background: var(--action-600); }
 
+/*
+ * Secondary carries a gold hairline rather than a grey one.
+ * It is the only place a button borrows the premium colour, and
+ * it is what stops the pair "primary + secondary" from reading
+ * as "button + disabled button".
+ */
 .btn--secondary {
   background: transparent;
   color: var(--navy-900);
-  box-shadow: inset 0 0 0 1px var(--hairline);
+  box-shadow: inset 0 0 0 1px var(--gold-400);
 }
-.btn--secondary:hover  { background: var(--navy-100); }
+.btn--secondary:hover  { background: var(--gold-100); }
 
 .btn--ghost            { background: transparent; color: var(--navy-900); }
 .btn--ghost:hover      { background: var(--navy-100); }
 
 .on-dark .btn--secondary {
   color: var(--text-inverse);
-  box-shadow: inset 0 0 0 1px var(--hairline-inverse);
+  box-shadow: inset 0 0 0 1px var(--gold-400);
 }
-.on-dark .btn--secondary:hover { background: rgba(255, 255, 255, .08); }
+.on-dark .btn--secondary:hover { background: rgba(220, 173, 117, .16); }
 .on-dark .btn--ghost   { color: var(--text-inverse); }
 
 .btn[disabled],
 .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+/*
+ * One focus ring for every variant, on the outside of the shape.
+ * Stated once here rather than per variant: a variant added later
+ * inherits it instead of shipping without one.
+ */
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.on-dark .btn:focus-visible { outline-color: var(--gold-400); }
+
+/*
+ * Waiting state is a breath, not a spinner. A rotating spinner on
+ * a submit button competes with the confirmation that follows it,
+ * and on the lead field that confirmation is the entire point.
+ */
+.btn--loading {
+  animation: btn-breathe 1.4s var(--ease) infinite;
+  cursor: progress;
+}
+@keyframes btn-breathe {
+  50% { opacity: .72; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--loading { animation: none; opacity: .72; }
+}
 
 /* ============================================================
    forms/LeadField — the single most important control (§10.6)
@@ -187,19 +294,48 @@
   padding: var(--s-5);
   border-radius: var(--r-md);
   background: var(--paper);
-  box-shadow: inset 0 0 0 1px var(--hairline);
+  /* A real border, so the card has an edge when the shadow is
+     not enough — which on a white section is always. */
+  border: var(--border-hairline);
   transition: transform var(--dur-el) var(--ease),
+              border-color var(--dur-el) var(--ease),
               box-shadow var(--dur-el) var(--ease);
 }
 .card--raised { box-shadow: var(--shadow-card); }
 
 .card--link:hover {
   transform: translateY(-2px);                     /* the 2px lift */
-  box-shadow: var(--shadow-card), inset 0 0 0 1px var(--hairline);
+  border-color: rgba(0, 37, 70, 0.24);
+  box-shadow: var(--shadow-card);
 }
 @media (prefers-reduced-motion: reduce) {
   .card--link:hover { transform: none; }
 }
+
+/* ============================================================
+   SECTION SURFACES
+
+   Named so a page alternates grounds deliberately instead of a
+   component deciding its own background. Two dark sections
+   never sit together — the rhythm is what stops a long page
+   reading as one undifferentiated block.
+   ============================================================ */
+.surface-paper { background: var(--paper); }
+.surface-alt   { background: var(--paper-alt); }
+.surface-sand  { background: var(--sand); }
+.surface-navy  { background: var(--navy-900); color: var(--text-inverse); }
+
+/* An arrow that points the way the language runs. */
+.arrow {
+  display: inline-block;
+  transition: transform var(--dur-micro) var(--ease);
+}
+html[dir="rtl"] .arrow { transform: scaleX(-1); }
+
+.link-weave:hover .arrow,
+.link-weave:focus-visible .arrow { transform: translateX(4px); }
+html[dir="rtl"] .link-weave:hover .arrow,
+html[dir="rtl"] .link-weave:focus-visible .arrow { transform: scaleX(-1) translateX(4px); }
 
 /* ============================================================
    ui/Badge
@@ -231,4 +367,154 @@
 
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ============================================================
+   SADU EDGE TREATMENTS
+
+   All drawn with gradients, never an image: they take their
+   colour from a token, cost no request, and stay crisp at any
+   size. Two crossing 45° gradients over a square tile give the
+   woven tooth; --sadu-tile sets the scale.
+   ============================================================ */
+.sadu-weave {
+  background-image:
+    linear-gradient( 45deg, var(--sadu-colour, var(--gold-400)) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--sadu-colour, var(--gold-400)) 25%, transparent 25%);
+  background-size: var(--sadu-tile) var(--sadu-tile);
+}
+
+/* A vertical strip pinned to a dark band's edge. Physical
+   `inset-inline-start` keeps it on the reading edge in both
+   directions, which is where the composition wants it. */
+.sadu-edge {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: var(--sadu-edge-w, 20px);
+  pointer-events: none;
+}
+
+/* The horizontal band above the footer. */
+.sadu-strip {
+  block-size: var(--sadu-tile);
+  border: 0;
+  margin: 0;
+}
+
+/* The small swatch that opens a hero eyebrow. */
+.sadu-mark {
+  display: block;
+  inline-size: 66px;
+  block-size: 9px;
+  flex: 0 0 auto;
+  --sadu-tile: 9px;
+}
+
+/* ============================================================
+   MONO LABEL — the Latin technical voice
+
+   Section numbering, lockup subtitles, figure captions, column
+   headings. Always Latin, always letterspaced; it never sets
+   Arabic, so `--tracking: 0` (which exists because Arabic must
+   never be letterspaced) does not apply and is overridden here
+   deliberately.
+   ============================================================ */
+.mono-label {
+  /*
+   * inline-block, not block, and the reason matters.
+   *
+   * `direction: ltr` below is needed so "01 / 05" and "SITEMAP" read in
+   * Latin order. On a block element it also decides where the line is
+   * placed, so the label pinned itself to the physical left of its column
+   * while the Arabic content underneath sat on the right — every section
+   * number and every footer heading detached from the thing it labelled.
+   *
+   * As an inline-block the PARENT's direction places the box and the
+   * element's own direction only orders the glyphs inside it. Label and
+   * content share an edge again, in both languages.
+   */
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: .24em;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-transform: uppercase;
+}
+.mono-label--tight { letter-spacing: .2em; font-size: 10.5px; }
+.mono-label--wide  { letter-spacing: .44em; font-size: 9.5px; }
+.mono-label--action { color: var(--action-600); }
+.mono-label--gold   { color: var(--gold-400); }
+.mono-label--muted  { color: var(--text-muted); }
+
+/* ============================================================
+   MARQUEE — one seamless loop
+
+   The track holds the SAME list twice, the second copy
+   aria-hidden, and travels exactly -50%. At that point copy two
+   sits precisely where copy one began, so the restart is
+   invisible. Any other distance shows a seam.
+   ============================================================ */
+@keyframes am-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  /* Both prefixes: Safari still needs -webkit- for masks. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--marquee-fade, 6%), #000 calc(100% - var(--marquee-fade, 6%)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--marquee-fade, 6%), #000 calc(100% - var(--marquee-fade, 6%)), transparent);
+}
+
+.marquee__track {
+  display: flex;
+  inline-size: max-content;
+  animation: am-marquee var(--marquee-dur, 40s) linear infinite;
+}
+
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track { animation-play-state: paused; }
+
+/*
+ * Reduced motion, and the too-few-items case, both resolve the
+ * same way: stop the travel and let the strip scroll by hand.
+ * A paused marquee whose content is narrower than its box would
+ * otherwise leave a visible gap.
+ */
+.marquee--static .marquee__track,
+.marquee--static { animation: none; }
+.marquee--static { overflow-x: auto; }
+.marquee--static .marquee__track { animation: none; inline-size: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; }
+  .marquee__track { animation: none; }
+}
+
+/* ============================================================
+   IMAGE GROUND
+
+   What a photograph sits on before it arrives, and behind any
+   transparency. Warm, with the faint diagonal ruling used
+   across the layout so an empty frame still reads as designed.
+   ============================================================ */
+.media-ground {
+  background-color: var(--placeholder-warm);
+  background-image: repeating-linear-gradient(
+    45deg, rgba(0, 37, 70, .1) 0 2px, transparent 2px 10px);
+}
+
+/* ============================================================
+   SECTION INDEX — "01 / 06 · MANIFESTO"
+   ============================================================ */
+.section-index {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
 }

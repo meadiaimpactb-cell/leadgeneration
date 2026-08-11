@@ -30,6 +30,9 @@ class Section extends Model implements HasMedia
     /** Section types, matching the sections/ component inventory (§10.5). */
     public const TYPES = [
         'hero',
+        // The running strip above the header. Its headlines are the section's
+        // own body, one per line, so they are per-language like any other copy.
+        'news_ticker',
         'intro_statement',
         'rich_text',
         'stats',

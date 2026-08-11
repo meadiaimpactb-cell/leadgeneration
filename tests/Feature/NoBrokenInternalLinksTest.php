@@ -122,7 +122,7 @@ class NoBrokenInternalLinksTest extends TestCase
 
         foreach (Sector::query()->visible()->get() as $sector) {
             foreach ($sector->translatedLocales() as $locale) {
-                $path = "/{$locale}/sectors/{$sector->slug}";
+                $path = "/{$locale}/solutions/{$sector->slug}";
 
                 if ($this->get($path)->getStatusCode() >= 400) {
                     $broken[] = $path;

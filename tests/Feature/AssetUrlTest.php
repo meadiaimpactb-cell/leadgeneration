@@ -75,7 +75,7 @@ class AssetUrlTest extends TestCase
     {
         $sector = $this->sectorWithImage();
 
-        $response = $this->get("/ar/sectors/{$sector->slug}");
+        $response = $this->get("/ar/solutions/{$sector->slug}");
         $response->assertOk();
 
         preg_match_all('/src="([^"]*storage[^"]*)"/', $response->getContent(), $matches);
@@ -129,7 +129,7 @@ class AssetUrlTest extends TestCase
     {
         $sector = $this->sectorWithImage();
 
-        $response = $this->get("/ar/sectors/{$sector->slug}");
+        $response = $this->get("/ar/solutions/{$sector->slug}");
 
         $body = $response->getContent();
 

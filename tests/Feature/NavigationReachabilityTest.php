@@ -95,19 +95,39 @@ class NavigationReachabilityTest extends TestCase
             'The English page links into the Arabic site: '.implode(', ', $matches[1]));
     }
 
+    /**
+     * The showcase left every menu when the header was cut to five entries,
+     * so the home page's showroom section is now the ONLY route to 332
+     * pieces. That link is load-bearing, and this is what says so: remove it
+     * and the largest thing on the site becomes an orphan reachable only from
+     * the sitemap.
+     */
+    /*
+     * One render per test, deliberately. Two SSR renders inside a single test
+     * return the FIRST render's markup, so a loop over both locales here
+     * asserted the Arabic page twice and reported it as an English failure.
+     */
     #[Test]
-    public function the_products_showcase_is_reachable_from_the_header(): void
+    public function the_arabic_home_page_reaches_the_products_showcase(): void
     {
-        $header = app(NavigationBuilder::class)->all('ar')[Navigation::HEADER] ?? [];
+        $this->get('/ar')->assertOk()->assertSee('/ar/products', false);
+    }
 
-        $this->assertContains('/ar/products', array_column($header, 'url'),
-            'The product showcase is in no header menu — a visitor can only reach it from the footer.');
+    #[Test]
+    public function the_english_home_page_reaches_the_products_showcase(): void
+    {
+        $this->get('/en')->assertOk()->assertSee('/en/products', false);
     }
 
     /**
      * The real guard: every managed page a visitor is meant to browse must be
-     * reachable from a menu, in both locales. A page nobody can navigate to
-     * is a page that produces no leads (§1).
+     * reachable from a menu or from the home page, in both locales. A page
+     * nobody can navigate to is a page that produces no leads (§1).
+     *
+     * `products` is checked separately above rather than listed here, because
+     * it is deliberately in no menu — the client cut the header to five
+     * entries — and asserting it into this list would have meant either a
+     * failing suite or quietly dropping the reachability rule for it.
      */
     #[Test]
     public function every_browsable_page_is_reachable_from_some_menu(): void
@@ -127,10 +147,37 @@ class NavigationReachabilityTest extends TestCase
                 }
             }
 
-            foreach (['solutions', 'products', 'impact', 'training', 'partners', 'about', 'contact'] as $slug) {
+            foreach (['solutions', 'impact', 'training', 'partners', 'about', 'contact'] as $slug) {
                 $this->assertContains("/{$locale}/{$slug}", $urls,
                     "/{$locale}/{$slug} is in no menu.");
             }
+
+            // The four audience segments, which is the whole point of the
+            // Solutions dropdown: each must be one click from the header.
+            foreach (['government', 'companies', 'partners', 'artisans'] as $segment) {
+                $this->assertContains("/{$locale}/solutions/{$segment}", $urls,
+                    "/{$locale}/solutions/{$segment} is in no menu.");
+            }
+        }
+    }
+
+    /**
+     * The header is five entries and nothing else. It grew to seven once
+     * already, one reasonable-looking addition at a time.
+     */
+    #[Test]
+    public function the_header_carries_exactly_five_entries(): void
+    {
+        foreach (['ar', 'en'] as $locale) {
+            $header = app(NavigationBuilder::class)->all($locale)[Navigation::HEADER] ?? [];
+
+            $this->assertCount(5, $header,
+                "The {$locale} header is not five entries: "
+                .implode(', ', array_column($header, 'label')));
+
+            $labels = array_column($header, 'url');
+            $this->assertNotContains("/{$locale}/products", $labels);
+            $this->assertNotContains("/{$locale}/sectors", $labels);
         }
     }
 }

@@ -170,7 +170,11 @@ function submit() {
                 <div v-for="field in extraFields" :key="field.key" class="lead__extra">
                     <label class="lead__label" :for="fieldId(field.key)">
                         {{ field.label }}
-                        <span v-if="!field.required" class="lead__optional">
+                        <!-- The marker and the input's own `required` come from
+                             the same flag, so what the visitor is told and what
+                             the form enforces cannot drift apart. -->
+                        <span v-if="field.required" class="lead__required" aria-hidden="true">*</span>
+                        <span v-else class="lead__optional">
                             {{ t('common.optional') }}
                         </span>
                     </label>
@@ -216,9 +220,12 @@ function submit() {
                         v-model="values[field.key]"
                         class="lead-input"
                         :type="field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text'"
-                        dir="auto"
                         :placeholder="field.placeholder ?? ''"
                         :maxlength="field.maxLength ?? undefined"
+                        :dir="field.type === 'email' || field.type === 'tel' ? 'ltr' : 'auto'"
+                        :class="{ 'lead-input--mono': field.type === 'email' || field.type === 'tel' }"
+                        :required="field.required || undefined"
+                        :aria-required="field.required ? 'true' : undefined"
                         :aria-invalid="errors[field.key] ? 'true' : undefined"
                         :aria-describedby="errors[field.key] ? errorId(field.key) : undefined"
                     />
@@ -232,8 +239,21 @@ function submit() {
             <!-- The contact field and the submit button, side by side. -->
             <div v-if="contactField" class="lead__row">
                 <div class="lead__field">
-                    <label class="visually-hidden" :for="fieldId(CONTACT)">
+                    <!--
+                        Visible in the CTA band, hidden in the stacked layout.
+                        Stacked, the field is one control under its own heading
+                        and a label would repeat it; in the band it sits in a
+                        column of three labelled fields, and the one without a
+                        label is the one people skip.
+                    -->
+                    <label
+                        :class="layout === 'inline' ? 'lead__label' : 'visually-hidden'"
+                        :for="fieldId(CONTACT)"
+                    >
                         {{ contactField.label }}
+                        <span v-if="layout === 'inline'" class="lead__required" aria-hidden="true">
+                            *
+                        </span>
                     </label>
                     <input
                         :id="fieldId(CONTACT)"
@@ -345,6 +365,13 @@ function submit() {
 .lead__optional {
     font-weight: 400;
     color: var(--text-muted);
+}
+
+/* Gold, so the marker reads as part of the identity rather than as an error
+   colour sitting next to every required field. */
+.lead__required {
+    color: var(--gold-400);
+    margin-inline-start: var(--s-1);
 }
 
 .on-dark .lead__optional {

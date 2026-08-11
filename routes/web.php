@@ -52,9 +52,28 @@ Route::prefix('{locale}')
         Route::get('/about', [PageController::class, 'about'])->name('about');
 
         Route::get('/solutions', [SolutionController::class, 'index'])->name('solutions.index');
-        Route::get('/solutions/{slug}', [SolutionController::class, 'show'])->name('solutions.show');
 
-        Route::get('/sectors/{slug}', [SectorController::class, 'show'])->name('sectors.show');
+        /*
+         * The four audience segments, addressed as solutions.
+         *
+         * They are Sector records served by SectorController — only the URL
+         * moved, because "is there something here for a body like mine" is
+         * what a buyer opens a Solutions menu to answer.
+         *
+         * Registered as four LITERAL paths, not as one `{slug}` route with a
+         * whereIn constraint. Laravel's route collection is keyed by method
+         * and URI, so a second `/solutions/{slug}` route silently replaces
+         * the first however it is constrained — which is exactly what
+         * happened: the segments all returned 404 while the solutions below
+         * kept working. Literal URIs are distinct keys, so both live.
+         */
+        foreach (['government', 'companies', 'partners', 'artisans'] as $segment) {
+            Route::get("/solutions/{$segment}", [SectorController::class, 'show'])
+                ->defaults('slug', $segment)
+                ->name("sectors.{$segment}");
+        }
+
+        Route::get('/solutions/{slug}', [SolutionController::class, 'show'])->name('solutions.show');
 
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/impact', [ImpactController::class, 'index'])->name('impact.index');

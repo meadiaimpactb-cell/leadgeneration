@@ -20,21 +20,43 @@
   --navy-800:      #06345C;
   --navy-700:      #0B4370;
   --navy-100:      #E3EAF1;
+  /* One step below navy-900, for the two surfaces that must read as the
+   * frame around the page rather than as part of it: the news strip at the
+   * very top and the footer at the very bottom. */
+  --navy-950:      #001A31;
   --lavender-700:  #5F5EBE;   /* text on white: 4.7:1   */
   --action-600:    #B4522C;   /* white text on it: 4.6:1 */
   --gold-100:      #F6ECDD;
   --sand:          #F3EEE7;
+
+  /* ---- Warm paper (§10.2) -------------------------------- *
+   * Pure #FFF next to navy and gold reads clinical, and it is
+   * the wrong ground for photographs of palm fibre and wool.
+   * This is the page ground; --paper stays white for the
+   * surfaces that must lift off it (cards, inputs, the admin
+   * panel).                                                   */
+  --paper-warm:       #FBF8F3;
+  /* What an image box shows before its file arrives. Warm, so
+   * the swap is not a flash from grey to sand.                */
+  --placeholder-warm: #E9E1D6;
 
   /* ---- Neutrals ----------------------------------------- */
   --ink:           #10161C;
   --muted:         #5A6B7B;
   --paper:         #FFFFFF;
   --paper-alt:     #F7F9FB;
-  --hairline:      rgba(0, 37, 70, 0.12);
+  /* Three weights of rule, because this layout draws structure with lines
+   * instead of shadows: the standard divider, the lighter one used inside a
+   * repeating strip where many lines meet, and the gold one on navy. */
+  --hairline:      rgba(0, 37, 70, 0.16);
+  --hairline-soft: rgba(0, 37, 70, 0.12);
+  --hairline-gold: rgba(220, 173, 117, 0.28);
   --hairline-inverse: rgba(255, 255, 255, 0.18);
 
   /* ---- Semantic ----------------------------------------- */
-  --bg:            var(--paper);
+  /* The page ground is warm paper, not white. The admin shell paints its own
+   * surface over this, so it is unaffected. */
+  --bg:            var(--paper-warm);
   --bg-inverse:    var(--navy-900);
   --text:          var(--ink);
   --text-muted:    var(--muted);
@@ -49,6 +71,9 @@
   --font-display-en: "Kefa", "SaudiWeb", Georgia, serif;
   --font-body-ar:    "IBM Plex Sans Arabic", "SaudiWeb", system-ui, sans-serif;
   --font-body-en:    "IBM Plex Sans", system-ui, sans-serif;
+  /* The Latin technical voice — never sets Arabic. Used only through
+   * `.mono-label`, so its letterspacing rules live in one place. */
+  --font-mono:       "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   --fs-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
   --fs-h1:      clamp(2rem,    1.4rem + 2.4vw, 3.25rem);
@@ -80,11 +105,103 @@
   --r-pill: 999px;  /* filters only            */
   --shadow-card: 0 1px 2px rgba(0, 37, 70, .06), 0 8px 24px rgba(0, 37, 70, .06);
 
+  /* ---- Borders (§10.4) ----------------------------------- *
+   * Cards carried their shape on the shadow alone, which reads
+   * soft — a corporate surface needs an edge. Two weights only:
+   * the resting hairline, and the one it firms into on hover.  */
+  --border-hairline: 1px solid var(--hairline);
+  --border-strong:   1px solid rgba(0, 37, 70, 0.24);
+  --border-inverse:  1px solid var(--hairline-inverse);
+
+  /* ---- Scrims (§10.8) ------------------------------------ *
+   * Craft photography is warm and mid-toned, so white text over
+   * it fails 4.5:1 on any bright frame. These guarantee the
+   * ratio without dulling the piece: strong under a headline,
+   * soft under a caption.                                     */
+  --scrim-navy-strong: linear-gradient(
+    to top, rgba(0, 37, 70, 0.88) 0%, rgba(0, 37, 70, 0.62) 45%, rgba(0, 37, 70, 0.18) 100%);
+  --scrim-navy-soft: linear-gradient(
+    to top, rgba(0, 37, 70, 0.62) 0%, rgba(0, 37, 70, 0.28) 60%, rgba(0, 37, 70, 0) 100%);
+
+  /* The hero ground. Two stops, not one: the vertical pass seats the trust
+   * strip and the header, the inline pass keeps the copy column dark while
+   * the far side of the frame stays open enough to read the piece. Sided on
+   * the logical axis so it flips with the document, never with `to left`. */
+  --scrim-hero:
+    linear-gradient(to top, rgba(0, 20, 38, 0.92) 0%, rgba(0, 20, 38, 0.55) 55%, rgba(0, 20, 38, 0.45) 100%),
+    linear-gradient(to var(--scrim-away, left), rgba(0, 20, 38, 0.92) 0%, rgba(0, 20, 38, 0.55) 55%, rgba(0, 20, 38, 0.1) 100%);
+
+  /* ---- Stacking (§10.5) ---------------------------------- *
+   * Named, so a new overlay never has to guess a number and
+   * land underneath something it must cover.                  */
+  --z-header: 40;
+  --z-dock:   60;
+  --z-modal:  80;
+
+  /* ---- Fixed heights ------------------------------------- *
+   * The header's height was hard-coded as -72px inside Hero to
+   * pull the media under it. One value, one place.            */
+  --header-h: 72px;
+  --news-h:   44px;
+
+  /* ---- Sadu geometry (§10.1) ----------------------------- *
+   * The motif is drawn with gradients, never an image: it has
+   * to survive any width, cost no request, and take its colour
+   * from a token. One tooth depth for the hero's clipped edge,
+   * one tile size for the woven strips.                       */
+  --sadu-tooth: 22px;
+  --sadu-tile:  10px;
+
+  /* Gap between the hero's two panes, where the vertical
+   * lettering sits. Named because three rules depend on it
+   * agreeing: the text pane's padding, the label's offset,
+   * and the tooth depth it must clear.                        */
+  --seam-gutter: 40px;
+
+  /* ---- Marquee cadence ----------------------------------- *
+   * Slow enough to read a full headline without stopping.     */
+  --dur-marquee-news:  46s;
+  --dur-marquee-logos: 34s;
+
+  /* ---- Reading measure (§10.3) --------------------------- *
+   * Arabic sets wider per character, so the same character
+   * count is a longer line — it gets the shorter measure.     */
+  --measure-ar: 62ch;
+  --measure-en: 68ch;
+
   /* ---- Motion (§10.7) ------------------------------------ */
   --ease:       cubic-bezier(.2, .7, .3, 1);
   --dur-micro:  160ms;
   --dur-el:     300ms;
   --dur-reveal: 450ms;
+}
+
+/* The two-line lockup plus its clear space sets the desktop header height. */
+@media (min-width: 1024px) {
+  :root { --header-h: 95px; }
+}
+
+html[lang="ar"] { --measure: var(--measure-ar); }
+html[lang="en"] { --measure: var(--measure-en); }
+
+/* CSS gradients have no logical direction of their own, so the one physical
+ * direction the system needs is named once here and flipped with the
+ * document. Components use `to var(--scrim-away)` and never `to left`. */
+html[dir="rtl"] { --scrim-away: left; }
+html[dir="ltr"] { --scrim-away: right; }
+
+/* ============================================================
+   §10.7 — prefers-reduced-motion
+   Zeroed at the token, not per component. Every transition and
+   animation in the system reads these, so one block disables
+   the lot and no future component can forget to honour it.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-micro:  0.01ms;
+    --dur-el:     0.01ms;
+    --dur-reveal: 0.01ms;
+  }
 }
 
 /* Grid & spacing step up with the breakpoints in §10.4. */

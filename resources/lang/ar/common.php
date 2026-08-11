@@ -28,6 +28,8 @@ return [
     'next' => 'التالي',
     'breadcrumb' => 'مسار التنقل',
     'logo_alt' => 'شعار أمد الحرف',
+    'brand_latin' => 'AMAD CRAFT',
+    'news' => 'آخر الأخبار',
     'external_link' => 'يفتح في نافذة جديدة',
     'required' => 'مطلوب',
     'optional' => 'اختياري',

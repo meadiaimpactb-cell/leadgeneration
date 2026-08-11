@@ -16,9 +16,11 @@ use Tests\TestCase;
  * white-on-white — logo and navigation invisible. Clicking through the nav
  * looked like the site had lost its header entirely.
  *
- * The fix made `overHero` an opt-in that defaults to false, so a page can only
- * get a transparent header by asking for one. These tests hold that default in
- * place.
+ * The first fix made `overHero` an opt-in defaulting to false. The bug came
+ * back anyway, because the header also went transparent whenever the scroll
+ * state and the paint state disagreed. The current fix removes the state
+ * entirely: the bar always paints navy and always sets white on it. These
+ * tests hold both the old default and the new unconditional ground in place.
  *
  * Why source assertions rather than HTTP ones: the header is Vue, and the
  * feature-test process does not run the SSR server, so a `$this->get(...)`
@@ -51,7 +53,7 @@ class HeaderVisibilityTest extends TestCase
     }
 
     #[Test]
-    public function the_header_treats_transparency_as_the_exception(): void
+    public function the_header_has_no_transparent_state_at_all(): void
     {
         $source = $this->source('Components/sections/SiteHeader.vue');
 
@@ -61,11 +63,22 @@ class HeaderVisibilityTest extends TestCase
             'SiteHeader must default overHero to false.'
         );
 
-        // Solid unless explicitly floating over an unscrolled hero.
-        $this->assertStringContainsString(
-            '!props.overHero || scrolled.value || menuOpen.value',
+        // The bar paints its own navy unconditionally. This is stronger than
+        // the rule it replaces: there is no longer a transparent state to get
+        // wrong, so no combination of scroll position, hydration timing or
+        // page template can render white text on a light ground.
+        $this->assertMatchesRegularExpression(
+            '/\.header\s*\{[^}]*background:\s*var\(--navy-900\)/s',
             $source,
-            'The header must be solid unless it is deliberately floating over a dark hero.'
+            'The header must paint an unconditional navy ground.'
+        );
+
+        // No scroll-derived paint. The invisible-header bug was exactly this:
+        // a colour that depended on a value the first paint did not have.
+        $this->assertStringNotContainsString(
+            'scrolled',
+            $source,
+            'The header must not derive its colour from the scroll position.'
         );
     }
 

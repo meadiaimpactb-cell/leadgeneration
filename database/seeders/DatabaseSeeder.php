@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             StructureSeeder::class,
             LeadFieldsSeeder::class,
             NavigationSeeder::class,
+            RedirectsSeeder::class,
         ]);
     }
 }

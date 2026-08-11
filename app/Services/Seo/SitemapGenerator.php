@@ -163,11 +163,13 @@ class SitemapGenerator
         // ---- Sectors -------------------------------------------------------
         foreach ($this->visible(Sector::class, $locale) as $sector) {
             $entries[] = $this->entry(
-                url("{$locale}/sectors/{$sector->slug}"),
+                // Under /solutions since the segments moved there. The old
+                // /sectors/* paths 301 to these, so nothing is orphaned.
+                url("{$locale}/solutions/{$sector->slug}"),
                 $sector->updated_at,
                 '0.7',
                 'monthly',
-                $this->alternates($sector, fn (string $l): string => url("{$l}/sectors/{$sector->slug}")),
+                $this->alternates($sector, fn (string $l): string => url("{$l}/solutions/{$sector->slug}")),
             );
         }
 

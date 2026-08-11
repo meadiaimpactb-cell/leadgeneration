@@ -70,6 +70,20 @@ class LeadFieldsSeeder extends Seeder
                 'en' => ['Organisation', 'Entity or company name', 'Extra field — off by default'],
             ],
             [
+                // A phone number in its own right, separate from `contact`
+                // (which accepts an email OR a mobile). Off by default like
+                // every other extra; the client turns it on if they decide
+                // they want both.
+                'key' => 'phone',
+                'type' => 'tel',
+                'enabled' => false,
+                'required' => false,
+                'locked' => false,
+                'max' => 32,
+                'ar' => ['رقم الهاتف', '+966 5X XXX XXXX', 'حقل إضافي — مُطفأ افتراضيًا'],
+                'en' => ['Phone number', '+966 5X XXX XXXX', 'Extra field — off by default'],
+            ],
+            [
                 'key' => 'job_title',
                 'type' => 'text',
                 'enabled' => false,

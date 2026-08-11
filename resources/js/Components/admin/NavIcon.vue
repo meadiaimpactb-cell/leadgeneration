@@ -13,6 +13,16 @@
  */
 defineProps({
     name: { type: String, required: true },
+    /**
+     * The set is shared with the public site, where the same glyphs are drawn
+     * at 40px beside a service line. A larger icon needs a lighter stroke or
+     * it reads as a filled shape, hence the two knobs — and `muted`, because
+     * the sidebar wants the icon quieter than its label while the public page
+     * wants it at full strength.
+     */
+    size: { type: Number, default: 18 },
+    weight: { type: Number, default: 1.75 },
+    muted: { type: Boolean, default: true },
 });
 
 /*
@@ -48,19 +58,44 @@ const PATHS = {
     tracking: 'M3 17l5-6 4 3 4-6 5 4M3 21h18',
     advanced: 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1v.2a2 2 0 11-4 0V21a1.6 1.6 0 00-2.7-1.1l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15a2 2 0 010-4 1.6 1.6 0 001.1-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 0010 4.6V4a2 2 0 014 0v.2a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1A1.6 1.6 0 0021 11a2 2 0 010 4z',
     profile: 'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z',
+
+    /* The screens added when the panel was regrouped. */
+    media: 'M3 5h18v14H3V5zM3 15l5-5 4 4 3-3 6 6M8.5 9.5h.01',
+    crm: 'M4 7h6v6H4V7zM14 11h6v6h-6v-6zM10 10h4M12 10v4',
+    bell: 'M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 21a2 2 0 01-3.4 0',
+    message: 'M20 15a2 2 0 01-2 2H8l-4 4V5a2 2 0 012-2h12a2 2 0 012 2v10z',
+    shield: 'M12 3l8 4v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V7l8-4zM9 12l2 2 4-4',
+    sitemap: 'M9 3h6v4H9V3zM3 17h6v4H3v-4zM15 17h6v4h-6v-4zM12 7v4M6 17v-2a1 1 0 011-1h10a1 1 0 011 1v2',
+    activity: 'M3 12h4l3 8 4-16 3 8h4',
+    languages: 'M4 6h10M9 4v2c0 5-2.5 8-5 9M7 11c1.5 3 4 5 6 5.5M13 20l4-9 4 9M14.8 17h4.4',
+    backup: 'M21 12a9 9 0 11-3-6.7M21 4v5h-5',
+
+    /* The four service lines (§4), drawn for the public page. */
+    gifts: 'M3 9h18v12H3V9zM3 13h18M12 9v12M12 9c-3 0-5.3-1.2-5.3-3S8.9 4.1 10.1 5C11 5.6 12 7.2 12 9zM12 9c3 0 5.3-1.2 5.3-3S15.1 4.1 13.9 5C13 5.6 12 7.2 12 9z',
+    events: 'M4 4h16v6H4V4zM4 10h16M8 14v6M16 14v6M12 14v6M6 20h12',
+    production: 'M4 20l7-7M9 12l3-3M12 9l4-4 3 3-4 4zM16 5l-2-2',
+    sourcing: 'M12 3a9 9 0 100 18 9 9 0 000-18zM12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18M3 12h18',
+
     dot: 'M12 12h.01',
 };
 </script>
 
 <template>
+    <!--
+        `class` stays a plain static attribute. Adding a bound class here
+        merges the two into `class="ico ico--muted"`, which silently breaks
+        every check that looks for the attribute verbatim — so the muted state
+        rides on an inline style instead.
+    -->
     <svg
         class="ico"
+        :style="muted ? undefined : { opacity: 1 }"
         viewBox="0 0 24 24"
-        width="18"
-        height="18"
+        :width="size"
+        :height="size"
         fill="none"
         stroke="currentColor"
-        stroke-width="1.75"
+        :stroke-width="weight"
         stroke-linecap="round"
         stroke-linejoin="round"
         aria-hidden="true"
@@ -73,7 +108,8 @@ const PATHS = {
 <style scoped>
 .ico {
     flex: 0 0 auto;
-    /* Slightly dimmer than the label so the word stays the primary signal. */
+    /* Slightly dimmer than the label so the word stays the primary signal.
+       Overridden inline where the icon is the point rather than the label. */
     opacity: 0.75;
 }
 </style>

@@ -67,8 +67,11 @@ class StructureSeeder extends Seeder
     private function sectors(): void
     {
         $sectors = [
-            Sector::KEY_GOVERNMENT => ['government-entities', 'الجهات الحكومية', 'Government entities'],
-            Sector::KEY_PRIVATE => ['private-sector', 'القطاع الخاص', 'Private sector'],
+            // Slugs shortened when the segments moved under /solutions. The
+            // old paths are kept alive by rows in the `redirects` table
+            // (§22.7) — see RedirectsSeeder.
+            Sector::KEY_GOVERNMENT => ['government', 'الجهات الحكومية', 'Government entities'],
+            Sector::KEY_PRIVATE => ['companies', 'القطاع الخاص', 'Private sector'],
             Sector::KEY_PARTNERS => ['partners', 'الشركاء', 'Partners'],
             Sector::KEY_ARTISANS => ['artisans', 'الحرفيون', 'Artisans'],
         ];
@@ -121,6 +124,16 @@ class StructureSeeder extends Seeder
             ['contact', 'dock_heading.en', null, true],
             ['contact', 'dock_note.ar', null, true],
             ['contact', 'dock_note.en', null, true],
+            ['contact', 'header_cta.ar', null, true],
+            ['contact', 'header_cta.en', null, true],
+            ['site', 'footer_blurb.ar', null, true],
+            ['site', 'footer_blurb.en', null, true],
+            ['contact', 'location_heading.ar', null, true],
+            ['contact', 'location_heading.en', null, true],
+            ['contact', 'location_note.ar', null, true],
+            ['contact', 'location_note.en', null, true],
+            ['contact', 'directions_label.ar', null, true],
+            ['contact', 'directions_label.en', null, true],
 
             // Where the company is (§5 contact page). A plain search query is
             // enough for the embed; paste a full Maps embed URL into

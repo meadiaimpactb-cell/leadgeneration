@@ -45,15 +45,15 @@ class PublicPagesTest extends TestCase
     #[DataProvider('sectorSlugs')]
     public function every_sector_page_resolves(string $slug): void
     {
-        $this->get("/ar/sectors/{$slug}")->assertOk();
+        $this->get("/ar/solutions/{$slug}")->assertOk();
     }
 
     /** @return array<string, array{string}> */
     public static function sectorSlugs(): array
     {
         return [
-            'government' => ['government-entities'],
-            'private' => ['private-sector'],
+            'government' => ['government'],
+            'private' => ['companies'],
             'partners' => ['partners'],
             'artisans' => ['artisans'],
         ];
@@ -65,7 +65,7 @@ class PublicPagesTest extends TestCase
         // The home page renders one card per active sector. If a sector is
         // active but its route 404s, the site is linking to nothing.
         foreach (Sector::query()->visible()->get() as $sector) {
-            $this->get("/ar/sectors/{$sector->slug}")
+            $this->get("/ar/solutions/{$sector->slug}")
                 ->assertOk("Sector [{$sector->slug}] is linked from the home page but does not resolve.");
         }
     }
@@ -103,7 +103,7 @@ class PublicPagesTest extends TestCase
     #[Test]
     public function an_unknown_sector_is_a_404(): void
     {
-        $this->get('/ar/sectors/does-not-exist')->assertNotFound();
+        $this->get('/ar/solutions/does-not-exist')->assertNotFound();
     }
 
     #[Test]

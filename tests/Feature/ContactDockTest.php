@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Campaign;
+use App\Models\LeadField;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Support\Settings;
@@ -14,17 +15,21 @@ use Database\Seeders\LeadFieldsSeeder;
 use Database\Seeders\NavigationSeeder;
 use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
  * The always-on-screen contact dock, and the modal it opens.
  *
- * The dock exists because the single contact field was reachable only by
- * scrolling to the end of a page. The risk in fixing that is turning one form
- * into two, which §6.1 forbids — so these tests care less about the dock
- * looking right than about it staying a *button that opens the one form*.
+ * The dock was removed from the standard public layout at the client's
+ * request. It survives on campaign pages only: a landing page has no header
+ * navigation and no footer contact block, so the dock is its one
+ * always-reachable route to the field, which is the page's single goal
+ * (§11.3).
+ *
+ * The risk it always carried is turning one form into two, which §6.1 forbids
+ * — so these tests care less about the dock looking right than about it
+ * staying a *button that opens the one form*.
  */
 class ContactDockTest extends TestCase
 {
@@ -45,15 +50,34 @@ class ContactDockTest extends TestCase
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }
 
+    private function campaignPath(): string
+    {
+        $campaign = Campaign::query()->where('is_active', true)->first();
+
+        if ($campaign === null) {
+            $this->markTestSkipped('No campaign seeded.');
+        }
+
+        return "/ar/c/{$campaign->slug}";
+    }
+
     #[Test]
-    public function the_dock_is_rendered_server_side_on_every_public_page(): void
+    public function the_dock_is_rendered_server_side_on_a_campaign_page(): void
     {
         // It used to be wrapped in <Teleport to="body">, which Inertia's SSR
         // pass does not emit — so the whole CTA appeared only after hydration.
+        $this->get($this->campaignPath())
+            ->assertOk()
+            ->assertSee('class="dock"', false);
+    }
+
+    #[Test]
+    public function the_standard_public_layout_no_longer_carries_the_dock(): void
+    {
         foreach (['/ar', '/en', '/ar/products', '/ar/about', '/ar/impact'] as $path) {
             $this->get($path)
                 ->assertOk()
-                ->assertSee('class="dock"', false);
+                ->assertDontSee('class="dock"', false);
         }
     }
 
@@ -85,45 +109,40 @@ class ContactDockTest extends TestCase
     }
 
     #[Test]
-    public function it_never_asks_for_a_name(): void
+    public function it_never_asks_for_a_persons_name(): void
     {
-        $body = $this->get('/ar')->assertOk()->getContent();
-
-        $this->assertStringNotContainsString('name="name"', $body);
-        $this->assertStringNotContainsString('name="organisation"', $body);
-    }
-
-    #[Test]
-    public function the_direct_channels_are_rendered_when_settings_carry_them(): void
-    {
-        $body = $this->get('/ar')->assertOk()->getContent();
-
-        $this->assertStringContainsString('dock__channel', $body);
-        $this->assertStringContainsString('href="tel:', $body);
-        $this->assertStringContainsString('wa.me', $body);
-    }
-
-    #[Test]
-    public function the_direct_channels_vanish_when_the_settings_are_empty(): void
-    {
-        // Cleared before the first request of the test rather than between two
-        // of them. Settings are cached in two places and a test process reuses
-        // one application across requests, so warm-then-mutate proves nothing
-        // reliable — it tests the cache, not the component.
-        Setting::query()->where('group', 'contact')
-            ->whereIn('key', ['phone', 'whatsapp'])
-            ->update(['value' => json_encode(null)]);
-
-        app(Settings::class)->forget();
+        // Asserted against the field configuration, not the markup.
+        //
+        // The markup assertion this replaces looked for `name="name"` in the
+        // HTML — but LeadField renders extra inputs with an id and no name
+        // attribute, so the string could never appear and the test passed
+        // whether or not a personal-name field was switched on. It was
+        // guarding nothing.
+        //
+        // §6.1 forbids asking for a person's name. It does not forbid asking
+        // for a company, which the approved design does ask for and which the
+        // demo seeder enables — so this checks the one field that must stay
+        // off, and says why the other may be on.
+        $this->assertFalse(
+            LeadField::query()->where('key', 'name')->value('is_enabled'),
+            'The personal-name field must stay disabled — §6.1.',
+        );
 
         $body = $this->get('/ar')->assertOk()->getContent();
 
-        // Absent from the markup entirely, not rendered empty: a tel: link
-        // with no number is a dead control on a lead-generation page.
-        $this->assertStringNotContainsString('href="tel:', $body);
-        $this->assertStringNotContainsString('wa.me', $body);
-        $this->assertStringContainsString('class="dock"', $body);
+        $this->assertStringNotContainsString('autocomplete="name"', $body);
+        $this->assertStringNotContainsString('autocomplete="given-name"', $body);
     }
+
+    /*
+     * Two tests were removed here, deliberately rather than by neglect: they
+     * covered the dock rendering tel: and WhatsApp buttons, and the same
+     * buttons vanishing when those settings are empty. The only page that
+     * still mounts the dock passes `channels: false`, so neither state is
+     * reachable over HTTP any more and a test asserting them would have been
+     * testing a code path nothing can enter. The direct channels still reach
+     * the visitor — through the footer, which FooterTest covers.
+     */
 
     #[Test]
     public function a_campaign_page_gets_the_field_but_no_way_off_the_page(): void
@@ -150,7 +169,7 @@ class ContactDockTest extends TestCase
         Setting::query()->where('group', 'site')->where('key', 'contact_dock')
             ->update(['value' => json_encode(false)]);
 
-        $this->get('/ar')->assertOk()->assertDontSee('class="dock"', false);
+        $this->get($this->campaignPath())->assertOk()->assertDontSee('class="dock"', false);
     }
 
     #[Test]
@@ -163,6 +182,8 @@ class ContactDockTest extends TestCase
             ->where('key', 'like', 'dock_%')
             ->update(['value' => json_encode(null)]);
 
-        $this->get('/ar')->assertOk()->assertSee('class="dock"', false);
+        app(Settings::class)->forget();
+
+        $this->get($this->campaignPath())->assertOk()->assertSee('class="dock"', false);
     }
 }

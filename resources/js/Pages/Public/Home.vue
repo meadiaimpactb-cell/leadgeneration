@@ -1,10 +1,11 @@
 <script setup>
 import { computed } from 'vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
-import SaduDivider from '@/Components/ui/SaduDivider.vue';
+import NewsTicker from '@/Components/sections/NewsTicker.vue';
 import Hero from '@/Components/sections/Hero.vue';
 import IntroStatement from '@/Components/sections/IntroStatement.vue';
 import SolutionsGrid from '@/Components/sections/SolutionsGrid.vue';
+import Gallery from '@/Components/sections/Gallery.vue';
 import SectorSpotlight from '@/Components/sections/SectorSpotlight.vue';
 import ImpactStats from '@/Components/sections/ImpactStats.vue';
 import StoryCarousel from '@/Components/sections/StoryCarousel.vue';
@@ -17,7 +18,7 @@ import CtaBand from '@/Components/sections/CtaBand.vue';
  * Order and presence of blocks come from `sections` rows, not from this file,
  * so the client can reorder or remove any of them from the admin panel
  * without a developer. This component only decides WHICH Vue component
- * renders a given section type, and where the two permitted Sadu dividers go.
+ * renders a given section type, and how the running index is counted.
  */
 const props = defineProps({
     page: { type: Object, default: null },
@@ -36,11 +37,33 @@ function section(type) {
     return props.sections.find((s) => s.type === type) ?? {};
 }
 
+/**
+ * The blocks that carry a running number, in the order they appear.
+ *
+ * Counted from the sections the client actually has, so deleting one in the
+ * admin panel renumbers the rest instead of leaving a gap at "03 / 06". The
+ * hero, the figures and the closing CTA are excluded on purpose — they are
+ * the covers of the document, not chapters in it.
+ */
+const NUMBERED = ['intro_statement', 'solutions_grid', 'gallery', 'sector_spotlight', 'story_carousel'];
+
+const numbered = computed(() => NUMBERED.filter((type) => props.sections.some((s) => s.type === type)));
+
+/** 1-based position of a section among the numbered ones, or null. */
+function counter(type) {
+    const i = numbered.value.indexOf(type);
+
+    return i === -1 ? null : i + 1;
+}
+
+const total = computed(() => numbered.value.length);
+
+const ticker = computed(() => section('news_ticker'));
 const hero = computed(() => section('hero'));
 const intro = computed(() => section('intro_statement'));
 const solutionsCopy = computed(() => section('solutions_grid'));
+const galleryCopy = computed(() => section('gallery'));
 const sectorsCopy = computed(() => section('sector_spotlight'));
-const impactCopy = computed(() => section('stats'));
 const storiesCopy = computed(() => section('story_carousel'));
 const partnersCopy = computed(() => section('logos'));
 const ctaCopy = computed(() => section('cta_band'));
@@ -49,9 +72,19 @@ const ctaCopy = computed(() => section('cta_band'));
 <template>
     <!-- The only page whose hero sits under a transparent header (§11.1). -->
     <PublicLayout :seo="seo" over-hero :previewing="previewing">
+        <template #ticker>
+            <NewsTicker
+                :heading="ticker.heading"
+                :body="ticker.body"
+                :cta-label="ticker.ctaLabel"
+                :cta-url="ticker.ctaUrl"
+            />
+        </template>
+
         <Hero
             :heading="hero.heading ?? page?.title"
             :subheading="hero.subheading ?? page?.subtitle"
+            :eyebrow="hero.settings?.eyebrow"
             :cta-label="hero.ctaLabel"
             :cta-url="hero.ctaUrl"
             :secondary-label="hero.settings?.secondaryLabel"
@@ -59,30 +92,66 @@ const ctaCopy = computed(() => section('cta_band'));
             :image="hero.settings?.image"
         />
 
-        <!-- Permitted Sadu use 1 of 3: the divider between sections (§10.1). -->
-        <SaduDivider />
+        <!--
+            The proof figures, riding up over the hero's lower edge. Placed
+            here rather than as a section of their own because the overlap is
+            what ties the claim to the evidence.
+        -->
+        <ImpactStats variant="overlap" :items="impact" />
 
-        <IntroStatement :body="intro.body" />
-
-        <SolutionsGrid :heading="solutionsCopy.heading" :items="solutions" />
-
-        <SectorSpotlight :heading="sectorsCopy.heading" :items="sectors" />
-
-        <!-- Permitted Sadu use 2 of 3: the faint ground behind the numbers. -->
-        <ImpactStats
-            :heading="impactCopy.heading"
-            :items="impact"
-            :cta-label="impactCopy.ctaLabel"
-            :cta-url="impactCopy.ctaUrl"
+        <IntroStatement
+            :body="intro.body"
+            :index="counter('intro_statement')"
+            :total="total"
+            slug="manifesto"
         />
 
-        <StoryCarousel :heading="storiesCopy.heading" :items="stories" />
+        <SolutionsGrid
+            :heading="solutionsCopy.heading"
+            :eyebrow="solutionsCopy.settings?.eyebrow"
+            :note="solutionsCopy.subheading"
+            :items="solutions"
+            :index="counter('solutions_grid')"
+            :total="total"
+            slug="solutions"
+        />
+
+        <Gallery
+            :heading="galleryCopy.heading"
+            :eyebrow="galleryCopy.settings?.eyebrow"
+            :images="galleryCopy.settings?.images ?? []"
+            :cta-label="galleryCopy.ctaLabel"
+            :cta-url="galleryCopy.ctaUrl"
+            :index="counter('gallery')"
+            :total="total"
+            slug="showroom"
+        />
+
+        <SectorSpotlight
+            :heading="sectorsCopy.heading"
+            :eyebrow="sectorsCopy.settings?.eyebrow"
+            :items="sectors"
+            :index="counter('sector_spotlight')"
+            :total="total"
+            slug="sectors"
+        />
+
+        <StoryCarousel
+            :heading="storiesCopy.heading"
+            :eyebrow="storiesCopy.settings?.eyebrow"
+            :items="stories"
+            :index="counter('story_carousel')"
+            :total="total"
+            slug="voices"
+        />
 
         <PartnersLogos :heading="partnersCopy.heading" :items="partners" />
 
         <CtaBand
             :heading="ctaCopy.heading"
+            :eyebrow="ctaCopy.settings?.eyebrow"
             :reassurance="ctaCopy.subheading"
+            :note="ctaCopy.body"
             :submit-label="ctaCopy.ctaLabel"
         />
     </PublicLayout>
