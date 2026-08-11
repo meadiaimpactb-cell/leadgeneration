@@ -76,11 +76,23 @@ class NavigationBuilder
             return null;
         }
 
-        $children = $item->children
-            ->map(fn (NavigationItem $child): ?array => $this->item($child, $locale))
-            ->filter()
-            ->values()
-            ->all();
+        /*
+         * Two levels, and the guard is the eager-load rather than a counter.
+         *
+         * `with('children.translations')` loads children for the top level
+         * only, so a child's own `children` relation is never loaded — and
+         * recursing into it blindly asked the database for it once per child,
+         * which `preventLazyLoading` correctly refused. Reading the flag
+         * instead stops the recursion exactly where the query stopped, so the
+         * menu can never issue a query per item.
+         */
+        $children = $item->relationLoaded('children')
+            ? $item->children
+                ->map(fn (NavigationItem $child): ?array => $this->item($child, $locale))
+                ->filter()
+                ->values()
+                ->all()
+            : [];
 
         return [
             'id' => $item->id,

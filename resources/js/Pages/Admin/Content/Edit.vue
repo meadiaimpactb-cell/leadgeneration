@@ -19,6 +19,10 @@ const props = defineProps({
     record: { type: Object, default: null },
     meta: { type: Object, required: true },
     options: { type: Object, default: () => ({}) },
+    /** Choices for each many-to-many picker, keyed by picker name. */
+    taxonomyOptions: { type: Object, default: () => ({}) },
+    /** The ids currently selected, keyed the same way. */
+    taxonomyValues: { type: Object, default: () => ({}) },
     locales: { type: Array, default: () => [] },
 });
 
@@ -39,7 +43,25 @@ const form = useForm({
     active: props.record?.active ?? true,
     attributes: props.record?.attributes ?? blankAttributes(),
     translations: props.record?.translations ?? blankTranslations(),
+    // Copied, not referenced: Inertia props are frozen, and checking a box
+    // would otherwise fail silently in production where Vue's warning is
+    // stripped.
+    taxonomies: Object.fromEntries(
+        Object.keys(props.meta.taxonomies ?? {}).map((name) => [
+            name,
+            [...(props.taxonomyValues[name] ?? [])],
+        ])
+    ),
 });
+
+/** Add or remove one id from a picker, keeping the click order. */
+function toggleTaxonomy(name, id) {
+    const chosen = form.taxonomies[name];
+    const at = chosen.indexOf(id);
+
+    if (at === -1) chosen.push(id);
+    else chosen.splice(at, 1);
+}
 
 function inputType(type) {
     if (type === 'number') return 'number';
@@ -116,6 +138,36 @@ function removeMedia(id) {
 
                     <Field v-model="form.active" :label="t('admin.active')" type="checkbox" />
                 </div>
+            </Panel>
+
+            <!--
+                Many-to-many pickers. Currently one: the audience segments a
+                solution is offered to. Checkboxes rather than a multi-select —
+                four options that must all be visible at once, on a panel used
+                by people who are not asked to know that ctrl-click exists.
+            -->
+            <Panel
+                v-for="(taxonomy, name) in meta.taxonomies ?? {}"
+                :key="name"
+                :title="t(`admin.taxonomy_${name}`)"
+                :hint="t(`admin.taxonomy_${name}_hint`)"
+            >
+                <ul class="picker">
+                    <li v-for="option in taxonomyOptions[name] ?? []" :key="option.value">
+                        <label class="picker__row">
+                            <input
+                                type="checkbox"
+                                :checked="form.taxonomies[name].includes(option.value)"
+                                @change="toggleTaxonomy(name, option.value)"
+                            />
+                            <span>{{ option.label }}</span>
+                        </label>
+                    </li>
+                </ul>
+
+                <p v-if="!(taxonomyOptions[name] ?? []).length" class="picker__empty">
+                    {{ t('admin.no_records') }}
+                </p>
             </Panel>
 
             <Panel :title="t('admin.per_locale')">
@@ -246,5 +298,23 @@ function removeMedia(id) {
         grid-template-columns: repeat(2, 1fr);
         align-items: end;
     }
+}
+.picker {
+    display: grid;
+    gap: var(--s-2);
+    list-style: none;
+}
+
+.picker__row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-block-size: 44px;
+    cursor: pointer;
+}
+
+.picker__empty {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
 }
 </style>

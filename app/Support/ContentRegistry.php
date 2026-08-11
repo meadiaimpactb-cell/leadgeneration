@@ -50,6 +50,22 @@ class ContentRegistry
                     'slug' => 'slug',
                     'icon' => 'text',
                 ],
+                /*
+                 * The audience segments this solution is offered to.
+                 *
+                 * "القطاعات" stopped being a content type of its own in the
+                 * sidebar and became this picker. The records are unchanged —
+                 * each segment still has its own page and its own editor,
+                 * listed under Solutions — so this says which solutions speak
+                 * to which audience; it does not flatten a segment into a tag.
+                 */
+                'taxonomies' => [
+                    'sectors' => [
+                        'entity' => 'sectors',
+                        'relation' => 'sectors',
+                        'table' => 'sectors',
+                    ],
+                ],
                 'hasSections' => true,
             ],
 

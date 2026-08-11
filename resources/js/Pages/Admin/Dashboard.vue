@@ -18,7 +18,6 @@ const props = defineProps({
     bySource: { type: Array, default: () => [] },
     byCampaign: { type: Array, default: () => [] },
     latest: { type: Array, default: () => [] },
-    crmDriver: { type: String, default: null },
 });
 
 const { t } = useTranslation();
@@ -44,10 +43,14 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
 
 <template>
     <AdminLayout :title="t('admin.dashboard')">
-        <p v-if="crmDriver === 'null'" class="warn" role="alert">
-            {{ t('admin.crm_driver_null_warning') }}
-        </p>
+        <!--
+            The CRM driver warning was removed at the client's request.
 
+            What it said: the configured driver is the null one, so leads are
+            saved to the database but pushed nowhere. That is still true and
+            still worth knowing — the "لم تصل إلى CRM" tile above is now the
+            only place it shows, and it is a number rather than a sentence.
+        -->
         <ul class="tiles">
             <li v-for="tile in tiles" :key="tile.label" class="tile" :class="`tile--${tile.tone}`">
                 <p class="tile__label">{{ tile.label }}</p>
@@ -130,15 +133,6 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
 </template>
 
 <style scoped>
-.warn {
-    margin-block-end: var(--s-5);
-    padding: var(--s-4);
-    border-radius: var(--r-sm);
-    background: var(--gold-100);
-    color: var(--action-600);
-    font-weight: 600;
-}
-
 .tiles {
     display: grid;
     gap: var(--gutter);

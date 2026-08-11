@@ -4,6 +4,7 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import Logo from '@/Components/ui/Logo.vue';
 import NavIcon from '@/Components/admin/NavIcon.vue';
 import { useTranslation } from '@/Composables/useTranslation';
+import { NAV_GROUPS } from '@/admin/navigation';
 
 /**
  * Layouts/AdminLayout (§9) — a custom panel, Arabic RTL by default.
@@ -23,70 +24,18 @@ const menuOpen = ref(false);
 const user = computed(() => page.props.auth?.user ?? null);
 const can = computed(() => page.props.auth?.can ?? {});
 
-const groups = computed(() => [
-    {
-        label: t('admin.nav_overview'),
-        items: [
-            { icon: 'dashboard', label: t('admin.dashboard'), href: '/admin', show: true },
-            { icon: 'leads', label: t('admin.leads'), href: '/admin/leads', show: can.value['leads.view'] },
-        ],
-    },
-    {
-        label: t('admin.nav_content'),
-        items: [
-            { icon: 'pages', label: t('admin.pages'), href: '/admin/pages', show: can.value['pages.view'] },
-            { icon: 'solutions', label: t('admin.solutions'), href: '/admin/content/solutions', show: can.value['solutions.manage'] },
-            { icon: 'sectors', label: t('admin.sectors'), href: '/admin/content/sectors', show: can.value['sectors.manage'] },
-            { icon: 'products', label: t('admin.products'), href: '/admin/content/products', show: can.value['products.manage'] },
-            { icon: 'categories', label: t('admin.product_categories'), href: '/admin/content/product-categories', show: can.value['products.manage'] },
-            { icon: 'impact', label: t('admin.impact_metrics'), href: '/admin/content/impact-metrics', show: can.value['impact.manage'] },
-            { icon: 'stories', label: t('admin.stories'), href: '/admin/content/stories', show: can.value['stories.manage'] },
-            { icon: 'reports', label: t('admin.reports'), href: '/admin/content/reports', show: can.value['reports.manage'] },
-            { icon: 'training', label: t('admin.training'), href: '/admin/content/training-programs', show: can.value['training.manage'] },
-            { icon: 'partners', label: t('admin.partners'), href: '/admin/content/partners', show: can.value['partners.manage'] },
-        ],
-    },
-    {
-        label: t('admin.nav_campaigns'),
-        items: [
-            { icon: 'campaigns', label: t('admin.campaigns'), href: '/admin/campaigns', show: can.value['campaigns.view'] },
-        ],
-    },
-    {
-        label: t('admin.nav_system'),
-        items: [
-            { icon: 'fields', label: t('admin.lead_fields'), href: '/admin/lead-fields', show: can.value['settings.manage'] },
-            { icon: 'navigation', label: t('admin.navigation'), href: '/admin/navigation', show: can.value['navigation.manage'] },
-            { icon: 'redirects', label: t('admin.redirects'), href: '/admin/redirects', show: can.value['redirects.manage'] },
-            { icon: 'users', label: t('admin.users'), href: '/admin/users', show: can.value['users.manage'] },
-        ],
-    },
-    /*
-     * Settings expand into their own group rather than sitting behind one
-     * link. They used to be a single page of thirty database keys; the sidebar
-     * is now the map of what can be changed, so an editor can find "where do I
-     * change the phone number" by reading rather than by opening and scanning.
-     */
-    {
-        label: t('admin.settings'),
-        items: [
-            { icon: 'contact', label: t('settings.screen.contact'), href: '/admin/settings/contact', show: can.value['settings.manage'] },
-            { icon: 'site', label: t('settings.screen.site'), href: '/admin/settings/site', show: can.value['settings.manage'] },
-            { icon: 'brand', label: t('admin.brand'), href: '/admin/brand', show: can.value['settings.manage'] },
-            { icon: 'store', label: t('settings.screen.store'), href: '/admin/settings/store', show: can.value['settings.manage'] },
-            { icon: 'seo', label: t('settings.screen.seo'), href: '/admin/settings/seo', show: can.value['settings.manage'] },
-            { icon: 'keywords', label: t('settings.screen.keywords'), href: '/admin/seo/keywords', show: can.value['pages.view'] },
-            { icon: 'robots', label: t('settings.screen.robots'), href: '/admin/settings/robots', show: can.value['settings.manage'] },
-            { icon: 'tracking', label: t('settings.screen.tracking'), href: '/admin/settings/tracking', show: can.value['settings.manage'] },
-            { icon: 'advanced', label: t('settings.screen.advanced'), href: '/admin/settings/advanced', show: can.value['settings.manage'] },
-        ],
-    },
-]);
-
+/*
+ * The sidebar's contents come from one module — resources/js/admin/navigation.js.
+ * This layout resolves the labels and filters by permission; it no longer
+ * carries the map of the panel itself.
+ */
 const visibleGroups = computed(() =>
-    groups.value
-        .map((g) => ({ ...g, items: g.items.filter((i) => i.show) }))
-        .filter((g) => g.items.length)
+    NAV_GROUPS.map((group) => ({
+        label: t(group.label),
+        items: group.items
+            .filter((item) => !item.can || can.value[item.can])
+            .map((item) => ({ ...item, label: t(item.label) })),
+    })).filter((group) => group.items.length)
 );
 
 function isCurrent(href) {
@@ -157,12 +106,17 @@ function logout() {
                         :key="item.href"
                         :href="item.href"
                         class="side__link"
-                        :class="{ 'is-current': isCurrent(item.href) }"
+                        :class="{ 'is-current': isCurrent(item.href), 'side__link--sub': item.sub }"
                         :aria-current="isCurrent(item.href) ? 'page' : undefined"
                         @click="menuOpen = false"
                     >
                         <NavIcon :name="item.icon ?? 'dot'" />
                         <span class="side__label">{{ item.label }}</span>
+                        <!-- Screens whose place in the panel is agreed but
+                             whose function is not built yet. Marked rather
+                             than hidden, so the shape of the finished panel
+                             is visible and nobody looks for a missing item. -->
+                        <span v-if="item.soon" class="side__soon">{{ t('admin.soon') }}</span>
                     </Link>
                 </div>
             </nav>
@@ -173,16 +127,12 @@ function logout() {
                 the change worked — so it gets a button, an icon that says it
                 leaves the panel, and a spoken note that it opens elsewhere.
             -->
-            <div class="side__foot">
-                <a class="side__visit" href="/" target="_blank" rel="noopener">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                         stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-                    </svg>
-                    <span>{{ t('admin.view_site') }}</span>
-                    <span class="visually-hidden">{{ t('common.external_link') }}</span>
-                </a>
-            </div>
+            <!--
+                "View the site" used to be repeated here at the foot of the
+                sidebar. It lives in the top bar, which is on screen at every
+                scroll position and on every admin screen, so the second copy
+                was one more thing to read past rather than a second way out.
+            -->
         </aside>
 
         <div class="main">
@@ -310,6 +260,27 @@ function logout() {
     color: rgba(255, 255, 255, 0.5);
 }
 
+/* A child of the entry above it: indented, and marked by a short rule on the
+   reading edge so the relationship survives on a narrow sidebar. */
+.side__link--sub {
+    margin-inline-start: var(--s-6);
+    padding-inline-start: var(--s-4);
+    border-inline-start: 1px solid rgb(255 255 255 / 0.18);
+    font-size: var(--fs-sm);
+}
+
+.side__soon {
+    margin-inline-start: auto;
+    flex-shrink: 0;
+    padding: 2px 6px;
+    border-radius: var(--r-sm);
+    background: rgb(255 255 255 / 0.12);
+    color: var(--gold-400);
+    font-size: 0.625rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
 .side__link {
     display: block;
     padding: var(--s-3);
@@ -328,11 +299,6 @@ function logout() {
 .side__link.is-current {
     background: var(--action-600);
     color: #fff;
-}
-
-.side__foot {
-    padding: var(--s-3);
-    border-block-start: 1px solid var(--hairline-inverse);
 }
 
 .main {
@@ -526,31 +492,6 @@ function logout() {
 .side__label {
     min-inline-size: 0;
     overflow-wrap: anywhere;
-}
-
-.side__foot {
-    padding: var(--s-3);
-    border-block-start: 1px solid var(--hairline-inverse);
-}
-
-/* The one action in the sidebar that is not navigation, so it does not look
-   like the links above it. */
-.side__visit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--s-2);
-    min-block-size: 44px;
-    border-radius: var(--r-sm);
-    background: rgb(255 255 255 / 0.12);
-    color: #fff;
-    font-size: var(--fs-sm);
-    font-weight: 700;
-    transition: background-color var(--dur-micro) var(--ease);
-}
-
-.side__visit:hover {
-    background: rgb(255 255 255 / 0.2);
 }
 
 /* ---- Topbar -------------------------------------------------------- */

@@ -62,6 +62,20 @@ class SettingsRegistry
             'contact.dock_heading.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 61],
             'contact.dock_note.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 62],
             'contact.dock_note.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 63],
+            // The button in the site header. Empty means no button — the
+            // header must never invent a call to action (§22.1).
+            'contact.header_cta.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 64],
+            'contact.header_cta.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 65],
+            // The short paragraph under the logo in the footer.
+            'site.footer_blurb.ar' => ['screen' => 'site', 'type' => 'textarea', 'order' => 66],
+            'site.footer_blurb.en' => ['screen' => 'site', 'type' => 'textarea', 'order' => 67],
+            // The showroom block above the footer columns.
+            'contact.location_heading.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 68],
+            'contact.location_heading.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 69],
+            'contact.location_note.ar' => ['screen' => 'contact', 'type' => 'textarea', 'order' => 70],
+            'contact.location_note.en' => ['screen' => 'contact', 'type' => 'textarea', 'order' => 71],
+            'contact.directions_label.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 72],
+            'contact.directions_label.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 73],
 
             // ---- The Zid store -----------------------------------------
             'store.url' => ['screen' => 'store', 'type' => 'url', 'order' => 10],

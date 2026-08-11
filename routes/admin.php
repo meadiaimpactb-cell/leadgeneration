@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\RedirectController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\UpcomingScreenController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -132,5 +133,21 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::delete('brand/{medium}', [BrandController::class, 'destroy'])->name('brand.destroy');
 
         Route::resource('users', UserController::class)->except(['show']);
+
+        /*
+         * Screens whose place in the panel is agreed but whose function is
+         * built in a later phase. Real routes, so no sidebar entry ever
+         * 404s — see UpcomingScreenController for the list and the phase
+         * each one belongs to.
+         */
+        Route::get('media', [UpcomingScreenController::class, 'show'])->defaults('screen', 'media')->name('upcoming.media');
+        Route::get('languages', [UpcomingScreenController::class, 'show'])->defaults('screen', 'languages')->name('upcoming.languages');
+        Route::get('backups', [UpcomingScreenController::class, 'show'])->defaults('screen', 'backups')->name('upcoming.backups');
+        Route::get('activity', [UpcomingScreenController::class, 'show'])->defaults('screen', 'activity')->name('upcoming.activity');
+        Route::get('seo/sitemap', [UpcomingScreenController::class, 'show'])->defaults('screen', 'sitemap')->name('upcoming.sitemap');
+
+        Route::get('integrations/{screen}', [UpcomingScreenController::class, 'show'])
+            ->whereIn('screen', ['crm', 'notifications', 'confirmations', 'spam'])
+            ->name('upcoming.integrations');
     });
 });

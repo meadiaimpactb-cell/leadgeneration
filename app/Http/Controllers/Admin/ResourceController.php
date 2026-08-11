@@ -71,6 +71,8 @@ class ResourceController extends Controller
             'record' => null,
             'meta' => $this->meta($config),
             'options' => $this->relationOptions($config),
+            'taxonomyOptions' => $this->taxonomyOptions($config),
+            'taxonomyValues' => $this->taxonomyValues(null, $config),
             'locales' => array_keys(config('site.locales')),
         ]);
     }
@@ -87,6 +89,8 @@ class ResourceController extends Controller
             'record' => $this->payload($record, $config),
             'meta' => $this->meta($config),
             'options' => $this->relationOptions($config),
+            'taxonomyOptions' => $this->taxonomyOptions($config),
+            'taxonomyValues' => $this->taxonomyValues($record, $config),
             'locales' => array_keys(config('site.locales')),
         ]);
     }
@@ -170,6 +174,12 @@ class ResourceController extends Controller
             $rules["attributes.{$name}"] = $this->rulesFor($type);
         }
 
+        // Many-to-many pickers, e.g. the audience segments a solution serves.
+        foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
+            $rules["taxonomies.{$name}"] = ['array'];
+            $rules["taxonomies.{$name}.*"] = ['integer', 'exists:'.$taxonomy['table'].',id'];
+        }
+
         foreach (array_keys(config('site.locales')) as $locale) {
             foreach ($config['fields'] as $field => $type) {
                 $rules["translations.{$locale}.{$field}"] = ['nullable', 'string',
@@ -202,6 +212,25 @@ class ResourceController extends Controller
                 }
 
                 $record->translations()->updateOrCreate(['locale' => $locale], $values);
+            }
+
+            /*
+             * `sync` with the order carried in the pivot, so the client's
+             * chosen order survives. An absent key means "not submitted",
+             * which is left alone; an empty array means "cleared", which is
+             * honoured — the two are different and must not be conflated.
+             */
+            foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
+                if (! array_key_exists($name, $data['taxonomies'] ?? [])) {
+                    continue;
+                }
+
+                $ids = collect($data['taxonomies'][$name])
+                    ->values()
+                    ->mapWithKeys(fn (int $id, int $i): array => [$id => ['sort_order' => $i]])
+                    ->all();
+
+                $record->{$taxonomy['relation']}()->sync($ids);
             }
         });
     }
@@ -297,6 +326,57 @@ class ResourceController extends Controller
     }
 
     /**
+     * Choices for every many-to-many picker on this entity.
+     *
+     * Labelled from the target's own first translated field, exactly as the
+     * single-relation selects are, so a segment renamed in its own editor
+     * renames itself here too.
+     *
+     * @return array<string, list<array{value: int, label: string}>>
+     */
+    private function taxonomyOptions(array $config): array
+    {
+        $options = [];
+
+        foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
+            $target = ContentRegistry::get($taxonomy['entity']);
+
+            $options[$name] = $target['model']::query()
+                ->with('translations')
+                ->orderBy('sort_order')
+                ->get()
+                ->map(fn (Model $r): array => [
+                    'value' => $r->getKey(),
+                    'label' => (string) $this->titleOf($r, $target),
+                ])
+                ->all();
+        }
+
+        return $options;
+    }
+
+    /**
+     * The ids currently selected for each picker, in their pivot order.
+     *
+     * @return array<string, list<int>>
+     */
+    private function taxonomyValues(?Model $record, array $config): array
+    {
+        $selected = [];
+
+        foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
+            // modelKeys() rather than pluck('<table>.id'): the relation knows
+            // its own key, and naming the table here would silently return
+            // nothing the day a second taxonomy is added.
+            $selected[$name] = $record === null
+                ? []
+                : $record->{$taxonomy['relation']}()->get()->modelKeys();
+        }
+
+        return $selected;
+    }
+
+    /**
      * The first translated field is the record's human label.
      */
     private function titleOf(Model $record, array $config): ?string
@@ -316,6 +396,9 @@ class ResourceController extends Controller
             'creatable' => $config['creatable'],
             'deletable' => $config['deletable'],
             'hasSections' => $config['hasSections'],
+            // Label + entity per picker, so the form can title the field
+            // without knowing what a taxonomy is.
+            'taxonomies' => $config['taxonomies'] ?? [],
         ];
     }
 
