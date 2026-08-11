@@ -703,7 +703,70 @@ class DemoContentSeeder extends Seeder
             ['icon' => 'users', 'title' => 'أطقم الترحيب', 'body' => 'طقم للموظف الجديد يصله في أول يوم، يُنتَج على دفعات.'],
         ] : [];
 
+        /*
+         * A partner's promises, not a buyer's benefits.
+         *
+         * This is the section the page exists for. An events agency's first
+         * question is never about the object — it is "if I introduce you to
+         * my client, do you take them from me". Everything else on the page
+         * is answered elsewhere; this is answered nowhere else.
+         */
+        $pledges = $key === Sector::KEY_PARTNERS ? [
+            ['icon' => 'shield', 'title' => 'عميلكم يبقى عميلكم', 'body' => 'لا نتواصل معه مباشرة إلا بطلبكم.'],
+            ['icon' => 'brand', 'title' => 'نظهر بالقدر الذي تختارونه', 'body' => 'باسمكم بالكامل، أو كشريك معلن — القرار قراركم.'],
+            ['icon' => 'campaigns', 'title' => 'مواعيدكم التزامنا', 'body' => 'تاريخ فعاليتكم هو خط الإنتاج عندنا.'],
+        ] : [];
+
+        /** How a partner works with us, as three named arrangements. */
+        $models = $key === Sector::KEY_PARTNERS ? [
+            ['icon' => 'events', 'title' => 'شركات الفعاليات والمؤتمرات', 'body' => 'هدايا المتحدّثين وكبار الحضور، ودروع وتذكارات، وأطقم ضيافة — بجدول مربوط بتاريخ الفعالية.'],
+            ['icon' => 'store', 'title' => 'شركات المعارض', 'body' => 'ركن حرفي حيّ أو قطع جاهزة لأجنحة عملائكم، بكميات مضبوطة.'],
+            ['icon' => 'partners', 'title' => 'التسويق بالعمولة', 'body' => 'تعرّفوننا على العميل ونتولّى التنفيذ. تفاصيل النموذج مع فريق المبيعات.'],
+        ] : [];
+
+        /*
+         * The steps differ by segment because the relationship does. A
+         * government body is buying a procedure it can check; a partner has
+         * bought before and is racing a tender deadline — the same four
+         * stages would have been the template the client objected to.
+         */
+        $steps = match ($key) {
+            Sector::KEY_PARTNERS => [
+                ['title' => 'أرسلوا موجز الفعالية', 'body' => 'التاريخ والجمهور والعدد التقريبي يكفي للبدء.',
+                    'title_en' => 'Send the brief', 'body_en' => 'The date, the audience and a rough count are enough to start.'],
+                ['title' => 'تسعير أوّلي سريع', 'body' => 'رقم مبدئي تبنون عليه عرضكم دون انتظار.',
+                    'title_en' => 'A fast initial price', 'body_en' => 'An indicative figure you can build your own proposal on.'],
+                ['title' => 'عيّنة ثم إنتاج', 'body' => 'اعتماد على القطعة، ثم إنتاج على جدول الفعالية لا جدولنا.',
+                    'title_en' => 'Sample, then production', 'body_en' => 'Approval on the piece, then production on the event\'s schedule, not ours.'],
+                ['title' => 'تسليم حيث تحتاجون', 'body' => 'إلى موقع الفعالية أو مستودعكم، وبالتغليف الذي يناسب ظهوركم.',
+                    'title_en' => 'Delivery where you need it', 'body_en' => 'To the venue or to your warehouse, packaged to suit how you appear.'],
+            ],
+            default => [
+                ['title' => 'اجتماع قصير', 'body' => 'نفهم فيه المناسبة والجمهور والميزانية.',
+                    'title_en' => 'A short meeting', 'body_en' => 'To understand the occasion, the audience and the budget.'],
+                ['title' => 'ثلاثة اتجاهات', 'body' => 'اقتراح مكتوب وثلاثة اتجاهات حرفية بخامات مختلفة.',
+                    'title_en' => 'Three directions', 'body_en' => 'A written proposal and three craft directions in different materials.'],
+                ['title' => 'عيّنة تُعتمد باليد', 'body' => 'قطعة فعلية تُعاين وتُعتمد قبل أي إنتاج.',
+                    'title_en' => 'A sample approved in the hand', 'body_en' => 'A real piece, seen and approved before any production begins.'],
+                ['title' => 'إنتاج وتسليم', 'body' => 'جدول واضح، وقطع تصل مغلّفة وجاهزة.',
+                    'title_en' => 'Production and delivery', 'body_en' => 'A clear schedule, and pieces that arrive packaged and ready.'],
+            ],
+        };
+
         $faq = match ($key) {
+            /*
+             * A partner's six. Every one of them is about the relationship,
+             * not the product — and the commission answer carries no figure,
+             * because a percentage on a public page is a price list (§2.2).
+             */
+            Sector::KEY_PARTNERS => [
+                ['question' => 'هل تتعاملون مع عميلنا مباشرة أم من خلالنا فقط؟', 'answer' => 'من خلالكم، ما لم تطلبوا غير ذلك كتابةً. العميل الذي تُعرّفوننا به يبقى عميلكم.'],
+                ['question' => 'هل يمكن أن تصلنا القطع بدون أي إشارة إلى أمد الحرف؟', 'answer' => 'نعم. التغليف والبطاقات تُنفَّذ باسمكم بالكامل إن أردتم، أو باسم الطرفين — أنتم تحدّدون.'],
+                ['question' => 'ما أسرع مدة لتسعير أوّلي لمنافسة عاجلة؟', 'answer' => 'أرسلوا الموجز ونعود إليكم برقم مبدئي في أقرب وقت ممكن حسب وضوح المتطلّب. الرقم النهائي بعد اعتماد العيّنة.'],
+                ['question' => 'هل يمكن إحضار عميلنا لزيارة المعرض معنا؟', 'answer' => 'نعم، وبموعد مسبق. كثير من الشركاء يجعلون الزيارة جزءًا من عرضهم.'],
+                ['question' => 'هل تخدمون أكثر من فعالية لنفس الشريك في وقت واحد؟', 'answer' => 'نعم. كل فعالية تُدار كطلب مستقل بجدولها الخاص.'],
+                ['question' => 'كيف يعمل نموذج الإحالة أو العمولة؟', 'answer' => 'يُتّفق عليه كتابةً قبل البدء ويختلف بحسب حجم التعاون ودوركم فيه. التفاصيل مع فريق المبيعات.'],
+            ],
             Sector::KEY_ARTISANS => [
                 ['question' => 'هل أحتاج سجلًا تجاريًا للبدء؟', 'answer' => 'لا يُشترط للبدء. ونساعدكم على الترتيب النظامي عند الحاجة إليه.'],
                 ['question' => 'من يتحمّل تكلفة الخامات؟', 'answer' => 'يُحدَّد ذلك في الاتفاق قبل البدء، ويختلف بحسب حجم الطلب ونوع الحرفة.'],
@@ -804,32 +867,7 @@ class DemoContentSeeder extends Seeder
             ['process_steps', [
                 'ar' => ["كيف نعمل {$withAr}"],
                 'en' => ["How we work {$withEn}"],
-            ], ['items' => [
-                [
-                    'title' => 'اجتماع قصير',
-                    'body' => 'نفهم فيه المناسبة والجمهور والميزانية.',
-                    'title_en' => 'A short meeting',
-                    'body_en' => 'To understand the occasion, the audience and the budget.',
-                ],
-                [
-                    'title' => 'ثلاثة اتجاهات',
-                    'body' => 'اقتراح مكتوب وثلاثة اتجاهات حرفية بخامات مختلفة.',
-                    'title_en' => 'Three directions',
-                    'body_en' => 'A written proposal and three craft directions in different materials.',
-                ],
-                [
-                    'title' => 'عيّنة تُعتمد باليد',
-                    'body' => 'قطعة فعلية تُعاين وتُعتمد قبل أي إنتاج.',
-                    'title_en' => 'A sample approved in the hand',
-                    'body_en' => 'A real piece, seen and approved before any production begins.',
-                ],
-                [
-                    'title' => 'إنتاج وتسليم',
-                    'body' => 'جدول واضح، وقطع تصل مغلّفة وجاهزة.',
-                    'title_en' => 'Production and delivery',
-                    'body_en' => 'A clear schedule, and pieces that arrive packaged and ready.',
-                ],
-            ]]],
+            ], ['items' => $steps]],
 
             /*
              * Occasions, not products.
@@ -844,6 +882,21 @@ class DemoContentSeeder extends Seeder
                     'ar' => ['متى تطلب الشركات منّا'],
                     'en' => ['When companies come to us'],
                 ], ['items' => $occasions]],
+            ]),
+
+            // The partner's answer to "will you take my client from me".
+            ...($pledges === [] ? [] : [
+                ['cards', [
+                    'ar' => ['تعهّدنا لشركائنا'],
+                    'en' => ['Our pledge to partners'],
+                ], ['items' => $pledges]],
+            ]),
+
+            ...($models === [] ? [] : [
+                ['cards', [
+                    'ar' => ['نماذج التعاون'],
+                    'en' => ['Ways we work together'],
+                ], ['items' => $models]],
             ]),
 
             ['accordion', [

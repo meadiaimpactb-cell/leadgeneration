@@ -219,3 +219,29 @@ work per page is content angle plus whatever section that segment alone needs.
 there is no browser in this environment. Verification here is the
 server-rendered HTML in both locales. A `hex-outside-tokens` lint was asked
 for and has not been written.
+
+**D2b — `/solutions/partners`.** The segment with the most different logic:
+the reader is not the end customer, they are an intermediary serving *our*
+customer, and their first question is "if I introduce you to my client, do you
+take them from me". The page is built to answer that.
+
+- **تعهّدنا لشركائنا** — three promises, partners only. This is the section
+  the page exists for; nothing else on the site answers that question.
+- **نماذج التعاون** — events, exhibitions, referral.
+- Process steps are now **per segment**. A government body is buying a
+  procedure it can check; a partner has bought before and is racing a tender
+  deadline, so theirs starts at "send the brief" and ends at "delivered where
+  you need it, packaged to suit how you appear".
+- Six partner FAQs replacing the three copied ones — direct contact,
+  white-label, speed of an indicative price, bringing their client to the
+  showroom, concurrent events, and the referral model. **The referral answer
+  carries no figure**: a percentage on a public page is a price list (§2.2).
+
+Guarded by `SegmentPagesAreDistinctTest` (6): no segment repeats its hero line
+in the body, the process steps differ between segments, each segment owns a
+section the others do not, and the partner page quotes no rate.
+
+Note on that last test: reducing a page to "what a visitor reads" needs the
+Inertia `data-page` attribute, `<script>` bodies AND `<style>` bodies stripped
+before the tags. Stripping tags alone leaves what is *between* them, and the
+map embed's URL-encoded `%3A` reads as a percentage.
