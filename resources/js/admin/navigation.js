@@ -64,7 +64,7 @@ export const NAV_GROUPS = [
         key: 'clients',
         label: 'admin.nav_clients',
         items: [
-            { icon: 'crm', label: 'admin.crm_link', href: '/admin/integrations/crm', can: 'settings.manage', soon: true },
+            { icon: 'crm', label: 'admin.crm_link', href: '/admin/integrations/crm', can: 'settings.manage' },
             { icon: 'bell', label: 'admin.notifications', href: '/admin/integrations/notifications', can: 'settings.manage', soon: true },
             { icon: 'fields', label: 'admin.lead_fields', href: '/admin/lead-fields', can: 'settings.manage' },
             { icon: 'message', label: 'admin.confirmations', href: '/admin/integrations/confirmations', can: 'settings.manage', soon: true },

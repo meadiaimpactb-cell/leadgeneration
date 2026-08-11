@@ -1,5 +1,5 @@
-import { computed, mergeProps, unref, useSSRContext, ref, withCtx, createVNode, toDisplayString, openBlock, createBlock, createCommentVNode, Fragment, renderList, useId, createTextVNode, withModifiers, withDirectives, vModelCheckbox, reactive, watch, resolveDynamicComponent, renderSlot, nextTick, onMounted, onBeforeUnmount, onUnmounted, vShow, createSlots, createSSRApp, h } from "vue";
-import { ssrRenderAttrs, ssrRenderAttr, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderSlot, ssrRenderStyle, ssrIncludeBooleanAttr, ssrLooseContain, ssrRenderVNode, ssrLooseEqual, ssrRenderDynamicModel } from "vue/server-renderer";
+import { computed, mergeProps, unref, useSSRContext, ref, withCtx, createVNode, toDisplayString, openBlock, createBlock, createCommentVNode, Fragment, renderList, useId, createTextVNode, withModifiers, withDirectives, vModelRadio, vShow, vModelCheckbox, reactive, watch, resolveDynamicComponent, renderSlot, nextTick, onMounted, onBeforeUnmount, onUnmounted, createSlots, createSSRApp, h } from "vue";
+import { ssrRenderAttrs, ssrRenderAttr, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderSlot, ssrRenderStyle, ssrIncludeBooleanAttr, ssrLooseEqual, ssrLooseContain, ssrRenderVNode, ssrRenderDynamicModel } from "vue/server-renderer";
 import { usePage, router, Head, Link, useForm, createInertiaApp } from "@inertiajs/vue3";
 import { renderToString } from "@vue/server-renderer";
 import createServer from "@inertiajs/vue3/server";
@@ -30,7 +30,7 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const _sfc_main$1c = {
+const _sfc_main$1d = {
   __name: "Logo",
   __ssrInlineRender: true,
   props: {
@@ -80,14 +80,14 @@ const _sfc_main$1c = {
     };
   }
 };
-const _sfc_setup$1c = _sfc_main$1c.setup;
-_sfc_main$1c.setup = (props, ctx) => {
+const _sfc_setup$1d = _sfc_main$1d.setup;
+_sfc_main$1d.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Logo.vue");
-  return _sfc_setup$1c ? _sfc_setup$1c(props, ctx) : void 0;
+  return _sfc_setup$1d ? _sfc_setup$1d(props, ctx) : void 0;
 };
-const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1c, [["__scopeId", "data-v-ef29b1f9"]]);
-const _sfc_main$1b = {
+const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1d, [["__scopeId", "data-v-ef29b1f9"]]);
+const _sfc_main$1c = {
   __name: "NavIcon",
   __ssrInlineRender: true,
   props: {
@@ -167,13 +167,13 @@ const _sfc_main$1b = {
     };
   }
 };
-const _sfc_setup$1b = _sfc_main$1b.setup;
-_sfc_main$1b.setup = (props, ctx) => {
+const _sfc_setup$1c = _sfc_main$1c.setup;
+_sfc_main$1c.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/NavIcon.vue");
-  return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
+  return _sfc_setup$1c ? _sfc_setup$1c(props, ctx) : void 0;
 };
-const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-64039991"]]);
+const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1c, [["__scopeId", "data-v-64039991"]]);
 const NAV_GROUPS = [
   {
     key: "overview",
@@ -222,7 +222,7 @@ const NAV_GROUPS = [
     key: "clients",
     label: "admin.nav_clients",
     items: [
-      { icon: "crm", label: "admin.crm_link", href: "/admin/integrations/crm", can: "settings.manage", soon: true },
+      { icon: "crm", label: "admin.crm_link", href: "/admin/integrations/crm", can: "settings.manage" },
       { icon: "bell", label: "admin.notifications", href: "/admin/integrations/notifications", can: "settings.manage", soon: true },
       { icon: "fields", label: "admin.lead_fields", href: "/admin/lead-fields", can: "settings.manage" },
       { icon: "message", label: "admin.confirmations", href: "/admin/integrations/confirmations", can: "settings.manage", soon: true },
@@ -265,7 +265,7 @@ const NAV_GROUPS = [
   }
 ];
 NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href));
-const _sfc_main$1a = {
+const _sfc_main$1b = {
   __name: "AdminLayout",
   __ssrInlineRender: true,
   props: {
@@ -405,13 +405,13 @@ const _sfc_main$1a = {
     };
   }
 };
-const _sfc_setup$1a = _sfc_main$1a.setup;
-_sfc_main$1a.setup = (props, ctx) => {
+const _sfc_setup$1b = _sfc_main$1b.setup;
+_sfc_main$1b.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AdminLayout.vue");
-  return _sfc_setup$1a ? _sfc_setup$1a(props, ctx) : void 0;
+  return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
 };
-const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$1a, [["__scopeId", "data-v-b13ef224"]]);
+const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-b13ef224"]]);
 const AR = "ar-SA-u-ca-gregory-nu-latn";
 const EN = "en-GB";
 function useFormat() {
@@ -447,7 +447,7 @@ function useFormat() {
   }
   return { number, date, dateTime, dayMonth };
 }
-const _sfc_main$19 = {
+const _sfc_main$1a = {
   __name: "Workspace",
   __ssrInlineRender: true,
   props: {
@@ -579,14 +579,14 @@ const _sfc_main$19 = {
     };
   }
 };
-const _sfc_setup$19 = _sfc_main$19.setup;
-_sfc_main$19.setup = (props, ctx) => {
+const _sfc_setup$1a = _sfc_main$1a.setup;
+_sfc_main$1a.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Workspace.vue");
-  return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
+  return _sfc_setup$1a ? _sfc_setup$1a(props, ctx) : void 0;
 };
-const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-dec49d27"]]);
-const _sfc_main$18 = {
+const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$1a, [["__scopeId", "data-v-dec49d27"]]);
+const _sfc_main$19 = {
   __name: "Panel",
   __ssrInlineRender: true,
   props: {
@@ -626,14 +626,14 @@ const _sfc_main$18 = {
     };
   }
 };
-const _sfc_setup$18 = _sfc_main$18.setup;
-_sfc_main$18.setup = (props, ctx) => {
+const _sfc_setup$19 = _sfc_main$19.setup;
+_sfc_main$19.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Panel.vue");
-  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
+  return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
 };
-const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-5a439de4"]]);
-const _sfc_main$17 = {
+const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-5a439de4"]]);
+const _sfc_main$18 = {
   __name: "Brand",
   __ssrInlineRender: true,
   props: {
@@ -943,18 +943,18 @@ const _sfc_main$17 = {
     };
   }
 };
-const _sfc_setup$17 = _sfc_main$17.setup;
-_sfc_main$17.setup = (props, ctx) => {
+const _sfc_setup$18 = _sfc_main$18.setup;
+_sfc_main$18.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Brand.vue");
-  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
+  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
 };
-const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-d1bab7a5"]]);
+const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-d1bab7a5"]]);
 const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Brand
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$16 = {
+const _sfc_main$17 = {
   __name: "Field",
   __ssrInlineRender: true,
   props: {
@@ -1014,14 +1014,14 @@ const _sfc_main$16 = {
     };
   }
 };
-const _sfc_setup$16 = _sfc_main$16.setup;
-_sfc_main$16.setup = (props, ctx) => {
+const _sfc_setup$17 = _sfc_main$17.setup;
+_sfc_main$17.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Field.vue");
-  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
+  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
 };
-const Field = /* @__PURE__ */ _export_sfc(_sfc_main$16, [["__scopeId", "data-v-4723bd15"]]);
-const _sfc_main$15 = {
+const Field = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-4723bd15"]]);
+const _sfc_main$16 = {
   __name: "BilingualFields",
   __ssrInlineRender: true,
   props: {
@@ -1080,14 +1080,14 @@ const _sfc_main$15 = {
     };
   }
 };
-const _sfc_setup$15 = _sfc_main$15.setup;
-_sfc_main$15.setup = (props, ctx) => {
+const _sfc_setup$16 = _sfc_main$16.setup;
+_sfc_main$16.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/BilingualFields.vue");
-  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
+  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
 };
-const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-8f821154"]]);
-const _sfc_main$14 = {
+const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$16, [["__scopeId", "data-v-8f821154"]]);
+const _sfc_main$15 = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -1456,18 +1456,18 @@ const _sfc_main$14 = {
     };
   }
 };
-const _sfc_setup$14 = _sfc_main$14.setup;
-_sfc_main$14.setup = (props, ctx) => {
+const _sfc_setup$15 = _sfc_main$15.setup;
+_sfc_main$15.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Edit.vue");
-  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
+  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
 };
-const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-81e9c2fe"]]);
+const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-81e9c2fe"]]);
 const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$3
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$13 = {
+const _sfc_main$14 = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -1731,18 +1731,18 @@ const _sfc_main$13 = {
     };
   }
 };
-const _sfc_setup$13 = _sfc_main$13.setup;
-_sfc_main$13.setup = (props, ctx) => {
+const _sfc_setup$14 = _sfc_main$14.setup;
+_sfc_main$14.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Index.vue");
-  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
+  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
 };
-const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-66c2bead"]]);
+const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-66c2bead"]]);
 const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$4
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$12 = {
+const _sfc_main$13 = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -2200,18 +2200,18 @@ const _sfc_main$12 = {
     };
   }
 };
-const _sfc_setup$12 = _sfc_main$12.setup;
-_sfc_main$12.setup = (props, ctx) => {
+const _sfc_setup$13 = _sfc_main$13.setup;
+_sfc_main$13.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Edit.vue");
-  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
+  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
 };
-const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-ed0bd693"]]);
+const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-ed0bd693"]]);
 const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$2
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$11 = {
+const _sfc_main$12 = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -2553,16 +2553,380 @@ const _sfc_main$11 = {
     };
   }
 };
-const _sfc_setup$11 = _sfc_main$11.setup;
-_sfc_main$11.setup = (props, ctx) => {
+const _sfc_setup$12 = _sfc_main$12.setup;
+_sfc_main$12.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Index.vue");
-  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
+  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
 };
-const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-83be9b57"]]);
+const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-83be9b57"]]);
 const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$3
+}, Symbol.toStringTag, { value: "Module" }));
+const _sfc_main$11 = {
+  __name: "Crm",
+  __ssrInlineRender: true,
+  props: {
+    driver: { type: String, required: true },
+    providers: { type: Array, default: () => [] },
+    fields: { type: Object, default: () => ({}) },
+    credentials: { type: Object, default: () => ({}) },
+    sources: { type: Object, default: () => ({}) },
+    status: { type: Object, required: true },
+    log: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t } = useTranslation();
+    const { number, dateTime } = useFormat();
+    const form = useForm({
+      driver: props.driver,
+      credentials: JSON.parse(JSON.stringify(props.credentials))
+    });
+    const stuck = computed(() => (props.status.pending ?? 0) + (props.status.failed ?? 0));
+    function save() {
+      form.put("/admin/integrations/crm", { preserveScroll: true });
+    }
+    function test() {
+      router.post("/admin/integrations/crm/test", {}, { preserveScroll: true });
+    }
+    function resyncAll() {
+      if (!confirm(t("admin.crm_resync_confirm"))) return;
+      router.post("/admin/integrations/crm/resync-all", {}, { preserveScroll: true });
+    }
+    const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[provider]?.[field] ?? "unset"}`);
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(ssrRenderComponent(AdminLayout, mergeProps({
+        title: unref(t)("admin.crm_link")
+      }, _attrs), {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.crm_provider"),
+              hint: unref(t)("admin.crm_provider_hint")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<ul class="providers" data-v-8e6716e7${_scopeId2}><!--[-->`);
+                  ssrRenderList(__props.providers, (provider) => {
+                    _push3(`<li data-v-8e6716e7${_scopeId2}><label class="providers__row" data-v-8e6716e7${_scopeId2}><input${ssrIncludeBooleanAttr(ssrLooseEqual(unref(form).driver, provider)) ? " checked" : ""} type="radio"${ssrRenderAttr("value", provider)} data-v-8e6716e7${_scopeId2}><span class="providers__name latin" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(provider)}</span></label></li>`);
+                  });
+                  _push3(`<!--]--></ul><!--[-->`);
+                  ssrRenderList(__props.providers, (provider) => {
+                    _push3(`<div class="creds" style="${ssrRenderStyle(unref(form).driver === provider ? null : { display: "none" })}" data-v-8e6716e7${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.fields[provider], (isSecret, field) => {
+                      _push3(ssrRenderComponent(Field, {
+                        key: field,
+                        modelValue: unref(form).credentials[provider][field],
+                        "onUpdate:modelValue": ($event) => unref(form).credentials[provider][field] = $event,
+                        label: field.replace(/_/g, " "),
+                        type: isSecret ? "password" : "text",
+                        dir: "ltr",
+                        hint: sourceLabel(provider, field),
+                        error: unref(form).errors[`credentials.${provider}.${field}`]
+                      }, null, _parent3, _scopeId2));
+                    });
+                    _push3(`<!--]--></div>`);
+                  });
+                  _push3(`<!--]--><div class="bar" data-v-8e6716e7${_scopeId2}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</button><button class="btn btn--secondary" type="button" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_test"))}</button></div>`);
+                } else {
+                  return [
+                    createVNode("ul", { class: "providers" }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.providers, (provider) => {
+                        return openBlock(), createBlock("li", { key: provider }, [
+                          createVNode("label", { class: "providers__row" }, [
+                            withDirectives(createVNode("input", {
+                              "onUpdate:modelValue": ($event) => unref(form).driver = $event,
+                              type: "radio",
+                              value: provider
+                            }, null, 8, ["onUpdate:modelValue", "value"]), [
+                              [vModelRadio, unref(form).driver]
+                            ]),
+                            createVNode("span", { class: "providers__name latin" }, toDisplayString(provider), 1)
+                          ])
+                        ]);
+                      }), 128))
+                    ]),
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.providers, (provider) => {
+                      return withDirectives((openBlock(), createBlock("div", {
+                        key: `f-${provider}`,
+                        class: "creds"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.fields[provider], (isSecret, field) => {
+                          return openBlock(), createBlock(Field, {
+                            key: field,
+                            modelValue: unref(form).credentials[provider][field],
+                            "onUpdate:modelValue": ($event) => unref(form).credentials[provider][field] = $event,
+                            label: field.replace(/_/g, " "),
+                            type: isSecret ? "password" : "text",
+                            dir: "ltr",
+                            hint: sourceLabel(provider, field),
+                            error: unref(form).errors[`credentials.${provider}.${field}`]
+                          }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type", "hint", "error"]);
+                        }), 128))
+                      ])), [
+                        [vShow, unref(form).driver === provider]
+                      ]);
+                    }), 128)),
+                    createVNode("div", { class: "bar" }, [
+                      createVNode("button", {
+                        class: "btn btn--cta",
+                        type: "button",
+                        disabled: unref(form).processing,
+                        onClick: save
+                      }, toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"]),
+                      createVNode("button", {
+                        class: "btn btn--secondary",
+                        type: "button",
+                        onClick: test
+                      }, toDisplayString(unref(t)("admin.crm_test")), 1)
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.crm_status")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<ul class="tiles" data-v-8e6716e7${_scopeId2}><li class="tile" data-v-8e6716e7${_scopeId2}><p class="tile__label" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_synced"))}</p><p class="tile__value tabular" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(number)(__props.status.synced))}</p></li><li class="tile" data-v-8e6716e7${_scopeId2}><p class="tile__label" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_pending"))}</p><p class="tile__value tabular" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(number)(__props.status.pending))}</p></li><li class="tile tile--accent" data-v-8e6716e7${_scopeId2}><p class="tile__label" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_failed"))}</p><p class="tile__value tabular" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(number)(__props.status.failed))}</p></li><li class="tile" data-v-8e6716e7${_scopeId2}><p class="tile__label" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_last_success"))}</p><p class="tile__value tile__value--small" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(__props.status.lastSuccessAt ? unref(dateTime)(__props.status.lastSuccessAt) : "—")}</p></li></ul><div class="bar" data-v-8e6716e7${_scopeId2}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(!stuck.value) ? " disabled" : ""} data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_resync_all", { count: unref(number)(stuck.value) }))}</button>`);
+                  if (!stuck.value) {
+                    _push3(`<span class="ok" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_nothing_stuck"))}</span>`);
+                  } else {
+                    _push3(`<!---->`);
+                  }
+                  _push3(`</div>`);
+                } else {
+                  return [
+                    createVNode("ul", { class: "tiles" }, [
+                      createVNode("li", { class: "tile" }, [
+                        createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_synced")), 1),
+                        createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(__props.status.synced)), 1)
+                      ]),
+                      createVNode("li", { class: "tile" }, [
+                        createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_pending")), 1),
+                        createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(__props.status.pending)), 1)
+                      ]),
+                      createVNode("li", { class: "tile tile--accent" }, [
+                        createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_failed")), 1),
+                        createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(__props.status.failed)), 1)
+                      ]),
+                      createVNode("li", { class: "tile" }, [
+                        createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_last_success")), 1),
+                        createVNode("p", { class: "tile__value tile__value--small" }, toDisplayString(__props.status.lastSuccessAt ? unref(dateTime)(__props.status.lastSuccessAt) : "—"), 1)
+                      ])
+                    ]),
+                    createVNode("div", { class: "bar" }, [
+                      createVNode("button", {
+                        class: "btn btn--cta",
+                        type: "button",
+                        disabled: !stuck.value,
+                        onClick: resyncAll
+                      }, toDisplayString(unref(t)("admin.crm_resync_all", { count: unref(number)(stuck.value) })), 9, ["disabled"]),
+                      !stuck.value ? (openBlock(), createBlock("span", {
+                        key: 0,
+                        class: "ok"
+                      }, toDisplayString(unref(t)("admin.crm_nothing_stuck")), 1)) : createCommentVNode("", true)
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(Panel, {
+              title: unref(t)("admin.crm_log"),
+              hint: unref(t)("admin.crm_log_hint")
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  if (!__props.log.length) {
+                    _push3(`<p class="empty" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                  } else {
+                    _push3(`<ul class="log" data-v-8e6716e7${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.log, (row) => {
+                      _push3(`<li class="log__row" data-v-8e6716e7${_scopeId2}><span class="${ssrRenderClass([row.successful ? "is-ok" : "is-bad", "log__state"])}" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(row.successful ? unref(t)("admin.crm_ok") : unref(t)("admin.crm_error"))}</span><span class="log__lead tabular" data-v-8e6716e7${_scopeId2}>#${ssrInterpolate(unref(number)(row.leadId))}</span><span class="log__provider latin" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(row.provider)}</span><span class="log__attempt tabular" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(number)(row.attempt))}</span><span class="log__at" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(unref(dateTime)(row.at))}</span><span class="log__error" data-v-8e6716e7${_scopeId2}>${ssrInterpolate(row.error ?? "—")}</span></li>`);
+                    });
+                    _push3(`<!--]--></ul>`);
+                  }
+                } else {
+                  return [
+                    !__props.log.length ? (openBlock(), createBlock("p", {
+                      key: 0,
+                      class: "empty"
+                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                      key: 1,
+                      class: "log"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.log, (row) => {
+                        return openBlock(), createBlock("li", {
+                          key: row.id,
+                          class: "log__row"
+                        }, [
+                          createVNode("span", {
+                            class: ["log__state", row.successful ? "is-ok" : "is-bad"]
+                          }, toDisplayString(row.successful ? unref(t)("admin.crm_ok") : unref(t)("admin.crm_error")), 3),
+                          createVNode("span", { class: "log__lead tabular" }, "#" + toDisplayString(unref(number)(row.leadId)), 1),
+                          createVNode("span", { class: "log__provider latin" }, toDisplayString(row.provider), 1),
+                          createVNode("span", { class: "log__attempt tabular" }, toDisplayString(unref(number)(row.attempt)), 1),
+                          createVNode("span", { class: "log__at" }, toDisplayString(unref(dateTime)(row.at)), 1),
+                          createVNode("span", { class: "log__error" }, toDisplayString(row.error ?? "—"), 1)
+                        ]);
+                      }), 128))
+                    ]))
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(Panel, {
+                title: unref(t)("admin.crm_provider"),
+                hint: unref(t)("admin.crm_provider_hint")
+              }, {
+                default: withCtx(() => [
+                  createVNode("ul", { class: "providers" }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.providers, (provider) => {
+                      return openBlock(), createBlock("li", { key: provider }, [
+                        createVNode("label", { class: "providers__row" }, [
+                          withDirectives(createVNode("input", {
+                            "onUpdate:modelValue": ($event) => unref(form).driver = $event,
+                            type: "radio",
+                            value: provider
+                          }, null, 8, ["onUpdate:modelValue", "value"]), [
+                            [vModelRadio, unref(form).driver]
+                          ]),
+                          createVNode("span", { class: "providers__name latin" }, toDisplayString(provider), 1)
+                        ])
+                      ]);
+                    }), 128))
+                  ]),
+                  (openBlock(true), createBlock(Fragment, null, renderList(__props.providers, (provider) => {
+                    return withDirectives((openBlock(), createBlock("div", {
+                      key: `f-${provider}`,
+                      class: "creds"
+                    }, [
+                      (openBlock(true), createBlock(Fragment, null, renderList(__props.fields[provider], (isSecret, field) => {
+                        return openBlock(), createBlock(Field, {
+                          key: field,
+                          modelValue: unref(form).credentials[provider][field],
+                          "onUpdate:modelValue": ($event) => unref(form).credentials[provider][field] = $event,
+                          label: field.replace(/_/g, " "),
+                          type: isSecret ? "password" : "text",
+                          dir: "ltr",
+                          hint: sourceLabel(provider, field),
+                          error: unref(form).errors[`credentials.${provider}.${field}`]
+                        }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type", "hint", "error"]);
+                      }), 128))
+                    ])), [
+                      [vShow, unref(form).driver === provider]
+                    ]);
+                  }), 128)),
+                  createVNode("div", { class: "bar" }, [
+                    createVNode("button", {
+                      class: "btn btn--cta",
+                      type: "button",
+                      disabled: unref(form).processing,
+                      onClick: save
+                    }, toDisplayString(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save")), 9, ["disabled"]),
+                    createVNode("button", {
+                      class: "btn btn--secondary",
+                      type: "button",
+                      onClick: test
+                    }, toDisplayString(unref(t)("admin.crm_test")), 1)
+                  ])
+                ]),
+                _: 1
+              }, 8, ["title", "hint"]),
+              createVNode(Panel, {
+                title: unref(t)("admin.crm_status")
+              }, {
+                default: withCtx(() => [
+                  createVNode("ul", { class: "tiles" }, [
+                    createVNode("li", { class: "tile" }, [
+                      createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_synced")), 1),
+                      createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(__props.status.synced)), 1)
+                    ]),
+                    createVNode("li", { class: "tile" }, [
+                      createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_pending")), 1),
+                      createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(__props.status.pending)), 1)
+                    ]),
+                    createVNode("li", { class: "tile tile--accent" }, [
+                      createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_failed")), 1),
+                      createVNode("p", { class: "tile__value tabular" }, toDisplayString(unref(number)(__props.status.failed)), 1)
+                    ]),
+                    createVNode("li", { class: "tile" }, [
+                      createVNode("p", { class: "tile__label" }, toDisplayString(unref(t)("admin.crm_last_success")), 1),
+                      createVNode("p", { class: "tile__value tile__value--small" }, toDisplayString(__props.status.lastSuccessAt ? unref(dateTime)(__props.status.lastSuccessAt) : "—"), 1)
+                    ])
+                  ]),
+                  createVNode("div", { class: "bar" }, [
+                    createVNode("button", {
+                      class: "btn btn--cta",
+                      type: "button",
+                      disabled: !stuck.value,
+                      onClick: resyncAll
+                    }, toDisplayString(unref(t)("admin.crm_resync_all", { count: unref(number)(stuck.value) })), 9, ["disabled"]),
+                    !stuck.value ? (openBlock(), createBlock("span", {
+                      key: 0,
+                      class: "ok"
+                    }, toDisplayString(unref(t)("admin.crm_nothing_stuck")), 1)) : createCommentVNode("", true)
+                  ])
+                ]),
+                _: 1
+              }, 8, ["title"]),
+              createVNode(Panel, {
+                title: unref(t)("admin.crm_log"),
+                hint: unref(t)("admin.crm_log_hint")
+              }, {
+                default: withCtx(() => [
+                  !__props.log.length ? (openBlock(), createBlock("p", {
+                    key: 0,
+                    class: "empty"
+                  }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                    key: 1,
+                    class: "log"
+                  }, [
+                    (openBlock(true), createBlock(Fragment, null, renderList(__props.log, (row) => {
+                      return openBlock(), createBlock("li", {
+                        key: row.id,
+                        class: "log__row"
+                      }, [
+                        createVNode("span", {
+                          class: ["log__state", row.successful ? "is-ok" : "is-bad"]
+                        }, toDisplayString(row.successful ? unref(t)("admin.crm_ok") : unref(t)("admin.crm_error")), 3),
+                        createVNode("span", { class: "log__lead tabular" }, "#" + toDisplayString(unref(number)(row.leadId)), 1),
+                        createVNode("span", { class: "log__provider latin" }, toDisplayString(row.provider), 1),
+                        createVNode("span", { class: "log__attempt tabular" }, toDisplayString(unref(number)(row.attempt)), 1),
+                        createVNode("span", { class: "log__at" }, toDisplayString(unref(dateTime)(row.at)), 1),
+                        createVNode("span", { class: "log__error" }, toDisplayString(row.error ?? "—"), 1)
+                      ]);
+                    }), 128))
+                  ]))
+                ]),
+                _: 1
+              }, 8, ["title", "hint"])
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+    };
+  }
+};
+const _sfc_setup$11 = _sfc_main$11.setup;
+_sfc_main$11.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Crm.vue");
+  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
+};
+const Crm = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-8e6716e7"]]);
+const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Crm
 }, Symbol.toStringTag, { value: "Module" }));
 const _sfc_main$10 = {
   __name: "Dashboard",
@@ -3011,7 +3375,7 @@ _sfc_main$10.setup = (props, ctx) => {
   return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
 };
 const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-711b8eb4"]]);
-const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Dashboard
 }, Symbol.toStringTag, { value: "Module" }));
@@ -3209,7 +3573,7 @@ _sfc_main$$.setup = (props, ctx) => {
   return _sfc_setup$$ ? _sfc_setup$$(props, ctx) : void 0;
 };
 const Languages = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-6adf93fd"]]);
-const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Languages
 }, Symbol.toStringTag, { value: "Module" }));
@@ -3540,7 +3904,7 @@ _sfc_main$_.setup = (props, ctx) => {
   return _sfc_setup$_ ? _sfc_setup$_(props, ctx) : void 0;
 };
 const LeadFields = /* @__PURE__ */ _export_sfc(_sfc_main$_, [["__scopeId", "data-v-4196502c"]]);
-const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: LeadFields
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4152,7 +4516,7 @@ _sfc_main$Z.setup = (props, ctx) => {
   return _sfc_setup$Z ? _sfc_setup$Z(props, ctx) : void 0;
 };
 const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$Z, [["__scopeId", "data-v-9c30a146"]]);
-const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4288,7 +4652,7 @@ _sfc_main$X.setup = (props, ctx) => {
   return _sfc_setup$X ? _sfc_setup$X(props, ctx) : void 0;
 };
 const Login = /* @__PURE__ */ _export_sfc(_sfc_main$X, [["__scopeId", "data-v-b2b9b1a9"]]);
-const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4569,7 +4933,7 @@ _sfc_main$W.setup = (props, ctx) => {
   return _sfc_setup$W ? _sfc_setup$W(props, ctx) : void 0;
 };
 const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$W, [["__scopeId", "data-v-7004d226"]]);
-const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Navigation
 }, Symbol.toStringTag, { value: "Module" }));
@@ -4868,7 +5232,7 @@ _sfc_main$V.setup = (props, ctx) => {
   return _sfc_setup$V ? _sfc_setup$V(props, ctx) : void 0;
 };
 const Edit$1 = /* @__PURE__ */ _export_sfc(_sfc_main$V, [["__scopeId", "data-v-17c730d0"]]);
-const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$1
 }, Symbol.toStringTag, { value: "Module" }));
@@ -5179,7 +5543,7 @@ _sfc_main$U.setup = (props, ctx) => {
   return _sfc_setup$U ? _sfc_setup$U(props, ctx) : void 0;
 };
 const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$U, [["__scopeId", "data-v-931dad69"]]);
-const __vite_glob_0_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$1
 }, Symbol.toStringTag, { value: "Module" }));
@@ -5854,7 +6218,7 @@ _sfc_main$T.setup = (props, ctx) => {
   return _sfc_setup$T ? _sfc_setup$T(props, ctx) : void 0;
 };
 const Profile = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["__scopeId", "data-v-c5983eaf"]]);
-const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Profile
 }, Symbol.toStringTag, { value: "Module" }));
@@ -6095,7 +6459,7 @@ _sfc_main$S.setup = (props, ctx) => {
   return _sfc_setup$S ? _sfc_setup$S(props, ctx) : void 0;
 };
 const Redirects = /* @__PURE__ */ _export_sfc(_sfc_main$S, [["__scopeId", "data-v-1f23add1"]]);
-const __vite_glob_0_14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Redirects
 }, Symbol.toStringTag, { value: "Module" }));
@@ -6628,7 +6992,7 @@ _sfc_main$R.setup = (props, ctx) => {
   return _sfc_setup$R ? _sfc_setup$R(props, ctx) : void 0;
 };
 const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["__scopeId", "data-v-e079d442"]]);
-const __vite_glob_0_15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Builder
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7191,7 +7555,7 @@ _sfc_main$Q.setup = (props, ctx) => {
   return _sfc_setup$Q ? _sfc_setup$Q(props, ctx) : void 0;
 };
 const Keywords = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-6f7b571d"]]);
-const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Keywords
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7554,7 +7918,7 @@ _sfc_main$P.setup = (props, ctx) => {
   return _sfc_setup$P ? _sfc_setup$P(props, ctx) : void 0;
 };
 const Screen = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["__scopeId", "data-v-bce278b6"]]);
-const __vite_glob_0_17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Screen
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7624,7 +7988,7 @@ _sfc_main$O.setup = (props, ctx) => {
   return _sfc_setup$O ? _sfc_setup$O(props, ctx) : void 0;
 };
 const Upcoming = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["__scopeId", "data-v-a1fbe472"]]);
-const __vite_glob_0_18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Upcoming
 }, Symbol.toStringTag, { value: "Module" }));
@@ -7899,7 +8263,7 @@ _sfc_main$N.setup = (props, ctx) => {
   return _sfc_setup$N ? _sfc_setup$N(props, ctx) : void 0;
 };
 const Edit = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["__scopeId", "data-v-63ed2dcc"]]);
-const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit
 }, Symbol.toStringTag, { value: "Module" }));
@@ -8142,7 +8506,7 @@ _sfc_main$M.setup = (props, ctx) => {
   return _sfc_setup$M ? _sfc_setup$M(props, ctx) : void 0;
 };
 const Index = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-d6860b89"]]);
-const __vite_glob_0_20 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index
 }, Symbol.toStringTag, { value: "Module" }));
@@ -9140,7 +9504,7 @@ _sfc_main$D.setup = (props, ctx) => {
   return _sfc_setup$D ? _sfc_setup$D(props, ctx) : void 0;
 };
 const Campaign = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-366d3954"]]);
-const __vite_glob_0_21 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Campaign
 }, Symbol.toStringTag, { value: "Module" }));
@@ -11788,7 +12152,7 @@ _sfc_main$l.setup = (props, ctx) => {
   return _sfc_setup$l ? _sfc_setup$l(props, ctx) : void 0;
 };
 const Contact = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["__scopeId", "data-v-ad849110"]]);
-const __vite_glob_0_22 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Contact
 }, Symbol.toStringTag, { value: "Module" }));
@@ -12991,7 +13355,7 @@ _sfc_main$d.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Home.vue");
   return _sfc_setup$d ? _sfc_setup$d(props, ctx) : void 0;
 };
-const __vite_glob_0_23 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$d
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13361,7 +13725,7 @@ _sfc_main$9.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Impact.vue");
   return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-const __vite_glob_0_24 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$9
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13464,7 +13828,7 @@ _sfc_main$8.setup = (props, ctx) => {
   return _sfc_setup$8 ? _sfc_setup$8(props, ctx) : void 0;
 };
 const Page = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-d363a75a"]]);
-const __vite_glob_0_25 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Page
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13564,7 +13928,7 @@ _sfc_main$7.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Partners.vue");
   return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
-const __vite_glob_0_26 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$7
 }, Symbol.toStringTag, { value: "Module" }));
@@ -13993,7 +14357,7 @@ _sfc_main$5.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Products.vue");
   return _sfc_setup$5 ? _sfc_setup$5(props, ctx) : void 0;
 };
-const __vite_glob_0_27 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$5
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14096,7 +14460,7 @@ _sfc_main$4.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Sector.vue");
   return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
 };
-const __vite_glob_0_28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$4
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14177,7 +14541,7 @@ _sfc_main$3.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Solution.vue");
   return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
 };
-const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$3
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14260,7 +14624,7 @@ _sfc_main$2.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Solutions.vue");
   return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-const __vite_glob_0_30 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main$2
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14468,7 +14832,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Training.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const __vite_glob_0_31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const __vite_glob_0_32 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: _sfc_main
 }, Symbol.toStringTag, { value: "Module" }));
@@ -14478,7 +14842,7 @@ createServer(
     render: renderToString,
     title: (title) => title,
     resolve: (name) => {
-      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Admin/Brand.vue": __vite_glob_0_0, "./Pages/Admin/Campaigns/Edit.vue": __vite_glob_0_1, "./Pages/Admin/Campaigns/Index.vue": __vite_glob_0_2, "./Pages/Admin/Content/Edit.vue": __vite_glob_0_3, "./Pages/Admin/Content/Index.vue": __vite_glob_0_4, "./Pages/Admin/Dashboard.vue": __vite_glob_0_5, "./Pages/Admin/Languages.vue": __vite_glob_0_6, "./Pages/Admin/LeadFields.vue": __vite_glob_0_7, "./Pages/Admin/Leads/Index.vue": __vite_glob_0_8, "./Pages/Admin/Login.vue": __vite_glob_0_9, "./Pages/Admin/Navigation.vue": __vite_glob_0_10, "./Pages/Admin/Pages/Edit.vue": __vite_glob_0_11, "./Pages/Admin/Pages/Index.vue": __vite_glob_0_12, "./Pages/Admin/Profile.vue": __vite_glob_0_13, "./Pages/Admin/Redirects.vue": __vite_glob_0_14, "./Pages/Admin/Sections/Builder.vue": __vite_glob_0_15, "./Pages/Admin/Seo/Keywords.vue": __vite_glob_0_16, "./Pages/Admin/Settings/Screen.vue": __vite_glob_0_17, "./Pages/Admin/Upcoming.vue": __vite_glob_0_18, "./Pages/Admin/Users/Edit.vue": __vite_glob_0_19, "./Pages/Admin/Users/Index.vue": __vite_glob_0_20, "./Pages/Public/Campaign.vue": __vite_glob_0_21, "./Pages/Public/Contact.vue": __vite_glob_0_22, "./Pages/Public/Home.vue": __vite_glob_0_23, "./Pages/Public/Impact.vue": __vite_glob_0_24, "./Pages/Public/Page.vue": __vite_glob_0_25, "./Pages/Public/Partners.vue": __vite_glob_0_26, "./Pages/Public/Products.vue": __vite_glob_0_27, "./Pages/Public/Sector.vue": __vite_glob_0_28, "./Pages/Public/Solution.vue": __vite_glob_0_29, "./Pages/Public/Solutions.vue": __vite_glob_0_30, "./Pages/Public/Training.vue": __vite_glob_0_31 });
+      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Admin/Brand.vue": __vite_glob_0_0, "./Pages/Admin/Campaigns/Edit.vue": __vite_glob_0_1, "./Pages/Admin/Campaigns/Index.vue": __vite_glob_0_2, "./Pages/Admin/Content/Edit.vue": __vite_glob_0_3, "./Pages/Admin/Content/Index.vue": __vite_glob_0_4, "./Pages/Admin/Crm.vue": __vite_glob_0_5, "./Pages/Admin/Dashboard.vue": __vite_glob_0_6, "./Pages/Admin/Languages.vue": __vite_glob_0_7, "./Pages/Admin/LeadFields.vue": __vite_glob_0_8, "./Pages/Admin/Leads/Index.vue": __vite_glob_0_9, "./Pages/Admin/Login.vue": __vite_glob_0_10, "./Pages/Admin/Navigation.vue": __vite_glob_0_11, "./Pages/Admin/Pages/Edit.vue": __vite_glob_0_12, "./Pages/Admin/Pages/Index.vue": __vite_glob_0_13, "./Pages/Admin/Profile.vue": __vite_glob_0_14, "./Pages/Admin/Redirects.vue": __vite_glob_0_15, "./Pages/Admin/Sections/Builder.vue": __vite_glob_0_16, "./Pages/Admin/Seo/Keywords.vue": __vite_glob_0_17, "./Pages/Admin/Settings/Screen.vue": __vite_glob_0_18, "./Pages/Admin/Upcoming.vue": __vite_glob_0_19, "./Pages/Admin/Users/Edit.vue": __vite_glob_0_20, "./Pages/Admin/Users/Index.vue": __vite_glob_0_21, "./Pages/Public/Campaign.vue": __vite_glob_0_22, "./Pages/Public/Contact.vue": __vite_glob_0_23, "./Pages/Public/Home.vue": __vite_glob_0_24, "./Pages/Public/Impact.vue": __vite_glob_0_25, "./Pages/Public/Page.vue": __vite_glob_0_26, "./Pages/Public/Partners.vue": __vite_glob_0_27, "./Pages/Public/Products.vue": __vite_glob_0_28, "./Pages/Public/Sector.vue": __vite_glob_0_29, "./Pages/Public/Solution.vue": __vite_glob_0_30, "./Pages/Public/Solutions.vue": __vite_glob_0_31, "./Pages/Public/Training.vue": __vite_glob_0_32 });
       return pages[`./Pages/${name}.vue`];
     },
     setup({ App, props, plugin }) {

@@ -10,6 +10,7 @@ use App\Services\Crm\Drivers\NullCrmDriver;
 use App\Services\Crm\Drivers\OdooCrmDriver;
 use App\Services\Crm\Drivers\WebhookCrmDriver;
 use App\Services\Crm\Drivers\ZidCrmDriver;
+use App\Support\CrmSettings;
 use Illuminate\Contracts\Container\Container;
 use InvalidArgumentException;
 
@@ -28,10 +29,18 @@ class CrmManager
         'zid' => ZidCrmDriver::class,
     ];
 
-    public function __construct(private readonly Container $container) {}
+    public function __construct(
+        private readonly Container $container,
+        private readonly CrmSettings $settings,
+    ) {}
 
     public function driver(?string $name = null): CrmDriver
     {
+        // Anything the client saved in the panel is layered over .env first,
+        // so the drivers below keep reading plain `config('crm.*')` and stay
+        // ignorant of where the value came from.
+        $this->settings->apply();
+
         $name ??= config('crm.driver') ?: 'null';
 
         if (! isset(self::DRIVERS[$name])) {

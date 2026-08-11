@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CampaignController;
+use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KeywordController;
 use App\Http\Controllers\Admin\LanguageController;
@@ -141,6 +142,13 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
          * 404s — see UpcomingScreenController for the list and the phase
          * each one belongs to.
          */
+        // 2.2 — the CRM connection (§6.3). Configures the driver abstraction;
+        // never talks to a provider directly (§22.8).
+        Route::get('integrations/crm', [CrmController::class, 'index'])->name('crm.index');
+        Route::put('integrations/crm', [CrmController::class, 'update'])->name('crm.update');
+        Route::post('integrations/crm/test', [CrmController::class, 'test'])->name('crm.test');
+        Route::post('integrations/crm/resync-all', [CrmController::class, 'resyncAll'])->name('crm.resync-all');
+
         // 2.1 — the English site's switch and its translation coverage (§12).
         Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');
         Route::put('languages', [LanguageController::class, 'update'])->name('languages.update');
@@ -151,7 +159,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('seo/sitemap', [UpcomingScreenController::class, 'show'])->defaults('screen', 'sitemap')->name('upcoming.sitemap');
 
         Route::get('integrations/{screen}', [UpcomingScreenController::class, 'show'])
-            ->whereIn('screen', ['crm', 'notifications', 'confirmations', 'spam'])
+            ->whereIn('screen', ['notifications', 'confirmations', 'spam'])
             ->name('upcoming.integrations');
     });
 });

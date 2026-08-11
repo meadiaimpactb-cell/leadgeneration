@@ -32,7 +32,6 @@ class UpcomingScreenController extends Controller
      */
     private const SCREENS = [
         'media' => 3,
-        'crm' => 2,
         'notifications' => 2,
         'confirmations' => 3,
         'spam' => 2,

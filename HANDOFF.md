@@ -7,8 +7,8 @@ A new session should be able to read this file and continue without the client
 re-explaining anything. Read [PROJECT_BRIEF.md](PROJECT_BRIEF.md) and
 [CLAUDE.md](CLAUDE.md) first; this file only covers work in flight.
 
-**Last updated:** after **2.1 Languages** went green.
-**Suite at that point:** 259 passing, 881 assertions. Pint clean.
+**Last updated:** after **2.2 CRM** went green.
+**Suite at that point:** 267 passing, 902 assertions. Pint clean.
 
 ---
 
@@ -57,47 +57,61 @@ shared content editor.
 | Coverage counted from translations, not stored | `LanguagesScreenTest::coverage_is_counted_from_the_translations_that_exist` |
 | An empty content type reports no percentage | `LanguagesScreenTest::an_empty_content_type_reports_no_percentage_at_all` |
 
+### Phase 2.2 — CRM connection ✔
+
+`/admin/integrations/crm` replaces its placeholder. Configures the existing
+driver abstraction; never talks to a provider directly (§22.8).
+
+| What | Test |
+|---|---|
+| The screen offers exactly two providers — zid, odoo | `CrmConnectionScreenTest::the_screen_offers_exactly_two_providers` |
+| Panel credentials override `.env` | `CrmConnectionScreenTest::credentials_save_to_settings_and_override_the_environment` |
+| Saving an unchanged secret does not overwrite it with bullets | `CrmConnectionScreenTest::saving_an_unchanged_secret_leaves_it_alone` |
+| A secret never reaches the browser | `CrmConnectionScreenTest::a_secret_is_never_sent_back_to_the_browser` |
+| The bulk resend dispatches a job, does not loop in the request | `CrmConnectionScreenTest::the_bulk_resend_dispatches_a_job_rather_than_looping_in_the_request` |
+| The job re-queues every stuck lead | `CrmConnectionScreenTest::the_job_requeues_every_stuck_lead` |
+| Status counts what is actually stuck | `CrmConnectionScreenTest::the_status_counts_what_is_actually_stuck` |
+| An editor cannot open or change it | `CrmConnectionScreenTest::an_editor_cannot_open_or_change_the_connection` |
+
+**Run against the real backlog:** 135 stuck (75 pending + 60 failed) → 0.
+`ResyncFailedLeads` logged `{"leads":135}`; the dashboard's "لم تصل إلى CRM"
+tile now reads 0. Note the local driver is `null`, so this proved the
+re-queue path, not a real provider round trip.
+
 ---
 
 ## 2. In progress right now
 
-**Phase 2.2 — CRM connection.** Not started; the tree is clean and committed
-at the end of 2.1.
+**Phase 2.3 — Notifications.** Not started; the tree is clean and committed
+at the end of 2.2.
 
 What already exists and must be reused, not rebuilt:
 
-- `App\Services\Crm\CrmDriver` + `CrmManager`, with `Null`, `Webhook`, `Odoo`
-  and `Zid` drivers. §22.8 forbids coupling to one provider — the screen
-  configures the manager, it does not talk to a provider directly.
-- `App\Jobs\PushLeadToCrm`, queued, with backoff from `config/crm.php`.
-- `crm_sync_logs` table + `CrmSyncLog` model — the send log already records
-  every attempt.
-- `POST /admin/leads/{lead}/resync` already exists for a single lead.
-- `App\Notifications\CrmSyncFailed` exists and is what 2.3 will wire up.
-
-The retry policy the brief asks for (three attempts, increasing gaps, then
-mark "did not reach CRM") is already in `config/crm.php` — check it matches
-before changing anything.
+- `App\Notifications\NewLeadReceived` and `App\Notifications\CrmSyncFailed`.
+  Both exist; what is missing is who receives them and an editable template.
+- `App\Jobs\ResyncFailedLeads` currently writes its result to the log with a
+  comment saying 2.3 turns that into a notification. That is a one-line
+  change — find the `Log::info('CRM backlog re-queued.'` call.
 
 Next step, exactly:
 
-1. Build `/admin/integrations/crm`, replacing the `crm` entry in
-   `UpcomingScreenController::SCREENS`, its route in `routes/admin.php`, and
-   the `soon: true` flag in `resources/js/admin/navigation.js`.
-2. Driver picker + credentials, stored as `settings` rows through
-   `SettingsRegistry` (never in code — §22.9).
-3. "Test connection" — a POST that calls the selected driver and reports the
-   result without saving a lead.
-4. Sync status + the log table, paginated.
-5. **Bulk resend** for every failed lead — the single-lead route exists; the
-   bulk one does not. This is what clears the 40 currently stuck.
+1. Build `/admin/integrations/notifications`, replacing the `notifications`
+   entry in `UpcomingScreenController::SCREENS`, its slug in the
+   `integrations/{screen}` route's `whereIn`, and the `soon: true` flag in
+   `resources/js/admin/navigation.js`. 2.2 did exactly this for `crm` — copy
+   that shape.
+2. Recipients: name + email, plus a WhatsApp number column left unused for
+   now (the brief asks for the structure, not the sending).
+3. Per-recipient event toggles: new lead / CRM push failed / daily summary.
+4. Editable subject and body with `{contact}` `{message}` `{source}` `{date}`.
+5. Everything on the queue — the visitor's form must never wait on mail.
 
 ---
 
 ## 3. Not started
 
-Phase 2: **2.2** CRM · **2.3** Notifications · **2.4** Lead export ·
-**2.5** Spam protection.
+Phase 2: **2.3** Notifications · **2.4** Lead export · **2.5** Spam
+protection.
 
 Phase 3: media library · drafts and preview · CTA registry · landing-page
 builder · confirmation messages.
