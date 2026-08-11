@@ -122,7 +122,7 @@ const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band'];
              should find the right one without going back to the menu. -->
         <section v-if="siblings.length" class="section siblings">
             <Container>
-                <h2 class="h2 siblings__title">{{ t('common.learn_more') }}</h2>
+                <h2 class="h2 siblings__title">{{ t('common.other_segments') }}</h2>
 
                 <ul class="siblings__list">
                     <li v-for="item in siblings" :key="item.id">

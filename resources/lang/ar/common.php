@@ -33,4 +33,5 @@ return [
     'external_link' => 'يفتح في نافذة جديدة',
     'required' => 'مطلوب',
     'optional' => 'اختياري',
+    'other_segments' => 'شرائح أخرى قد تعنيكم',
 ];

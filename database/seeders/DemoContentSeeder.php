@@ -615,7 +615,7 @@ class DemoContentSeeder extends Seeder
                 '1.avif',
             ],
             Sector::KEY_PRIVATE => [
-                'القطاع الخاص', 'Private sector',
+                'شركات القطاع الخاص', 'Private-sector companies',
                 'هدايا للعملاء والموظفين تحمل هوية شركتكم، وتصلح للمناسبات السنوية وإطلاق المنتجات.',
                 'Client and employee gifts carrying your company identity, for annual occasions and product launches.',
                 '4.avif',
@@ -663,54 +663,66 @@ class DemoContentSeeder extends Seeder
      *
      * @return list<array{0: string, 1: array<string, list<string|null>>, 2?: array<string, mixed>}>
      */
-    /**
-     * The segment's own summary, reused as the opening statement of its page.
-     *
-     * Read back out of the record this seeder has just written rather than
-     * duplicated here, so the two can never drift: edit the summary in the
-     * panel and the page's opening line follows it.
-     */
-    private function sectorNeed(string $key, string $locale): ?string
-    {
-        return Sector::query()
-            ->where('key', $key)
-            ->first()
-            ?->translations()
-            ->where('locale', $locale)
-            ->value('summary');
-    }
-
     private function sectorSections(string $key): array
     {
         $cards = match ($key) {
             Sector::KEY_GOVERNMENT => [
-                ['icon' => '📄', 'title' => 'توثيق كامل', 'body' => 'ملف مصدر لكل قطعة يوضّح الحرفة والحرفيين المشاركين فيها.'],
-                ['icon' => '📅', 'title' => 'التزام بالتاريخ', 'body' => 'جدول عكسي من تاريخ المناسبة، ومتابعة موثّقة حتى التسليم.'],
-                ['icon' => '📊', 'title' => 'تقرير أثر', 'body' => 'قابل للإدراج ضمن تقاريركم السنوية ومبادراتكم المجتمعية.'],
+                ['icon' => 'fields', 'title' => 'توثيق كامل', 'body' => 'ملف مصدر لكل قطعة يوضّح الحرفة والحرفيين المشاركين فيها.'],
+                ['icon' => 'campaigns', 'title' => 'التزام بالتاريخ', 'body' => 'جدول عكسي من تاريخ المناسبة، ومتابعة موثّقة حتى التسليم.'],
+                ['icon' => 'impact', 'title' => 'تقرير أثر', 'body' => 'قابل للإدراج ضمن تقاريركم السنوية ومبادراتكم المجتمعية.'],
             ],
             Sector::KEY_PRIVATE => [
-                ['icon' => '🎯', 'title' => 'هويتكم أولًا', 'body' => 'الشعار والألوان والتغليف تتبع دليل هويتكم، لا العكس.'],
-                ['icon' => '📦', 'title' => 'كميات مرنة', 'body' => 'من دفعة صغيرة لفريق، إلى إنتاج موسمي لقاعدة عملاء.'],
-                ['icon' => '⏱️', 'title' => 'جدول واضح', 'body' => 'تعرفون تاريخ التسليم قبل بدء الإنتاج لا بعده.'],
+                ['icon' => 'brand', 'title' => 'هويتكم أولًا', 'body' => 'الشعار والألوان والتغليف تتبع دليل هويتكم، لا العكس.'],
+                ['icon' => 'products', 'title' => 'كميات مرنة', 'body' => 'من دفعة صغيرة لفريق، إلى إنتاج موسمي لقاعدة عملاء.'],
+                ['icon' => 'activity', 'title' => 'جدول واضح', 'body' => 'تعرفون تاريخ التسليم قبل بدء الإنتاج لا بعده.'],
             ],
             Sector::KEY_PARTNERS => [
                 ['icon' => 'sourcing', 'title' => 'مورّد خلفي', 'body' => 'نعمل باسمكم أمام عميلكم، ولا نتجاوزكم إليه.'],
-                ['icon' => '⚡', 'title' => 'استجابة سريعة', 'body' => 'اقتراح مبدئي وتسعير أوّلي للعروض العاجلة.'],
-                ['icon' => '🧾', 'title' => 'تسعير واضح', 'body' => 'هوامش معروفة مسبقًا تتيح لكم بناء عرضكم بثقة.'],
+                ['icon' => 'campaigns', 'title' => 'استجابة سريعة', 'body' => 'اقتراح مبدئي وتسعير أوّلي للعروض العاجلة.'],
+                ['icon' => 'reports', 'title' => 'تسعير واضح', 'body' => 'هوامش معروفة مسبقًا تتيح لكم بناء عرضكم بثقة.'],
             ],
             Sector::KEY_ARTISANS => [
-                ['icon' => '📈', 'title' => 'طلب مستقر', 'body' => 'دفعات مجدولة تعرف حجمها وموعدها قبل أن تبدأ.'],
-                ['icon' => '🎓', 'title' => 'تدريب عملي', 'body' => 'مسارات في الجودة والتسعير والتغليف ترفع قيمة قطعتك.'],
-                ['icon' => '⚖️', 'title' => 'تسعير عادل', 'body' => 'السعر متفق عليه ومكتوب قبل بدء العمل.'],
+                ['icon' => 'impact', 'title' => 'طلب مستقر', 'body' => 'دفعات مجدولة تعرف حجمها وموعدها قبل أن تبدأ.'],
+                ['icon' => 'training', 'title' => 'تدريب عملي', 'body' => 'مسارات في الجودة والتسعير والتغليف ترفع قيمة قطعتك.'],
+                ['icon' => 'sourcing', 'title' => 'تسعير عادل', 'body' => 'السعر متفق عليه ومكتوب قبل بدء العمل.'],
             ],
             default => [],
         };
+
+        /*
+         * The occasions a private-sector buyer actually names. Six, because
+         * the seventh is always a variation of one of these — and a grid that
+         * has to wrap twice stops being scannable.
+         */
+        $occasions = $key === Sector::KEY_PRIVATE ? [
+            ['icon' => 'gifts', 'title' => 'هدايا نهاية العام', 'body' => 'دفعة موحّدة للعملاء أو للفريق، بجدول يبدأ قبل الموسم لا فيه.'],
+            ['icon' => 'partners', 'title' => 'تكريم الموظفين', 'body' => 'قطع للتقاعد وسنوات الخدمة، تُصنع فرادى وتُنقش بالاسم.'],
+            ['icon' => 'campaigns', 'title' => 'إطلاق منتج أو فرع', 'body' => 'قطعة تُوزَّع في اليوم نفسه وتبقى على المكتب بعده.'],
+            ['icon' => 'contact', 'title' => 'ضيافة كبار العملاء', 'body' => 'عدد محدود بمستوى تشطيب أعلى، بتغليف يُفتح ولا يُرمى.'],
+            ['icon' => 'events', 'title' => 'المؤتمرات والمعارض', 'body' => 'كميات للمنصّة، ودروع للمتحدّثين، بموعد تسليم مربوط بالتاريخ.'],
+            ['icon' => 'users', 'title' => 'أطقم الترحيب', 'body' => 'طقم للموظف الجديد يصله في أول يوم، يُنتَج على دفعات.'],
+        ] : [];
 
         $faq = match ($key) {
             Sector::KEY_ARTISANS => [
                 ['question' => 'هل أحتاج سجلًا تجاريًا للبدء؟', 'answer' => 'لا يُشترط للبدء. ونساعدكم على الترتيب النظامي عند الحاجة إليه.'],
                 ['question' => 'من يتحمّل تكلفة الخامات؟', 'answer' => 'يُحدَّد ذلك في الاتفاق قبل البدء، ويختلف بحسب حجم الطلب ونوع الحرفة.'],
                 ['question' => 'متى يصلني المقابل؟', 'answer' => 'جدول الدفع يُكتب ضمن الاتفاق، ويُربط بمراحل التسليم لا بنهايتها فقط.'],
+            ],
+            /*
+             * The four a private-sector buyer asks that a government one does
+             * not. The invoice answer is a sentence and nothing more: §2.2
+             * forbids a commercial function, and the site must not grow one
+             * by answering a question about it.
+             */
+            Sector::KEY_PRIVATE => [
+                ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية المطلوبة ونوضّح لكم الممكن بصدق.'],
+                ['question' => 'كم تستغرق المدة؟', 'answer' => 'نبني الجدول عكسيًا من تاريخ مناسبتكم، ونخبركم مبكرًا إن كان التاريخ غير كافٍ.'],
+                ['question' => 'هل يمكن وضع شعارنا على القطعة نفسها لا التغليف فقط؟', 'answer' => 'نعم، بحسب الخامة: النقش على الخشب والجلد، والتطريز على المنسوجات. نوضّح لكم في العيّنة كيف يظهر الشعار قبل الإنتاج.'],
+                ['question' => 'هل يمكن تخصيص التغليف؟', 'answer' => 'نعم. التغليف عندنا جزء من التصميم لا إضافة عليه.'],
+                ['question' => 'هل توجد عيّنة قبل اعتماد الكمية؟', 'answer' => 'دائمًا. لا يبدأ الإنتاج قبل أن تعاينوا قطعة فعلية وتعتمدوها باليد.'],
+                ['question' => 'هل يمكن التسليم على أكثر من فرع أو مدينة؟', 'answer' => 'نعم. تُقسَّم الدفعة حسب الفروع وتُغلَّف لكل وجهة على حدة.'],
+                ['question' => 'هل تتوفر فاتورة ضريبية باسم الشركة؟', 'answer' => 'نعم. الفوترة تتم عبر فريق المبيعات خارج الموقع بعد الاتفاق على الطلب.'],
             ],
             default => [
                 ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية المطلوبة ونوضّح لكم الممكن بصدق.'],
@@ -770,17 +782,14 @@ class DemoContentSeeder extends Seeder
             ]],
 
             /*
-             * The segment's needs, before what we offer.
+             * No opening statement section here, deliberately.
              *
-             * Seeded from the sector's own summary — the one line already
-             * written for this audience — rather than from anything new. It
-             * is the "احتياجات الفئة" step of the agreed structure, and it is
-             * a draft: the final statement comes from Amad Craft.
+             * It used to be seeded from the sector's own summary — which is
+             * also the hero's subtitle, so the same sentence appeared twice
+             * within one screen of itself, once small and once very large.
+             * The segment's need is stated in the hero; repeating it verbatim
+             * underneath read as a template that had run out of things to say.
              */
-            ['intro_statement', [
-                'ar' => [null, null, $this->sectorNeed($key, 'ar')],
-                'en' => [null, null, $this->sectorNeed($key, 'en')],
-            ]],
 
             ['cards', [
                 'ar' => ["ما نقدّمه {$toAr}"],
@@ -821,6 +830,21 @@ class DemoContentSeeder extends Seeder
                     'body_en' => 'A clear schedule, and pieces that arrive packaged and ready.',
                 ],
             ]]],
+
+            /*
+             * Occasions, not products.
+             *
+             * A company buys for a moment — the year's end, a launch, a
+             * retirement — and names that moment before it names an object.
+             * The segment that thinks this way gets the section; the others
+             * do not, which is the point of four separate pages.
+             */
+            ...($occasions === [] ? [] : [
+                ['cards', [
+                    'ar' => ['متى تطلب الشركات منّا'],
+                    'en' => ['When companies come to us'],
+                ], ['items' => $occasions]],
+            ]),
 
             ['accordion', [
                 'ar' => ['أسئلة متكررة'],

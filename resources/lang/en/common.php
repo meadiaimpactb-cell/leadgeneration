@@ -32,4 +32,5 @@ return [
     'external_link' => 'Opens in a new window',
     'required' => 'Required',
     'optional' => 'Optional',
+    'other_segments' => 'Other segments that may fit you',
 ];

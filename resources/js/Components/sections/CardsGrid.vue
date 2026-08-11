@@ -1,5 +1,6 @@
 <script setup>
 import Container from '@/Components/ui/Container.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import { useReveal } from '@/Composables/useReveal';
 
 /**
@@ -24,7 +25,17 @@ const { root } = useReveal();
 
             <ul class="cards">
                 <li v-for="(item, i) in items" :key="i" class="card reveal">
-                    <span v-if="item.icon" class="cards__icon" aria-hidden="true">{{ item.icon }}</span>
+                    <!--
+                        A line glyph from the icon set, never the raw string.
+                        Emoji were rendering here as the platform's own
+                        multi-colour artwork — one of them arrived as an
+                        Instagram-style gradient — which is a second brand's
+                        palette sitting inside a card that is otherwise built
+                        entirely from this one's tokens.
+                    -->
+                    <span v-if="item.icon" class="cards__icon">
+                        <NavIcon :name="item.icon" :size="28" :weight="1.4" :muted="false" />
+                    </span>
                     <h3 v-if="item.title" class="cards__title">{{ item.title }}</h3>
                     <p v-if="item.body" class="cards__body">{{ item.body }}</p>
                 </li>
@@ -47,9 +58,16 @@ const { root } = useReveal();
     margin-block-start: var(--s-7);
 }
 
+/* A faint disc behind the glyph — the one place §10.2 lets the lavender
+   appear, at an opacity where it reads as tint rather than as a colour. */
 .cards__icon {
-    font-size: var(--fs-h3);
-    color: var(--gold-400);
+    display: inline-grid;
+    place-items: center;
+    inline-size: 48px;
+    block-size: 48px;
+    border-radius: 50%;
+    background: rgba(134, 133, 216, 0.12);
+    color: var(--navy-900);
 }
 
 .cards__title {

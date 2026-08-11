@@ -9098,35 +9098,42 @@ const _sfc_main$I = {
           ref_key: "root",
           ref: root,
           class: "section"
-        }, _attrs))} data-v-f98da4e4>`);
+        }, _attrs))} data-v-218210e5>`);
         _push(ssrRenderComponent(_sfc_main$N, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
               if (__props.heading) {
-                _push2(`<h2 class="reveal" data-v-f98da4e4${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 class="reveal" data-v-218210e5${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="cards__sub reveal" data-v-f98da4e4${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="cards__sub reveal" data-v-218210e5${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<ul class="cards" data-v-f98da4e4${_scopeId}><!--[-->`);
+              _push2(`<ul class="cards" data-v-218210e5${_scopeId}><!--[-->`);
               ssrRenderList(__props.items, (item, i) => {
-                _push2(`<li class="card reveal" data-v-f98da4e4${_scopeId}>`);
+                _push2(`<li class="card reveal" data-v-218210e5${_scopeId}>`);
                 if (item.icon) {
-                  _push2(`<span class="cards__icon" aria-hidden="true" data-v-f98da4e4${_scopeId}>${ssrInterpolate(item.icon)}</span>`);
+                  _push2(`<span class="cards__icon" data-v-218210e5${_scopeId}>`);
+                  _push2(ssrRenderComponent(NavIcon, {
+                    name: item.icon,
+                    size: 28,
+                    weight: 1.4,
+                    muted: false
+                  }, null, _parent2, _scopeId));
+                  _push2(`</span>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (item.title) {
-                  _push2(`<h3 class="cards__title" data-v-f98da4e4${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
+                  _push2(`<h3 class="cards__title" data-v-218210e5${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (item.body) {
-                  _push2(`<p class="cards__body" data-v-f98da4e4${_scopeId}>${ssrInterpolate(item.body)}</p>`);
+                  _push2(`<p class="cards__body" data-v-218210e5${_scopeId}>${ssrInterpolate(item.body)}</p>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -9151,9 +9158,15 @@ const _sfc_main$I = {
                     }, [
                       item.icon ? (openBlock(), createBlock("span", {
                         key: 0,
-                        class: "cards__icon",
-                        "aria-hidden": "true"
-                      }, toDisplayString(item.icon), 1)) : createCommentVNode("", true),
+                        class: "cards__icon"
+                      }, [
+                        createVNode(NavIcon, {
+                          name: item.icon,
+                          size: 28,
+                          weight: 1.4,
+                          muted: false
+                        }, null, 8, ["name"])
+                      ])) : createCommentVNode("", true),
                       item.title ? (openBlock(), createBlock("h3", {
                         key: 1,
                         class: "cards__title"
@@ -9183,7 +9196,7 @@ _sfc_main$I.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CardsGrid.vue");
   return _sfc_setup$I ? _sfc_setup$I(props, ctx) : void 0;
 };
-const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["__scopeId", "data-v-f98da4e4"]]);
+const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["__scopeId", "data-v-218210e5"]]);
 const _sfc_main$H = {
   __name: "PartnersLogos",
   __ssrInlineRender: true,
@@ -14696,20 +14709,20 @@ const _sfc_main$4 = {
               items: __props.impact
             }, null, _parent2, _scopeId));
             if (__props.siblings.length) {
-              _push2(`<section class="section siblings" data-v-8c9609c3${_scopeId}>`);
+              _push2(`<section class="section siblings" data-v-a9fdb77f${_scopeId}>`);
               _push2(ssrRenderComponent(_sfc_main$N, null, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<h2 class="h2 siblings__title" data-v-8c9609c3${_scopeId2}>${ssrInterpolate(unref(t)("common.learn_more"))}</h2><ul class="siblings__list" data-v-8c9609c3${_scopeId2}><!--[-->`);
+                    _push3(`<h2 class="h2 siblings__title" data-v-a9fdb77f${_scopeId2}>${ssrInterpolate(unref(t)("common.other_segments"))}</h2><ul class="siblings__list" data-v-a9fdb77f${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.siblings, (item) => {
-                      _push3(`<li data-v-8c9609c3${_scopeId2}>`);
+                      _push3(`<li data-v-a9fdb77f${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: item.url,
                         class: "sibling"
                       }, {
                         default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                           if (_push4) {
-                            _push4(`<span class="sibling__name" data-v-8c9609c3${_scopeId3}>${ssrInterpolate(item.name)}</span><span class="arrow" aria-hidden="true" data-v-8c9609c3${_scopeId3}>→</span>`);
+                            _push4(`<span class="sibling__name" data-v-a9fdb77f${_scopeId3}>${ssrInterpolate(item.name)}</span><span class="arrow" aria-hidden="true" data-v-a9fdb77f${_scopeId3}>→</span>`);
                           } else {
                             return [
                               createVNode("span", { class: "sibling__name" }, toDisplayString(item.name), 1),
@@ -14727,7 +14740,7 @@ const _sfc_main$4 = {
                     _push3(`<!--]--></ul>`);
                   } else {
                     return [
-                      createVNode("h2", { class: "h2 siblings__title" }, toDisplayString(unref(t)("common.learn_more")), 1),
+                      createVNode("h2", { class: "h2 siblings__title" }, toDisplayString(unref(t)("common.other_segments")), 1),
                       createVNode("ul", { class: "siblings__list" }, [
                         (openBlock(true), createBlock(Fragment, null, renderList(__props.siblings, (item) => {
                           return openBlock(), createBlock("li", {
@@ -14806,7 +14819,7 @@ const _sfc_main$4 = {
               }, [
                 createVNode(_sfc_main$N, null, {
                   default: withCtx(() => [
-                    createVNode("h2", { class: "h2 siblings__title" }, toDisplayString(unref(t)("common.learn_more")), 1),
+                    createVNode("h2", { class: "h2 siblings__title" }, toDisplayString(unref(t)("common.other_segments")), 1),
                     createVNode("ul", { class: "siblings__list" }, [
                       (openBlock(true), createBlock(Fragment, null, renderList(__props.siblings, (item) => {
                         return openBlock(), createBlock("li", {
@@ -14854,7 +14867,7 @@ _sfc_main$4.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Sector.vue");
   return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
 };
-const Sector = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-8c9609c3"]]);
+const Sector = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-a9fdb77f"]]);
 const __vite_glob_0_29 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Sector

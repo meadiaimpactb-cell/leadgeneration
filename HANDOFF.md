@@ -179,3 +179,43 @@ locale's content, this is why.
 - Per-segment impact figures and testimonials are empty by design — they need
   Amad Craft's own data, and the global figures must not be attributed to one
   segment.
+
+---
+
+## Design track (parallel to the phases)
+
+**D0 — design system extracted.** `DESIGN_SYSTEM.md` + two additions to the
+shared layer: `.cut` / `.cut--deep` (the octagon chamfer) and `.steps` (the
+process timeline). Commit `f70be63`.
+
+**D1 — `/solutions/government`** — the template all four segments share.
+`SegmentHero` (running index, two actions, octagon photo over a Sadu edge),
+`ProcessSteps` replacing the "how we work" paragraph, and a siblings row
+before the form. Commit `f70be63`.
+
+**D2a — `/solutions/companies`.** Five fixes plus two sections:
+
+- Segment renamed to "شركات القطاع الخاص" everywhere — hero, `<title>`,
+  breadcrumb, menu.
+- The opening statement section was dropped from every segment: it was seeded
+  from the sector summary, which is *also* the hero subtitle, so the same
+  sentence appeared twice within one screen.
+- Every emoji icon replaced with a line glyph from `NavIcon` — one was
+  rendering as an Instagram-style gradient, a second brand's palette inside a
+  card built from these tokens. `CardsGrid` now renders `NavIcon`, on a
+  lavender disc at 12%, which is the one place §10.2 allows that colour.
+- "متى تطلب الشركات منّا" — six occasions, private-sector only. The section is
+  conditional on the segment, which is the point of four separate pages.
+- FAQ for this segment is seven questions, including the invoice one. The
+  answer is a sentence and nothing more: §2.2 forbids a commercial function,
+  and the site must not grow one by answering a question about it.
+
+**Still open on the design track:** D2 for `/solutions/partners`,
+`/solutions/artisans`, `/impact`, `/training`, `/about`, `/contact`,
+`/products/*`, `/lp/*`, and the 404 page. Each inherits this template; the
+work per page is content angle plus whatever section that segment alone needs.
+
+**Not done and not claimable:** screenshots at 360/768/1440 and Lighthouse —
+there is no browser in this environment. Verification here is the
+server-rendered HTML in both locales. A `hex-outside-tokens` lint was asked
+for and has not been written.
