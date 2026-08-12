@@ -91,6 +91,29 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Input direction, set once for the whole site.
+
+   The caret in an empty Arabic field sat on the left: `dir="auto"` decides
+   from the first strong character typed, and an empty field gives it nothing
+   to judge, so it fell back to LTR. Binding this to the document's own
+   direction is what `auto` was standing in for — and doing it here means any
+   form added later inherits it instead of needing the same fix again.
+
+   Email and phone are the deliberate exceptions: `name@company.sa` and
+   `+966…` are Latin in every locale, and an RTL field puts the `+` on the
+   wrong end of the number. */
+[dir='rtl'] input[type='text'],
+[dir='rtl'] input:not([type]),
+[dir='rtl'] textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir='rtl'] input[type='email'],
+[dir='rtl'] input[type='tel'] {
+  direction: ltr;
+}
+
 /* Anchor targets clear the fixed header.
 
    Without this the browser scrolls the target to y=0, which is underneath the

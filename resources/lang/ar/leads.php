@@ -15,6 +15,7 @@ declare(strict_types=1);
 */
 
 return [
+    'optional' => '(اختياري)',
     'placeholder' => 'بريدك الإلكتروني أو رقم جوالك',
     'dock_cta' => 'تواصلوا معنا',
     'submit' => 'تواصلوا معي',

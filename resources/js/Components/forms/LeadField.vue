@@ -406,15 +406,25 @@ function submit() {
                     smaller than the qualification it buys.
                 -->
                 <div class="lead__message">
-                    <label class="visually-hidden" :for="fieldId(MESSAGE)">
+                    <!--
+                        A visible label, not a screen-reader-only one.
+
+                        «(اختياري)» comes from the language file rather than
+                        from the label in the database: it describes the
+                        field's validation, not its content, and an editor who
+                        renames the label must not be able to make the form
+                        claim something the server does not enforce.
+                    -->
+                    <label class="lead__label" :for="fieldId(MESSAGE)">
                         {{ messageField.label }}
+                        <span class="lead__optional">{{ t('leads.optional') }}</span>
                     </label>
                     <textarea
                         :id="fieldId(MESSAGE)"
                         v-model="values[MESSAGE]"
                         class="lead-input lead-textarea"
                         :name="MESSAGE"
-                        rows="2"
+                        rows="4"
                         :dir="textDir"
                         :placeholder="messageHint ?? messagePlaceholder ?? messageField.placeholder ?? ''"
                         :maxlength="messageField.maxLength ?? undefined"

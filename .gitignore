@@ -46,3 +46,6 @@ Thumbs.db
 # serves live in public/fonts and are committed. If the kit should travel with
 # the code, make the repository private first and remove this rule.
 /هوية امد الحرف/
+
+# Backups are data, never code.
+storage/backups/

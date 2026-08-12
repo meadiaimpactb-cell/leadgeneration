@@ -240,16 +240,51 @@ class ContactPageKeepsItsPromisesTest extends TestCase
         $this->assertFalse((bool) $message->is_required, 'The message field became required.');
     }
 
-    /** The message stays collapsed, so the form is still three inputs on arrival. */
+    /**
+     * The message box is open on arrival, with its label and «(اختياري)».
+     *
+     * This test asserted the opposite until the client reversed the decision:
+     * the box was collapsed behind «أضف رسالة» to keep the form at three
+     * controls (§10.6). The reasoning still holds for the required fields, but
+     * a field nobody sees is a field nobody fills, and this is where a buyer
+     * writes the one line worth qualifying on.
+     *
+     * The «(اختياري)» marker is asserted separately from the label because it
+     * comes from the language file, not the database: it describes the field's
+     * validation, and an editor renaming the label must not be able to make
+     * the form claim something the server does not enforce.
+     */
     #[Test]
-    public function the_message_field_is_not_a_fourth_box_on_arrival(): void
+    public function the_message_box_is_open_and_marked_optional(): void
     {
         $body = $this->get('/ar/contact')->assertOk()->getContent();
 
-        $this->assertStringContainsString('أضف رسالة', $body,
-            'There is no way to reach the optional message.');
-        $this->assertStringNotContainsString('lead-textarea', $body,
-            'The message box is open before the visitor asked for it.');
+        $this->assertStringContainsString('lead-textarea', $body,
+            'The optional message box is hidden again.');
+
+        /*
+         * The toggle is asserted by its CLASS, not by its label. Every
+         * translation string is shipped to the browser in the i18n payload, so
+         * «أضف رسالة» is present in the response whether or not anything
+         * renders it — matching the words tested the language file, not the
+         * page.
+         */
+        $this->assertStringNotContainsString('lead__toggle', $body,
+            'The old "add a message" toggle is back.');
+        $this->assertStringContainsString('(اختياري)', $body,
+            'The message field does not say it is optional.');
+    }
+
+    /** Optional means optional: the form submits with the box left empty. */
+    #[Test]
+    public function the_form_submits_without_a_message(): void
+    {
+        $this->post('/ar/leads', [
+            'organisation' => 'جهة اختبار',
+            'phone' => '+966500000000',
+            'contact' => 'test@example.com',
+            'started_at' => now()->subSeconds(30)->timestamp,
+        ])->assertSessionHasNoErrors();
     }
 
     // ---- Promises the client has not made ----------------------------- //

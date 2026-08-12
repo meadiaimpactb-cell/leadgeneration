@@ -11,6 +11,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -29,6 +30,30 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        /*
+         * Destructive artisan commands are refused unless the database name
+         * ends in `_test`.
+         *
+         * This exists because `php artisan migrate:fresh --env=testing --force`
+         * wiped the development database. `--env=testing` only loads a
+         * `.env.testing` file; there wasn't one, so Laravel fell back to `.env`
+         * and the command ran against live data. The settings in `phpunit.xml`
+         * are no protection — they apply only when phpunit runs.
+         *
+         * `.env.testing` now exists, which fixes that specific path. This
+         * guard is the second line: it does not care how the connection was
+         * chosen, only what it points at. `migrate:fresh`, `db:wipe` and
+         * `migrate:reset` all refuse on `amadcraft_b2b` and allow on
+         * `amadcraft_b2b_test`.
+         *
+         * To wipe a non-test database deliberately, name it in the command's
+         * own connection or drop it in the client's own tooling — this refuses
+         * to make destruction the accidental default.
+         */
+        DB::prohibitDestructiveCommands(
+            ! str_ends_with((string) DB::connection()->getDatabaseName(), '_test')
+        );
+
         // Inertia props are consumed directly by Vue components as arrays.
         // The default "data" envelope would turn every :items="sectors" into
         // an object and silently render nothing.

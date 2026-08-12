@@ -9,6 +9,7 @@ declare(strict_types=1);
 */
 
 return [
+    'optional' => '(optional)',
     'placeholder' => 'Your email or mobile number',
     'dock_cta' => 'Contact us',
     'submit' => 'Contact me',
