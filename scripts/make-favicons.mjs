@@ -1,135 +1,119 @@
 /**
- * Browser icons, rendered from the real Amad Craft lockup.
+ * Browser icons, generated from the icon the client supplied.
  *
  * Run: node scripts/make-favicons.mjs
  *
- * WHAT CHANGED, AND WHY
+ * SOURCE OF TRUTH
  *
- * These were drawn as the Sadu weave — the identity's signature mark — on the
- * reasoning that two lines of type cannot survive 16×16. The client asked for
- * the actual logo instead, so the actual logo is what is rendered: the STACKED
- * lockup, because at 516×470 it is very nearly square and therefore the one
- * that fills an icon canvas without being letterboxed into a sliver.
+ * `public/images/amadcraft.ico` — the client's own file, flattened to
+ * `public/brand/icon-source.png` by scripts/ico-to-png.py. It replaced two
+ * earlier attempts, both mine: the Sadu weave, and a render of
+ * logo-stacked.svg. Neither is used any more. To change the icon, replace the
+ * .ico, rerun the Python step, then rerun this.
  *
- * The trade is real and worth stating plainly: at 16px the wordmark reads as
- * the brand's silhouette rather than as words. That is how most typographic
- * logos behave in a tab, and it is what was asked for. At 32px and above —
- * bookmarks, the Android launcher, the iOS home screen — it is legible.
+ * WHY THIS RESIZES RATHER THAN JUST LINKING TO THE FILE
  *
- * WHY sharp AND NOT GD
+ * Two reasons, and the second is the important one.
  *
- * The lockup is seventeen Bézier paths of Arabic calligraphy. GD draws
- * primitives and cannot rasterise a path, so the previous generator could only
- * ever produce geometry it drew itself. sharp is already in this project as a
- * Vite dependency, renders SVG through librsvg, and adds nothing to install.
+ * The supplied file is a single 256×256 image in an uncompressed DIB: 264KB
+ * fetched for a browser tab.
+ *
+ * And it is composed as an app icon, not as a favicon. Measured, the wordmark
+ * occupies 69% of the width but only **20% of the height** — the rest is
+ * empty navy. Scaled straight down, the mark would be about three pixels tall
+ * at 16×16, which is not small: it is absent. The margin is trimmed here and
+ * a consistent clear space added back, so the same artwork is as large as the
+ * canvas allows at every size.
+ *
+ * WHAT THIS CANNOT FIX
+ *
+ * The lockup is roughly 3.5:1. Inside a square, a 16px icon gives it about
+ * five pixels of height for two lines of type — it will read as the brand's
+ * colour and silhouette, not as words. That is true of every wide wordmark in
+ * a tab and no pipeline changes it; the honest alternative is a fragment of
+ * the mark rather than the whole of it, which is a design decision and so the
+ * client's to make. Retina tabs use the 32px icon, where it is markedly
+ * better.
  */
 
 import sharp from 'sharp';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
+const SOURCE = join(PUBLIC, 'brand/icon-source.png');
 
-const NAVY = '#002546';
-
-/**
- * The lockup's own paths, lifted out of the identity file.
- *
- * It ships as two groups, and which is which matters here: the first holds the
- * eight paths of the Arabic wordmark, the second the nine of "Amad Craft".
- */
-const source = readFileSync(join(PUBLIC, 'brand/logo-stacked.svg'), 'utf8');
-const [vx, vy, vw, vh] = source.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
-
-const pathsIn = (svg) => [...svg.matchAll(/<path[^>]*\sd="([^"]+)"/g)].map((m) => m[1]);
-const groups = [...source.matchAll(/<g>([\s\S]*?)<\/g>/g)].map((m) => m[1]);
-
-const ARABIC = pathsIn(groups[0] ?? '');
-const FULL = pathsIn(source);
-
-if (ARABIC.length === 0 || FULL.length === 0) {
-    throw new Error('logo-stacked.svg did not parse - check its group structure');
+if (!existsSync(SOURCE)) {
+    throw new Error(
+        `${SOURCE} is missing. Rebuild it from the client's icon:\n` +
+            '  python3 scripts/ico-to-png.py public/images/amadcraft.ico public/brand/icon-source.png'
+    );
 }
 
-/**
- * The band the Arabic wordmark occupies, in the file's own coordinates.
+/** The artwork's own ground, so trimming and padding are invisible. */
+const NAVY = { r: 0, g: 37, b: 70, alpha: 1 };
+
+/*
+ * Trimmed once, reused for every size.
  *
- * Measured from the paths rather than assumed: the Latin line sits from y=700
- * downward, and cropping to this band is what lets the wordmark fill the
- * canvas instead of sharing it.
+ * `trim` removes the uniform border by comparing against the top-left pixel —
+ * which is the navy ground here — leaving just the wordmark.
  */
-const ARABIC_BAND = { top: 300, bottom: 650 };
+const artwork = await sharp(readFileSync(SOURCE))
+    .trim({ threshold: 12 })
+    .toBuffer();
+
+const { width, height } = await sharp(artwork).metadata();
+console.log(`source trimmed to ${width}×${height} (was 256×256)`);
 
 /**
- * One icon.
+ * One square icon: the wordmark as large as it goes, with clear space.
  *
- * The lockup is scaled to a share of the canvas and centred, so the mark keeps
- * clear space on every side — §23 asks for the height of the «ا» glyph, and a
- * logo pressed against the edge of a 16px square is the one way to make it
- * less legible than it already is.
- *
- * @param {number} size
- * @param {boolean} rounded  Apple and Android apply their own mask; the tab
- *                           does not, so only the tab icon gets a radius.
+ * `contain` keeps the lockup's proportions — a wordmark stretched to fill a
+ * square is a different logo — and the padding is the identity's own navy.
  */
-function iconSvg(size, rounded) {
+async function icon(size) {
     /*
-     * Small icons carry the Arabic wordmark alone.
+     * No margin at all in a tab.
      *
-     * The whole lockup at 16x16 puts "Amad Craft" in about four pixels of
-     * height, and the result is a grey smear under the Arabic - it makes the
-     * icon look damaged rather than small. Dropping to the Arabic wordmark
-     * roughly doubles the glyph height and the mark is recognisable again.
-     *
-     * Above 32px - bookmarks, the iOS home screen, the Android launcher -
-     * there is room for both lines, so both are drawn.
+     * The lockup is 3.5:1, so inside a square it is already surrounded by
+     * empty navy on two sides — adding more would shrink the only part of the
+     * icon that carries meaning. Larger icons keep clear space (§23) because
+     * they have it to spare.
      */
-    const small = size <= 32;
-    const paths = small ? ARABIC : FULL;
-    const top = small ? ARABIC_BAND.top : vy;
-    const height = small ? ARABIC_BAND.bottom - ARABIC_BAND.top : vh;
+    const inset = size <= 32 ? 0 : 0.12;
+    const inner = Math.max(1, Math.round(size * (1 - inset * 2)));
 
-    // Clear space around the mark. Tighter when small: at sixteen pixels a
-    // wide margin costs more than it protects.
-    const inset = small ? 0.1 : 0.16;
-    const box = size * (1 - inset * 2);
-    const scale = Math.min(box / vw, box / height);
-    const w = vw * scale;
-    const h = height * scale;
-    const dx = (size - w) / 2;
-    const dy = (size - h) / 2;
-    const radius = rounded ? size * (4 / 32) : 0;
-
-    return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" rx="${radius}" fill="${NAVY}"/>
-  <g transform="translate(${dx} ${dy}) scale(${scale}) translate(${-vx} ${-top})" fill="#FFFFFF">
-    ${paths.map((d) => `<path d="${d}"/>`).join('')}
-  </g>
-</svg>`);
+    return sharp(artwork)
+        .resize(inner, inner, { fit: 'inside', kernel: 'lanczos3' })
+        .extend({
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: NAVY,
+        })
+        .resize(size, size, { fit: 'contain', background: NAVY })
+        .png({ compressionLevel: 9 })
+        .toBuffer();
 }
-
-const png = (size, rounded = true) =>
-    sharp(iconSvg(size, rounded), { density: 384 }).png({ compressionLevel: 9 }).toBuffer();
 
 /** An .ico carrying one PNG per size. */
 function ico(entries) {
-    const count = entries.length;
     const header = Buffer.alloc(6);
     header.writeUInt16LE(0, 0);
     header.writeUInt16LE(1, 2);
-    header.writeUInt16LE(count, 4);
+    header.writeUInt16LE(entries.length, 4);
 
-    let offset = 6 + count * 16;
+    let offset = 6 + entries.length * 16;
     const dir = [];
 
     for (const { size, data } of entries) {
         const e = Buffer.alloc(16);
         e.writeUInt8(size >= 256 ? 0 : size, 0);
         e.writeUInt8(size >= 256 ? 0 : size, 1);
-        e.writeUInt8(0, 2);
-        e.writeUInt8(0, 3);
         e.writeUInt16LE(1, 4);
         e.writeUInt16LE(32, 6);
         e.writeUInt32LE(data.length, 8);
@@ -143,32 +127,32 @@ function ico(entries) {
 
 // ---------------------------------------------------------------------
 
-const icoSizes = [16, 32, 48];
 const icoEntries = [];
 
-for (const size of icoSizes) {
-    icoEntries.push({ size, data: await png(size, true) });
+for (const size of [16, 32, 48]) {
+    icoEntries.push({ size, data: await icon(size) });
 }
 
 writeFileSync(join(PUBLIC, 'favicon.ico'), ico(icoEntries));
 console.log('wrote  favicon.ico (16, 32, 48)');
 
-const files = [
-    ['favicon-16x16.png', 16, true],
-    ['favicon-32x32.png', 32, true],
-    ['apple-touch-icon.png', 180, false],
-    ['android-chrome-192x192.png', 192, false],
-    ['android-chrome-512x512.png', 512, false],
-];
-
-for (const [name, size, rounded] of files) {
-    writeFileSync(join(PUBLIC, name), await png(size, rounded));
+for (const [name, size] of [
+    ['favicon-16x16.png', 16],
+    ['favicon-32x32.png', 32],
+    ['apple-touch-icon.png', 180],
+    ['android-chrome-192x192.png', 192],
+    ['android-chrome-512x512.png', 512],
+]) {
+    writeFileSync(join(PUBLIC, name), await icon(size));
     console.log(`wrote  ${name} (${size}×${size})`);
 }
 
 /*
- * The SVG the tab prefers, written from the same source so the two can never
- * drift. Browsers that take it get the lockup at whatever size they render.
+ * The hand-drawn favicon.svg is gone.
+ *
+ * The client's artwork is a bitmap, and a vector drawn by hand sitting beside
+ * it would be a second icon that drifts from the first the moment either
+ * changes. One source, one set — so the <link> for it goes too.
  */
-writeFileSync(join(PUBLIC, 'favicon.svg'), iconSvg(32, true));
-console.log('wrote  favicon.svg');
+writeFileSync(join(PUBLIC, 'favicon-256x256.png'), await icon(256));
+console.log('wrote  favicon-256x256.png');
