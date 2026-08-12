@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { useFormat } from '@/Composables/useFormat';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -27,6 +28,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'insert']);
 
 const { t } = useTranslation();
+const { date } = useFormat();
 
 /** The panel's own interface language, for dates and for which alt to show. */
 const locale = computed(() => usePage().props.locale ?? 'ar');
@@ -341,15 +343,15 @@ function formatSize(bytes) {
     return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 }
 
-function formatDate(iso) {
-    if (!iso) return '—';
-
-    return new Date(iso).toLocaleDateString(locale.value === 'ar' ? 'ar' : 'en', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-    });
-}
+/*
+ * Through useFormat, never through the browser's own date helper.
+ *
+ * One formatter for the whole platform: Latin digits in both languages and a
+ * Gregorian calendar, because `ar-SA` otherwise renders Arabic-Indic numerals
+ * and Hijri dates — and an upload date that does not match the same file's
+ * date in an export is a date nobody trusts.
+ */
+const formatDate = date;
 </script>
 
 <template>

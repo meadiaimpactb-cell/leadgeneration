@@ -202,8 +202,9 @@ function onDrop(index) {
             </li>
         </ul>
 
-        <button v-if="!full" type="button" class="btn btn--ghost slot__add" @click="openAdd">
-            {{ single ? t('admin.media_add_image') : t('admin.media_add_images') }}
+        <button v-if="!full" type="button" class="slot__add" @click="openAdd">
+            <NavIcon name="media" :size="18" :muted="false" />
+            <span>{{ single ? t('admin.media_add_image') : t('admin.media_add_images') }}</span>
         </button>
 
         <p v-if="hint" class="slot__hint">{{ hint }}</p>
@@ -249,10 +250,6 @@ function onDrop(index) {
     background: var(--paper-alt);
 }
 
-.slot__cell {
-    position: relative;
-}
-
 .slot__cell img,
 .slot__cell video {
     inline-size: 100%;
@@ -263,35 +260,19 @@ function onDrop(index) {
 }
 
 /*
- * The tools sit over the picture and appear on hover or keyboard focus.
+ * Under the picture, always visible — the original arrangement, with icons
+ * where the words were.
  *
- * Always-on controls under every thumbnail turned a row of six images into a
- * wall of Arabic buttons, and the pictures — the thing the screen exists to
- * show — became the smallest part of it.
+ * Two wrong turns got here. Words under the thumbnail wrapped to three lines
+ * and squashed the picture; icons floated over the picture covered the thing
+ * the editor is trying to look at. The layout was never the problem — the
+ * labels were too long for it. Icons in the same row the words occupied cost
+ * the picture nothing and hide nothing.
  */
 .slot__tools {
-    position: absolute;
-    inset-block-start: var(--s-2);
-    inset-inline-end: var(--s-2);
     display: flex;
+    justify-content: center;
     gap: var(--s-1);
-    padding: 2px;
-    border-radius: var(--r-sm);
-    background: rgba(255, 255, 255, 0.92);
-    opacity: 0;
-    transition: opacity 160ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.slot__cell:hover .slot__tools,
-.slot__tools:focus-within {
-    opacity: 1;
-}
-
-/* Never hidden where hover does not exist. */
-@media (hover: none) {
-    .slot__tools {
-        opacity: 1;
-    }
 }
 
 .icon-btn {
@@ -320,6 +301,34 @@ function onDrop(index) {
 
 .icon-btn.danger {
     color: var(--action-600);
+}
+
+/*
+ * The way images get added, so it has to look like it.
+ *
+ * It was a ghost button: dark text on the panel's own background, sitting
+ * under a row of photographs. An operator looking for "how do I add a
+ * picture" reads it as a caption. This is the one action in the block, and
+ * the only one drawn as a button.
+ */
+.slot__add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-block-size: 44px;
+    padding-inline: var(--s-4);
+    border: 1px dashed var(--action-600);
+    border-radius: var(--r-sm);
+    background: var(--gold-100);
+    color: var(--action-600);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.slot__add:hover {
+    background: var(--paper);
+    border-style: solid;
 }
 
 .slot__hint {

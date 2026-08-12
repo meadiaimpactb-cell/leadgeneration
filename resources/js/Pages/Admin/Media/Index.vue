@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import { useFormat } from '@/Composables/useFormat';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -23,6 +24,7 @@ defineProps({
 });
 
 const { t } = useTranslation();
+const { date } = useFormat();
 
 const MAX_MB = 64;
 const ACCEPT =
@@ -303,15 +305,15 @@ function formatSize(bytes) {
     return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 }
 
-function formatDate(iso) {
-    if (!iso) return '—';
-
-    return new Date(iso).toLocaleDateString(locale.value === 'ar' ? 'ar' : 'en', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-    });
-}
+/*
+ * Through useFormat, never through the browser's own date helper.
+ *
+ * One formatter for the whole platform: Latin digits in both languages and a
+ * Gregorian calendar, because `ar-SA` otherwise renders Arabic-Indic numerals
+ * and Hijri dates — and an upload date that does not match the same file's
+ * date in an export is a date nobody trusts.
+ */
+const formatDate = date;
 </script>
 
 <template>
