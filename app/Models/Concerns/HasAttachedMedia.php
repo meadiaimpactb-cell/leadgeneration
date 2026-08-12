@@ -132,6 +132,9 @@ trait HasAttachedMedia
             'url' => $media->getUrl(),
             'webp' => $media->hasGeneratedConversion('webp') ? $media->getUrl('webp') : null,
             'thumb' => $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : $media->getUrl(),
+            // Hero decides between <video> and <img> by extension, but the
+            // panel cannot guess from a URL alone which tile to draw.
+            'mime' => $media->mime_type,
             'width' => $media->getCustomProperty('width'),
             'height' => $media->getCustomProperty('height'),
             'alt' => $translation?->alt_text,

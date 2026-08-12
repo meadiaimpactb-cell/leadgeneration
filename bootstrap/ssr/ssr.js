@@ -134,6 +134,14 @@ const _sfc_main$1p = {
       profile: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z",
       /* The screens added when the panel was regrouped. */
       media: "M3 5h18v14H3V5zM3 15l5-5 4 4 3-3 6 6M8.5 9.5h.01",
+      /*
+       * The two actions on a chosen image. They are icons rather than words
+       * because the words — «استبدال» and «إزالة من القسم» — wrapped to three
+       * lines inside a 160px card and pushed the thumbnail out of shape.
+       * Both carry an aria-label, so nothing is lost to a screen reader.
+       */
+      swap: "M4 8h11l-3-3M20 16H9l3 3",
+      trash: "M4 7h16M10 7V5h4v2M6 7l1 13h10l1-13M10 11v6M14 11v6",
       crm: "M4 7h6v6H4V7zM14 11h6v6h-6v-6zM10 10h4M12 10v4",
       bell: "M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 21a2 2 0 01-3.4 0",
       message: "M20 15a2 2 0 01-2 2H8l-4 4V5a2 2 0 012-2h12a2 2 0 012 2v10z",
@@ -163,7 +171,7 @@ const _sfc_main$1p = {
         "stroke-linejoin": "round",
         "aria-hidden": "true",
         focusable: "false"
-      }, _attrs))} data-v-64039991><path${ssrRenderAttr("d", PATHS[__props.name] ?? PATHS.dot)} data-v-64039991></path></svg>`);
+      }, _attrs))} data-v-c9c772dd><path${ssrRenderAttr("d", PATHS[__props.name] ?? PATHS.dot)} data-v-c9c772dd></path></svg>`);
     };
   }
 };
@@ -173,7 +181,7 @@ _sfc_main$1p.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/NavIcon.vue");
   return _sfc_setup$1p ? _sfc_setup$1p(props, ctx) : void 0;
 };
-const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1p, [["__scopeId", "data-v-64039991"]]);
+const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1p, [["__scopeId", "data-v-c9c772dd"]]);
 const NAV_GROUPS = [
   {
     key: "overview",
@@ -1750,7 +1758,7 @@ const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   __proto__: null,
   default: Index$5
 }, Symbol.toStringTag, { value: "Module" }));
-const ACCEPT$1 = "image/jpeg,image/png,image/webp,image/avif,image/svg+xml";
+const ACCEPT$1 = "image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif,video/mp4,video/webm";
 const _sfc_main$1g = {
   __name: "MediaPicker",
   __ssrInlineRender: true,
@@ -1822,6 +1830,9 @@ const _sfc_main$1g = {
     function isChosen(item) {
       return chosen.value.includes(item.id);
     }
+    function isVideo(item) {
+      return String(item?.mime ?? "").startsWith("video/");
+    }
     function formatSize(bytes) {
       if (!bytes) return "—";
       const mb = bytes / (1024 * 1024);
@@ -1841,17 +1852,22 @@ const _sfc_main$1g = {
           class: "picker",
           role: "dialog",
           "aria-modal": "true"
-        }, _attrs))} data-v-c3a43226><div class="picker__scrim" data-v-c3a43226></div><div class="picker__panel" data-v-c3a43226><header class="picker__head" data-v-c3a43226><div class="picker__tabs" role="tablist" data-v-c3a43226><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "library" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "library")} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_tab_library"))}</button><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "upload" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "upload")} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_tab_upload"))}</button></div><button type="button" class="btn btn--ghost" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_close"))}</button></header><div class="picker__body" style="${ssrRenderStyle(tab.value === "library" ? null : { display: "none" })}" data-v-c3a43226><div class="picker__main" data-v-c3a43226><input${ssrRenderAttr("value", search.value)} type="search" class="picker__search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-c3a43226>`);
+        }, _attrs))} data-v-d0e5a5eb><div class="picker__scrim" data-v-d0e5a5eb></div><div class="picker__panel" data-v-d0e5a5eb><header class="picker__head" data-v-d0e5a5eb><div class="picker__tabs" role="tablist" data-v-d0e5a5eb><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "library" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "library")} data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_tab_library"))}</button><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "upload" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "upload")} data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_tab_upload"))}</button></div><button type="button" class="btn btn--ghost" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_close"))}</button></header><div class="${ssrRenderClass([{ "has-rail": activeItem.value }, "picker__body"])}" style="${ssrRenderStyle(tab.value === "library" ? null : { display: "none" })}" data-v-d0e5a5eb><div class="picker__main" data-v-d0e5a5eb><input${ssrRenderAttr("value", search.value)} type="search" class="picker__search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-d0e5a5eb>`);
         if (!loading.value && items.value.length === 0) {
-          _push(`<p class="picker__empty" data-v-c3a43226>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
+          _push(`<p class="picker__empty" data-v-d0e5a5eb>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<ul class="grid" data-v-c3a43226><!--[-->`);
+        _push(`<ul class="grid" data-v-d0e5a5eb><!--[-->`);
         ssrRenderList(items.value, (item) => {
-          _push(`<li data-v-c3a43226><button type="button" class="${ssrRenderClass([{ "is-chosen": isChosen(item), "is-active": active.value === item.id }, "grid__cell"])}"${ssrRenderAttr("aria-pressed", isChosen(item))} data-v-c3a43226><img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-c3a43226>`);
+          _push(`<li data-v-d0e5a5eb><button type="button" class="${ssrRenderClass([{ "is-chosen": isChosen(item), "is-active": active.value === item.id }, "grid__cell"])}"${ssrRenderAttr("aria-pressed", isChosen(item))} data-v-d0e5a5eb>`);
+          if (isVideo(item)) {
+            _push(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-d0e5a5eb></video>`);
+          } else {
+            _push(`<img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-d0e5a5eb>`);
+          }
           if (isChosen(item)) {
-            _push(`<span class="grid__tick" aria-hidden="true" data-v-c3a43226>✓</span>`);
+            _push(`<span class="grid__tick" aria-hidden="true" data-v-d0e5a5eb>✓</span>`);
           } else {
             _push(`<!---->`);
           }
@@ -1859,25 +1875,31 @@ const _sfc_main$1g = {
         });
         _push(`<!--]--></ul>`);
         if (page.value < lastPage.value) {
-          _push(`<button type="button" class="btn btn--ghost picker__more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
+          _push(`<button type="button" class="btn btn--ghost picker__more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
         } else {
           _push(`<!---->`);
         }
         _push(`</div>`);
         if (activeItem.value) {
-          _push(`<aside class="picker__side" data-v-c3a43226><img${ssrRenderAttr("src", activeItem.value.thumb)}${ssrRenderAttr("alt", "")} class="picker__preview" data-v-c3a43226><dl class="facts" data-v-c3a43226><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-c3a43226>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-c3a43226>`);
-          if (activeItem.value.width) {
-            _push(`<span data-v-c3a43226>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+          _push(`<aside class="picker__side" data-v-d0e5a5eb>`);
+          if (isVideo(activeItem.value)) {
+            _push(`<video${ssrRenderAttr("src", activeItem.value.url)} class="picker__preview" muted playsinline controls data-v-d0e5a5eb></video>`);
           } else {
-            _push(`<span data-v-c3a43226>—</span>`);
+            _push(`<img${ssrRenderAttr("src", activeItem.value.thumb)}${ssrRenderAttr("alt", "")} class="picker__preview" data-v-d0e5a5eb>`);
           }
-          _push(`</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-c3a43226>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-c3a43226>${ssrInterpolate(formatDate(activeItem.value.createdAt))}</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_used_in"))}</dt><dd data-v-c3a43226>${ssrInterpolate(activeItem.value.usageCount ? unref(t)("admin.media_usage_count", { count: activeItem.value.usageCount }) : unref(t)("admin.media_unused"))}</dd></dl><!--[-->`);
+          _push(`<dl class="facts" data-v-d0e5a5eb><dt data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-d0e5a5eb>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-d0e5a5eb>`);
+          if (activeItem.value.width) {
+            _push(`<span data-v-d0e5a5eb>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+          } else {
+            _push(`<span data-v-d0e5a5eb>—</span>`);
+          }
+          _push(`</dd><dt data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-d0e5a5eb>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-d0e5a5eb>${ssrInterpolate(formatDate(activeItem.value.createdAt))}</dd><dt data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_used_in"))}</dt><dd data-v-d0e5a5eb>${ssrInterpolate(activeItem.value.usageCount ? unref(t)("admin.media_usage_count", { count: activeItem.value.usageCount }) : unref(t)("admin.media_unused"))}</dd></dl><!--[-->`);
           ssrRenderList(LOCALES, (code) => {
-            _push(`<div class="picker__alt" data-v-c3a43226><label${ssrRenderAttr("for", `alt-${code}`)} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-c3a43226></div>`);
+            _push(`<div class="picker__alt" data-v-d0e5a5eb><label${ssrRenderAttr("for", `alt-${code}`)} data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-d0e5a5eb></div>`);
           });
-          _push(`<!--]--><p class="picker__hint" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.alt_text_hint"))}</p>`);
+          _push(`<!--]--><p class="picker__hint" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.alt_text_hint"))}</p>`);
           if (savingAlt.value) {
-            _push(`<p class="picker__hint" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
+            _push(`<p class="picker__hint" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
           } else {
             _push(`<!---->`);
           }
@@ -1885,17 +1907,17 @@ const _sfc_main$1g = {
         } else {
           _push(`<!---->`);
         }
-        _push(`</div><div class="picker__body" style="${ssrRenderStyle(tab.value === "upload" ? null : { display: "none" })}" data-v-c3a43226><div class="picker__main" data-v-c3a43226><div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-c3a43226><p class="drop__label" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT$1)} class="drop__input" data-v-c3a43226></div>`);
+        _push(`</div><div class="picker__body" style="${ssrRenderStyle(tab.value === "upload" ? null : { display: "none" })}" data-v-d0e5a5eb><div class="picker__main" data-v-d0e5a5eb><div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-d0e5a5eb><p class="drop__label" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT$1)} class="drop__input" data-v-d0e5a5eb></div>`);
         if (uploads.value.length) {
-          _push(`<ul class="queue" data-v-c3a43226><!--[-->`);
+          _push(`<ul class="queue" data-v-d0e5a5eb><!--[-->`);
           ssrRenderList(uploads.value, (entry, i) => {
-            _push(`<li class="queue__row" data-v-c3a43226><span class="queue__name" dir="auto" data-v-c3a43226>${ssrInterpolate(entry.name)}</span>`);
+            _push(`<li class="queue__row" data-v-d0e5a5eb><span class="queue__name" dir="auto" data-v-d0e5a5eb>${ssrInterpolate(entry.name)}</span>`);
             if (entry.error) {
-              _push(`<span class="queue__error" data-v-c3a43226>${ssrInterpolate(entry.error)}</span>`);
+              _push(`<span class="queue__error" data-v-d0e5a5eb>${ssrInterpolate(entry.error)}</span>`);
             } else if (entry.done) {
-              _push(`<span class="queue__done" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
+              _push(`<span class="queue__done" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
             } else {
-              _push(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-c3a43226><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-c3a43226></span></span>`);
+              _push(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-d0e5a5eb><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-d0e5a5eb></span></span>`);
             }
             _push(`</li>`);
           });
@@ -1903,7 +1925,7 @@ const _sfc_main$1g = {
         } else {
           _push(`<!---->`);
         }
-        _push(`</div></div><footer class="picker__foot" data-v-c3a43226><p class="picker__count" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_selected", { count: chosen.value.length }))}</p><button type="button" class="btn btn--primary"${ssrIncludeBooleanAttr(!canInsert.value) ? " disabled" : ""} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_insert_count", { count: chosen.value.length }))}</button></footer></div></div>`);
+        _push(`</div></div><footer class="picker__foot" data-v-d0e5a5eb><p class="picker__count" data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_selected", { count: chosen.value.length }))}</p><button type="button" class="btn btn--primary"${ssrIncludeBooleanAttr(!canInsert.value) ? " disabled" : ""} data-v-d0e5a5eb>${ssrInterpolate(unref(t)("admin.media_insert_count", { count: chosen.value.length }))}</button></footer></div></div>`);
       } else {
         _push(`<!---->`);
       }
@@ -1916,7 +1938,7 @@ _sfc_main$1g.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/MediaPicker.vue");
   return _sfc_setup$1g ? _sfc_setup$1g(props, ctx) : void 0;
 };
-const MediaPicker = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-c3a43226"]]);
+const MediaPicker = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-d0e5a5eb"]]);
 const _sfc_main$1f = {
   __name: "MediaSlot",
   __ssrInlineRender: true,
@@ -1964,42 +1986,63 @@ const _sfc_main$1f = {
         return true;
       });
     }
+    function isVideo(item) {
+      return String(item?.mime ?? "").startsWith("video/");
+    }
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "slot" }, _attrs))} data-v-c9ff8c37>`);
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "slot" }, _attrs))} data-v-c8a33519>`);
       if (__props.label) {
-        _push(`<p class="slot__label" data-v-c9ff8c37>${ssrInterpolate(__props.label)}</p>`);
+        _push(`<p class="slot__label" data-v-c8a33519>${ssrInterpolate(__props.label)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (items.value.length) {
-        _push(`<ul class="slot__grid" data-v-c9ff8c37><!--[-->`);
+        _push(`<ul class="slot__grid" data-v-c8a33519><!--[-->`);
         ssrRenderList(items.value, (item, index) => {
-          _push(`<li class="slot__cell"${ssrRenderAttr("draggable", !single.value)} data-v-c9ff8c37><img${ssrRenderAttr("src", item.thumb ?? item.url)}${ssrRenderAttr("alt", item.translations?.[locale.value]?.alt_text ?? "")} data-v-c9ff8c37><div class="slot__tools" data-v-c9ff8c37><button type="button" class="btn btn--ghost" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_replace"))}</button><button type="button" class="btn btn--ghost danger" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_remove"))}</button></div>`);
+          _push(`<li class="slot__cell"${ssrRenderAttr("draggable", !single.value)} data-v-c8a33519>`);
+          if (isVideo(item)) {
+            _push(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-c8a33519></video>`);
+          } else {
+            _push(`<img${ssrRenderAttr("src", item.thumb ?? item.url)}${ssrRenderAttr("alt", item.translations?.[locale.value]?.alt_text ?? "")} data-v-c8a33519>`);
+          }
+          _push(`<div class="slot__tools" data-v-c8a33519><button type="button" class="icon-btn"${ssrRenderAttr("aria-label", unref(t)("admin.media_replace"))}${ssrRenderAttr("title", unref(t)("admin.media_replace"))} data-v-c8a33519>`);
+          _push(ssrRenderComponent(NavIcon, {
+            name: "swap",
+            size: 16,
+            muted: false
+          }, null, _parent));
+          _push(`</button><button type="button" class="icon-btn danger"${ssrRenderAttr("aria-label", unref(t)("admin.media_remove"))}${ssrRenderAttr("title", unref(t)("admin.media_remove"))} data-v-c8a33519>`);
+          _push(ssrRenderComponent(NavIcon, {
+            name: "trash",
+            size: 16,
+            muted: false
+          }, null, _parent));
+          _push(`</button>`);
           if (!single.value) {
-            _push(`<div class="slot__order" data-v-c9ff8c37><button type="button" class="btn btn--ghost"${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))} data-v-c9ff8c37> ↑ </button><button type="button" class="btn btn--ghost"${ssrIncludeBooleanAttr(index === items.value.length - 1) ? " disabled" : ""}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))} data-v-c9ff8c37> ↓ </button></div>`);
+            _push(`<!--[--><button type="button" class="icon-btn"${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrRenderAttr("title", unref(t)("admin.move_up"))} data-v-c8a33519> ↑ </button><button type="button" class="icon-btn"${ssrIncludeBooleanAttr(index === items.value.length - 1) ? " disabled" : ""}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrRenderAttr("title", unref(t)("admin.move_down"))} data-v-c8a33519> ↓ </button><!--]-->`);
           } else {
             _push(`<!---->`);
           }
-          _push(`</li>`);
+          _push(`</div></li>`);
         });
         _push(`<!--]--></ul>`);
       } else {
         _push(`<!---->`);
       }
       if (!full.value) {
-        _push(`<button type="button" class="btn btn--ghost slot__add" data-v-c9ff8c37>${ssrInterpolate(single.value ? unref(t)("admin.media_add_image") : unref(t)("admin.media_add_images"))}</button>`);
+        _push(`<button type="button" class="btn btn--ghost slot__add" data-v-c8a33519>${ssrInterpolate(single.value ? unref(t)("admin.media_add_image") : unref(t)("admin.media_add_images"))}</button>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.hint) {
-        _push(`<p class="slot__hint" data-v-c9ff8c37>${ssrInterpolate(__props.hint)}</p>`);
+        _push(`<p class="slot__hint" data-v-c8a33519>${ssrInterpolate(__props.hint)}</p>`);
       } else if (items.value.length > 1) {
-        _push(`<p class="slot__hint" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_reorder_hint"))}</p>`);
+        _push(`<p class="slot__hint" data-v-c8a33519>${ssrInterpolate(unref(t)("admin.media_reorder_hint"))}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (items.value.length) {
-        _push(`<p class="slot__hint" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_remove_hint"))}</p>`);
+        _push(`<p class="slot__hint" data-v-c8a33519>${ssrInterpolate(unref(t)("admin.media_remove_hint"))}</p>`);
       } else {
         _push(`<!---->`);
       }
@@ -2020,7 +2063,7 @@ _sfc_main$1f.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/MediaSlot.vue");
   return _sfc_setup$1f ? _sfc_setup$1f(props, ctx) : void 0;
 };
-const MediaSlot = /* @__PURE__ */ _export_sfc(_sfc_main$1f, [["__scopeId", "data-v-c9ff8c37"]]);
+const MediaSlot = /* @__PURE__ */ _export_sfc(_sfc_main$1f, [["__scopeId", "data-v-c8a33519"]]);
 const _sfc_main$1e = {
   __name: "Edit",
   __ssrInlineRender: true,
@@ -5007,8 +5050,8 @@ const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.de
   __proto__: null,
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
-const MAX_MB = 10;
-const ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/svg+xml";
+const MAX_MB = 64;
+const ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif,video/mp4,video/webm";
 const _sfc_main$15 = {
   __name: "Index",
   __ssrInlineRender: true,
@@ -5126,54 +5169,68 @@ const _sfc_main$15 = {
       queue(event.target.files);
       event.target.value = "";
     }
-    function queue(fileList) {
+    async function queue(fileList) {
       const files = Array.from(fileList ?? []);
       if (files.length === 0) return;
-      files.forEach((file) => {
+      for (const file of files) {
         const entry = { name: file.name, progress: 0, error: null, done: false };
         uploads.value.push(entry);
         const tooBig = file.size > MAX_MB * 1024 * 1024;
         const wrongType = !ACCEPT.split(",").includes(file.type);
         if (tooBig || wrongType) {
           entry.error = tooBig ? t("admin.media_too_large", { max: MAX_MB }) : t("admin.media_wrong_type");
-          return;
+          continue;
         }
-        send(file, entry);
-      });
+        await send(file, entry);
+      }
     }
     function send(file, entry) {
-      const body = new FormData();
-      body.append("file", file);
-      const request = new XMLHttpRequest();
-      request.open("POST", "/admin/media/library");
-      request.setRequestHeader("Accept", "application/json");
-      request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-      request.setRequestHeader("X-CSRF-TOKEN", csrf());
-      request.upload.addEventListener("progress", (event) => {
-        if (event.lengthComputable) entry.progress = Math.round(event.loaded / event.total * 100);
-      });
-      request.addEventListener("load", () => {
-        if (request.status === 201) {
-          entry.done = true;
-          entry.progress = 100;
-          const item = JSON.parse(request.responseText).item;
-          items.value = [item, ...items.value];
-          total.value += 1;
-          active.value = item.id;
-        } else {
-          let message = t("admin.media_upload_failed");
-          try {
-            const parsed = JSON.parse(request.responseText);
-            message = parsed.errors?.file?.[0] ?? parsed.message ?? message;
-          } catch {
+      return new Promise((resolve) => {
+        const body = new FormData();
+        body.append("file", file);
+        const request = new XMLHttpRequest();
+        request.open("POST", "/admin/media/library");
+        request.setRequestHeader("Accept", "application/json");
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        request.setRequestHeader("X-CSRF-TOKEN", csrf());
+        request.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            entry.progress = Math.round(event.loaded / event.total * 100);
           }
-          entry.error = message;
+        });
+        request.addEventListener("load", () => {
+          if (request.status === 201) {
+            entry.done = true;
+            entry.progress = 100;
+            const item = JSON.parse(request.responseText).item;
+            items.value = [item, ...items.value];
+            total.value += 1;
+            active.value = item.id;
+          } else {
+            entry.error = failureMessage(request);
+          }
+          resolve();
+        });
+        request.addEventListener("error", () => {
+          entry.error = t("admin.media_upload_failed");
+          resolve();
+        });
+        request.send(body);
+      });
+    }
+    function failureMessage(request) {
+      if (request.status === 422) {
+        try {
+          const parsed = JSON.parse(request.responseText);
+          return parsed.errors?.file?.[0] ?? parsed.message ?? t("admin.media_upload_failed");
+        } catch {
         }
-      });
-      request.addEventListener("error", () => {
-        entry.error = t("admin.media_upload_failed");
-      });
-      request.send(body);
+      }
+      if (request.status === 413) return t("admin.media_too_large", { max: MAX_MB });
+      return t("admin.media_upload_failed");
+    }
+    function isVideo(item) {
+      return String(item?.mime ?? "").startsWith("video/");
     }
     function formatSize(bytes) {
       if (!bytes) return "—";
@@ -5199,17 +5256,17 @@ const _sfc_main$15 = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-de500ec9${_scopeId2}><p class="drop__label" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT)} class="drop__input" data-v-de500ec9${_scopeId2}></div>`);
+                  _push3(`<div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-1c68e8ad${_scopeId2}><p class="drop__label" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT)} class="drop__input" data-v-1c68e8ad${_scopeId2}></div>`);
                   if (uploads.value.length) {
-                    _push3(`<ul class="queue" data-v-de500ec9${_scopeId2}><!--[-->`);
+                    _push3(`<ul class="queue" data-v-1c68e8ad${_scopeId2}><!--[-->`);
                     ssrRenderList(uploads.value, (entry, i) => {
-                      _push3(`<li class="queue__row" data-v-de500ec9${_scopeId2}><span class="queue__name" dir="auto" data-v-de500ec9${_scopeId2}>${ssrInterpolate(entry.name)}</span>`);
+                      _push3(`<li class="queue__row" data-v-1c68e8ad${_scopeId2}><span class="queue__name" dir="auto" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(entry.name)}</span>`);
                       if (entry.error) {
-                        _push3(`<span class="queue__error" data-v-de500ec9${_scopeId2}>${ssrInterpolate(entry.error)}</span>`);
+                        _push3(`<span class="queue__error" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(entry.error)}</span>`);
                       } else if (entry.done) {
-                        _push3(`<span class="queue__done" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
+                        _push3(`<span class="queue__done" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
                       } else {
-                        _push3(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-de500ec9${_scopeId2}><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-de500ec9${_scopeId2}></span></span>`);
+                        _push3(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-1c68e8ad${_scopeId2}><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-1c68e8ad${_scopeId2}></span></span>`);
                       }
                       _push3(`</li>`);
                     });
@@ -5285,51 +5342,63 @@ const _sfc_main$15 = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<input${ssrRenderAttr("value", search.value)} type="search" class="search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-de500ec9${_scopeId2}><div class="screen" data-v-de500ec9${_scopeId2}><div class="screen__main" data-v-de500ec9${_scopeId2}>`);
+                  _push3(`<input${ssrRenderAttr("value", search.value)} type="search" class="search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-1c68e8ad${_scopeId2}><div class="screen" data-v-1c68e8ad${_scopeId2}><div class="screen__main" data-v-1c68e8ad${_scopeId2}>`);
                   if (!loading.value && items.value.length === 0) {
-                    _push3(`<p class="muted" data-v-de500ec9${_scopeId2}>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
+                    _push3(`<p class="muted" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
                   } else {
                     _push3(`<!---->`);
                   }
-                  _push3(`<ul class="grid" data-v-de500ec9${_scopeId2}><!--[-->`);
+                  _push3(`<ul class="grid" data-v-1c68e8ad${_scopeId2}><!--[-->`);
                   ssrRenderList(items.value, (item) => {
-                    _push3(`<li data-v-de500ec9${_scopeId2}><button type="button" class="${ssrRenderClass([{ "is-active": active.value === item.id }, "grid__cell"])}" data-v-de500ec9${_scopeId2}><img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-de500ec9${_scopeId2}></button></li>`);
+                    _push3(`<li data-v-1c68e8ad${_scopeId2}><button type="button" class="${ssrRenderClass([{ "is-active": active.value === item.id }, "grid__cell"])}" data-v-1c68e8ad${_scopeId2}>`);
+                    if (isVideo(item)) {
+                      _push3(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-1c68e8ad${_scopeId2}></video>`);
+                    } else {
+                      _push3(`<img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-1c68e8ad${_scopeId2}>`);
+                    }
+                    _push3(`</button></li>`);
                   });
                   _push3(`<!--]--></ul>`);
                   if (page.value < lastPage.value) {
-                    _push3(`<button type="button" class="btn btn--ghost more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
+                    _push3(`<button type="button" class="btn btn--ghost more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
                   } else {
                     _push3(`<!---->`);
                   }
                   _push3(`</div>`);
                   if (activeItem.value) {
-                    _push3(`<aside class="screen__side" data-v-de500ec9${_scopeId2}><img${ssrRenderAttr("src", activeItem.value.thumb)} alt="" class="preview" data-v-de500ec9${_scopeId2}><dl class="facts" data-v-de500ec9${_scopeId2}><dt data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-de500ec9${_scopeId2}>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-de500ec9${_scopeId2}>`);
-                    if (activeItem.value.width) {
-                      _push3(`<span data-v-de500ec9${_scopeId2}>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+                    _push3(`<aside class="screen__side" data-v-1c68e8ad${_scopeId2}>`);
+                    if (isVideo(activeItem.value)) {
+                      _push3(`<video${ssrRenderAttr("src", activeItem.value.url)} class="preview" muted playsinline controls data-v-1c68e8ad${_scopeId2}></video>`);
                     } else {
-                      _push3(`<span data-v-de500ec9${_scopeId2}>—</span>`);
+                      _push3(`<img${ssrRenderAttr("src", activeItem.value.thumb)} alt="" class="preview" data-v-1c68e8ad${_scopeId2}>`);
                     }
-                    _push3(`</dd><dt data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-de500ec9${_scopeId2}>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-de500ec9${_scopeId2}>${ssrInterpolate(formatDate(activeItem.value.createdAt))}</dd></dl><!--[-->`);
+                    _push3(`<dl class="facts" data-v-1c68e8ad${_scopeId2}><dt data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-1c68e8ad${_scopeId2}>`);
+                    if (activeItem.value.width) {
+                      _push3(`<span data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+                    } else {
+                      _push3(`<span data-v-1c68e8ad${_scopeId2}>—</span>`);
+                    }
+                    _push3(`</dd><dt data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(formatDate(activeItem.value.createdAt))}</dd></dl><!--[-->`);
                     ssrRenderList(__props.locales, (code) => {
-                      _push3(`<div class="alt" data-v-de500ec9${_scopeId2}><label${ssrRenderAttr("for", `alt-${code}`)} data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-de500ec9${_scopeId2}></div>`);
+                      _push3(`<div class="alt" data-v-1c68e8ad${_scopeId2}><label${ssrRenderAttr("for", `alt-${code}`)} data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-1c68e8ad${_scopeId2}></div>`);
                     });
                     _push3(`<!--]-->`);
                     if (savingAlt.value) {
-                      _push3(`<p class="muted" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
+                      _push3(`<p class="muted" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
                     } else {
                       _push3(`<!---->`);
                     }
-                    _push3(`<h3 class="side__title" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_used_in"))}</h3>`);
+                    _push3(`<h3 class="side__title" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_used_in"))}</h3>`);
                     if (usage.value.length === 0) {
-                      _push3(`<p class="muted" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_unused"))}</p>`);
+                      _push3(`<p class="muted" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_unused"))}</p>`);
                     } else {
-                      _push3(`<ul class="usage" data-v-de500ec9${_scopeId2}><!--[-->`);
+                      _push3(`<ul class="usage" data-v-1c68e8ad${_scopeId2}><!--[-->`);
                       ssrRenderList(usage.value, (place, i) => {
-                        _push3(`<li data-v-de500ec9${_scopeId2}>${ssrInterpolate(placeLabel(place))}</li>`);
+                        _push3(`<li data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(placeLabel(place))}</li>`);
                       });
                       _push3(`<!--]--></ul>`);
                     }
-                    _push3(`<button type="button" class="btn btn--ghost danger delete" data-v-de500ec9${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_delete_forever"))}</button></aside>`);
+                    _push3(`<button type="button" class="btn btn--ghost danger delete" data-v-1c68e8ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_delete_forever"))}</button></aside>`);
                   } else {
                     _push3(`<!---->`);
                   }
@@ -5360,11 +5429,18 @@ const _sfc_main$15 = {
                                 class: ["grid__cell", { "is-active": active.value === item.id }],
                                 onClick: ($event) => active.value = item.id
                               }, [
-                                createVNode("img", {
+                                isVideo(item) ? (openBlock(), createBlock("video", {
+                                  key: 0,
+                                  src: item.url,
+                                  muted: "",
+                                  playsinline: "",
+                                  preload: "metadata"
+                                }, null, 8, ["src"])) : (openBlock(), createBlock("img", {
+                                  key: 1,
                                   src: item.thumb,
                                   alt: item.translations[locale.value]?.alt_text ?? "",
                                   loading: "lazy"
-                                }, null, 8, ["src", "alt"])
+                                }, null, 8, ["src", "alt"]))
                               ], 10, ["onClick"])
                             ]);
                           }), 128))
@@ -5381,11 +5457,19 @@ const _sfc_main$15 = {
                         key: 0,
                         class: "screen__side"
                       }, [
-                        createVNode("img", {
+                        isVideo(activeItem.value) ? (openBlock(), createBlock("video", {
+                          key: 0,
+                          src: activeItem.value.url,
+                          class: "preview",
+                          muted: "",
+                          playsinline: "",
+                          controls: ""
+                        }, null, 8, ["src"])) : (openBlock(), createBlock("img", {
+                          key: 1,
                           src: activeItem.value.thumb,
                           alt: "",
                           class: "preview"
-                        }, null, 8, ["src"]),
+                        }, null, 8, ["src"])),
                         createVNode("dl", { class: "facts" }, [
                           createVNode("dt", null, toDisplayString(unref(t)("admin.media_file_name")), 1),
                           createVNode("dd", { class: "facts__file" }, toDisplayString(activeItem.value.fileName), 1),
@@ -5418,15 +5502,15 @@ const _sfc_main$15 = {
                           ]);
                         }), 128)),
                         savingAlt.value ? (openBlock(), createBlock("p", {
-                          key: 0,
+                          key: 2,
                           class: "muted"
                         }, toDisplayString(unref(t)("admin.saving")), 1)) : createCommentVNode("", true),
                         createVNode("h3", { class: "side__title" }, toDisplayString(unref(t)("admin.media_used_in")), 1),
                         usage.value.length === 0 ? (openBlock(), createBlock("p", {
-                          key: 1,
+                          key: 3,
                           class: "muted"
                         }, toDisplayString(unref(t)("admin.media_unused")), 1)) : (openBlock(), createBlock("ul", {
-                          key: 2,
+                          key: 4,
                           class: "usage"
                         }, [
                           (openBlock(true), createBlock(Fragment, null, renderList(usage.value, (place, i) => {
@@ -5538,11 +5622,18 @@ const _sfc_main$15 = {
                               class: ["grid__cell", { "is-active": active.value === item.id }],
                               onClick: ($event) => active.value = item.id
                             }, [
-                              createVNode("img", {
+                              isVideo(item) ? (openBlock(), createBlock("video", {
+                                key: 0,
+                                src: item.url,
+                                muted: "",
+                                playsinline: "",
+                                preload: "metadata"
+                              }, null, 8, ["src"])) : (openBlock(), createBlock("img", {
+                                key: 1,
                                 src: item.thumb,
                                 alt: item.translations[locale.value]?.alt_text ?? "",
                                 loading: "lazy"
-                              }, null, 8, ["src", "alt"])
+                              }, null, 8, ["src", "alt"]))
                             ], 10, ["onClick"])
                           ]);
                         }), 128))
@@ -5559,11 +5650,19 @@ const _sfc_main$15 = {
                       key: 0,
                       class: "screen__side"
                     }, [
-                      createVNode("img", {
+                      isVideo(activeItem.value) ? (openBlock(), createBlock("video", {
+                        key: 0,
+                        src: activeItem.value.url,
+                        class: "preview",
+                        muted: "",
+                        playsinline: "",
+                        controls: ""
+                      }, null, 8, ["src"])) : (openBlock(), createBlock("img", {
+                        key: 1,
                         src: activeItem.value.thumb,
                         alt: "",
                         class: "preview"
-                      }, null, 8, ["src"]),
+                      }, null, 8, ["src"])),
                       createVNode("dl", { class: "facts" }, [
                         createVNode("dt", null, toDisplayString(unref(t)("admin.media_file_name")), 1),
                         createVNode("dd", { class: "facts__file" }, toDisplayString(activeItem.value.fileName), 1),
@@ -5596,15 +5695,15 @@ const _sfc_main$15 = {
                         ]);
                       }), 128)),
                       savingAlt.value ? (openBlock(), createBlock("p", {
-                        key: 0,
+                        key: 2,
                         class: "muted"
                       }, toDisplayString(unref(t)("admin.saving")), 1)) : createCommentVNode("", true),
                       createVNode("h3", { class: "side__title" }, toDisplayString(unref(t)("admin.media_used_in")), 1),
                       usage.value.length === 0 ? (openBlock(), createBlock("p", {
-                        key: 1,
+                        key: 3,
                         class: "muted"
                       }, toDisplayString(unref(t)("admin.media_unused")), 1)) : (openBlock(), createBlock("ul", {
-                        key: 2,
+                        key: 4,
                         class: "usage"
                       }, [
                         (openBlock(true), createBlock(Fragment, null, renderList(usage.value, (place, i) => {
@@ -5635,7 +5734,7 @@ _sfc_main$15.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Media/Index.vue");
   return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
 };
-const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-de500ec9"]]);
+const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-1c68e8ad"]]);
 const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$2
@@ -7585,7 +7684,7 @@ const _sfc_main$$ = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<form class="add" data-v-ac8b5424${_scopeId2}>`);
+                  _push3(`<form class="add" data-v-e3c63912${_scopeId2}>`);
                   _push3(ssrRenderComponent(Field, {
                     modelValue: unref(addForm).type,
                     "onUpdate:modelValue": ($event) => unref(addForm).type = $event,
@@ -7593,7 +7692,7 @@ const _sfc_main$$ = {
                     type: "select",
                     options: __props.types.map((ty) => ({ value: ty, label: ty }))
                   }, null, _parent3, _scopeId2));
-                  _push3(`<button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-ac8b5424${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button></form>`);
+                  _push3(`<button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-e3c63912${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button></form>`);
                 } else {
                   return [
                     createVNode("form", {
@@ -7619,21 +7718,21 @@ const _sfc_main$$ = {
               _: 1
             }, _parent2, _scopeId));
             if (!__props.sections.length) {
-              _push2(`<p class="empty" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+              _push2(`<p class="empty" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<ol class="list" data-v-ac8b5424${_scopeId}><!--[-->`);
+            _push2(`<ol class="list" data-v-e3c63912${_scopeId}><!--[-->`);
             ssrRenderList(__props.sections, (section, index) => {
-              _push2(`<li class="item" draggable="true" data-v-ac8b5424${_scopeId}><header class="item__head" data-v-ac8b5424${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-ac8b5424${_scopeId}><span class="item__type latin" data-v-ac8b5424${_scopeId}>${ssrInterpolate(section.type)}</span>`);
+              _push2(`<li class="item" draggable="true" data-v-e3c63912${_scopeId}><header class="item__head" data-v-e3c63912${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-e3c63912${_scopeId}><span class="item__type latin" data-v-e3c63912${_scopeId}>${ssrInterpolate(section.type)}</span>`);
               if (!section.isActive) {
-                _push2(`<span class="chip" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
+                _push2(`<span class="chip" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`</button><div class="item__tools" data-v-ac8b5424${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></header>`);
+              _push2(`</button><div class="item__tools" data-v-e3c63912${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-e3c63912${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-e3c63912${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></header>`);
               if (open.value === section.id) {
-                _push2(`<div class="item__body" data-v-ac8b5424${_scopeId}>`);
+                _push2(`<div class="item__body" data-v-e3c63912${_scopeId}>`);
                 _push2(ssrRenderComponent(Field, {
                   modelValue: section.isActive,
                   "onUpdate:modelValue": ($event) => section.isActive = $event,
@@ -7651,6 +7750,7 @@ const _sfc_main$$ = {
                     "model-value": section.media?.image ?? [],
                     limit: 1,
                     label: unref(t)("admin.section_image"),
+                    hint: section.type === "hero" ? unref(t)("admin.media_motion_hint") : null,
                     "onUpdate:modelValue": (v) => setMedia(section, "image", v)
                   }, null, _parent2, _scopeId));
                 } else {
@@ -7666,9 +7766,9 @@ const _sfc_main$$ = {
                   _push2(`<!---->`);
                 }
                 if (itemSchema(section)) {
-                  _push2(`<div class="items" data-v-ac8b5424${_scopeId}><div class="items__head" data-v-ac8b5424${_scopeId}><p class="media__label" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--ghost" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</button></div><!--[-->`);
+                  _push2(`<div class="items" data-v-e3c63912${_scopeId}><div class="items__head" data-v-e3c63912${_scopeId}><p class="media__label" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--ghost" type="button" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</button></div><!--[-->`);
                   ssrRenderList(items(section), (item, i) => {
-                    _push2(`<div class="items__row" data-v-ac8b5424${_scopeId}><!--[-->`);
+                    _push2(`<div class="items__row" data-v-e3c63912${_scopeId}><!--[-->`);
                     ssrRenderList(itemSchema(section), (f) => {
                       _push2(ssrRenderComponent(Field, {
                         key: f.key,
@@ -7679,13 +7779,13 @@ const _sfc_main$$ = {
                         rows: 2
                       }, null, _parent2, _scopeId));
                     });
-                    _push2(`<!--]--><div class="items__tools" data-v-ac8b5424${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></div>`);
+                    _push2(`<!--]--><div class="items__tools" data-v-e3c63912${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-e3c63912${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-e3c63912${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></div>`);
                   });
                   _push2(`<!--]--></div>`);
                 } else {
                   _push2(`<!---->`);
                 }
-                _push2(`<details class="advanced" data-v-ac8b5424${_scopeId}><summary data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
+                _push2(`<details class="advanced" data-v-e3c63912${_scopeId}><summary data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
                 _push2(ssrRenderComponent(Field, {
                   label: "settings",
                   type: "textarea",
@@ -7694,7 +7794,7 @@ const _sfc_main$$ = {
                   error: section.settingsError,
                   "onUpdate:modelValue": (v) => updateSettings(section, v)
                 }, null, _parent2, _scopeId));
-                _push2(`</details><button class="btn btn--cta" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</button></div>`);
+                _push2(`</details><button class="btn btn--cta" type="button" data-v-e3c63912${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</button></div>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -7799,8 +7899,9 @@ const _sfc_main$$ = {
                         "model-value": section.media?.image ?? [],
                         limit: 1,
                         label: unref(t)("admin.section_image"),
+                        hint: section.type === "hero" ? unref(t)("admin.media_motion_hint") : null,
                         "onUpdate:modelValue": (v) => setMedia(section, "image", v)
-                      }, null, 8, ["model-value", "label", "onUpdate:modelValue"])) : createCommentVNode("", true),
+                      }, null, 8, ["model-value", "label", "hint", "onUpdate:modelValue"])) : createCommentVNode("", true),
                       GALLERY_TYPES.includes(section.type) ? (openBlock(), createBlock(MediaSlot, {
                         key: 1,
                         "model-value": section.media?.gallery ?? [],
@@ -7892,7 +7993,7 @@ _sfc_main$$.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Sections/Builder.vue");
   return _sfc_setup$$ ? _sfc_setup$$(props, ctx) : void 0;
 };
-const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-ac8b5424"]]);
+const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-e3c63912"]]);
 const __vite_glob_0_17 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Builder

@@ -121,7 +121,24 @@ class Section extends Model implements HasMedia
         $attached = $this->attachedMedia('image')->first();
 
         if ($attached !== null) {
-            return $this->mediaPayload($attached);
+            $payload = $this->mediaPayload($attached);
+
+            /*
+             * A moving hero keeps its poster.
+             *
+             * Hero.vue paints the poster as the pane's ground so the section
+             * is never an empty box while a 20MB GIF is still arriving. The
+             * poster is a second, much smaller still — it has no slot of its
+             * own, so it stays in `settings` and is carried across here
+             * rather than being lost the moment the clip is chosen.
+             */
+            $poster = data_get($this->settings, 'image.poster');
+
+            if (is_string($poster) && $poster !== '') {
+                $payload['poster'] = $poster;
+            }
+
+            return $payload;
         }
 
         $media = $this->getFirstMedia('image');

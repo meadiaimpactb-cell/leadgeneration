@@ -32,8 +32,18 @@ const { t } = useTranslation();
 const locale = computed(() => usePage().props.locale ?? 'ar');
 
 const LOCALES = ['ar', 'en'];
-const MAX_MB = 10;
-const ACCEPT = 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml';
+const MAX_MB = 64;
+
+/**
+ * Stills and motion both.
+ *
+ * The hero has always been able to render a moving file — Hero.vue turns an
+ * mp4/webm into a muted looping <video> and shows a GIF as an <img> — but the
+ * picker refused all three, so the one section built for motion could not be
+ * given any from the panel.
+ */
+const ACCEPT =
+    'image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif,video/mp4,video/webm';
 
 const tab = ref('library');
 const items = ref([]);
@@ -201,13 +211,13 @@ function onPick(event) {
  * all of them, and a bar that sits at 40% for a minute is what makes an editor
  * reload the page halfway through an upload.
  */
-function queue(fileList) {
+async function queue(fileList) {
     const files = Array.from(fileList ?? []);
     if (files.length === 0) return;
 
     tab.value = 'upload';
 
-    files.forEach((file) => {
+    for (const file of files) {
         const entry = { name: file.name, progress: 0, error: null, done: false };
         uploads.value.push(entry);
 
@@ -215,74 +225,113 @@ function queue(fileList) {
         const wrongType = !ACCEPT.split(',').includes(file.type);
 
         // Checked here as well as on the server: the server is the authority,
-        // but a 10MB upload that fails after 10MB of waiting is a worse way to
+        // but a 60MB upload that fails after 60MB of waiting is a worse way to
         // learn the limit than being told before it starts.
         if (tooBig || wrongType) {
             entry.error = tooBig ? t('admin.media_too_large', { max: MAX_MB }) : t('admin.media_wrong_type');
-            return;
+            continue;
         }
 
-        send(file, entry);
+        /*
+         * One at a time, awaited.
+         *
+         * They used to all leave at once. Nine parallel uploads of camera
+         * originals put nine PHP workers to work generating thumbnails, and
+         * the ones that lost the race came back with session and connection
+         * errors that had nothing to do with the file — the upload had not
+         * failed, the server had run out of room to answer. Sequential is
+         * slower to start and finishes sooner, and every bar means something.
+         */
+        // eslint-disable-next-line no-await-in-loop
+        await send(file, entry);
+    }
+}
+
+/** Resolves when this file is finished, successfully or not. */
+function send(file, entry) {
+    return new Promise((resolve) => {
+        const body = new FormData();
+        body.append('file', file);
+
+        // XHR rather than fetch: fetch still cannot report upload progress.
+        const request = new XMLHttpRequest();
+
+        request.open('POST', '/admin/media/library');
+        request.setRequestHeader('Accept', 'application/json');
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.setRequestHeader(
+            'X-CSRF-TOKEN',
+            document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+        );
+
+        request.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+                entry.progress = Math.round((event.loaded / event.total) * 100);
+            }
+        });
+
+        request.addEventListener('load', async () => {
+            if (request.status === 201) {
+                entry.done = true;
+                entry.progress = 100;
+
+                const item = JSON.parse(request.responseText).item;
+
+                items.value = [item, ...items.value];
+                total.value += 1;
+
+                // Selected the moment it arrives, so the common case — upload,
+                // insert — is two clicks and not a hunt through the grid.
+                if (single.value) chosen.value = [item.id];
+                else chosen.value.push(item.id);
+
+                active.value = item.id;
+
+                await nextTick();
+            } else {
+                entry.error = failureMessage(request);
+            }
+
+            resolve();
+        });
+
+        request.addEventListener('error', () => {
+            entry.error = t('admin.media_upload_failed');
+            resolve();
+        });
+
+        request.send(body);
     });
 }
 
-function send(file, entry) {
-    const body = new FormData();
-    body.append('file', file);
+/**
+ * What to tell the editor when an upload comes back wrong.
+ *
+ * Only a 422 carries something they can act on — the file is too big, or it
+ * is not a type we take. Anything else is the server having a bad day, and
+ * pasting its exception into the panel puts `SQLSTATE[HY000] [1049] Unknown
+ * database` next to a photograph, which reads as "your picture is broken"
+ * when the picture is fine.
+ */
+function failureMessage(request) {
+    if (request.status === 422) {
+        try {
+            const body = JSON.parse(request.responseText);
 
-    // XHR rather than fetch: fetch still cannot report upload progress.
-    const request = new XMLHttpRequest();
-
-    request.open('POST', '/admin/media/library');
-    request.setRequestHeader('Accept', 'application/json');
-    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    request.setRequestHeader(
-        'X-CSRF-TOKEN',
-        document.querySelector('meta[name="csrf-token"]')?.content ?? ''
-    );
-
-    request.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) entry.progress = Math.round((event.loaded / event.total) * 100);
-    });
-
-    request.addEventListener('load', async () => {
-        if (request.status === 201) {
-            entry.done = true;
-            entry.progress = 100;
-
-            const item = JSON.parse(request.responseText).item;
-
-            items.value = [item, ...items.value];
-            total.value += 1;
-
-            // Selected the moment it arrives, so the common case — upload,
-            // insert — is two clicks and not a hunt through the grid.
-            if (single.value) chosen.value = [item.id];
-            else chosen.value.push(item.id);
-
-            active.value = item.id;
-
-            await nextTick();
-        } else {
-            let message = t('admin.media_upload_failed');
-
-            try {
-                const body = JSON.parse(request.responseText);
-                message = body.errors?.file?.[0] ?? body.message ?? message;
-            } catch {
-                // A non-JSON body means the server fell over; the generic
-                // message is the honest one.
-            }
-
-            entry.error = message;
+            return body.errors?.file?.[0] ?? body.message ?? t('admin.media_upload_failed');
+        } catch {
+            // Fall through to the generic message.
         }
-    });
+    }
 
-    request.addEventListener('error', () => {
-        entry.error = t('admin.media_upload_failed');
-    });
+    if (request.status === 413) return t('admin.media_too_large', { max: MAX_MB });
 
-    request.send(body);
+    return t('admin.media_upload_failed');
+}
+
+/** A clip cannot be drawn with <img>; the browser paints its first frame. */
+function isVideo(item) {
+    return String(item?.mime ?? '').startsWith('video/');
 }
 
 function formatSize(bytes) {
@@ -343,7 +392,7 @@ function formatDate(iso) {
             </header>
 
             <!-- ---- Library ------------------------------------------- -->
-            <div v-show="tab === 'library'" class="picker__body">
+            <div v-show="tab === 'library'" class="picker__body" :class="{ 'has-rail': activeItem }">
                 <div class="picker__main">
                     <input
                         v-model="search"
@@ -365,7 +414,13 @@ function formatDate(iso) {
                                 :aria-pressed="isChosen(item)"
                                 @click="toggle(item)"
                             >
-                                <img :src="item.thumb" :alt="item.translations[locale]?.alt_text ?? ''" loading="lazy" />
+                                <video v-if="isVideo(item)" :src="item.url" muted playsinline preload="metadata" />
+                                <img
+                                    v-else
+                                    :src="item.thumb"
+                                    :alt="item.translations[locale]?.alt_text ?? ''"
+                                    loading="lazy"
+                                />
                                 <span v-if="isChosen(item)" class="grid__tick" aria-hidden="true">✓</span>
                             </button>
                         </li>
@@ -384,7 +439,15 @@ function formatDate(iso) {
 
                 <!-- The details rail: what this image is, and its alt text. -->
                 <aside v-if="activeItem" class="picker__side">
-                    <img :src="activeItem.thumb" :alt="''" class="picker__preview" />
+                    <video
+                        v-if="isVideo(activeItem)"
+                        :src="activeItem.url"
+                        class="picker__preview"
+                        muted
+                        playsinline
+                        controls
+                    />
+                    <img v-else :src="activeItem.thumb" :alt="''" class="picker__preview" />
 
                     <dl class="facts">
                         <dt>{{ t('admin.media_file_name') }}</dt>
@@ -551,8 +614,16 @@ function formatDate(iso) {
     overflow: hidden;
 }
 
+/*
+ * The second column exists only when something is selected.
+ *
+ * It used to be declared for both tabs unconditionally, so the upload tab —
+ * which has no rail — reserved 300px for nothing. In an RTL panel that empty
+ * column sits on the LEFT, which is why the uploading files looked shoved
+ * against one edge with a dead strip beside them.
+ */
 @media (min-width: 900px) {
-    .picker__body {
+    .picker__body.has-rail {
         grid-template-columns: 1fr 300px;
     }
 }
@@ -600,7 +671,8 @@ function formatDate(iso) {
     overflow: hidden;
 }
 
-.grid__cell img {
+.grid__cell img,
+.grid__cell video {
     inline-size: 100%;
     block-size: 100%;
     /* `contain`, not `cover`: a logo cropped to a square in the picker is a

@@ -273,11 +273,16 @@ function updateSettings(section, text) {
 
                     <!-- Chosen from the library and shown as pictures, so the
                          panel answers "what is on this page" by itself. -->
+                    <!-- The hero takes motion as well as a still: Hero.vue
+                         loops an mp4/webm muted and shows a GIF as an image.
+                         The hint is here because a slot that accepts a video
+                         and never says so is a slot nobody puts one in. -->
                     <MediaSlot
                         v-if="IMAGE_TYPES.includes(section.type)"
                         :model-value="section.media?.image ?? []"
                         :limit="1"
                         :label="t('admin.section_image')"
+                        :hint="section.type === 'hero' ? t('admin.media_motion_hint') : null"
                         @update:model-value="(v) => setMedia(section, 'image', v)"
                     />
 

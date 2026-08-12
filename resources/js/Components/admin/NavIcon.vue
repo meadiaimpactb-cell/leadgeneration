@@ -61,6 +61,15 @@ const PATHS = {
 
     /* The screens added when the panel was regrouped. */
     media: 'M3 5h18v14H3V5zM3 15l5-5 4 4 3-3 6 6M8.5 9.5h.01',
+
+    /*
+     * The two actions on a chosen image. They are icons rather than words
+     * because the words — «استبدال» and «إزالة من القسم» — wrapped to three
+     * lines inside a 160px card and pushed the thumbnail out of shape.
+     * Both carry an aria-label, so nothing is lost to a screen reader.
+     */
+    swap: 'M4 8h11l-3-3M20 16H9l3 3',
+    trash: 'M4 7h16M10 7V5h4v2M6 7l1 13h10l1-13M10 11v6M14 11v6',
     crm: 'M4 7h6v6H4V7zM14 11h6v6h-6v-6zM10 10h4M12 10v4',
     bell: 'M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 21a2 2 0 01-3.4 0',
     message: 'M20 15a2 2 0 01-2 2H8l-4 4V5a2 2 0 012-2h12a2 2 0 012 2v10z',

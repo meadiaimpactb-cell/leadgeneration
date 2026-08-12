@@ -206,6 +206,7 @@ class SectionController extends Controller
                 'url' => $m->getUrl(),
                 'thumb' => $m->thumbUrl(),
                 'name' => $m->file_name,
+                'mime' => $m->mime_type,
                 'width' => $m->getCustomProperty('width'),
                 'height' => $m->getCustomProperty('height'),
                 'translations' => $translations,

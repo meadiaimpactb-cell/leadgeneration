@@ -24,8 +24,9 @@ defineProps({
 
 const { t } = useTranslation();
 
-const MAX_MB = 10;
-const ACCEPT = 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml';
+const MAX_MB = 64;
+const ACCEPT =
+    'image/jpeg,image/png,image/webp,image/avif,image/svg+xml,image/gif,video/mp4,video/webm';
 
 const locale = computed(() => usePage().props.locale ?? 'ar');
 
@@ -192,11 +193,18 @@ function onPick(event) {
     event.target.value = '';
 }
 
-function queue(fileList) {
+/**
+ * One file at a time, awaited.
+ *
+ * Sending them all at once put one PHP worker per file to work generating
+ * thumbnails, and the ones that lost the race came back with session and
+ * connection errors that had nothing to do with the file. See MediaPicker.
+ */
+async function queue(fileList) {
     const files = Array.from(fileList ?? []);
     if (files.length === 0) return;
 
-    files.forEach((file) => {
+    for (const file of files) {
         const entry = { name: file.name, progress: 0, error: null, done: false };
         uploads.value.push(entry);
 
@@ -206,58 +214,86 @@ function queue(fileList) {
         if (tooBig || wrongType) {
             entry.error = tooBig ? t('admin.media_too_large', { max: MAX_MB }) : t('admin.media_wrong_type');
 
-            return;
+            continue;
         }
 
-        send(file, entry);
+        // eslint-disable-next-line no-await-in-loop
+        await send(file, entry);
+    }
+}
+
+/** Resolves when this file is finished, successfully or not. */
+function send(file, entry) {
+    return new Promise((resolve) => {
+        const body = new FormData();
+        body.append('file', file);
+
+        // XHR, not fetch: fetch still cannot report upload progress.
+        const request = new XMLHttpRequest();
+
+        request.open('POST', '/admin/media/library');
+        request.setRequestHeader('Accept', 'application/json');
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.setRequestHeader('X-CSRF-TOKEN', csrf());
+
+        request.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+                entry.progress = Math.round((event.loaded / event.total) * 100);
+            }
+        });
+
+        request.addEventListener('load', () => {
+            if (request.status === 201) {
+                entry.done = true;
+                entry.progress = 100;
+
+                const item = JSON.parse(request.responseText).item;
+                items.value = [item, ...items.value];
+                total.value += 1;
+                active.value = item.id;
+            } else {
+                entry.error = failureMessage(request);
+            }
+
+            resolve();
+        });
+
+        request.addEventListener('error', () => {
+            entry.error = t('admin.media_upload_failed');
+            resolve();
+        });
+
+        request.send(body);
     });
 }
 
-function send(file, entry) {
-    const body = new FormData();
-    body.append('file', file);
+/**
+ * What to tell the editor when an upload comes back wrong.
+ *
+ * Only a 422 carries something they can act on. Anything else is the server
+ * having a bad day, and pasting its exception into the panel puts
+ * `SQLSTATE[HY000] [1049] Unknown database` next to a photograph, which reads
+ * as "your picture is broken" when the picture is fine.
+ */
+function failureMessage(request) {
+    if (request.status === 422) {
+        try {
+            const parsed = JSON.parse(request.responseText);
 
-    // XHR, not fetch: fetch still cannot report upload progress.
-    const request = new XMLHttpRequest();
-
-    request.open('POST', '/admin/media/library');
-    request.setRequestHeader('Accept', 'application/json');
-    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    request.setRequestHeader('X-CSRF-TOKEN', csrf());
-
-    request.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) entry.progress = Math.round((event.loaded / event.total) * 100);
-    });
-
-    request.addEventListener('load', () => {
-        if (request.status === 201) {
-            entry.done = true;
-            entry.progress = 100;
-
-            const item = JSON.parse(request.responseText).item;
-            items.value = [item, ...items.value];
-            total.value += 1;
-            active.value = item.id;
-        } else {
-            let message = t('admin.media_upload_failed');
-
-            try {
-                const parsed = JSON.parse(request.responseText);
-                message = parsed.errors?.file?.[0] ?? parsed.message ?? message;
-            } catch {
-                // A non-JSON body means the server fell over; the generic
-                // message is the honest one.
-            }
-
-            entry.error = message;
+            return parsed.errors?.file?.[0] ?? parsed.message ?? t('admin.media_upload_failed');
+        } catch {
+            // Fall through to the generic message.
         }
-    });
+    }
 
-    request.addEventListener('error', () => {
-        entry.error = t('admin.media_upload_failed');
-    });
+    if (request.status === 413) return t('admin.media_too_large', { max: MAX_MB });
 
-    request.send(body);
+    return t('admin.media_upload_failed');
+}
+
+/** A clip cannot be drawn with <img>; the browser paints its first frame. */
+function isVideo(item) {
+    return String(item?.mime ?? '').startsWith('video/');
 }
 
 function formatSize(bytes) {
@@ -327,7 +363,13 @@ function formatDate(iso) {
                                 :class="{ 'is-active': active === item.id }"
                                 @click="active = item.id"
                             >
-                                <img :src="item.thumb" :alt="item.translations[locale]?.alt_text ?? ''" loading="lazy" />
+                                <video v-if="isVideo(item)" :src="item.url" muted playsinline preload="metadata" />
+                                <img
+                                    v-else
+                                    :src="item.thumb"
+                                    :alt="item.translations[locale]?.alt_text ?? ''"
+                                    loading="lazy"
+                                />
                             </button>
                         </li>
                     </ul>
@@ -344,7 +386,15 @@ function formatDate(iso) {
                 </div>
 
                 <aside v-if="activeItem" class="screen__side">
-                    <img :src="activeItem.thumb" alt="" class="preview" />
+                    <video
+                        v-if="isVideo(activeItem)"
+                        :src="activeItem.url"
+                        class="preview"
+                        muted
+                        playsinline
+                        controls
+                    />
+                    <img v-else :src="activeItem.thumb" alt="" class="preview" />
 
                     <dl class="facts">
                         <dt>{{ t('admin.media_file_name') }}</dt>
@@ -438,7 +488,8 @@ function formatDate(iso) {
     overflow: hidden;
 }
 
-.grid__cell img {
+.grid__cell img,
+.grid__cell video {
     inline-size: 100%;
     block-size: 100%;
     object-fit: contain;

@@ -375,6 +375,7 @@ class ResourceController extends Controller
                         'url' => $item->getUrl(),
                         'thumb' => $item->thumbUrl(),
                         'name' => $item->file_name,
+                        'mime' => $item->mime_type,
                         'translations' => $translations,
                     ];
                 })->values();

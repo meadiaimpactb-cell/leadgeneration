@@ -101,7 +101,7 @@ class MediaController extends Controller
                 'required', 'file',
                 'max:'.MediaLibrary::MAX_KILOBYTES,
                 // Real type, not the extension (§9.2).
-                'mimes:'.implode(',', MediaLibrary::IMAGE_MIMES),
+                'mimes:'.implode(',', MediaLibrary::acceptedMimes()),
             ],
         ], [], ['file' => __('admin.media_file')]);
 

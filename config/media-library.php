@@ -50,7 +50,11 @@ return [
      * The maximum file size of an item in bytes.
      * Adding a larger file will result in an exception.
      */
-    'max_file_size' => 1024 * 1024 * 10, // 10MB
+    // 64MB, matching MediaLibrary::MAX_KILOBYTES. Spatie throws FileIsTooBig
+    // before the controller ever sees the file, so the two ceilings have to
+    // agree — a lower one here would refuse an upload the form had already
+    // told the editor was allowed.
+    'max_file_size' => 1024 * 1024 * 64, // 64MB
 
     /*
      * Uploads whose file name contains any of these extensions will be rejected.

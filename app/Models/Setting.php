@@ -54,6 +54,13 @@ class Setting extends Model implements HasMedia
      */
     public function registerMediaConversions(?Media $media = null): void
     {
+        // Nothing to resize on a video. Spatie's video generator needs ffmpeg,
+        // which is not installed here, so without this guard every hero clip
+        // would queue four conversions that can only fail.
+        if ($media !== null && ! str_starts_with((string) $media->mime_type, 'image/')) {
+            return;
+        }
+
         $this->addMediaConversion('thumb')
             ->fit(Fit::Crop, 400, 400)
             ->nonQueued();

@@ -31,11 +31,38 @@ class MediaLibrary
 
     public const COLLECTION = 'library';
 
-    /** What the picker will accept. Checked by real MIME, not by name (§9.2). */
-    public const IMAGE_MIMES = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'svg'];
+    /**
+     * What the picker will accept. Checked by real MIME, not by name (§9.2).
+     *
+     * `gif`, `mp4` and `webm` are here because the home hero has always been
+     * able to render a moving file — Hero.vue turns an `.mp4`/`.webm` into a
+     * muted looping <video> and shows a GIF as an <img>, and the seeded hero
+     * is a 20MB GIF of the client's own workshop. Leaving them out of the
+     * picker meant the one section built for motion could not be given any
+     * from the panel.
+     */
+    public const IMAGE_MIMES = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'svg', 'gif'];
 
-    /** 10MB — the media-library config's own ceiling. */
-    public const MAX_KILOBYTES = 10240;
+    public const MOTION_MIMES = ['mp4', 'webm'];
+
+    /**
+     * 64MB.
+     *
+     * It was 10MB, which refused the client's own hero footage. PHP here
+     * allows 2GB, so the old ceiling was ours alone and it was too low for
+     * the one thing the hero exists to show.
+     *
+     * It is still a ceiling rather than no limit: §15.1 caps a first page at
+     * 1.2MB, and a hero heavy enough to need this much deserves a poster
+     * frame with it — see the note in docs/dynamic-audit.md.
+     */
+    public const MAX_KILOBYTES = 65536;
+
+    /** @return list<string> */
+    public static function acceptedMimes(): array
+    {
+        return [...self::IMAGE_MIMES, ...self::MOTION_MIMES];
+    }
 
     /**
      * The row the files hang off.
@@ -111,6 +138,10 @@ class MediaLibrary
         $query = Media::query()
             ->whereIn('mime_type', [
                 'image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml', 'image/gif',
+                // The hero's moving files live in the same library as the
+                // stills. One place for everything the site shows, which is
+                // the whole point of a library.
+                'video/mp4', 'video/webm',
             ])
             ->with('translations')
             ->latest('id');
