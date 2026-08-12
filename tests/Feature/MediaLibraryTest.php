@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Admin\UpcomingScreenController;
 use App\Models\Media;
 use App\Models\MediaAttachment;
 use App\Models\Page;
@@ -564,6 +565,17 @@ class MediaLibraryTest extends TestCase
         $this->assertSame($before, Media::query()->count());
         $this->assertSame($media->id, $partner->fresh()->mediaFor('logo')?->id);
         $this->assertSame($media->id, $section->fresh()->attachedMedia('gallery')->first()->id);
+    }
+
+    #[Test]
+    public function the_media_screen_is_a_real_screen_now(): void
+    {
+        $this->actingAs($this->admin)->get('/admin/media')->assertOk();
+
+        // It left the "coming in a later phase" list when it stopped being a
+        // placeholder; a sidebar entry marked `soon` that opens a working
+        // screen is how an operator learns to distrust the labels.
+        $this->assertNotContains('media', UpcomingScreenController::keys());
     }
 
     #[Test]

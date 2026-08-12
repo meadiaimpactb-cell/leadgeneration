@@ -115,6 +115,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         // inside the picker modal, from the content screens and from the media
         // screen, so it cannot be one page's Inertia prop.
         // Declared before `media/{medium}` so `library` is never read as an id.
+        Route::get('media', [MediaController::class, 'index'])->name('media.index');
         Route::get('media/library', [MediaController::class, 'library'])->name('media.library');
         Route::post('media/library', [MediaController::class, 'upload'])->name('media.upload');
         Route::get('media/{medium}/usage', [MediaController::class, 'usage'])->name('media.usage');
@@ -183,7 +184,6 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');
         Route::put('languages', [LanguageController::class, 'update'])->name('languages.update');
 
-        Route::get('media', [UpcomingScreenController::class, 'show'])->defaults('screen', 'media')->name('upcoming.media');
         Route::get('backups', [UpcomingScreenController::class, 'show'])->defaults('screen', 'backups')->name('upcoming.backups');
         Route::get('activity', [UpcomingScreenController::class, 'show'])->defaults('screen', 'activity')->name('upcoming.activity');
         Route::get('seo/sitemap', [UpcomingScreenController::class, 'show'])->defaults('screen', 'sitemap')->name('upcoming.sitemap');

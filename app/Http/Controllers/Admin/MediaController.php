@@ -17,6 +17,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -33,6 +35,23 @@ class MediaController extends Controller
     private const DOCUMENT_MIMES = ['pdf'];
 
     public function __construct(private readonly MediaLibrary $library) {}
+
+    /**
+     * The media screen.
+     *
+     * A page with no data of its own: the grid, the search and the uploader
+     * all read the same JSON endpoints the picker uses, so there is one
+     * library with one behaviour rather than a screen and a modal that drift
+     * apart.
+     */
+    public function index(Request $request): Response
+    {
+        abort_unless($request->user()->can('media.manage'), 403);
+
+        return Inertia::render('Admin/Media/Index', [
+            'locales' => array_keys(config('site.locales')),
+        ]);
+    }
 
     /**
      * The library grid, as JSON.

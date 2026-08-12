@@ -31,7 +31,6 @@ class UpcomingScreenController extends Controller
      * so a screen cannot be added here without saying what it is for.
      */
     private const SCREENS = [
-        'media' => 3,
         'notifications' => 2,
         'confirmations' => 3,
         'spam' => 2,

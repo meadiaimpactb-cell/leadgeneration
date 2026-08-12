@@ -50,7 +50,7 @@ export const NAV_GROUPS = [
             { icon: 'reports', label: 'admin.reports', href: '/admin/content/reports', can: 'reports.manage' },
             { icon: 'training', label: 'admin.training', href: '/admin/content/training-programs', can: 'training.manage' },
             { icon: 'partners', label: 'admin.partners', href: '/admin/content/partners', can: 'partners.manage' },
-            { icon: 'media', label: 'admin.media_library', href: '/admin/media', can: 'pages.view', soon: true },
+            { icon: 'media', label: 'admin.media_library', href: '/admin/media', can: 'media.manage' },
         ],
     },
     {
