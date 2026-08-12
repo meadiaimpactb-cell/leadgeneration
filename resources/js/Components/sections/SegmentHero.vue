@@ -2,6 +2,7 @@
 import Container from '@/Components/ui/Container.vue';
 import Button from '@/Components/ui/Button.vue';
 import SectionIndex from '@/Components/ui/SectionIndex.vue';
+import { useHashCta } from '@/Composables/useHashCta';
 
 /**
  * The hero of an audience-segment page.
@@ -26,6 +27,16 @@ defineProps({
     secondaryLabel: { type: String, default: null },
     secondaryUrl: { type: String, default: null },
 });
+
+/**
+ * Both actions, not just the first.
+ *
+ * A segment page carries its own form at the foot, so either button may point
+ * at `#lead` — and which of the two does is the client's decision in the
+ * panel, not a shape this component should assume. The handler ignores any
+ * URL that is not a hash, so wiring both costs nothing when they navigate.
+ */
+const { onHashCta } = useHashCta();
 </script>
 
 <template>
@@ -39,10 +50,20 @@ defineProps({
                     <p v-if="subtitle" class="shero__sub">{{ subtitle }}</p>
 
                     <div v-if="ctaLabel || secondaryLabel" class="shero__actions">
-                        <Button v-if="ctaLabel" variant="cta-lg" :href="ctaUrl">
+                        <Button
+                            v-if="ctaLabel"
+                            variant="cta-lg"
+                            :href="ctaUrl"
+                            @click="onHashCta($event, ctaUrl)"
+                        >
                             {{ ctaLabel }}
                         </Button>
-                        <Button v-if="secondaryLabel" variant="secondary" :href="secondaryUrl">
+                        <Button
+                            v-if="secondaryLabel"
+                            variant="secondary"
+                            :href="secondaryUrl"
+                            @click="onHashCta($event, secondaryUrl)"
+                        >
                             {{ secondaryLabel }}
                         </Button>
                     </div>

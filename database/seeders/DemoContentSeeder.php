@@ -1424,16 +1424,26 @@ class DemoContentSeeder extends Seeder
         return [
             // The hero's two actions. The heading and line come from the
             // sector record itself, so only the buttons live here.
+            /*
+             * Both actions land on this page's own form, not on /contact.
+             *
+             * A segment page ends in a full lead form — the same one, already
+             * carrying `sectorHint` so the sales team knows which audience
+             * asked. Sending a visitor who has just read the whole pitch to a
+             * second page to find a second form spends the attention the page
+             * earned. The home hero has always done it this way; these four
+             * were the exception, and the owner closed it.
+             */
             ['hero', [
-                'ar' => [null, null, null, 'لنبدأ معًا', '/ar/contact'],
-                'en' => [null, null, null, "Let's begin", '/en/contact'],
+                'ar' => [null, null, null, 'لنبدأ معًا', '#lead'],
+                'en' => [null, null, null, "Let's begin", '#lead'],
             ], [
                 // settings is one JSON column, not per-locale, so a second
                 // button carries both languages here.
                 'secondaryLabel' => 'زوروا معرضنا',
-                'secondaryUrl' => '/ar/contact',
+                'secondaryUrl' => '#lead',
                 'secondaryLabel_en' => 'Visit our showroom',
-                'secondaryUrl_en' => '/en/contact',
+                'secondaryUrl_en' => '#lead',
             ]],
 
             /*

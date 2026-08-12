@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import Button from '@/Components/ui/Button.vue';
+import { useHashCta } from '@/Composables/useHashCta';
 
 /**
  * sections/Hero (§11.1) — two real panes: copy and media.
@@ -63,52 +64,18 @@ const secondaryDownloads = computed(() =>
 );
 
 /**
+ * A hash CTA scrolls to the form and puts the caret in its first field. The
+ * routine now lives in `useHashCta` because SegmentHero needs the same one —
+ * see the composable for why an anchor alone is not enough.
+ */
+const { onHashCta } = useHashCta();
+
+/**
  * The still that stands in until the moving file arrives. For a video this is
  * the native `poster`; for a heavy GIF — which has no poster attribute — it is
  * painted as the pane's own background, so the pane is never an empty
  * rectangle during the download.
  */
-/**
- * A hash CTA scrolls to the form and puts the caret in its first field.
- *
- * The anchor alone already scrolls, and `scroll-margin` already clears the
- * fixed header — but it leaves the visitor looking at a form they still have
- * to click into. Focusing the first field is the difference between arriving
- * at the form and being in it.
- *
- * Only for in-page targets: anything else is left to navigate normally. And
- * only when the target exists, so a CTA pointing at a section the client has
- * removed from the panel still behaves like an ordinary link instead of
- * swallowing the click.
- */
-function onCta(event) {
-    const href = props.ctaUrl ?? '';
-
-    if (!href.startsWith('#') || typeof document === 'undefined') {
-        return;
-    }
-
-    const target = document.querySelector(href);
-
-    if (!target) {
-        return;
-    }
-
-    event.preventDefault();
-
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
-    target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
-
-    /*
-     * `focus({preventScroll: true})` — focusing normally yanks the page to the
-     * field and cancels the smooth scroll that is still running, which reads
-     * as a jump. The scroll above owns the movement; the focus only moves the
-     * caret.
-     */
-    target.querySelector('input, textarea, select')?.focus({ preventScroll: true });
-}
-
 const paneGround = computed(() =>
     props.image?.poster && !isVideo.value
         ? { backgroundImage: `url("${props.image.poster}")` }
@@ -156,7 +123,7 @@ const paneGround = computed(() =>
                     <p v-if="subheading" class="hero__sub">{{ subheading }}</p>
 
                     <div v-if="ctaLabel || secondaryLabel" class="hero__actions">
-                        <Button v-if="ctaLabel" variant="cta-lg" :href="ctaUrl" @click="onCta">
+                        <Button v-if="ctaLabel" variant="cta-lg" :href="ctaUrl" @click="onHashCta($event, ctaUrl)">
                             {{ ctaLabel }}
                         </Button>
                         <Button

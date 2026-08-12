@@ -221,4 +221,36 @@ class SegmentPagesAreDistinctTest extends TestCase
     {
         $this->get('/en/solutions/partners')->assertOk();
     }
+
+    /**
+     * A hero action does not send the reader off a page that already asks.
+     *
+     * All four heroes pointed at /contact while the page they sat on ended in
+     * the very form /contact would have shown — carrying `sectorHint`, which
+     * /contact cannot know. The visitor most likely to convert was the one
+     * being moved. Both buttons now land on `#lead`.
+     *
+     * The anchor is asserted to EXIST as well as to be pointed at: a CTA
+     * aimed at a section the client has switched off in the panel is a button
+     * that does nothing, which is worse than one that navigates.
+     */
+    #[Test]
+    public function both_hero_actions_land_on_the_form_the_page_already_carries(): void
+    {
+        foreach (self::SEGMENTS as $segment) {
+            $body = $this->get("/ar/solutions/{$segment}")->assertOk()->getContent();
+
+            $this->assertStringContainsString('id="lead"', $body,
+                "The {$segment} page has no form for its hero to point at.");
+
+            preg_match('/class="shero__actions"[^>]*>(.*?)<\/div>/s', $body, $actions);
+
+            $this->assertNotEmpty($actions, "The {$segment} hero renders no actions.");
+
+            preg_match_all('/href="([^"]*)"/', $actions[1], $hrefs);
+
+            $this->assertSame(['#lead', '#lead'], $hrefs[1],
+                "A {$segment} hero button leaves a page that carries its own form.");
+        }
+    }
 }
