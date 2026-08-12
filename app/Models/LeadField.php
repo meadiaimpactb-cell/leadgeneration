@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslations;
+use App\Rules\InternationalPhone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -63,10 +64,18 @@ class LeadField extends Model
 
         $rules[] = match ($this->type) {
             'checkbox' => 'boolean',
-            'email' => 'email',
+            // `email:rfc,dns` would reject a real address whose DNS is slow or
+            // briefly unreachable, and a refused lead costs more than a typo.
+            // `rfc` alone still catches «a@b» and everything with a space in it.
+            'email' => 'email:rfc',
             'select' => 'string',
             default => 'string',
         };
+
+        // Google's metadata decides whether a number is dialable, per country.
+        if ($this->type === 'tel') {
+            $rules[] = new InternationalPhone;
+        }
 
         if ($this->type === 'select' && filled($this->options)) {
             $rules[] = 'in:'.implode(',', array_column($this->options, 'value'));

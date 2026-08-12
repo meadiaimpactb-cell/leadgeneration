@@ -264,11 +264,19 @@
   box-shadow: inset 0 0 0 1px var(--action-600);
 }
 
+/* Grows with its content up to ten rows — see LeadField's grow(). `resize`
+   stays manual as well, so anyone who wants it larger still can. */
 .lead-textarea {
   min-block-size: 56px;
   padding-block: var(--s-4);
   resize: vertical;
+  overflow-y: hidden;
   line-height: var(--lh-body);
+  transition: height 120ms cubic-bezier(.2,.7,.3,1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-textarea { transition: none; }
 }
 
 .lead-error {
@@ -277,19 +285,17 @@
 }
 .on-dark .lead-error { color: var(--gold-400); }
 
-/* Success state: short message + the Sadu thread weaving underneath. */
-.lead-success-thread {
-  block-size: 8px;
-  inline-size: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23DCAD75' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  animation: sadu-weave var(--dur-reveal) var(--ease) forwards;
-}
-@keyframes sadu-weave { to { inline-size: 100%; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .lead-success-thread { inline-size: 100%; animation: none; }
-}
+/*
+ * §10.6 asked for the success state to be a short line with the Sadu thread
+ * weaving underneath, and explicitly for "no modal". The owner asked for a
+ * modal instead: the form vanishing left half the band empty and read as a
+ * broken page rather than a finished errand. Their call overrides the brief
+ * here, and it is recorded in docs/dynamic-audit.md.
+ *
+ * The thread's rules are unaffected — it keeps its three homes (§10.1), and
+ * this was a fourth. The styles are gone rather than left dead; the animation
+ * is two lines to restore from git if the decision is ever reversed.
+ */
 
 /* ============================================================
    ui/Card (§10.5)

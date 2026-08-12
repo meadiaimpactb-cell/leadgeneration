@@ -26,9 +26,18 @@ return [
 
     'contact_required' => 'اكتب بريدك الإلكتروني أو رقم جوالك لنتمكن من التواصل معك.',
     'contact_invalid' => 'تعذّر التعرّف على ما كتبته. اكتب بريدًا إلكترونيًا مثل name@company.sa أو رقم جوال مثل 05xxxxxxxx.',
+    'phone_invalid' => 'الرقم غير صحيح لهذه الدولة. تأكدوا من عدد الأرقام وبادئتها.',
+    'email_invalid' => 'صيغة البريد غير صحيحة. مثال: name@company.sa',
     'message_too_long' => 'الرسالة أطول من اللازم. اختصرها في سطر واحد.',
 
     'success' => 'وصلنا طلبك، وسنتواصل معك قريبًا.',
+
+    // The confirmation dialog. Kept apart from `success` above, which is
+    // still the single line a screen reader announces in place.
+    'success_title' => 'وصلنا طلبك',
+    'success_body' => 'سنتواصل معك قريبًا.',
+    'error_title' => 'تعذّر الإرسال',
+    'error_body' => 'لم يصل طلبك. تحقّق من اتصالك وحاول مرة أخرى — ما كتبته محفوظ.',
     'error' => 'تعذّر إرسال الطلب الآن. حاول مرة أخرى بعد قليل.',
     'too_many' => 'وصلتنا محاولات كثيرة من هذا الجهاز. انتظر دقيقة ثم حاول مجددًا.',
 ];

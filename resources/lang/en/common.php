@@ -16,6 +16,7 @@ return [
     'open_menu' => 'Open menu',
     'close_menu' => 'Close menu',
     'close' => 'Close',
+    'done' => 'Done',
     'home' => 'Home',
     'loading' => 'Loading…',
     'language' => 'Language',

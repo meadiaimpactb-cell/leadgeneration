@@ -20,9 +20,18 @@ return [
 
     'contact_required' => 'Enter your email or mobile number so we can reach you.',
     'contact_invalid' => 'We could not read that. Enter an email such as name@company.sa, or a mobile number such as 05xxxxxxxx.',
+    'phone_invalid' => 'That number is not valid for the chosen country. Check its length and prefix.',
+    'email_invalid' => 'That email address is not valid. For example: name@company.sa',
     'message_too_long' => 'That message is too long. Keep it to a single line.',
 
     'success' => 'We have your request and will be in touch shortly.',
+
+    // The confirmation dialog. Kept apart from `success` above, which is
+    // still the single line a screen reader announces in place.
+    'success_title' => "We've received your request",
+    'success_body' => "We'll be in touch shortly.",
+    'error_title' => 'It did not send',
+    'error_body' => 'Your request did not reach us. Check your connection and try again — what you typed is still here.',
     'error' => 'We could not send that just now. Please try again in a moment.',
     'too_many' => 'Too many attempts from this device. Wait a minute and try again.',
 ];

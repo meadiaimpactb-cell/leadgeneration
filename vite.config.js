@@ -37,6 +37,22 @@ export default defineConfig({
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
+                        /*
+                         * Left to its own chunk on purpose.
+                         *
+                         * intl-tel-input with libphonenumber's metadata is
+                         * ~80KB gzipped. PhoneField imports it dynamically so
+                         * only a page with a form pays for it — but naming it
+                         * `vendor` here would pull it back into the shared
+                         * bundle and undo that, putting every country's
+                         * numbering rules on the front page. §15.1 caps
+                         * initial JS at 180KB gzipped, and this alone was
+                         * half of it.
+                         */
+                        if (id.includes('intl-tel-input')) {
+                            return undefined;
+                        }
+
                         if (id.includes('/vue') || id.includes('@inertiajs')) {
                             return 'vendor-core';
                         }

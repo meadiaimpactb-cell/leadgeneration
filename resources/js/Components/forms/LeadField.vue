@@ -3,6 +3,8 @@ import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { useTranslation } from '@/Composables/useTranslation';
 import Button from '@/Components/ui/Button.vue';
+import PhoneField from '@/Components/forms/PhoneField.vue';
+import ResultDialog from '@/Components/ui/ResultDialog.vue';
 
 /**
  * forms/LeadField — the single most important control on the site (§10.6).
@@ -116,8 +118,78 @@ const textDir = computed(() => (page.props.locale === 'en' ? 'ltr' : 'rtl'));
 
 // A placeholder handed over at the moment the box is opened — see openMessage.
 const messageHint = ref(null);
+const messageBox = ref(null);
+
+/**
+ * Complaints raised while typing, kept apart from the server's.
+ *
+ * `errors` belongs to the server and is cleared on every submit. These are
+ * the browser's, and they appear only once a field has been left — §10.6 says
+ * validation runs on submit, never while typing, and the reason holds: an
+ * error under a half-typed email is scolding someone mid-word. Leaving the
+ * field is a different moment. They are answered the instant the value
+ * becomes valid, so nobody is told off for something they have already fixed.
+ */
+const liveErrors = reactive({});
+
+/**
+ * A real check, not `type="email"`.
+ *
+ * The browser accepts `a@b` as a valid email; a buyer who typos their address
+ * is a lead that cannot be answered — the one outcome this site is measured
+ * on (§1). Public domains are welcome: plenty of small institutions run on
+ * Gmail, and refusing them would refuse real work.
+ */
+const EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
+
+function onPhoneValidity(key, state) {
+    if (state.empty || state.valid) {
+        delete liveErrors[key];
+
+        return;
+    }
+
+    liveErrors[key] = state.message;
+}
+
+/** Trim and lower-case as it leaves the field — nobody means «  A@B.Com ». */
+function normaliseEmail(key) {
+    const value = String(values[key] ?? '').trim().toLowerCase().replace(/\s+/g, '');
+
+    values[key] = value;
+
+    if (value === '') {
+        delete liveErrors[key];
+
+        return;
+    }
+
+    if (EMAIL.test(value)) {
+        delete liveErrors[key];
+
+        return;
+    }
+
+    liveErrors[key] = t('leads.email_invalid');
+}
+
+/** Answered as soon as it is right, so nobody argues with a fixed field. */
+function clearLive(key) {
+    if (liveErrors[key] && EMAIL.test(String(values[key] ?? '').trim().toLowerCase())) {
+        delete liveErrors[key];
+    }
+}
 const processing = ref(false);
 const submitted = ref(false);
+
+/**
+ * `null` while nothing has happened, then 'success' or 'error'.
+ *
+ * The form no longer disappears on success — it stays where it is and this
+ * decides what the dialog over it says. Half a band going empty read as a
+ * broken page rather than a completed errand.
+ */
+const outcome = ref(null);
 const errors = ref({});
 
 // Round-trip timer: a human cannot complete this in under two seconds.
@@ -213,8 +285,84 @@ function openMessage(placeholder = null) {
 
 defineExpose({ openMessage });
 
+/**
+ * Closing the confirmation empties the form for the next request.
+ *
+ * Only after a success: a failure keeps every value, because asking someone
+ * to retype what they just typed is how a retry becomes an abandonment.
+ */
+/**
+ * The message box grows with what is written in it.
+ *
+ * It was a fixed three rows with an inner scrollbar, so anyone writing more
+ * than two lines lost sight of their own sentence — on a field whose whole
+ * purpose is the one line that qualifies a lead («عندي مؤتمر بتاريخ كذا»).
+ *
+ * Height is reset before it is measured: `scrollHeight` only ever grows while
+ * the element is taller than its content, so without the reset the box can
+ * expand and never shrink back.
+ */
+const MESSAGE_MAX_ROWS = 10;
+
+function grow(event) {
+    const el = event?.target ?? messageBox.value;
+    if (!el) return;
+
+    const styles = window.getComputedStyle(el);
+    const line = parseFloat(styles.lineHeight) || 24;
+    const chrome =
+        parseFloat(styles.paddingBlockStart) +
+        parseFloat(styles.paddingBlockEnd) +
+        parseFloat(styles.borderBlockStartWidth) +
+        parseFloat(styles.borderBlockEndWidth);
+
+    const max = line * MESSAGE_MAX_ROWS + chrome;
+
+    el.style.height = 'auto';
+
+    const next = Math.min(el.scrollHeight, max);
+
+    el.style.height = `${next}px`;
+    // Past the ceiling it scrolls rather than pushing the button off-screen.
+    el.style.overflowY = el.scrollHeight > max ? 'auto' : 'hidden';
+}
+
+function dismiss() {
+    if (outcome.value === 'success') {
+        fields.value.forEach((field) => {
+            values[field.key] = '';
+        });
+
+        submitted.value = false;
+        errors.value = {};
+
+        // The box shrinks with the text it no longer holds.
+        nextTick(() => {
+            if (messageBox.value) {
+                messageBox.value.style.height = 'auto';
+                messageBox.value.style.overflowY = 'hidden';
+            }
+        });
+    }
+
+    outcome.value = null;
+}
+
 function submit() {
     if (processing.value) return;
+
+    /*
+     * The browser's own complaints are settled first.
+     *
+     * Not a replacement for the server's check — that one is authoritative
+     * and runs regardless (§7.4) — but a round trip to be told an address is
+     * malformed is a round trip the visitor did not need to make.
+     */
+    fields.value
+        .filter((field) => field.type === 'email')
+        .forEach((field) => normaliseEmail(field.key));
+
+    if (Object.keys(liveErrors).length > 0) return;
 
     processing.value = true;
     errors.value = {};
@@ -232,6 +380,7 @@ function submit() {
             // Success resolves in place — no modal, no redirect (§10.6).
             onSuccess: () => {
                 submitted.value = true;
+                outcome.value = 'success';
 
                 // The conversion event GA4 and Meta listen for (§14.1).
                 if (typeof window !== 'undefined') {
@@ -247,6 +396,16 @@ function submit() {
             },
             onError: (received) => {
                 errors.value = received;
+
+                /*
+                 * A field-level complaint is answered under the field; only a
+                 * failure with nothing to point at gets the dialog. Otherwise
+                 * a mistyped email would raise a modal that says nothing the
+                 * message beneath the input has not already said.
+                 */
+                if (Object.keys(received ?? {}).length === 0) {
+                    outcome.value = 'error';
+                }
             },
             onFinish: () => {
                 processing.value = false;
@@ -260,14 +419,20 @@ function submit() {
 
 <template>
     <div ref="root" class="lead" :class="`lead--${layout}`">
-        <!-- Confirmation replaces the form in place, with the Sadu thread
-             weaving itself underneath (§10.6). -->
-        <div v-if="submitted" class="lead__done" role="status" aria-live="polite">
-            <p class="lead__done-text">{{ t('leads.success') }}</p>
-            <div class="lead-success-thread" aria-hidden="true" />
-        </div>
+        <!--
+            Announced, not shown.
 
-        <form v-else novalidate @submit.prevent="submit">
+            The confirmation used to replace the whole form, which left half
+            the band empty and read as a page that had broken rather than an
+            errand that had finished. The visible answer is now the dialog at
+            the end of this file; this line stays because `aria-live` is how a
+            screen reader learns anything happened at all (§10.6).
+        -->
+        <p v-if="submitted" class="visually-hidden" role="status" aria-live="polite">
+            {{ t('leads.success') }}
+        </p>
+
+        <form novalidate @submit.prevent="submit">
             <p v-if="heading" class="lead__heading">{{ heading }}</p>
             <p v-if="reassurance" class="lead__reassurance">{{ reassurance }}</p>
 
@@ -309,6 +474,24 @@ function submit() {
                         <span>{{ field.help ?? field.label }}</span>
                     </label>
 
+                    <!--
+                        A phone number gets the country list, the flag and the
+                        per-country check. Keyed by type rather than by name,
+                        so a second `tel` field the client adds in the panel
+                        behaves the same without a code change.
+                    -->
+                    <PhoneField
+                        v-else-if="field.type === 'tel'"
+                        :id="fieldId(field.key)"
+                        v-model="values[field.key]"
+                        :name="field.key"
+                        :placeholder="field.placeholder"
+                        :required="field.required"
+                        :invalid="Boolean(errors[field.key] || liveErrors[field.key])"
+                        :described-by="(errors[field.key] || liveErrors[field.key]) ? errorId(field.key) : undefined"
+                        @validity="(state) => onPhoneValidity(field.key, state)"
+                    />
+
                     <textarea
                         v-else-if="field.type === 'textarea'"
                         :id="fieldId(field.key)"
@@ -333,12 +516,18 @@ function submit() {
                         :class="{ 'lead-input--mono': field.type === 'email' || field.type === 'tel' }"
                         :required="field.required || undefined"
                         :aria-required="field.required ? 'true' : undefined"
-                        :aria-invalid="errors[field.key] ? 'true' : undefined"
-                        :aria-describedby="errors[field.key] ? errorId(field.key) : undefined"
+                        :aria-invalid="(errors[field.key] || liveErrors[field.key]) ? 'true' : undefined"
+                        :aria-describedby="(errors[field.key] || liveErrors[field.key]) ? errorId(field.key) : undefined"
+                        @blur="field.type === 'email' ? normaliseEmail(field.key) : null"
+                        @input="field.type === 'email' ? clearLive(field.key) : null"
                     />
 
-                    <p v-if="errors[field.key]" :id="errorId(field.key)" class="lead-error">
-                        {{ errors[field.key] }}
+                    <p
+                        v-if="errors[field.key] || liveErrors[field.key]"
+                        :id="errorId(field.key)"
+                        class="lead-error"
+                    >
+                        {{ errors[field.key] ?? liveErrors[field.key] }}
                     </p>
                 </div>
             </div>
@@ -378,7 +567,15 @@ function submit() {
                     />
                 </div>
 
+                <!--
+                    The button leaves this row when there is a message box,
+                    because the box belongs between the last field and the
+                    button — a visitor writes their line and then presses
+                    send. With no message field the row is unchanged: field
+                    and button side by side, exactly as before.
+                -->
                 <Button
+                    v-if="!messageField"
                     type="submit"
                     :variant="layout === 'inline' ? 'cta-lg' : 'cta'"
                     :loading="processing"
@@ -421,17 +618,30 @@ function submit() {
                     </label>
                     <textarea
                         :id="fieldId(MESSAGE)"
+                        ref="messageBox"
                         v-model="values[MESSAGE]"
                         class="lead-input lead-textarea"
                         :name="MESSAGE"
-                        rows="4"
+                        rows="3"
                         :dir="textDir"
                         :placeholder="messageHint ?? messagePlaceholder ?? messageField.placeholder ?? ''"
                         :maxlength="messageField.maxLength ?? undefined"
+                        @input="grow"
                     />
                     <p v-if="errors[MESSAGE]" class="lead-error">{{ errors[MESSAGE] }}</p>
                 </div>
             </template>
+
+            <div v-if="messageField" class="lead__actions">
+                <Button
+                    type="submit"
+                    :variant="layout === 'inline' ? 'cta-lg' : 'cta'"
+                    :loading="processing"
+                    class="lead__submit"
+                >
+                    {{ processing ? t('leads.submitting') : (submitLabel ?? t('leads.submit')) }}
+                </Button>
+            </div>
 
             <!-- Honeypot: aria-hidden and tabindex -1 so no real user reaches it. -->
             <div class="lead__trap" aria-hidden="true">
@@ -446,6 +656,16 @@ function submit() {
                 />
             </div>
         </form>
+
+        <!-- The visible answer. The form behind it keeps its place. -->
+        <ResultDialog
+            :open="outcome !== null"
+            :tone="outcome ?? 'success'"
+            :title="outcome === 'error' ? t('leads.error_title') : t('leads.success_title')"
+            :message="outcome === 'error' ? t('leads.error_body') : t('leads.success_body')"
+            :auto-close-ms="outcome === 'error' ? 0 : 5000"
+            @close="dismiss"
+        />
     </div>
 </template>
 
@@ -561,11 +781,13 @@ function submit() {
     margin-block-start: var(--s-3);
 }
 
-.lead__done-text {
-    font-size: var(--fs-body-lg);
-    font-weight: 600;
-    margin-block-end: var(--s-3);
+/* The button's own line, once the message box sits above it. Same gap as
+   between the fields, so nothing about the section's rhythm changes. */
+.lead__actions {
+    display: flex;
+    margin-block-start: var(--s-4);
 }
+
 
 /* Off-canvas rather than display:none — some bots skip hidden inputs. */
 .lead__trap {

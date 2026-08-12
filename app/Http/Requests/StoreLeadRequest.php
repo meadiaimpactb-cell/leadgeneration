@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Models\LeadField;
+use App\Rules\InternationalPhone;
 use App\Support\ContactValue;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
@@ -134,9 +135,21 @@ class StoreLeadRequest extends FormRequest
             $value = $this->input($field->key);
 
             if (filled($value) || $field->type === 'checkbox') {
-                $extra[$field->key] = $field->type === 'checkbox'
-                    ? $this->boolean($field->key)
-                    : $value;
+                $extra[$field->key] = match ($field->type) {
+                    'checkbox' => $this->boolean($field->key),
+                    /*
+                     * Stored as it is dialled, not as it was typed.
+                     *
+                     * «0512345678» is how a Saudi writes their own number and
+                     * means nothing to a WhatsApp link or a CRM. The browser
+                     * already sends E.164 when its JavaScript ran; this makes
+                     * it true when it did not.
+                     */
+                    'tel' => InternationalPhone::e164((string) $value),
+                    // Nobody means « A@B.Com ».
+                    'email' => mb_strtolower(trim((string) $value)),
+                    default => $value,
+                };
             }
         }
 

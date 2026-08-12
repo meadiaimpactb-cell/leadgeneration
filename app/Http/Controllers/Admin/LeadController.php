@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Jobs\PushLeadToCrm;
 use App\Models\Campaign;
 use App\Models\Lead;
+use App\Models\LeadField;
+use App\Rules\InternationalPhone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -97,7 +99,7 @@ class LeadController extends Controller
                 'fbclid' => $lead->fbclid,
             ],
             'sectorHint' => $lead->sector_hint,
-            'extra' => $lead->extra ?? [],
+            'extra' => $this->readableExtra($lead),
             'crmProvider' => $lead->crm_provider,
             'crmExternalId' => $lead->crm_external_id,
             'crmSyncedAt' => $lead->crm_synced_at?->toIso8601String(),
@@ -197,11 +199,32 @@ class LeadController extends Controller
     }
 
     /**
+     * A lead's extra answers, written for a person rather than for a dialler.
+     *
+     * Phone numbers are STORED in E.164 — `+966512345678` — because that is
+     * what a CRM and a WhatsApp link need. Nobody reads a number that way, so
+     * the screen shows `+966 51 234 5678`. The stored value is untouched;
+     * this is only how it is displayed, and the two must never swap places.
+     *
+     * @return array<string, mixed>
+     */
+    private function readableExtra(Lead $lead): array
+    {
+        $phoneKeys = LeadField::query()->where('type', 'tel')->pluck('key')->all();
+
+        return collect($lead->extra ?? [])
+            ->map(fn ($value, string $key): mixed => in_array($key, $phoneKeys, true) && is_string($value)
+                ? InternationalPhone::readable($value)
+                : $value)
+            ->all();
+    }
+
+    /**
      * Flatten a lead's extra answers into one readable cell.
      */
     private function formatExtra(Lead $lead): string
     {
-        return collect($lead->extra ?? [])
+        return collect($this->readableExtra($lead))
             ->map(fn ($value, string $key): string => $key.': '.(is_bool($value) ? ($value ? 'نعم' : 'لا') : $value))
             ->implode(' · ');
     }
