@@ -254,6 +254,20 @@ class HandleInertiaRequests extends Middleware
             }
 
             foreach (Arr::dot($lines) as $key => $value) {
+                /*
+                 * Arrays are skipped, not cast.
+                 *
+                 * `Arr::dot` flattens nested keys but leaves an EMPTY array as
+                 * an array — and `validation.php` ships with `'custom' => []`.
+                 * Casting that to string raised "Array to string conversion"
+                 * and took the whole admin panel to a 500 the moment that file
+                 * existed. A lang file is data written by hand; this loop has
+                 * to survive whatever shape it is in.
+                 */
+                if (! is_scalar($value)) {
+                    continue;
+                }
+
                 $messages["{$group}.{$key}"] = (string) $value;
             }
         }

@@ -485,7 +485,6 @@ function submit() {
                         :id="fieldId(field.key)"
                         v-model="values[field.key]"
                         :name="field.key"
-                        :placeholder="field.placeholder"
                         :required="field.required"
                         :invalid="Boolean(errors[field.key] || liveErrors[field.key])"
                         :described-by="(errors[field.key] || liveErrors[field.key]) ? errorId(field.key) : undefined"

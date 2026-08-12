@@ -27,7 +27,6 @@ const props = defineProps({
     modelValue: { type: String, default: '' },
     id: { type: String, required: true },
     name: { type: String, default: 'phone' },
-    placeholder: { type: String, default: null },
     invalid: { type: Boolean, default: false },
     describedBy: { type: String, default: null },
     required: { type: Boolean, default: false },
@@ -39,30 +38,25 @@ const { t } = useTranslation();
 
 const input = ref(null);
 const instance = ref(null);
+/** False until the library has attached; the field still works meanwhile. */
+const ready = ref(false);
 const page = usePage();
 
 /**
- * Where to start the country list.
+ * Saudi Arabia, always.
  *
- * Saudi Arabia unless the browser says otherwise, because most visitors to
- * this site are local (§3) and a default that is right most of the time beats
- * a lookup that costs a request. `ipinfo`-style geo services are deliberately
- * not used: a third-party call on every page load to save one tap is a
- * privacy cost the brief's §6 posture does not justify.
+ * This was read from `navigator.languages` first, which is how the field came
+ * up showing an American flag and +1 on a Saudi site: the browser was set to
+ * en-US, and a browser's language says where its owner reads, not where they
+ * are. §3 makes local institutions the first audience, so the default has to
+ * be right for them and cannot depend on a guess that fails silently.
+ *
+ * Geo lookup is deliberately absent rather than deferred: a third-party
+ * request on every page load, to save one tap for a minority of visitors, is
+ * a privacy cost the brief's §6 posture does not justify. The country list is
+ * one click away for everyone else.
  */
-function initialCountry() {
-    const locales = [page.props.locale, ...(navigator?.languages ?? [navigator?.language])].filter(Boolean);
-
-    for (const tag of locales) {
-        // "en-GB" → GB, "ar-SA" → SA. A bare "ar" or "en" says nothing about
-        // country, so it is skipped rather than guessed at.
-        const region = String(tag).split('-')[1];
-
-        if (region && /^[A-Za-z]{2}$/.test(region)) return region.toLowerCase();
-    }
-
-    return 'sa';
-}
+const DEFAULT_COUNTRY = 'sa';
 
 onMounted(async () => {
     /*
@@ -80,12 +74,22 @@ onMounted(async () => {
     ]);
 
     instance.value = intlTelInput(input.value, {
-        initialCountry: initialCountry(),
+        initialCountry: DEFAULT_COUNTRY,
         // Saudi first, then the countries this site is actually written for
         // (§3), then everyone else.
         countryOrder: ['sa', 'ae', 'kw', 'qa', 'bh', 'om', 'eg', 'jo', 'gb', 'us'],
         countrySearch: true,
         formatAsYouType: true,
+        /*
+         * The library writes the placeholder, and it writes the NATIONAL
+         * form: «5X XXX XXXX».
+         *
+         * Ours said «+966 5X XXX XXXX» while the country button beside it
+         * said +1 — the code twice, disagreeing with itself. The country
+         * button is the only place a dial code belongs, and this way the
+         * example changes with the country instead of contradicting it.
+         */
+        autoPlaceholder: 'aggressive',
         // The list is drawn inside the form rather than pinned to <body>, so
         // it inherits the page's direction and cannot be left behind when the
         // section scrolls.
@@ -97,12 +101,22 @@ onMounted(async () => {
 
     if (props.modelValue) instance.value.setNumber(props.modelValue);
 
-    input.value.addEventListener('input', publish);
+    // `countrychange` is the library's own event and has no Vue equivalent;
+    // typing is handled by the template's @input instead. Relying on an
+    // addEventListener for BOTH is what lost the number: this component's
+    // listener was attached only after an awaited dynamic import, so anything
+    // typed before that — or at all, if the import was slow — updated the
+    // input and never the model, and the form posted an empty phone.
     input.value.addEventListener('countrychange', publish);
+
+    ready.value = true;
+
+    // Whatever is already in the box now counts, including a browser autofill
+    // that happened while the library was still loading.
+    publish();
 });
 
 onBeforeUnmount(() => {
-    input.value?.removeEventListener('input', publish);
     input.value?.removeEventListener('countrychange', publish);
     instance.value?.destroy();
 });
@@ -129,13 +143,25 @@ async function arabicLabels() {
  * is what a dialler needs.
  */
 function publish() {
-    if (!instance.value) return;
-
-    const typed = input.value.value.trim();
+    const typed = (input.value?.value ?? '').trim();
 
     if (typed === '') {
         emit('update:modelValue', '');
         emit('validity', { empty: true, valid: !props.required, message: null });
+
+        return;
+    }
+
+    /*
+     * Before the library attaches, the typed value is passed through as-is
+     * and the server has the last word — it runs the same libphonenumber
+     * metadata, so nothing is accepted here that would be refused there.
+     * Silence would be the wrong answer: a number that reached the input and
+     * not the model is a lead lost without a trace.
+     */
+    if (!ready.value || !instance.value) {
+        emit('update:modelValue', typed);
+        emit('validity', { empty: false, valid: true, message: null });
 
         return;
     }
@@ -169,6 +195,16 @@ watch(
 </script>
 
 <template>
+    <!--
+        No `:value` binding: once the library is attached it owns what is in
+        the box — it reformats as you type — and a Vue binding rewriting the
+        element on every patch fights it for the cursor. The initial value is
+        set once on mount, and the watcher below handles the one other case
+        (the parent clearing the form after a successful send).
+
+        `placeholder` is the library's too; ours said the dial code a second
+        time. Until it attaches, the field is a plain, working phone input.
+    -->
     <input
         :id="id"
         ref="input"
@@ -178,11 +214,11 @@ watch(
         dir="ltr"
         inputmode="tel"
         autocomplete="tel"
-        :placeholder="placeholder ?? ''"
         :aria-invalid="invalid ? 'true' : undefined"
         :aria-describedby="describedBy"
         :required="required"
-        :value="modelValue"
+        @input="publish"
+        @blur="publish"
     />
 </template>
 

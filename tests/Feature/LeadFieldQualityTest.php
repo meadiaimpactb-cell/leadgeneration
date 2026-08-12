@@ -185,17 +185,89 @@ class LeadFieldQualityTest extends TestCase
     // ---------------------------------------------------------------- //
 
     /**
-     * Both languages are offered, and the one being read is marked rather
-     * than removed — a switch showing only «English» tells a visitor nothing
-     * about what they are looking at now.
+     * One entry: where you can go, not where you are.
+     *
+     * Showing both put «العربية» beside «English» on an Arabic page, one of
+     * them inert, naming the language the reader can already see.
      */
     #[Test]
-    public function the_language_switch_offers_both_and_marks_the_current_one(): void
+    public function the_arabic_page_offers_english_and_nothing_else(): void
     {
-        $html = $this->get('/ar')->assertOk()->getContent();
+        $this->assertSwitchOffers('ar', 'en');
+    }
 
-        $this->assertStringContainsString('aria-current="true"', $html);
-        $this->assertStringContainsString('hreflang="en"', $html);
+    #[Test]
+    public function the_english_page_offers_arabic_and_nothing_else(): void
+    {
+        $this->assertSwitchOffers('en', 'ar');
+    }
+
+    /**
+     * One locale per test, one request each — a second request inside the
+     * same test comes back in the first one's language. See
+     * LeadFormAnswersInPlaceTest for why that is the harness and not the site.
+     */
+    private function assertSwitchOffers(string $on, string $to): void
+    {
+        $nav = $this->switchMarkup($this->get("/{$on}")->assertOk()->getContent());
+
+        $this->assertStringContainsString("hreflang=\"{$to}\"", $nav, "the {$on} page offers {$to}");
+        $this->assertStringNotContainsString("hreflang=\"{$on}\"", $nav,
+            'the language being read is not offered as somewhere to go');
+        $this->assertSame(1, substr_count($nav, '<a '), 'exactly one destination');
+    }
+
+    /** The switch alone — `hreflang` also appears in the head's SEO links. */
+    private function switchMarkup(string $html): string
+    {
+        preg_match('/<nav[^>]*class="lang-switch".*?<\/nav>/s', $html, $m);
+
+        $this->assertNotEmpty($m, 'the language switch is on the page');
+
+        return $m[0];
+    }
+
+    // ---------------------------------------------------------------- //
+    // Messages a person can read
+    // ---------------------------------------------------------------- //
+
+    /**
+     * There was no validation.php in either locale, so every server-side
+     * complaint rendered as its own key — a visitor who left the phone field
+     * empty was told «validation.required», which reads as a broken page
+     * rather than as a mistake they can fix. It affected every form on the
+     * site; the lead form's own overrides in leads.php were the only messages
+     * that ever spoke.
+     */
+    #[Test]
+    public function a_rejected_field_says_why_in_the_visitors_language(): void
+    {
+        $response = $this->from('/ar')->post('/leads', [
+            'organisation' => 'وزارة الثقافة',
+            'contact' => 'buyer@ministry.gov.sa',
+            // phone omitted, and it is required in this configuration
+        ]);
+
+        $errors = session('errors')->getBag('default')->get('phone');
+
+        $this->assertNotEmpty($errors);
+        $this->assertStringNotContainsString('validation.', $errors[0],
+            'a raw translation key must never reach a visitor');
+        $this->assertStringContainsString('رقم الهاتف', $errors[0],
+            'and it names the field in Arabic');
+    }
+
+    #[Test]
+    public function every_rule_the_form_uses_has_a_message(): void
+    {
+        foreach (['ar', 'en'] as $locale) {
+            foreach (['required', 'email', 'max', 'string', 'boolean', 'in', 'prohibited'] as $rule) {
+                $line = trans("validation.{$rule}", locale: $locale);
+
+                $this->assertNotSame("validation.{$rule}", $line,
+                    "validation.{$rule} is missing in {$locale}");
+            }
+        }
     }
 
     /** Switching language keeps you on the page you were reading (§12). */

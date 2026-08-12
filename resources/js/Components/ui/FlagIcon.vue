@@ -31,17 +31,29 @@ defineProps({
         aria-hidden="true"
     >
         <rect width="24" height="16" rx="2" fill="#006C35" />
-        <!-- The shahada band. -->
-        <path
-            d="M5 6.2h14"
-            stroke="#fff"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            opacity=".95"
-        />
-        <!-- The sword, blade and hilt. -->
-        <path d="M5 10.4h12.2" stroke="#fff" stroke-width="1.1" stroke-linecap="round" />
-        <path d="M17.2 9.3v2.2" stroke="#fff" stroke-width="1.1" stroke-linecap="round" />
+
+        <!--
+            The shahada, as calligraphy reads at 20px rather than as letters.
+            It was a single straight bar, which is not what is on the flag —
+            the inscription is a dense cursive band with ascenders rising from
+            it, and that shape is what makes it recognisable at this size.
+        -->
+        <g stroke="#fff" fill="none" stroke-linecap="round">
+            <path d="M4.8 6.9c.7-1.1 1.4-1.1 2.1 0s1.4 1.1 2.1 0 1.4-1.1 2.1 0 1.4 1.1 2.1 0 1.4-1.1 2.1 0 1.4 1.1 2.1 0"
+                  stroke-width="1.15" />
+            <path d="M6.6 5.1v1.4M9.4 4.6v1.9M12.2 4.9v1.6M15 4.6v1.9M17.8 5.1v1.4"
+                  stroke-width=".85" />
+        </g>
+
+        <!--
+            The sword: blade to the left, hilt and pommel to the right, which
+            is how it sits on the flag.
+        -->
+        <g fill="#fff">
+            <path d="M5.4 10.9 15.6 10.25v1.3z" />
+            <rect x="15.6" y="9.85" width=".85" height="2.1" rx=".4" />
+            <circle cx="17.5" cy="10.9" r=".95" />
+        </g>
     </svg>
 
     <svg
