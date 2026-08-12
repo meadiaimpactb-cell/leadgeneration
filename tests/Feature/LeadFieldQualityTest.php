@@ -76,6 +76,22 @@ class LeadFieldQualityTest extends TestCase
         $this->assertSame('+966512345678', Lead::sole()->extra['phone']);
     }
 
+    /**
+     * The number exactly as the field displays it, spaces and all.
+     *
+     * intl-tel-input formats as you type — «+966 54 232 7104» — and that is
+     * the string the browser now sends when the model never caught the
+     * keystrokes. It has to be accepted and normalised, not refused for its
+     * spaces.
+     */
+    #[Test]
+    public function a_number_submitted_as_it_appears_on_screen_is_accepted(): void
+    {
+        $this->send(['phone' => '+966 54 232 7104'])->assertSessionHas('lead_submitted', true);
+
+        $this->assertSame('+966542327104', Lead::sole()->extra['phone']);
+    }
+
     #[Test]
     public function a_number_from_another_country_keeps_its_own_country(): void
     {

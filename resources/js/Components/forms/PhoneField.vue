@@ -109,6 +109,18 @@ onMounted(async () => {
     // input and never the model, and the form posted an empty phone.
     input.value.addEventListener('countrychange', publish);
 
+    /*
+     * Also watched directly, because `@input` is not enough.
+     *
+     * `strictMode` and `formatAsYouType` rewrite the element's value as you
+     * type, and a programmatic assignment fires no `input` event — so a
+     * keystroke the library reformats can land in the box without Vue ever
+     * hearing about it. `keyup` and `paste` cover the ways a person puts a
+     * number in; `blur` is already on the element.
+     */
+    input.value.addEventListener('keyup', publish);
+    input.value.addEventListener('paste', () => setTimeout(publish, 0));
+
     ready.value = true;
 
     // Whatever is already in the box now counts, including a browser autofill
@@ -118,6 +130,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     input.value?.removeEventListener('countrychange', publish);
+    input.value?.removeEventListener('keyup', publish);
     instance.value?.destroy();
 });
 

@@ -362,6 +362,30 @@ function submit() {
         .filter((field) => field.type === 'email')
         .forEach((field) => normaliseEmail(field.key));
 
+    /*
+     * Phone fields are read off the page, not trusted to have arrived.
+     *
+     * The number is displayed by intl-tel-input, which formats as you type by
+     * assigning to the element — and a programmatic assignment fires no
+     * `input` event, so a keystroke can reach the box without ever reaching
+     * the model. Twice now a visitor has filled this form, seen their number
+     * sitting in the field, and been told the field was required.
+     *
+     * At this instant the element holds what the person believes they typed,
+     * which is the only version worth submitting. The value is used only when
+     * the model has nothing: an emitted E.164 number is better than the
+     * formatted one on screen, and the server normalises either.
+     */
+    fields.value
+        .filter((field) => field.type === 'tel')
+        .forEach((field) => {
+            const shown = document.getElementById(fieldId(field.key))?.value?.trim() ?? '';
+
+            if (shown !== '' && String(values[field.key] ?? '').trim() === '') {
+                values[field.key] = shown;
+            }
+        });
+
     if (Object.keys(liveErrors).length > 0) return;
 
     processing.value = true;
