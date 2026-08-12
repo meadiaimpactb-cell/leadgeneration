@@ -6,8 +6,10 @@ namespace App\Models;
 
 use App\Support\Settings;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * A single client-editable value (§14.1).
@@ -35,6 +37,36 @@ class Setting extends Model implements HasMedia
             'value' => 'array',
             'is_public' => 'boolean',
         ];
+    }
+
+    /**
+     * The sizes every uploaded image is reduced to (§15.1 caps the first page
+     * at 1.2MB, and a 4000px camera original in a card blows that alone).
+     *
+     * `thumb` is generated synchronously; everything else is queued. The media
+     * grid is unusable without a thumbnail — an editor who uploads five images
+     * and sees five empty squares assumes the upload failed — but nobody is
+     * waiting on the 1600px version, and the queue worker this project already
+     * requires can carry it.
+     *
+     * WebP is produced for every image because §13 asks for it and the format
+     * saves more on photographs of craftwork than any other single change.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->fit(Fit::Crop, 400, 400)
+            ->nonQueued();
+
+        $this->addMediaConversion('medium')
+            ->fit(Fit::Max, 800, 800);
+
+        $this->addMediaConversion('large')
+            ->fit(Fit::Max, 1600, 1600);
+
+        $this->addMediaConversion('webp')
+            ->fit(Fit::Max, 1600, 1600)
+            ->format('webp');
     }
 
     protected static function booted(): void

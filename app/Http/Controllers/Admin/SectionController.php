@@ -164,14 +164,53 @@ class SectionController extends Controller
             'sortOrder' => $section->sort_order,
             'translations' => $translations,
             'media' => [
-                'image' => $section->getMedia('image')
-                    ->map(fn ($m): array => ['id' => $m->id, 'url' => $m->getUrl(), 'name' => $m->file_name])
-                    ->values(),
-                'gallery' => $section->getMedia('gallery')
-                    ->map(fn ($m): array => ['id' => $m->id, 'url' => $m->getUrl(), 'name' => $m->file_name])
-                    ->values(),
+                'image' => $this->mediaFor($section, 'image'),
+                'gallery' => $this->mediaFor($section, 'gallery'),
             ],
         ];
+    }
+
+    /**
+     * A slot's images for the builder's thumbnail grid.
+     *
+     * Referenced library images first; images uploaded onto the section
+     * itself, before the picker existed, only when there are none. Same order
+     * of authority as `Section::imagePayload()`, so what an editor sees in the
+     * panel is what the page renders — the two disagreeing is the worst thing
+     * a media screen can do.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function mediaFor(Section $section, string $collection): array
+    {
+        $attached = $section->attachedMedia($collection);
+
+        $media = $attached->isNotEmpty()
+            ? $attached
+            : $section->getMedia($collection);
+
+        return $media->map(function ($m): array {
+            $translations = [];
+
+            foreach (array_keys(config('site.locales')) as $locale) {
+                $row = $m->translation($locale);
+
+                $translations[$locale] = [
+                    'alt_text' => $row?->alt_text,
+                    'caption' => $row?->caption,
+                ];
+            }
+
+            return [
+                'id' => $m->id,
+                'url' => $m->getUrl(),
+                'thumb' => $m->thumbUrl(),
+                'name' => $m->file_name,
+                'width' => $m->getCustomProperty('width'),
+                'height' => $m->getCustomProperty('height'),
+                'translations' => $translations,
+            ];
+        })->values()->all();
     }
 
     private function owner(Request $request, string $type, int $id): Model

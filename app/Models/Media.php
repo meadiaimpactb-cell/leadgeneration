@@ -21,6 +21,30 @@ class Media extends BaseMedia
         return $this->hasMany(MediaTranslation::class);
     }
 
+    /**
+     * Everywhere this image is referenced from — the count the delete warning
+     * is built on.
+     *
+     * @return HasMany<MediaAttachment, $this>
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(MediaAttachment::class);
+    }
+
+    /**
+     * A thumbnail if one was generated, the original otherwise.
+     *
+     * The fallback is not defensive coding: images uploaded before the picker
+     * existed, and images owned by records rather than the library, have no
+     * conversions. A grid that showed them as broken squares would be telling
+     * an editor their picture is gone when it is fine.
+     */
+    public function thumbUrl(): string
+    {
+        return $this->hasGeneratedConversion('thumb') ? $this->getUrl('thumb') : $this->getUrl();
+    }
+
     public function translation(?string $locale = null): ?MediaTranslation
     {
         $locale ??= app()->getLocale();

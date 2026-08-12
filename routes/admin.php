@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RedirectController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SectionController;
+use App\Http\Controllers\Admin\SectionMediaController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UpcomingScreenController;
 use App\Http\Controllers\Admin\UserController;
@@ -66,6 +67,21 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::resource('pages', PageController::class)->except(['show']);
         Route::post('pages/{page}/publish', [PageController::class, 'publish'])->name('pages.publish');
 
+        /*
+         * Which library images a section uses, and in what order.
+         *
+         * Registered BEFORE `sections/{type}/{id}` on purpose. Both are three
+         * segments, so `POST sections/5/media` would otherwise be read as
+         * "create a section on owner type 5 with id media" and land in the
+         * wrong controller. Matching this one first is unambiguous in the
+         * other direction: a real store call is `sections/page/12`, whose
+         * third segment is never the literal word `media`.
+         */
+        Route::post('sections/{section}/media', [SectionMediaController::class, 'sync'])
+            ->whereNumber('section')->name('sections.media.sync');
+        Route::delete('sections/{section}/media/{medium}', [SectionMediaController::class, 'detach'])
+            ->whereNumber('section')->name('sections.media.detach');
+
         // Sections attach polymorphically to pages, solutions, sectors and
         // campaigns, so they are addressed by owner type + id.
         Route::get('sections/{type}/{id}', [SectionController::class, 'index'])->name('sections.index');
@@ -89,6 +105,14 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('content/{entity}/reorder', [ResourceController::class, 'reorder'])->name('content.reorder');
 
         // ---- Media -------------------------------------------------------
+        // The library reads and writes as JSON: the same list is browsed from
+        // inside the picker modal, from the content screens and from the media
+        // screen, so it cannot be one page's Inertia prop.
+        // Declared before `media/{medium}` so `library` is never read as an id.
+        Route::get('media/library', [MediaController::class, 'library'])->name('media.library');
+        Route::post('media/library', [MediaController::class, 'upload'])->name('media.upload');
+        Route::get('media/{medium}/usage', [MediaController::class, 'usage'])->name('media.usage');
+
         Route::post('media', [MediaController::class, 'store'])->name('media.store');
         Route::patch('media/{medium}', [MediaController::class, 'update'])->name('media.update');
         Route::delete('media/{medium}', [MediaController::class, 'destroy'])->name('media.destroy');

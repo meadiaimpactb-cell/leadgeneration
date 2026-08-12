@@ -12,6 +12,8 @@ use App\Models\Section;
 use App\Models\Sector;
 use App\Models\Solution;
 use App\Support\ContentRegistry;
+use App\Support\MediaLibrary;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -29,6 +31,105 @@ class MediaController extends Controller
     private const IMAGE_MIMES = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'svg'];
 
     private const DOCUMENT_MIMES = ['pdf'];
+
+    public function __construct(private readonly MediaLibrary $library) {}
+
+    /**
+     * The library grid, as JSON.
+     *
+     * Not an Inertia page: this same list is read by the picker inside a
+     * modal, by the picker on the content screens, and by the media screen
+     * itself. An Inertia prop would tie it to one page's props and make
+     * searching from a modal a full page visit.
+     */
+    public function library(Request $request): JsonResponse
+    {
+        abort_unless($request->user()->can('media.manage'), 403);
+
+        $data = $request->validate([
+            'search' => ['nullable', 'string', 'max:191'],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        $paginator = $this->library
+            ->query($data['search'] ?? null)
+            ->withCount('attachments')
+            ->paginate(40, page: $data['page'] ?? 1);
+
+        return response()->json([
+            'items' => collect($paginator->items())->map(fn (Media $media): array => $this->item($media))->all(),
+            'page' => $paginator->currentPage(),
+            'lastPage' => $paginator->lastPage(),
+            'total' => $paginator->total(),
+        ]);
+    }
+
+    /**
+     * One upload into the library.
+     *
+     * One file per request even though the picker sends several at once: the
+     * browser gives a progress event per request, and a single request
+     * carrying five files can only report one bar for all of them — which is
+     * exactly the thing an editor watches when a slow upload makes them
+     * wonder whether it is working.
+     */
+    public function upload(Request $request): JsonResponse
+    {
+        abort_unless($request->user()->can('media.manage'), 403);
+
+        $request->validate([
+            'file' => [
+                'required', 'file',
+                'max:'.MediaLibrary::MAX_KILOBYTES,
+                // Real type, not the extension (§9.2).
+                'mimes:'.implode(',', MediaLibrary::IMAGE_MIMES),
+            ],
+        ], [], ['file' => __('admin.media_file')]);
+
+        $media = $this->library->add($request->file('file'));
+
+        return response()->json(['item' => $this->item($media->fresh())], 201);
+    }
+
+    /** Where an image is used, for the delete warning. */
+    public function usage(Request $request, Media $medium): JsonResponse
+    {
+        abort_unless($request->user()->can('media.manage'), 403);
+
+        return response()->json(['usage' => $this->library->usage($medium)]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function item(Media $media): array
+    {
+        $translations = [];
+
+        foreach (array_keys(config('site.locales')) as $locale) {
+            $row = $media->translations->firstWhere('locale', $locale);
+
+            $translations[$locale] = [
+                'alt_text' => $row?->alt_text,
+                'caption' => $row?->caption,
+            ];
+        }
+
+        return [
+            'id' => $media->id,
+            'name' => $media->name,
+            'fileName' => $media->file_name,
+            'url' => $media->getUrl(),
+            'thumb' => $media->thumbUrl(),
+            'mime' => $media->mime_type,
+            'size' => $media->size,
+            'width' => $media->getCustomProperty('width'),
+            'height' => $media->getCustomProperty('height'),
+            'createdAt' => $media->created_at?->toIso8601String(),
+            'usageCount' => $media->attachments_count ?? $media->attachments()->count(),
+            'translations' => $translations,
+        ];
+    }
 
     public function store(Request $request): RedirectResponse
     {
@@ -113,10 +214,28 @@ class MediaController extends Controller
         return back()->with('success', __('admin.saved'));
     }
 
+    /**
+     * Delete an image from the library outright.
+     *
+     * Refused while anything still references it, unless the caller says
+     * `force`. The screen asks first and lists the places, but the check lives
+     * here too: deleting the file is the one action in this controller that
+     * cannot be undone, and a confirm dialog is a UI convention, not a
+     * safeguard — the same request can arrive without ever seeing it.
+     */
     public function destroy(Request $request, Media $medium): RedirectResponse
     {
         abort_unless($request->user()->can('media.manage'), 403);
 
+        $usage = $this->library->usage($medium);
+
+        if ($usage !== [] && ! $request->boolean('force')) {
+            return back()->with('error', __('admin.media_in_use', ['count' => count($usage)]));
+        }
+
+        // The references go with it — `media_attachments.media_id` cascades —
+        // so the sections that used it fall back to whatever they showed
+        // before, rather than rendering a broken image.
         $medium->delete();
 
         return back()->with('success', __('admin.deleted'));

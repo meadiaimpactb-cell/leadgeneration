@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasAttachedMedia;
 use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,9 +25,21 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  */
 class Section extends Model implements HasMedia
 {
+    use HasAttachedMedia;
     use HasFactory;
     use HasTranslations;
     use InteractsWithMedia;
+
+    /**
+     * Referenced library images are always loaded with the section.
+     *
+     * Declared here rather than added to each controller's `with()` because
+     * `Model::preventLazyLoading()` is on in local (§7.4): a public page that
+     * forgot one would throw in development and, worse, quietly issue a query
+     * per section in production. Eleven controllers render sections, and this
+     * is one place instead of eleven chances to miss one.
+     */
+    protected $with = ['mediaAttachments.media.translations'];
 
     /** Section types, matching the sections/ component inventory (§10.5). */
     public const TYPES = [
@@ -101,13 +114,27 @@ class Section extends Model implements HasMedia
     /**
      * The section's image, whichever way it was set.
      *
-     * Uploaded media wins over a path written into `settings`, so a client who
-     * uploads through the panel always overrides whatever a seeder put there.
+     * Three sources in falling order of authority:
+     *
+     *   1. an image referenced from the media library (the picker),
+     *   2. an image uploaded onto the section itself (the old upload button),
+     *   3. a path written into `settings` by a seeder.
+     *
+     * Each one is a more deliberate act than the one below it, so each one
+     * wins. A seeder never overrides what the client chose, and the JSON path
+     * keeps rendering untouched until they choose something — which is what
+     * makes moving to the library a zero-change operation on the public site.
      *
      * @return array<string, mixed>|null
      */
     public function imagePayload(): ?array
     {
+        $attached = $this->attachedMedia('image')->first();
+
+        if ($attached !== null) {
+            return $this->mediaPayload($attached);
+        }
+
         $media = $this->getFirstMedia('image');
 
         if ($media !== null) {
@@ -132,6 +159,12 @@ class Section extends Model implements HasMedia
      */
     public function galleryPayload(): array
     {
+        $attached = $this->attachedMedia('gallery');
+
+        if ($attached->isNotEmpty()) {
+            return $attached->map(fn (Media $media): array => $this->mediaPayload($media))->all();
+        }
+
         $uploaded = $this->getMedia('gallery')
             ->map(fn ($media): array => [
                 'url' => $media->getUrl(),
