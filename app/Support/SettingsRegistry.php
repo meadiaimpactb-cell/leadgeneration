@@ -76,6 +76,29 @@ class SettingsRegistry
             'contact.location_note.en' => ['screen' => 'contact', 'type' => 'textarea', 'order' => 71],
             'contact.directions_label.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 72],
             'contact.directions_label.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 73],
+            // The visit request on the contact page's location section: the
+            // button's words, and the example put in the message box when it
+            // is pressed. Empty label means no button (§22.1).
+            'contact.visit_cta.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 74],
+            'contact.visit_cta.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 75],
+            'contact.visit_prompt.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 76],
+            'contact.visit_prompt.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 77],
+            // The message WhatsApp opens with, so the visitor never faces an
+            // empty box and the sales team knows where the chat began.
+            'contact.whatsapp_message.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 78],
+            'contact.whatsapp_message.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 79],
+            /*
+             * The response commitment — "we reply within one working day".
+             *
+             * A promise on a public page that the company does not keep is
+             * worse than no promise, so it ships OFF and its text is empty.
+             * Both the switch and the words are the client's, and the panel's
+             * own response-time figure is where they can check whether the
+             * commitment is one they actually meet before turning it on.
+             */
+            'contact.response_promise_enabled' => ['screen' => 'contact', 'type' => 'boolean', 'order' => 80],
+            'contact.response_promise.ar' => ['screen' => 'contact', 'type' => 'text', 'order' => 81],
+            'contact.response_promise.en' => ['screen' => 'contact', 'type' => 'text', 'order' => 82],
 
             // ---- The Zid store -----------------------------------------
             'store.url' => ['screen' => 'store', 'type' => 'url', 'order' => 10],

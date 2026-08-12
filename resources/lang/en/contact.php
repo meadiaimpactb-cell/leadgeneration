@@ -20,4 +20,5 @@ return [
     'map_privacy' => 'The map loads from Google Maps only when you ask for it.',
     'open_in_maps' => 'Open in Google Maps',
     'direct_channels' => 'Or reach us directly',
+    'direct_eyebrow' => 'DIRECT',
 ];

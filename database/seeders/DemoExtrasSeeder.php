@@ -154,66 +154,86 @@ class DemoExtrasSeeder extends Seeder
         return match ($slug) {
             'event-collateral' => [
                 'cards' => [
-                    ['icon' => '🏆', 'title' => 'درع المتحدّث', 'body' => 'قطعة حرفية بدل الدرع الزجاجي المكرّر، بنقش اسم المتحدّث.'],
-                    ['icon' => '🎒', 'title' => 'حقيبة المشارك', 'body' => 'محتوى متجانس الخامة يجعل الفعالية تبدو مصمَّمة لا مجمَّعة.'],
-                    ['icon' => '🪑', 'title' => 'ركن حرفي حيّ', 'body' => 'حرفي يعمل داخل جناحكم أمام الزوّار — تجربة تُروى لا تُوزَّع.'],
+                    ['icon' => '🏆', 'title' => 'درع المتحدّث', 'body' => 'قطعة حرفية بدل الدرع الزجاجي المكرّر، بنقش اسم المتحدّث.',
+                        'title_en' => 'The speaker award', 'body_en' => 'A craft piece instead of the same glass trophy, engraved with the speaker\'s name.'],
+                    ['icon' => '🎒', 'title' => 'حقيبة المشارك', 'body' => 'محتوى متجانس الخامة يجعل الفعالية تبدو مصمَّمة لا مجمَّعة.',
+                        'title_en' => 'The attendee bag', 'body_en' => 'Contents in consistent materials, so the event looks designed rather than assembled.'],
+                    ['icon' => '🪑', 'title' => 'ركن حرفي حيّ', 'body' => 'حرفي يعمل داخل جناحكم أمام الزوّار — تجربة تُروى لا تُوزَّع.',
+                        'title_en' => 'A live craft corner', 'body_en' => 'An artisan working inside your stand in front of visitors — an experience retold, not handed out.'],
                 ],
                 'how' => [
                     'ar' => 'نبدأ من تاريخ الفعالية ونرجع للخلف: موعد التسليم، ثم التغليف، ثم الإنتاج، ثم اعتماد العيّنة. تعرفون في أول اجتماع إن كان التاريخ يكفي أو لا — نقولها بصراحة بدل أن نكتشفها متأخرين.',
                     'en' => 'We start from the event date and work backwards: delivery, packaging, production, sample approval. You know in the first meeting whether the date is enough — we say so plainly rather than discovering it late.',
                 ],
                 'faq' => [
-                    ['question' => 'ما أقصر مدة ممكنة؟', 'answer' => 'تعتمد على الحرفة والكمية. أخبرونا بالتاريخ أولًا ونجيبكم بصدق قبل أي التزام.'],
-                    ['question' => 'هل تنفّذون داخل مدن أخرى؟', 'answer' => 'نعم، ونرتّب الشحن والتسليم إلى موقع الفعالية.'],
+                    ['question' => 'ما أقصر مدة ممكنة؟', 'answer' => 'تعتمد على الحرفة والكمية. أخبرونا بالتاريخ أولًا ونجيبكم بصدق قبل أي التزام.',
+                        'question_en' => 'What is the shortest possible turnaround?', 'answer_en' => 'It depends on the craft and the quantity. Tell us the date first and we answer honestly before any commitment.'],
+                    ['question' => 'هل تنفّذون داخل مدن أخرى؟', 'answer' => 'نعم، ونرتّب الشحن والتسليم إلى موقع الفعالية.',
+                        'question_en' => 'Do you deliver in other cities?', 'answer_en' => 'Yes, and we arrange shipping and delivery to the venue.'],
                 ],
             ],
 
             'custom-production' => [
                 'cards' => [
-                    ['icon' => '📐', 'title' => 'مواصفة مكتوبة', 'body' => 'الخامة والمقاس والوزن واللون مثبّتة قبل بدء الإنتاج.'],
-                    ['icon' => '🔍', 'title' => 'فحص على دفعات', 'body' => 'ضبط الجودة أثناء العمل لا في نهايته، لأن التصحيح المتأخر مكلف.'],
-                    ['icon' => '🔁', 'title' => 'قابلية التكرار', 'body' => 'نوثّق المواصفة لتتمكّنوا من إعادة الطلب بنفس النتيجة لاحقًا.'],
+                    ['icon' => '📐', 'title' => 'مواصفة مكتوبة', 'body' => 'الخامة والمقاس والوزن واللون مثبّتة قبل بدء الإنتاج.',
+                        'title_en' => 'A written specification', 'body_en' => 'Material, size, weight and colour fixed before production starts.'],
+                    ['icon' => '🔍', 'title' => 'فحص على دفعات', 'body' => 'ضبط الجودة أثناء العمل لا في نهايته، لأن التصحيح المتأخر مكلف.',
+                        'title_en' => 'Batch inspection', 'body_en' => 'Quality controlled during the work rather than at the end of it, because late correction is expensive.'],
+                    ['icon' => '🔁', 'title' => 'قابلية التكرار', 'body' => 'نوثّق المواصفة لتتمكّنوا من إعادة الطلب بنفس النتيجة لاحقًا.',
+                        'title_en' => 'Repeatable', 'body_en' => 'We keep the specification on file so you can reorder later and get the same result.'],
                 ],
                 'how' => [
                     'ar' => 'نحوّل ما تحتاجونه إلى مواصفة مكتوبة، ثم نوزّع الإنتاج على الحرفيين المناسبين لكل مرحلة. تصلكم عيّنة تُعتمد باليد قبل الدخول في الكمية الكاملة، ويُفحص العمل على دفعات حتى التسليم.',
                     'en' => 'We turn your need into a written specification, then distribute production across the right artisans for each stage. A sample is approved in the hand before full volume begins, and work is inspected in batches through to delivery.',
                 ],
                 'faq' => [
-                    ['question' => 'هل يمكن إعادة الطلب لاحقًا بنفس المواصفة؟', 'answer' => 'نعم. نحتفظ بملف المواصفة والعيّنة المعتمدة لكل مشروع.'],
-                    ['question' => 'ماذا لو اختلفت القطع اليدوية قليلًا؟', 'answer' => 'الاختلاف اليسير طبيعة العمل اليدوي وقيمته. نتفق مسبقًا على حدود التفاوت المقبولة.'],
+                    ['question' => 'هل يمكن إعادة الطلب لاحقًا بنفس المواصفة؟', 'answer' => 'نعم. نحتفظ بملف المواصفة والعيّنة المعتمدة لكل مشروع.',
+                        'question_en' => 'Can we reorder later to the same specification?', 'answer_en' => 'Yes. We keep the specification file and the approved sample for every project.'],
+                    ['question' => 'ماذا لو اختلفت القطع اليدوية قليلًا؟', 'answer' => 'الاختلاف اليسير طبيعة العمل اليدوي وقيمته. نتفق مسبقًا على حدود التفاوت المقبولة.',
+                        'question_en' => 'What if handmade pieces differ slightly?', 'answer_en' => 'Small variation is the nature of handwork and part of its value. We agree acceptable tolerances in advance.'],
                 ],
             ],
 
             'artisan-sourcing' => [
                 'cards' => [
-                    ['icon' => '🧭', 'title' => 'اختيار الحرفيين', 'body' => 'نرشّح المناسبين لحرفتكم وكميتكم، لا الأقرب فحسب.'],
-                    ['icon' => '📝', 'title' => 'توثيق الاتفاق', 'body' => 'المواصفة والسعر والجدول مكتوبة تحمي الطرفين.'],
-                    ['icon' => '📊', 'title' => 'تقرير الأثر', 'body' => 'يوضّح كم حرفيًا استفاد من طلبكم ومن أي منطقة.'],
+                    ['icon' => '🧭', 'title' => 'اختيار الحرفيين', 'body' => 'نرشّح المناسبين لحرفتكم وكميتكم، لا الأقرب فحسب.',
+                        'title_en' => 'Selecting the artisans', 'body_en' => 'We nominate the ones suited to your craft and your quantity, not simply the nearest.'],
+                    ['icon' => '📝', 'title' => 'توثيق الاتفاق', 'body' => 'المواصفة والسعر والجدول مكتوبة تحمي الطرفين.',
+                        'title_en' => 'Documenting the agreement', 'body_en' => 'Specification, price and schedule in writing, protecting both sides.'],
+                    ['icon' => '📊', 'title' => 'تقرير الأثر', 'body' => 'يوضّح كم حرفيًا استفاد من طلبكم ومن أي منطقة.',
+                        'title_en' => 'The impact report', 'body_en' => 'It sets out how many artisans your order reached, and from which regions.'],
                 ],
                 'how' => [
                     'ar' => 'دورنا هنا تشغيلي بحت: نختار الحرفيين، ونوثّق الاتفاق، ونتابع الإنتاج ميدانيًا، ونضبط الجودة، ثم نصدر تقرير الأثر. تتعاملون مع الحرفة مباشرة، ويبقى الضمان علينا.',
                     'en' => 'Our role here is purely operational: we select the artisans, document the agreement, follow production on the ground, control quality, then issue the impact report. You deal with the craft directly; the guarantee stays with us.',
                 ],
                 'faq' => [
-                    ['question' => 'هل نتعامل مع الحرفي مباشرة؟', 'answer' => 'نعم إن رغبتم، ويبقى ضبط الجودة والجدول من مسؤوليتنا.'],
-                    ['question' => 'كيف يُحتسب أثر الطلب؟', 'answer' => 'بعدد الحرفيين المشاركين وساعات العمل والمناطق المستفيدة، ويصلكم موثّقًا.'],
+                    ['question' => 'هل نتعامل مع الحرفي مباشرة؟', 'answer' => 'نعم إن رغبتم، ويبقى ضبط الجودة والجدول من مسؤوليتنا.',
+                        'question_en' => 'Do we deal with the artisan directly?', 'answer_en' => 'Yes if you wish, and quality control and the schedule stay our responsibility.'],
+                    ['question' => 'كيف يُحتسب أثر الطلب؟', 'answer' => 'بعدد الحرفيين المشاركين وساعات العمل والمناطق المستفيدة، ويصلكم موثّقًا.',
+                        'question_en' => 'How is the impact of an order counted?', 'answer_en' => 'By the artisans involved, the hours worked and the regions reached — documented and sent to you.'],
                 ],
             ],
 
             // corporate-gifts and anything added later
             default => [
                 'cards' => [
-                    ['icon' => '🎨', 'title' => 'اختيار الحرفة', 'body' => 'نرشّح الحرفة التي تناسب رسالتكم ومن ستُهدى إليه.'],
-                    ['icon' => '🏷️', 'title' => 'هويتكم على القطعة', 'body' => 'الشعار ينفَّذ بأسلوب يحترم الحرفة ولا يطمسها.'],
-                    ['icon' => '🎁', 'title' => 'تغليف جاهز للتقديم', 'body' => 'كل قطعة في علبتها، جاهزة للتسليم المباشر دون تجهيز إضافي.'],
+                    ['icon' => '🎨', 'title' => 'اختيار الحرفة', 'body' => 'نرشّح الحرفة التي تناسب رسالتكم ومن ستُهدى إليه.',
+                        'title_en' => 'Choosing the craft', 'body_en' => 'We nominate the craft that suits your message and the person receiving it.'],
+                    ['icon' => '🏷️', 'title' => 'هويتكم على القطعة', 'body' => 'الشعار ينفَّذ بأسلوب يحترم الحرفة ولا يطمسها.',
+                        'title_en' => 'Your identity on the piece', 'body_en' => 'The mark is applied in a way that respects the craft rather than covering it.'],
+                    ['icon' => '🎁', 'title' => 'تغليف جاهز للتقديم', 'body' => 'كل قطعة في علبتها، جاهزة للتسليم المباشر دون تجهيز إضافي.',
+                        'title_en' => 'Ready to hand over', 'body_en' => 'Every piece in its own box, ready to give with no further preparation.'],
                 ],
                 'how' => [
                     'ar' => 'نفهم أولًا المناسبة ومن سيستلم الهدية والميزانية، ثم نقترح ثلاثة اتجاهات حرفية بخامات مختلفة. تختارون اتجاهًا فنصنع عيّنة فعلية تُعتمد باليد لا بالصورة، وبعدها يبدأ الإنتاج بجدول واضح.',
                     'en' => 'We first understand the occasion, the recipient and the budget, then propose three craft directions in different materials. You choose one, we produce a real sample approved in the hand rather than from a photo, and production then runs to a clear schedule.',
                 ],
                 'faq' => [
-                    ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية ونوضّح لكم الممكن بصدق.'],
-                    ['question' => 'هل يمكن تنفيذ الشعار بالحفر أو التطريز؟', 'answer' => 'نعم، ونرشّح الأنسب منهما بحسب الخامة حتى لا يفقد العمل اليدوي قيمته.'],
+                    ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية ونوضّح لكم الممكن بصدق.',
+                        'question_en' => 'What is the minimum order?', 'answer_en' => 'It varies with the craft and the piece. Tell us the quantity and we will tell you honestly what is possible.'],
+                    ['question' => 'هل يمكن تنفيذ الشعار بالحفر أو التطريز؟', 'answer' => 'نعم، ونرشّح الأنسب منهما بحسب الخامة حتى لا يفقد العمل اليدوي قيمته.',
+                        'question_en' => 'Can the mark be engraved or embroidered?', 'answer_en' => 'Yes, and we recommend whichever suits the material so the handwork does not lose its value.'],
                 ],
             ],
         };
@@ -267,82 +287,47 @@ class DemoExtrasSeeder extends Seeder
                 'ar' => ['لماذا أمد الحرف لموسمكم'],
                 'en' => ['Why Amad Craft for your season'],
             ], ['items' => [
-                ['icon' => '⏱️', 'title' => 'جاهز قبل الموعد', 'body' => 'جدول عكسي من تاريخ فعاليتكم، لا وعد مفتوح.'],
-                ['icon' => '🇸🇦', 'title' => 'حرفة سعودية أصيلة', 'body' => 'سدو وخوص وزري ونقش حساوي بأيدٍ سعودية.'],
-                ['icon' => '🎯', 'title' => 'بهويتكم', 'body' => 'الشعار والألوان والتغليف على دليل هويتكم.'],
+                ['icon' => '⏱️', 'title' => 'جاهز قبل الموعد', 'body' => 'جدول عكسي من تاريخ فعاليتكم، لا وعد مفتوح.',
+                    'title_en' => 'Ready before the date', 'body_en' => 'A schedule built backwards from your event date, not an open-ended promise.'],
+                ['icon' => '🇸🇦', 'title' => 'حرفة سعودية أصيلة', 'body' => 'سدو وخوص وزري ونقش حساوي بأيدٍ سعودية.',
+                    'title_en' => 'Genuine Saudi craft', 'body_en' => 'Sadu, palm-frond weaving, Zari and Al-Ahsa engraving, by Saudi hands.'],
+                ['icon' => '🎯', 'title' => 'بهويتكم', 'body' => 'الشعار والألوان والتغليف على دليل هويتكم.',
+                    'title_en' => 'In your identity', 'body_en' => 'Mark, colours and packaging follow your brand guide.'],
             ]]],
 
             ['contact_block', [
-                'ar' => ['أخبرونا بتاريخ فعاليتكم', 'حقل واحد يكفي، ونعود إليكم باقتراح وجدول تسليم.', null, 'تواصلوا معي'],
-                'en' => ['Tell us your event date', 'One field is enough, and we will return with a proposal and a schedule.', null, 'Contact me'],
+                'ar' => ['أخبرونا بتاريخ فعاليتكم', 'ثلاث خانات فقط، ونعود إليكم باقتراح وجدول تسليم.', null, 'تواصلوا معي'],
+                'en' => ['Tell us your event date', 'Three fields only, and we come back with a proposal and a schedule.', null, 'Contact me'],
             ]],
         ]);
     }
 
     /**
-     * A real downloadable file on each report, so the download link works.
+     * Removes the 612-byte demo PDFs this seeder used to attach to every
+     * report, and attaches nothing in their place.
+     *
+     * The reasoning was "a real file makes the download link testable". What
+     * it actually produced was a public button on the credibility page reading
+     * «تحميل التقرير (612 B)» — a size that announces the file is empty, on a
+     * document a government buyer was invited to put in their own report. The
+     * link worked and the promise behind it did not, which is the worse of the
+     * two failures.
+     *
+     * `ReportsList` now shows «التقرير قيد الإعداد» when no file is attached,
+     * and a test that needs a downloadable report attaches its own fixture.
+     * Amad Craft's real publications replace this state by being uploaded.
      */
     private function reportFiles(): void
     {
-        foreach (Report::query()->get() as $report) {
-            if ($report->getMedia('file')->isNotEmpty()) {
-                continue;
+        foreach (Report::query()->with('media')->get() as $report) {
+            foreach ($report->getMedia('file') as $file) {
+                // Only the generated stand-ins: a file the client uploaded
+                // through the panel is theirs and is never touched by a seeder.
+                if (str_starts_with((string) $file->file_name, 'demo-report-')) {
+                    $file->delete();
+                }
             }
-
-            $path = storage_path("app/demo-report-{$report->slug}.pdf");
-
-            if (! is_dir(dirname($path))) {
-                mkdir(dirname($path), 0775, true);
-            }
-
-            file_put_contents($path, $this->minimalPdf($report->slug));
-
-            $report->addMedia($path)->toMediaCollection('file');
         }
-    }
-
-    /**
-     * A valid one-page PDF, built by hand.
-     *
-     * Small enough to keep in a seeder and real enough that the browser opens
-     * it — which is what makes the download link genuinely testable rather
-     * than merely present.
-     */
-    private function minimalPdf(string $label): string
-    {
-        $text = "Amad Craft - demo report - {$label}";
-
-        $objects = [
-            "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n",
-            "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n",
-            "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] "
-                ."/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>\nendobj\n",
-            "4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n",
-        ];
-
-        $stream = "BT /F1 18 Tf 60 760 Td ({$text}) Tj ET";
-        $objects[] = '5 0 obj'."\n".'<< /Length '.strlen($stream).' >>'."\n"
-            .'stream'."\n".$stream."\n".'endstream'."\n".'endobj'."\n";
-
-        $pdf = "%PDF-1.4\n";
-        $offsets = [];
-
-        foreach ($objects as $object) {
-            $offsets[] = strlen($pdf);
-            $pdf .= $object;
-        }
-
-        $xrefAt = strlen($pdf);
-        $pdf .= 'xref'."\n".'0 '.(count($objects) + 1)."\n".'0000000000 65535 f '."\n";
-
-        foreach ($offsets as $offset) {
-            $pdf .= str_pad((string) $offset, 10, '0', STR_PAD_LEFT).' 00000 n '."\n";
-        }
-
-        $pdf .= 'trailer'."\n".'<< /Size '.(count($objects) + 1).' /Root 1 0 R >>'."\n"
-            .'startxref'."\n".$xrefAt."\n".'%%EOF';
-
-        return $pdf;
     }
 
     // ---------------------------------------------------------------- //
@@ -363,7 +348,11 @@ class DemoExtrasSeeder extends Seeder
             return [
                 'ar' => '<p>تحترم أمد الحرف خصوصية زوّار موقعها، ولا تجمع من البيانات إلا ما يلزم للرد على طلب التواصل.</p>'
                     .'<h3>ما نجمعه</h3>'
-                    .'<p>عند إرسال نموذج التواصل نحفظ وسيلة التواصل التي كتبتها — بريدًا إلكترونيًا أو رقم جوال — والرسالة الاختيارية إن كتبتها. لا نطلب اسمًا ولا أي بيانات إضافية.</p>'
+                    // Must list what the form actually asks for. The three
+                    // required fields are the client's own decision; a privacy
+                    // notice that under-states what is collected is the one
+                    // kind of stale copy with a legal cost.
+                    .'<p>عند إرسال نموذج التواصل نحفظ ما كتبته فيه: اسم جهتكم، ورقم الهاتف، والبريد الإلكتروني، والرسالة الاختيارية إن كتبتها. لا نطلب بيانات تتجاوز ذلك.</p>'
                     .'<p>نحفظ كذلك مصدر زيارتك (الصفحة التي أتيت منها ووسوم الحملة إن وُجدت) لقياس فاعلية قنواتنا، وبصمة مشفّرة لعنوان الإنترنت للحماية من الإرسال الآلي. لا نحفظ عنوان الإنترنت نفسه.</p>'
                     .'<h3>لماذا نجمعه</h3>'
                     .'<p>للتواصل معك بشأن طلبك، ولقياس أداء الموقع. لا نبيع بياناتك ولا نشاركها لأغراض تسويقية مع أطراف أخرى.</p>'
@@ -375,7 +364,7 @@ class DemoExtrasSeeder extends Seeder
                     .'<p>نستخدم ملف ارتباط واحدًا لتذكّر لغتك المفضّلة، وأدوات قياس لفهم كيفية استخدام الموقع.</p>',
                 'en' => '<p>Amad Craft respects the privacy of everyone who visits this site, and collects no more than is needed to answer a contact request.</p>'
                     .'<h3>What we collect</h3>'
-                    .'<p>When you submit the contact form we store the contact detail you entered — an email address or a mobile number — and the optional message if you wrote one. We ask for no name and no additional data.</p>'
+                    .'<p>When you submit the contact form we store what you entered in it: your organisation name, your phone number, your email address, and the optional message if you wrote one. We ask for nothing beyond that.</p>'
                     .'<p>We also store where your visit came from (the referring page and any campaign tags) to measure our channels, and a hashed fingerprint of your IP address to guard against automated submissions. We do not store the IP address itself.</p>'
                     .'<h3>Why we collect it</h3>'
                     .'<p>To reply to your request, and to measure how the site performs. We do not sell your data or share it with third parties for marketing.</p>'

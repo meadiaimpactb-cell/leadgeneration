@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { useTranslation } from '@/Composables/useTranslation';
 import Button from '@/Components/ui/Button.vue';
@@ -25,6 +25,23 @@ const props = defineProps({
     // Which sector page this was submitted from — a hint for sales, not a claim.
     sectorHint: { type: String, default: null },
     campaign: { type: String, default: null },
+    /**
+     * Which of a page's audiences this visitor is.
+     *
+     * /training addresses two people who want opposite things — an artisan
+     * asking to join a track and an institution asking to sponsor one — and
+     * this records which button they pressed. §6.1 fixes the form at three
+     * controls, so the alternative was a fourth field asking the visitor to
+     * classify themselves. This is the same answer, obtained for free.
+     */
+    interest: { type: String, default: null },
+    /**
+     * A page-specific example for the optional message.
+     *
+     * The placeholder only, exactly as `firstFieldLabel` is the label only:
+     * same field, same column, same optionality.
+     */
+    messagePlaceholder: { type: String, default: null },
     /**
      * A page-specific label for the first field.
      *
@@ -83,6 +100,9 @@ const values = reactive({
 });
 
 const showMessage = ref(false);
+
+// A placeholder handed over at the moment the box is opened — see openMessage.
+const messageHint = ref(null);
 const processing = ref(false);
 const submitted = ref(false);
 const errors = ref({});
@@ -116,8 +136,69 @@ function attribution() {
         fbclid: params.get('fbclid'),
         campaign: props.campaign,
         sector_hint: props.sectorHint,
+        interest: props.interest,
     };
 }
+
+/**
+ * Choosing an audience opens the message box.
+ *
+ * It stays collapsed on arrival — §10.6 is explicit that the form starts at
+ * one field — but a visitor who has just pressed «التحقوا بمسار» has said
+ * something about themselves, and the example in the placeholder is only
+ * useful if it is on screen when they do. A watcher fires on change only, so
+ * a page that merely renders with an interest already set is unaffected — the
+ * box opens because somebody pressed something, never on arrival.
+ */
+watch(
+    () => props.interest,
+    (chosen) => {
+        if (chosen) showMessage.value = true;
+    }
+);
+
+/**
+ * The root node, so a caller can bring the form onto the screen.
+ *
+ * `.lead` is also what `ContactDock` watches with its IntersectionObserver, so
+ * this is a reference to a node that already exists rather than a new wrapper.
+ */
+const root = ref(null);
+
+/**
+ * Open the form at the message box, with an example of what to write.
+ *
+ * Exposed for a page that has a second entry point into the one form — the
+ * showroom section's «احجزوا زيارة بموعد مسبق» is a request the three fixed
+ * fields cannot express, so the button hands the visitor the field that can
+ * and shows them what belongs in it. Still one form, one endpoint (§6.1);
+ * this is a scroll and a focus, not a second route in.
+ *
+ * Returns false when the client has switched the message field off, so the
+ * caller can decide what to do instead of assuming it worked.
+ */
+function openMessage(placeholder = null) {
+    const smooth =
+        typeof window !== 'undefined' &&
+        !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+    root.value?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+
+    if (!messageField.value) {
+        nextTick(() => document.getElementById(fieldId(CONTACT))?.focus({ preventScroll: true }));
+
+        return false;
+    }
+
+    messageHint.value = placeholder;
+    showMessage.value = true;
+
+    nextTick(() => document.getElementById(fieldId(MESSAGE))?.focus({ preventScroll: true }));
+
+    return true;
+}
+
+defineExpose({ openMessage });
 
 function submit() {
     if (processing.value) return;
@@ -147,6 +228,7 @@ function submit() {
                         lead_locale: page.props.locale,
                         lead_campaign: props.campaign ?? null,
                         lead_sector: props.sectorHint ?? null,
+                        lead_interest: props.interest ?? null,
                     });
                 }
             },
@@ -164,7 +246,7 @@ function submit() {
 </script>
 
 <template>
-    <div class="lead" :class="`lead--${layout}`">
+    <div ref="root" class="lead" :class="`lead--${layout}`">
         <!-- Confirmation replaces the form in place, with the Sadu thread
              weaving itself underneath (§10.6). -->
         <div v-if="submitted" class="lead__done" role="status" aria-live="polite">
@@ -320,7 +402,7 @@ function submit() {
                         :name="MESSAGE"
                         rows="1"
                         dir="auto"
-                        :placeholder="messageField.placeholder ?? ''"
+                        :placeholder="messageHint ?? messagePlaceholder ?? messageField.placeholder ?? ''"
                         :maxlength="messageField.maxLength ?? undefined"
                     />
                     <p v-if="errors[MESSAGE]" class="lead-error">{{ errors[MESSAGE] }}</p>
@@ -418,8 +500,18 @@ function submit() {
         flex: 0 0 auto;
     }
 
+    /*
+     * `minmax(0, 1fr)`, not a bare `1fr`.
+     *
+     * A bare fr track is sized to its content's minimum before free space is
+     * shared out, and an <input>'s intrinsic minimum is wide — so two inputs
+     * in two bare tracks demand more than the row has and push the form past
+     * the viewport instead of shrinking. This is the same defect that
+     * collapsed the CtaBand heading to one word per line; the form carries it
+     * on every page, so it is the one worth fixing first.
+     */
     .lead__extras {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 

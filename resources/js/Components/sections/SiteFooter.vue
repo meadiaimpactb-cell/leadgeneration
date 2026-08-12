@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import Container from '@/Components/ui/Container.vue';
 import Logo from '@/Components/ui/Logo.vue';
+import SocialLinks from '@/Components/ui/SocialLinks.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -16,6 +17,15 @@ import { useTranslation } from '@/Composables/useTranslation';
  * definition. That is what lets them be set in the mono face without asking a
  * client editing the Arabic site to type an English word.
  */
+/**
+ * `showLocation` is false on a page that carries its own location section —
+ * see `PublicLayout`'s `hasOwnLocation`. Default true, so a new page keeps the
+ * showroom block unless it deliberately takes the question over.
+ */
+defineProps({
+    showLocation: { type: Boolean, default: true },
+});
+
 const { t } = useTranslation();
 const page = usePage();
 
@@ -96,34 +106,6 @@ const placeName = computed(() => {
 });
 
 
-/**
- * A line glyph per channel, matched on the link's own host — so a client who
- * adds an Instagram URL gets the Instagram mark without being asked to pick
- * an icon, and an unrecognised network falls back to its label rather than to
- * a wrong symbol.
- */
-const MARKS = {
-    instagram: 'M3 8a5 5 0 015-5h8a5 5 0 015 5v8a5 5 0 01-5 5H8a5 5 0 01-5-5V8zM12 16a4 4 0 100-8 4 4 0 000 8zM17.5 6.5h.01',
-    x: 'M4 4l16 16M20 4L4 20',
-    twitter: 'M4 4l16 16M20 4L4 20',
-    linkedin: 'M3 3h18v18H3V3zM7 10v7M7 7v.01M11 17v-4a2.5 2.5 0 015 0v4M11 10v7',
-    youtube: 'M2 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H5a3 3 0 01-3-3V8zM10 9l5 3-5 3V9z',
-    facebook: 'M14 8h3V4h-3a4 4 0 00-4 4v2H8v4h2v6h4v-6h3l1-4h-4V8z',
-    snapchat: 'M12 3c2.5 0 4 1.9 4 4.3 0 1 .1 1.9-.1 2.5.5.3 1.2 0 1.6-.2.5.7-.3 1.5-1.3 1.9.5 1.7 2 3 3.3 3.3.3.6-1 1.2-2.4 1.4-.2.4-.1 1.1-.6 1.2-.7.1-1.6-.4-2.7 0-.9.3-1.5 1.3-2.8 1.3s-1.9-1-2.8-1.3c-1.1-.4-2 .1-2.7 0-.5-.1-.4-.8-.6-1.2-1.4-.2-2.7-.8-2.4-1.4 1.3-.3 2.8-1.6 3.3-3.3-1-.4-1.8-1.2-1.3-1.9.4.2 1.1.5 1.6.2-.2-.6-.1-1.5-.1-2.5C8 4.9 9.5 3 12 3z',
-    // An unrecognised network gets a globe, never a wrong brand mark and
-    // never its name printed inside a 44px square.
-    default: 'M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z',
-};
-
-function mark(url) {
-    const host = String(url ?? '').toLowerCase();
-
-    for (const key of Object.keys(MARKS)) {
-        if (key !== 'default' && host.includes(key)) return MARKS[key];
-    }
-
-    return MARKS.default;
-}
 </script>
 
 <template>
@@ -132,9 +114,19 @@ function mark(url) {
         <div class="sadu-strip sadu-weave footer__strip" aria-hidden="true" />
 
         <Container>
-            <!-- The showroom, above the link columns. Hidden entirely until
-                 the client has set a map. -->
-            <section v-if="mapEmbed" class="visit" aria-labelledby="visit-heading">
+            <!-- The showroom, above the link columns. Hidden until the client
+                 has set a map, and hidden on a page that answers "where are
+                 you" itself. -->
+            <!-- `id="visit"` is a link target, not decoration: /about's hero
+                 action is «زوروا معرضنا» and lands here. Anything else that
+                 wants to send a visitor to the premises uses the same anchor
+                 rather than a second copy of the address. -->
+            <section
+                v-if="showLocation && mapEmbed"
+                id="visit"
+                class="visit"
+                aria-labelledby="visit-heading"
+            >
                 <div class="visit__copy">
                     <p class="mono-label mono-label--tight mono-label--gold">location</p>
 
@@ -323,31 +315,10 @@ function mark(url) {
                         </li>
                     </ul>
 
-                    <ul v-if="social.length" class="footer__social">
-                        <li v-for="channel in social" :key="channel.url">
-                            <a
-                                class="footer__mark"
-                                :href="channel.url"
-                                rel="noopener noreferrer"
-                                target="_blank"
-                                :aria-label="channel.label"
-                            >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    width="17"
-                                    height="17"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="1.5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    aria-hidden="true"
-                                >
-                                    <path :d="mark(channel.url)" />
-                                </svg>
-                            </a>
-                        </li>
-                    </ul>
+                    <!-- The glyph table moved to `ui/SocialLinks`, which the
+                         contact card also draws from. It lived here alone
+                         while that card printed the same accounts as words. -->
+                    <SocialLinks :items="social" tone="dark" class="footer__social" />
                 </div>
             </div>
 
@@ -729,31 +700,10 @@ function mark(url) {
     color: var(--text-inverse);
 }
 
+/* Only the spacing. The marks themselves are `ui/SocialLinks`, which took
+   this block's gold-on-navy treatment with it as the shared default. */
 .footer__social {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3);
     margin-block-start: var(--s-5);
-    list-style: none;
-}
-
-.footer__mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: 44px;
-    block-size: 44px;
-    border: 1px solid rgba(220, 173, 117, 0.4);
-    color: var(--gold-400);
-    transition:
-        background-color var(--dur-micro) var(--ease),
-        color var(--dur-micro) var(--ease);
-}
-
-.footer__mark:hover,
-.footer__mark:focus-visible {
-    background: rgba(220, 173, 117, 0.16);
-    color: #fff;
 }
 
 .footer__base {

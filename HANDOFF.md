@@ -7,9 +7,35 @@ A new session should be able to read this file and continue without the client
 re-explaining anything. Read [PROJECT_BRIEF.md](PROJECT_BRIEF.md) and
 [CLAUDE.md](CLAUDE.md) first; this file only covers work in flight.
 
-**Last updated:** after **D2c — `/solutions/artisans`** went green, which closes
-all four audience segments.
-**Suite at that point:** 275 passing, 956 assertions. Pint clean.
+**Last updated:** after **D2f — `/training`**, verified live in both locales.
+**Suite:** 326 passing, 1,126 assertions on a quiet database. Pint clean.
+**D2d, D2e and D2f are NOT committed** — see the warning immediately below.
+
+---
+
+## ⚠️ Two sessions are writing to this working tree
+
+Discovered while closing D2d. Alongside this session's `/impact` work, another
+is building `/training`, `/contact`, `/about`, `BridgeModel.vue` and their
+tests, with file writes interleaved minute by minute — and both sessions run
+`php artisan test` against the same `amadcraft_b2b_test`.
+
+What it looks like from inside, so the next session does not spend an hour
+misdiagnosing it as its own bug:
+
+- Tests fail in files nobody touched (`AssetUrlTest`, `ContactDockTest`).
+- `SQLSTATE[40001] Deadlock` and `1050 Table 'sessions' already exists` and
+  `1824 Failed to open the referenced table` — one run's `RefreshDatabase`
+  drops tables while the other is mid-transaction.
+- **Every failing test passes on its own.** That is the signature. A real
+  regression does not care whether it has company.
+
+D2d was therefore **not committed**: `git status` shows both sessions' work
+mixed together, and `git add -A` would sweep another session's half-finished
+pages into a commit describing the impact page.
+
+Before committing anything from here: confirm the other session has stopped,
+run `php artisan migrate:fresh --env=testing --force` once, then the suite.
 
 ---
 
@@ -241,6 +267,196 @@ before the form. Commit `f70be63`.
 template; the work per page is content angle plus whatever section that page
 alone needs.
 
+**D2d — `/impact`.** The proof page. Every other page points here, so the rule
+is narrower than elsewhere: no assertion without something behind it.
+
+The four defects named in the brief, and what each turned out to be:
+
+- **Report covers were a stock photograph of a necklace on a model**, the same
+  one on both reports, in the space a document cover belongs — so a report read
+  as merchandise. New `ui/ReportCover.vue` draws a navy document face with the
+  mark and the year, from tokens and markup, costing no bytes and never the
+  wrong year. An uploaded cover still wins over it. *The brief asked for the
+  PDF's first page as a thumbnail; that needs Imagick, which is not installed
+  here. If it is added, a medialibrary conversion can populate `cover` and this
+  component needs no change.*
+- **A card headed 2025 wearing a 2023 badge.** The year was typed into the
+  title as well as held in the `year` field. Two places for one fact disagree
+  eventually; the year is out of the titles and the badge is the only statement
+  of it.
+- **«تحميل التقرير (612 B)».** The demo seeder attached a hand-built 612-byte
+  PDF to every report so the link would be "testable". What it produced was a
+  public button on the credibility page handing a public body an empty file.
+  The seeder now attaches nothing and removes what it attached; `ReportsList`
+  shows «التقرير قيد الإعداد». A test that needs a download attaches its own.
+- **Stories illustrated with product shots.** `StoryCarousel` even carried
+  `mix-blend-mode: multiply` to drop the white studio sweep — the compensation
+  was the tell. **Amad Craft has since supplied three workshop photographs**
+  (`public/images/image (2..4).jpg`): hands at the loom, palm fronds split at
+  the bench. Matched to the craft each caption names, with alt text describing
+  people at work rather than the shared "a craft piece" default.
+
+  ⚠️ **`story-zari` is an approximate match.** Zari is gold thread worked onto
+  fabric; the photograph is weaving. It is the closest of the three and it is
+  still the wrong craft — swap it when a Zari photograph arrives. A picture
+  that contradicts its own caption is the original defect wearing a new coat.
+
+  Note the ordering in the seeder: `detachSeededMedia` runs **before**
+  `attachImage`, because `attachImage` returns early when the collection is
+  occupied — reversed, the stale catalogue shot keeps its place and the page
+  looks finished while showing the wrong thing.
+
+Built on top of it:
+
+- Hero gained a second action; the first goes to `#reports`, not the form — a
+  public body arriving for the document should not read the page to reach it.
+- «آخر تحديث للأرقام», derived from when the figures were last edited rather
+  than a second field to maintain.
+- `/impact/stories` and `/impact/stories/{slug}`, with «اقرأوا القصة كاملة»
+  keyed on the story having a body, and «كل القصص» appearing only once there
+  are more than the three on show. Sitemap lists only stories with a body — a
+  headline and a pull quote is a thin page.
+- Report downloads push a `report_download` conversion to `dataLayer`, guarded
+  so no consent means no throw.
+
+**Seeded empty on purpose, and this is the honest part of the page:** «كيف
+نقيس» and «ارتباطنا برؤية 2030». Both are methodology. The hero promises we
+measure «استقرار الدخل» — whether that means three consecutive months of orders
+or six is a fact only Amad Craft holds, and a placeholder definition on the page
+whose entire job is to be checkable does more damage than an absent section.
+The rows exist in the section builder; `CardsGrid` renders `v-if="items.length"`.
+Filling `items` in the panel switches each on with no further work.
+
+**Not built: «أثرنا على الخريطة».** It needs artisans-per-region figures that do
+not exist in any record here, and drawing approximate regions on the one page
+that must be checkable is the same failure as the placeholder PDF. It is the
+optional-activation section in the brief; it should be built when the regional
+data arrives.
+
+Guarded by `ImpactPageProvesItsClaimsTest` (10), including the single-source
+test the brief asked for: change a figure and both the home page and /impact
+move together.
+
+**D2e — `/contact`.** Mostly built in a parallel session; this session settled
+the one point the client overruled.
+
+The brief's fix for the duplicated location — «موقعنا» plus the footer's
+showroom block, two headings, two maps, two addresses and two sets of opening
+hours in a two-screen page — was to suppress the footer block on this page.
+**The client reversed which of the two survives:** «لا تحذف الخريطه من الفوتر
+لاني الموقع المفروض يكون موحد». The footer block is the site's one answer to
+"where are you", and a visitor who learns to look for it at the foot of every
+page must find it at the foot of this one.
+
+So `Contact.vue` dropped `has-own-location` and its own `MapBlock` instead. The
+appointment request was the only thing that section owned which the footer
+block does not offer, and it moved into the direct-contact card beside the form
+— which is where someone who has already decided to make contact is looking.
+`the_contact_page_carries_exactly_one_location_section` now asserts the
+arrangement in both directions: the footer heading present, «موقعنا» absent.
+
+**The decision the brief asked for is already made: option A.** The optional
+single-line message exists site-wide, collapsed until asked for, and the schema
+carries `leads.message`. Three required fields plus one optional message, as
+§7 specified.
+
+⚠️ **A consequence worth a decision.** The contact page used to be the one page
+that loaded no Google script before a click — its map was click-to-load, and
+the brief praised the pattern. The footer block's map is a real (lazy) Google
+iframe, so /contact now loads Google on arrival like every other page. Nothing
+regressed site-wide; /contact simply joined the rest. Applying the click-to-load
+treatment to the footer block would give uniformity *and* the privacy pattern
+together, on every page — it is a change to every page's footer, so it is the
+client's call, not a tidy-up to make unasked.
+
+**D2f — `/about`.** Built in the parallel session; this session verified it
+against the brief's acceptance criteria and wrote the guard tests they call for
+(`AboutPageEarnsTrustTest`, 6).
+
+Checked and holding: the bridge diagram is drawn and carries a text
+alternative, its five stages come from the section's `settings`, the duplicated
+«كيف نعمل» is gone, the figures are the shared `ImpactMetric` record (change one
+and /about moves with the home page and /impact), the team grid is off until
+switched on, and no photograph is shared with a segment page — the gallery is
+showroom interiors, not the leather bag that appeared on five pages.
+
+One test was mine and wrong before it was right: matching segment step titles
+against the whole document reported «تواصلوا معنا» as a duplicated procedure
+when it is a navigation label on every page. The header and footer are stripped
+before the comparison now — a false positive there teaches the next person to
+distrust the test rather than the page.
+
+**«محطات» now carries real, sourced facts.** Amad Craft supplied «تقرير مركز
+التدريب والإنتاج بالأحساء — سبتمبر 2025 إلى فبراير 2026», and the four invented
+milestones were replaced with four the report documents:
+
+| Station | Source in the report |
+|---|---|
+| 09·2025 first cohort, three named workshops | p.5 |
+| 11·2025 Banan recognition, Heritage Commission | p.25 |
+| 12·2025 second cohort, 300+ applications | p.5, p.7 |
+| 02·2026 75 trainees, 44 production contracts | p.7 / p.14 / p.21, p.24 |
+
+Two notes on the reading. The 75 is stated on p.7 **and** independently confirmed
+by the two cohort rosters (37 + 38); the per-workshop «المقبولين» column sums to
+88, which is acceptances, not completions — the rosters are the truth. And the
+stations are stamped month · year rather than year alone because that is the
+precision the report supports; nothing reaches back before September 2025,
+because the report does not cover it.
+
+**Still unused from that report, and worth using:**
+
+- **The recognitions**, all documented with photographs: Banan / Heritage
+  Commission, «الأحساء تستاهل» with UNESCO (honoured by the Governor of
+  Al-Ahsa), the King Faisal University handicrafts forum, and معرض البشت
+  الحساوي. A «تكريمات ومشاركات» band on /about or /impact is the obvious home.
+- **The programme facts for `/training`**: 8 weeks, Sunday–Thursday 08:00–14:00,
+  women 18 and over, and the six workshop names across two cohorts. The training
+  pages currently carry none of this.
+- **The workshop photographs** (pp.10–23) — trainees at the loom, palm fronds
+  at the bench, gypsum carving, and the finished pieces. These are far better
+  than anything currently on /impact, and they come with the report's own
+  framing. **They are in the PDF, not in the repo** — someone needs to export
+  them to `public/images/` before they can be used.
+- **The magazine coverage** (مجلة الأحساء, issue 175) — usable as press, but
+  note its «335 حرفياً وحرفية» and «150 حرفياً» figures are the magazine's, not
+  the report's, and the two do not reconcile with the 75 above. Do not mix them
+  into the impact counters without asking which measure each one is.
+
+The team section stays off until Amad Craft decides to publish people.
+
+**Rhythm rule — «لا كحلي فوق كحلي أبداً».** Now DESIGN_SYSTEM.md §7b and swept
+across every built page by `NavyNeverTouchesNavyTest`.
+
+**The sweep found exactly one offender: `/impact`.** The other eight pages —
+home, /about, /contact, /training and the four segments — were already clean,
+so no other page needed changing. The test walks the top-level blocks of
+`<main>` and fails on two `on-dark` sections in a row; it ignores nesting, so
+`CtaBand`'s navy card inside its light outer section correctly does not trip
+it, and it excludes the footer, which the rule's own text exempts.
+
+**Two `/impact` fixes shipped with it:**
+
+- **The hero had lost its heading**, and the cause was mine. This page has a
+  prop called `page`, and I added `const page = usePage()` for a locale check —
+  in `<script setup>` a top-level binding of that name wins over the prop in
+  the template, so `page?.title` resolved to the Inertia page object. Nothing
+  threw; the `v-if` saw undefined and the hero rendered as two buttons on an
+  empty navy field. Renamed to `inertia`, and
+  `ImpactPageProvesItsClaimsTest::no_page_shows_a_hero_without_a_heading` now
+  asserts a non-empty `<h1>` on every hero page, because the same collision is
+  available to all of them and no framework error announces it.
+- **The figures moved to the floating card** — `ImpactStats variant="overlap"`,
+  the same component the home page calls, not a copy. Cream, octagon-cut,
+  riding the hero's edge on a negative margin, 2×2 on phones with a 20px
+  overlap. The heading «أثرنا بالأرقام» is gone: four large numbers do not need
+  announcing.
+
+  Note the shadow: `clip-path` cuts a `box-shadow` off with the corners, so the
+  soft shadow is a `drop-shadow` filter on the section instead — filters follow
+  the clipped outline. That is the only way to get the octagon and the shadow
+  on one element.
+
 **Not done and not claimable:** screenshots at 360/768/1440 and Lighthouse —
 there is no browser in this environment. Verification here is the
 server-rendered HTML in both locales. A `hex-outside-tokens` lint was asked
@@ -309,3 +525,86 @@ recur:
   `SectorController` was still passing a `solutions` prop the page no longer
   rendered. Invisible on screen, fully present in the `data-page` JSON. **A prop
   that stopped being rendered is still shipped** — deleted at the controller.
+
+**D2f — `/training`.** The one page with two readers: an artisan deciding
+whether to join a track, and an institution deciding whether to fund one. It
+showed tracks to the first and then ended at a form headed «ترغبون برعاية مسار
+تدريبي؟» — so the artisan who read to the bottom found no door.
+
+- **Two doors, one form.** The hero's first action is a fragment link down to
+  the tracks; its second, and one button in each column of the new
+  `AudienceSplit` section, call `choose(tag)` — which sets the interest, scrolls
+  to the band and focuses the field. The three fields never change (§6.1).
+  Only the heading, the message placeholder and a stored tag do, and all three
+  come from `settings.variants` keyed by the tag itself, so the copy for an
+  audience and the label it is filed under cannot drift apart.
+- **`leads.interest`** — a new nullable column, set from which button was
+  pressed and never asked of the visitor. It reaches the row and the side panel
+  in the admin list, a filter built from the tags that actually exist, the CSV
+  export, `LeadPayload` (so every CRM driver gets it), the Odoo description,
+  the `NewLeadReceived` mail and the `lead_submitted` dataLayer event.
+  Deliberately **not** an enum: the value comes from a section setting the
+  client edits, and a whitelist would turn a typo in the panel into a rejected
+  lead. A visitor who pressed nothing is stored with no tag — the sales team
+  must be able to trust the column.
+- **Five process steps**, the same `ProcessSteps` component the segment pages
+  use. The fifth — «الربط بطلبات أمد الحرف» — is what separates this from a
+  training institute.
+- **Track cards are fields, not markup.** Duration badge, summary, the outcome
+  line and an optional next-cohort line, all per record. The outcome is now
+  **required in the panel**: `ContentRegistry` grew a `required` list and
+  `ResourceController` turns it into `required_with` against the other fields
+  of the *same locale*, so a wholly blank English column still means "not
+  translated" and still deletes its row (§12).
+- **Three training figures from the one register**, chosen by the `stats`
+  section's own `keys` setting and re-ordered to match it. `training-graduates`
+  and `training-to-production` are seeded **with labels and no value**:
+  `ImpactMetric::visible()` now skips a row whose `value_numeric` is null, so
+  typing the number in the panel is the only step needed to publish it. The
+  page must never fall back to the site-wide set — «ساعة تدريب» beside «قطعة
+  حرفية سُلّمت» would be a training claim made of delivery data.
+- **`stories.tag`** — one column, so `/training` can ask for graduates of its
+  own tracks and `/impact` still shows every story. One record, read twice.
+  **Seeded with no tagged stories**: what happened to somebody who took a track
+  is theirs to say, and a drafted graduate testimonial is a fabricated
+  endorsement, not placeholder copy. **This is content the client owes us** —
+  it is the strongest thing this page could put in front of a sponsor.
+- **Photographs.** The client supplied three: `sadu.png` illustrates the Sadu
+  track, `sojad.png` the artisans' column, `gbs.png` the sponsors' column — the
+  last one has the training centre's own sign in the frame, which is the only
+  photograph on the site that answers "does the place exist". The catalogue
+  photographs that used to sit on the cards were removed: the craft-business
+  track was illustrated with a wall clock. **Two are still owed** — the
+  palm-frond room and a craft-business session. Their frames render as warm
+  placeholders until then.
+
+Guarded by `TrainingPageServesTwoAudiencesTest` (24), including: no price, fee
+or promised income anywhere on the page; no track illustrated with a catalogue
+photograph; the English page carrying no Arabic.
+
+**One render per test.** The SSR gateway serves a test's first render and
+returns an empty document for the second, so a before/after pair inside one
+method silently asserts against nothing — it passes `assertStringNotContains`
+and then fails the positive half with an empty haystack. Every conditional
+section here is therefore two tests, not one.
+
+**Fixed while building it, in components shared by other pages.** These were
+already live and are not `/training`'s doing:
+
+- `CardsGrid`, `FaqAccordion` and `Timeline` printed the Arabic keys of
+  `settings.items` verbatim on `/en` — an English heading over Arabic cards, on
+  four segment pages and four solution pages. All three now read through the
+  new `useSettingText` composable (both languages per item, no fallback), and
+  every seeded item in `DemoContentSeeder` and `DemoExtrasSeeder` gained its
+  `_en` half. `ProcessSteps` and `Timeline` had private copies of that helper;
+  they now share one.
+- `ui/Button` rendered `href="#lead"` as an Inertia `<Link>`, which issues a
+  visit instead of scrolling — the fragment never reaches the server, so the
+  page re-rendered at the top. A same-page fragment is now a plain `<a>`. This
+  also repairs `/impact`'s two hero actions.
+
+**Not done, and deliberately.** The showroom block asked for in the brief
+(«مقابلات التقييم تبدأ من المعرض») lives in `SiteFooter` and is driven by the
+global `contact.*` settings, so it is the same block on every page. Giving it a
+per-page angle needs a mechanism that does not exist yet; the FAQ answer about
+where tracks run carries the point instead.

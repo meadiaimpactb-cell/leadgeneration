@@ -13,6 +13,15 @@ import { useReveal } from '@/Composables/useReveal';
 defineProps({
     heading: { type: String, default: null },
     body: { type: String, default: null },
+    /**
+     * An optional photograph beside the prose, cut to the octagon.
+     *
+     * Added for /about, where the opening story is the page's whole argument
+     * and a full-width column of text with nothing beside it reads as a
+     * document rather than as an editorial spread. Every other rich_text
+     * section on the site has no image and is untouched by this.
+     */
+    image: { type: Object, default: null },
 });
 
 const { root } = useReveal();
@@ -21,15 +30,74 @@ const { root } = useReveal();
 <template>
     <section v-if="body || heading" ref="root" class="section">
         <Container>
-            <div class="prose reveal">
-                <h2 v-if="heading">{{ heading }}</h2>
-                <div v-if="body" class="prose__body" v-html="body" />
+            <div class="editorial" :class="{ 'editorial--illustrated': image }">
+                <div class="prose reveal">
+                    <h2 v-if="heading">{{ heading }}</h2>
+                    <div v-if="body" class="prose__body" v-html="body" />
+                </div>
+
+                <figure v-if="image" class="editorial__figure reveal">
+                    <div class="editorial__frame cut-framed">
+                        <img
+                            class="editorial__img cut"
+                            :src="image.webp ?? image.url"
+                            :alt="image.alt ?? ''"
+                            :width="image.width ?? undefined"
+                            :height="image.height ?? undefined"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    </div>
+
+                    <figcaption v-if="image.caption" class="editorial__caption">
+                        {{ image.caption }}
+                    </figcaption>
+                </figure>
             </div>
         </Container>
     </section>
 </template>
 
 <style scoped>
+.editorial {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-8);
+    align-items: center;
+}
+
+.editorial__figure {
+    margin: 0;
+}
+
+.editorial__img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--placeholder-warm);
+}
+
+.editorial__caption {
+    margin-block-start: var(--s-3);
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+}
+
+@media (min-width: 1024px) {
+    /*
+     * The text column keeps its comfortable measure and the photograph takes
+     * the rest — the opposite of an even split, which would either stretch
+     * the line length past readable or shrink the establishing shot to a
+     * thumbnail.
+     */
+    .editorial--illustrated {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: var(--s-10);
+    }
+}
+
 .prose {
     max-inline-size: 68ch;
 }

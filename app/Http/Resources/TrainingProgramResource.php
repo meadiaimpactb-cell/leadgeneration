@@ -23,6 +23,9 @@ class TrainingProgramResource extends JsonResource
             'summary' => $this->t('summary'),
             'body' => $this->t('body'),
             'outcomes' => $this->t('outcomes'),
+            // Optional and usually absent — the card's line appears only while
+            // this holds something (§22.1: no invented dates on a page).
+            'nextCohort' => $this->t('next_cohort'),
             'durationWeeks' => $this->duration_weeks,
             'image' => MediaResource::make($this->getFirstMedia('hero')),
         ];

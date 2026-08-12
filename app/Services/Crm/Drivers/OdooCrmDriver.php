@@ -181,6 +181,7 @@ class OdooCrmDriver implements CrmDriver
             'Referrer: '.($lead->referrer ?? '—'),
             'Campaign: '.($lead->campaign?->slug ?? '—'),
             'Sector: '.($lead->sector_hint ?? '—'),
+            'Interest: '.($lead->interest ?? '—'),
             "UTM: source={$lead->utm_source} medium={$lead->utm_medium} campaign={$lead->utm_campaign} term={$lead->utm_term} content={$lead->utm_content}",
             'gclid: '.($lead->gclid ?? '—').' · fbclid: '.($lead->fbclid ?? '—'),
         ];

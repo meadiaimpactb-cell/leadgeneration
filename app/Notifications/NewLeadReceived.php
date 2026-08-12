@@ -45,6 +45,9 @@ class NewLeadReceived extends Notification implements ShouldQueue
             'المصدر' => $lead->utm_source,
             'الوسيط' => $lead->utm_medium,
             'القطاع' => $lead->sector_hint,
+            // sponsor / trainee — the first thing that decides who picks this
+            // enquiry up, so it belongs in the alert and not only in the panel.
+            'الاهتمام' => $lead->interest,
             'المُحيل' => $lead->referrer,
         ])->filter()->map(fn ($v, $k): string => "{$k}: {$v}");
 

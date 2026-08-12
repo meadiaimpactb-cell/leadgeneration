@@ -182,8 +182,11 @@ class ResourceController extends Controller
 
         foreach (array_keys(config('site.locales')) as $locale) {
             foreach ($config['fields'] as $field => $type) {
-                $rules["translations.{$locale}.{$field}"] = ['nullable', 'string',
-                    $type === 'text' ? 'max:255' : 'max:20000'];
+                $rules["translations.{$locale}.{$field}"] = array_merge(
+                    ['nullable'],
+                    $this->presenceRulesFor($config, $locale, $field),
+                    ['string', $type === 'text' ? 'max:255' : 'max:20000'],
+                );
             }
         }
 
@@ -233,6 +236,37 @@ class ResourceController extends Controller
                 $record->{$taxonomy['relation']}()->sync($ids);
             }
         });
+    }
+
+    /**
+     * What makes one translated field compulsory, if anything does.
+     *
+     * Every field stays `nullable`, because a record that exists in one
+     * language and not the other is normal and §12 wants it stored that way —
+     * and because empty strings arrive here as null, so dropping `nullable`
+     * makes `string` fail on every blank box.
+     *
+     * An entity may name fields it cannot be described without — the outcome
+     * line on a training track — and those become required *for a locale being
+     * written*, never for a locale left alone. `required_with` is an implicit
+     * rule, so it still fires alongside `nullable`, and it fires only once
+     * something else in that same column has been typed: a blank English side
+     * still means "not translated" and still deletes its row.
+     *
+     * @return list<string>
+     */
+    private function presenceRulesFor(array $config, string $locale, string $field): array
+    {
+        if (! in_array($field, $config['required'] ?? [], true)) {
+            return [];
+        }
+
+        $siblings = array_map(
+            fn (string $other): string => "translations.{$locale}.{$other}",
+            array_values(array_diff(array_keys($config['fields']), [$field])),
+        );
+
+        return ['required_with:'.implode(',', $siblings)];
     }
 
     /** @return list<string> */
@@ -391,6 +425,9 @@ class ResourceController extends Controller
     {
         return [
             'fields' => $config['fields'],
+            // So the editor marks what it is going to refuse to save without,
+            // rather than teaching it through an error after the fact.
+            'required' => $config['required'] ?? [],
             'attributes' => $config['attributes'],
             'media' => $config['media'],
             'creatable' => $config['creatable'],

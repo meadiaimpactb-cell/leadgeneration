@@ -22,6 +22,16 @@ const props = defineProps({
     overHero: { type: Boolean, default: false },
     /** True when reached through a draft's secret preview link (§9.1). */
     previewing: { type: Boolean, default: false },
+    /**
+     * Set by a page that carries a location section of its own.
+     *
+     * The footer's showroom block is the site-wide answer to "where are you".
+     * On /contact the page already answers it, and the two together printed
+     * one address, one set of opening hours and one map twice within a short
+     * page. The page that owns the question keeps it; the global block steps
+     * aside.
+     */
+    hasOwnLocation: { type: Boolean, default: false },
 });
 
 const { t } = useTranslation();
@@ -82,7 +92,7 @@ const alternates = computed(() => props.seo.alternates ?? []);
         <slot />
     </main>
 
-    <SiteFooter />
+    <SiteFooter :show-location="!hasOwnLocation" />
 
     <!--
         The floating contact dock is gone at the client's request. The contact

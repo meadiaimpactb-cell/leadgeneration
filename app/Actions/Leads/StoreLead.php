@@ -54,6 +54,9 @@ class StoreLead
             'fbclid' => $attribution['fbclid'] ?? null,
             'campaign_id' => $campaignId,
             'sector_hint' => $attribution['sector_hint'] ?? null,
+            // Which audience's button produced this — see the column's own
+            // migration. Qualification the visitor was never asked to do.
+            'interest' => $attribution['interest'] ?? null,
 
             'user_agent' => substr((string) $request->userAgent(), 0, 512),
             'ip_hash' => self::hashIp($request->ip()),

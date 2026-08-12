@@ -79,6 +79,10 @@ return [
     'lead_source' => 'Source',
     'lead_date' => 'Date',
     'lead_campaign' => 'Campaign',
+    // Which audience pressed the button — recorded from the page, never asked.
+    'lead_interest' => 'Interest',
+    'interest_sponsor' => 'Sponsor a track',
+    'interest_trainee' => 'Join a track',
     'crm_state' => 'CRM',
     'crm_resync' => 'Re-send to CRM',
     'resync_queued' => 'Queued for another attempt.',
@@ -149,7 +153,7 @@ return [
 
     // Lead form builder
     'lead_fields' => 'Contact form fields',
-    'lead_fields_warning' => 'One field is enough. Every extra field you enable costs leads — the only thing this site is measured on (§1). The delivered configuration is the contact field plus an optional message, per §6.1.',
+    'lead_fields_warning' => 'Every extra field you enable costs leads — the only thing this site is measured on (§1). The approved configuration is three required fields (company name, phone, email) plus an optional message. A fourth required field is a decision with a price.',
     'lead_fields_enabled' => ':count field(s) enabled',
     'field_enabled' => 'Enabled',
     'field_required' => 'Required',

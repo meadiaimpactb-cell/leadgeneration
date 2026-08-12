@@ -151,7 +151,16 @@ class ContentRegistry
                     'attribution' => 'text',
                     'body' => 'richtext',
                 ],
-                'attributes' => ['slug' => 'slug'],
+                'attributes' => [
+                    'slug' => 'slug',
+                    /*
+                     * One label, so a page can ask for the stories that belong
+                     * on it — «training-graduate» is what /training reads. A
+                     * story with no tag is simply a story, and appears on
+                     * /impact as it always did.
+                     */
+                    'tag' => 'text',
+                ],
             ],
 
             'reports' => [
@@ -178,8 +187,21 @@ class ContentRegistry
                     'name' => 'text',
                     'summary' => 'textarea',
                     'outcomes' => 'textarea',
+                    // When the next cohort opens. Optional, and blank by
+                    // default: nothing renders until it is filled, so the card
+                    // never carries a date nobody has committed to.
+                    'next_cohort' => 'text',
                     'body' => 'richtext',
                 ],
+                /*
+                 * The outcome line is what separates a track from an awareness
+                 * workshop, and it is the line an institution weighing a
+                 * sponsorship actually reads. A track described without one is
+                 * not describable, so the editor refuses to save it — in the
+                 * language being written, leaving a locale that is blank
+                 * throughout still meaning "not translated" (§12).
+                 */
+                'required' => ['outcomes'],
                 'attributes' => [
                     'slug' => 'slug',
                     'duration_weeks' => 'number',
@@ -218,6 +240,9 @@ class ContentRegistry
             'creatable' => true,
             'deletable' => true,
             'hasSections' => false,
+            // Per-locale fields that must be filled whenever that locale is
+            // being written at all. Empty for every entity but one.
+            'required' => [],
         ];
     }
 

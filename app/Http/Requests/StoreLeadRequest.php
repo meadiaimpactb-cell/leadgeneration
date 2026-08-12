@@ -75,6 +75,14 @@ class StoreLeadRequest extends FormRequest
             'fbclid' => ['nullable', 'string', 'max:255'],
             'campaign' => ['nullable', 'string', 'max:191'],
             'sector_hint' => ['nullable', 'string', 'max:64'],
+            /*
+             * Which of a page's audiences pressed the button — «ارعوا مساراً»
+             * or «التحقوا بمسار» on /training. Bounded by length only, like
+             * `sector_hint` above and for the same reason: the value comes
+             * from a section setting the client edits, and a whitelist here
+             * would turn a typo in the panel into a rejected lead.
+             */
+            'interest' => ['nullable', 'string', 'max:32'],
         ];
 
         foreach ($this->enabledFields() as $field) {

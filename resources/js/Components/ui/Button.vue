@@ -26,9 +26,19 @@ const props = defineProps({
     loading: { type: Boolean, default: false },
 });
 
+/**
+ * A link to a place on this page is a plain anchor, never an Inertia Link.
+ *
+ * `<Link href="#lead">` looks right and is not: Inertia intercepts the click
+ * and issues a visit, the fragment never reaches the server, and the page
+ * re-renders at the top instead of scrolling to the section. The browser
+ * already does this correctly, including history and the keyboard.
+ */
+const isFragment = computed(() => props.href?.startsWith('#') ?? false);
+
 const tag = computed(() => {
     if (props.href === null) return 'button';
-    return props.external ? 'a' : Link;
+    return props.external || isFragment.value ? 'a' : Link;
 });
 
 const classes = computed(() => ['btn', `btn--${props.variant}`]);

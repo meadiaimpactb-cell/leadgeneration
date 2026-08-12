@@ -36,6 +36,10 @@ trait LeadPayload
                 'fbclid' => $lead->fbclid,
                 'campaign' => $lead->campaign?->slug,
                 'sector_hint' => $lead->sector_hint,
+                // sponsor / trainee on /training — which of a page's two
+                // audiences this enquiry came from, so the CRM can route it
+                // without a salesperson opening the message first.
+                'interest' => $lead->interest,
             ],
         ];
     }

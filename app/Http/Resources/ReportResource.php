@@ -29,7 +29,15 @@ class ReportResource extends JsonResource
             // must not carry a hostname that may not be the one serving it.
             'fileUrl' => $file?->getUrl(),
             'fileSize' => $file?->human_readable_size,
-            'fileType' => $file?->mime_type,
+            /*
+             * "PDF", not "application/pdf". The card tells a visitor what they
+             * are about to receive; a MIME type tells them what a server
+             * thinks. The extension is the honest, readable form of the same
+             * fact, and it needs no map to maintain.
+             */
+            'fileLabel' => $file === null
+                ? null
+                : mb_strtoupper(pathinfo((string) $file->file_name, PATHINFO_EXTENSION)),
         ];
     }
 }

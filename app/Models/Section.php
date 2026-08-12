@@ -49,6 +49,8 @@ class Section extends Model implements HasMedia
         'media_split',
         // A procedure as steps, not a paragraph about a procedure.
         'process_steps',
+        // Two audiences addressed side by side, each with its own way in.
+        'audience_split',
         'solutions_grid',
         'sector_spotlight',
         'story_carousel',

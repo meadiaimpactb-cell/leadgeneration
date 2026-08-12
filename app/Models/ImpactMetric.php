@@ -42,8 +42,20 @@ class ImpactMetric extends Model
         return $query->whereNull('sector_id');
     }
 
+    /**
+     * Figures the public may see.
+     *
+     * A row with no value is not a figure yet. The register carries such rows
+     * on purpose — a label and a definition can be agreed long before anybody
+     * has counted the thing — and they must not reach a page as a blank under
+     * a caption. Typing the number in the panel is the only step needed to
+     * publish one, which is the point: nothing else to remember, no flag to
+     * find.
+     */
     public function scopeVisible(Builder $query): Builder
     {
-        return $query->where('is_active', true)->orderBy('sort_order');
+        return $query->where('is_active', true)
+            ->whereNotNull('value_numeric')
+            ->orderBy('sort_order');
     }
 }

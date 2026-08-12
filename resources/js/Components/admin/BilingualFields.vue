@@ -23,6 +23,13 @@ const props = defineProps({
     fields: { type: Object, required: true },
     errors: { type: Object, default: () => ({}) },
     labels: { type: Object, default: () => ({}) },
+    /**
+     * Field names this record cannot be described without, in whichever
+     * language is being written. A wholly blank column still means "not
+     * translated" — the marker says what is needed once you start, not that
+     * the language is compulsory.
+     */
+    required: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -66,6 +73,7 @@ function label(field) {
                     :key="`${locale}-${field}`"
                     :label="label(field)"
                     :type="type"
+                    :required="required.includes(field)"
                     :dir="DIRS[locale] ?? 'auto'"
                     :model-value="modelValue[locale]?.[field] ?? ''"
                     :error="errors[`translations.${locale}.${field}`]"

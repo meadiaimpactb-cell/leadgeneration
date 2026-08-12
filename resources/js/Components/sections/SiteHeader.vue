@@ -64,6 +64,45 @@ function closeAll() {
 }
 
 /**
+ * Keyboard on the solutions panel.
+ *
+ * Escape closes and hands focus back to the control that opened it — leaving
+ * it inside a hidden panel is the classic way a keyboard user gets stranded.
+ * The arrows walk the rows, because a panel that only a mouse can traverse is
+ * a panel half the visitors cannot use.
+ */
+function onPanelKeydown(event, itemId) {
+    if (event.key === 'Escape') {
+        openMenu.value = null;
+        event.currentTarget.closest('.header__item')?.querySelector('.header__caret')?.focus();
+
+        return;
+    }
+
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+        return;
+    }
+
+    event.preventDefault();
+    openMenu.value = itemId;
+
+    const links = [
+        ...event.currentTarget.closest('.header__item').querySelectorAll('.panel__link'),
+    ];
+
+    if (links.length === 0) {
+        return;
+    }
+
+    const at = links.indexOf(document.activeElement);
+    const step = event.key === 'ArrowDown' ? 1 : -1;
+    // Wraps at both ends: from the last row down returns to the first.
+    const next = at === -1 ? (step === 1 ? 0 : links.length - 1) : (at + step + links.length) % links.length;
+
+    links[next].focus();
+}
+
+/**
  * The CTA takes the visitor to the form, wherever the shortest path to it is:
  * if this page already carries one, it scrolls there and puts the cursor in
  * the field; otherwise it goes to the contact page.
@@ -107,6 +146,8 @@ function start() {
                         :key="item.id"
                         class="header__item"
                         @mouseenter="item.children?.length && (openMenu = item.id)"
+                        @mouseleave="item.children?.length && (openMenu = null)"
+                        @keydown="item.children?.length && onPanelKeydown($event, item.id)"
                     >
                         <!-- A parent is a real link to its own hub page as
                              well as the trigger for its submenu, so it is a
@@ -140,18 +181,48 @@ function start() {
                             </svg>
                         </button>
 
-                        <ul
+                        <!--
+                            A panel, not a list of links.
+
+                            It reuses the three signatures the identity already
+                            owns rather than inventing decoration: the running
+                            section numbering (01–04), the Sadu weave as the
+                            top edge, and the octagon cut on the lower corners.
+                            The visitor should read it as a piece of the same
+                            cloth as the pages it leads to.
+                        -->
+                        <div
                             v-if="item.children?.length"
                             :id="`submenu-${item.id}`"
-                            class="submenu"
-                            :class="{ 'submenu--open': openMenu === item.id }"
+                            class="panel"
+                            :class="{ 'panel--open': openMenu === item.id }"
                         >
-                            <li v-for="child in item.children" :key="child.id">
-                                <Link :href="child.url" class="submenu__link" @click="closeAll">
-                                    {{ child.label }}
-                                </Link>
-                            </li>
-                        </ul>
+                            <span class="sadu-strip sadu-weave panel__edge" aria-hidden="true" />
+
+                            <ul class="panel__list">
+                                <li
+                                    v-for="(child, i) in item.children"
+                                    :key="child.id"
+                                    class="panel__row"
+                                    :style="{ '--row': i }"
+                                >
+                                    <Link :href="child.url" class="panel__link" @click="closeAll">
+                                        <!-- Two digits, Latin, never mirrored —
+                                             the same counter the pages use. -->
+                                        <span class="panel__num" aria-hidden="true">
+                                            {{ String(i + 1).padStart(2, '0') }}
+                                        </span>
+
+                                        <span class="panel__text">
+                                            <span class="panel__label">{{ child.label }}</span>
+                                            <span v-if="child.description" class="panel__desc">
+                                                {{ child.description }}
+                                            </span>
+                                        </span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </nav>
 
@@ -315,47 +386,168 @@ function start() {
  * crawler and can transition — and so `aria-expanded` describes something
  * that genuinely exists.
  */
-.submenu {
+/* ---- Solutions panel (desktop) ---------------------------------- */
+
+.panel {
     position: absolute;
     inset-block-start: 100%;
     inset-inline-start: 0;
-    min-inline-size: 260px;
-    padding-block: var(--s-2);
+    min-inline-size: 320px;
     background: var(--navy-950);
-    border: 1px solid var(--hairline-gold);
-    list-style: none;
+    box-shadow: var(--shadow-card);
+    /* Octagon on the lower corners only: the panel hangs from the header,
+       so its top edge is a join, not a corner. */
+    clip-path: polygon(
+        0 0, 100% 0,
+        100% calc(100% - 9px), calc(100% - 9px) 100%,
+        9px 100%, 0 calc(100% - 9px)
+    );
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
     transition:
-        opacity var(--dur-micro) var(--ease),
-        transform var(--dur-micro) var(--ease),
-        visibility var(--dur-micro);
+        opacity var(--dur-el) var(--ease),
+        transform var(--dur-el) var(--ease),
+        visibility var(--dur-el);
     z-index: 1;
 }
 
-.submenu--open,
-.header__item:focus-within .submenu {
+.panel--open,
+.header__item:focus-within .panel {
     opacity: 1;
     visibility: visible;
     transform: none;
 }
 
-.submenu__link {
+/*
+ * The hover bridge. The panel starts flush against the header, so there is
+ * no gap for the pointer to cross and no dead strip that closes it midway.
+ */
+.panel__edge {
     display: block;
-    padding: var(--s-3) var(--s-5);
-    color: rgba(255, 255, 255, 0.82);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    line-height: 1.4;
-    min-block-size: 44px;
-    transition: background-color var(--dur-micro) var(--ease);
+    --sadu-tile: 3px;
+    --sadu-colour: var(--gold-400);
+    block-size: 3px;
 }
 
-.submenu__link:hover,
-.submenu__link:focus-visible {
-    background: rgba(220, 173, 117, 0.14);
-    color: #fff;
+.panel__list {
+    list-style: none;
+    margin: 0;
+    padding-block: var(--s-2);
+}
+
+/*
+ * Rows arrive in sequence on open and leave together on close. The delay is
+ * on the open state only — a staggered close reads as the panel struggling
+ * to get out of the way.
+ */
+.panel--open .panel__row,
+.header__item:focus-within .panel__row {
+    animation: panel-row var(--dur-el) var(--ease) backwards;
+    animation-delay: calc(var(--row, 0) * 40ms);
+}
+
+@keyframes panel-row {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.panel__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--s-5);
+    min-block-size: 56px;
+    color: rgba(255, 255, 255, 0.82);
+    transition: padding-inline-start var(--dur-micro) var(--ease);
+}
+
+/*
+ * The gold bar on the reading edge. `inset-inline-start` puts it on the
+ * right in Arabic and the left in English with no second rule.
+ */
+.panel__link::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: var(--s-2);
+    inline-size: 2px;
+    background: var(--gold-400);
+    transform: scaleY(0);
+    transition: transform var(--dur-micro) var(--ease);
+}
+
+/*
+ * The 4px nudge is padding, not a transform.
+ *
+ * `translateX` needs a sign that flips with direction and there is no token
+ * for one; `padding-inline-start` moves the row toward the reading edge in
+ * both languages with a single rule and no arithmetic.
+ */
+.panel__link:hover,
+.panel__link:focus-visible {
+    padding-inline-start: calc(var(--s-5) + 4px);
+}
+
+.panel__link:hover::before,
+.panel__link:focus-visible::before {
+    transform: scaleY(1);
+}
+
+.panel__link:focus-visible {
+    outline: 2px solid var(--gold-400);
+    outline-offset: -2px;
+}
+
+.panel__num {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--gold-400);
+    /* A counter is Latin in both locales and must never mirror. */
+    direction: ltr;
+    transition: color var(--dur-micro) var(--ease);
+}
+
+.panel__link:hover .panel__num,
+.panel__link:focus-visible .panel__num {
+    color: var(--orange-500);
+}
+
+.panel__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-inline-size: 0;
+}
+
+.panel__label {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-inverse);
+}
+
+.panel__desc {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.58);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel,
+    .panel__link,
+    .panel__link::before,
+    .panel__num {
+        transition: none;
+    }
+
+    .panel--open .panel__row,
+    .header__item:focus-within .panel__row {
+        animation: none;
+    }
 }
 
 .header__actions {

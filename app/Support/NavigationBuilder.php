@@ -97,6 +97,9 @@ class NavigationBuilder
         return [
             'id' => $item->id,
             'label' => $label,
+            // The one-line chooser text under a name in the solutions panel.
+            // Null on every other entry, which renders nothing.
+            'description' => $item->t('description', $locale),
             'url' => $url,
             'children' => $children,
         ];

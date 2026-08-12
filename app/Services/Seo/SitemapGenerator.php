@@ -203,11 +203,34 @@ class SitemapGenerator
             );
         }
 
+        // ---- Artisan stories -----------------------------------------------
+        // Only those with a body written in this locale.
+        //
+        // Every visible story now answers at /impact/stories/{slug}, but one
+        // with no body is a headline and a pull quote — a thin page, and
+        // listing it spends crawl budget to publish something a reader gains
+        // nothing from. The same condition governs the «اقرأوا القصة كاملة»
+        // button, so the sitemap and the site agree on what a full story is.
+        foreach ($this->visible(Story::class, $locale) as $story) {
+            if (blank($story->translations->firstWhere('locale', $locale)?->body)) {
+                continue;
+            }
+
+            $url = fn (string $l): string => url("{$l}/impact/stories/{$story->slug}");
+
+            $entries[] = $this->entry(
+                $url($locale),
+                $story->updated_at,
+                '0.5',
+                'monthly',
+                $this->alternates($story, $url),
+            );
+        }
+
         // ---- Records with no page of their own -----------------------------
-        // Stories, reports, programs and products are rendered inside the
-        // listing pages above, so they contribute a lastmod rather than a URL.
-        // Listing a URL that does not exist would be the same defect as
-        // listing a draft.
+        // Reports, programs and products are rendered inside the listing pages
+        // above, so they contribute a lastmod rather than a URL. Listing a URL
+        // that does not exist would be the same defect as listing a draft.
 
         // ---- Live campaigns ------------------------------------------------
         foreach (Campaign::query()->live()->with('translations')->get() as $campaign) {

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $summary
  * @property string|null $body
  * @property string|null $outcomes
+ * @property string|null $next_cohort
  */
 class TrainingProgramTranslation extends Model
 {

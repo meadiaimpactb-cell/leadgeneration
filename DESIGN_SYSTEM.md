@@ -154,3 +154,58 @@ Each of these is here because it broke something real.
   fill. Use a `box-shadow` ring per cell instead.
 - **`class="x"` plus `:class` merge into one attribute**, silently breaking any
   check that looks for the attribute verbatim.
+- **Two near-whites side by side read as unfinished, not as two options.** The
+  contact card sat on `--paper-alt` beside a form on `--paper-warm`: a few
+  shades apart, which the eye reads as a box that failed to load rather than as
+  an alternative worth taking. An alternative to the primary path gets the
+  opposite ground — navy with a gold hairline, the same weighting the CTA band
+  and the footer already use.
+- **An account list is a set of marks, not a row of words.** «Snapchat Facebook
+  X Instagram» printed as four text links three sections above the footer
+  showing the same four accounts as icons. `ui/SocialLinks` owns the glyph
+  table and both read from it; the glyph is matched on the link's own host, so
+  a client who pastes a URL never has to pick an icon, and an unknown network
+  gets a globe rather than a wrong brand mark.
+
+---
+
+## 7b. Rhythm — never navy on navy
+
+**Two navy sections may never sit directly against each other.** Between them
+there is always a light section, a floating card, or a Sadu divider on a light
+ground.
+
+Navy is roughly 30% of the page and it is the identity's weight. Two navy
+blocks in sequence do not read as two sections; they read as one very tall
+field with a horizontal line in it, and whatever is in the second block gets
+absorbed into the first. On /impact this cost the page its argument: the
+figures sat in a navy band immediately under the navy hero, so four numbers
+that exist to be *evidence for* the claim above them looked like part of the
+header.
+
+The three legal separators, in order of preference:
+
+1. **A floating card** — `ImpactStats variant="overlap"`. Cream, octagon-cut,
+   riding the navy edge on a negative margin. Use this when the second block
+   is evidence for the first; the overlap is what says "these belong together".
+2. **A light section** — any `.section` on `--bg`.
+3. **A Sadu divider on a light ground** — `SaduDivider`, never between two
+   dark blocks, where it reads as a stripe rather than a seam.
+
+The footer's showroom block is navy and it closes every page, so the last
+section before the footer must be light. `CtaBand` is navy but sits inside a
+light-grounded outer section, which satisfies the rule — the card is navy, the
+band around it is not.
+
+---
+
+## 8. Components that exist to stop a duplicate
+
+- **`ui/SocialLinks`** — the social glyph table, `dark` (gold on navy) and
+  `paper` tones. Was inline in `SiteFooter`.
+- **`ui/ReportCover`** — a document face in the identity for a report with no
+  uploaded cover. Was a stock photograph.
+- **`ui/SectionIndex`** — the «03 / 05 · voices» running index.
+
+Before adding a second copy of any of these, use the component. That is the
+whole reason each one was extracted.

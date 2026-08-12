@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, watch } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
@@ -20,12 +20,27 @@ const props = defineProps({
     statuses: { type: Array, default: () => [] },
     campaigns: { type: Array, default: () => [] },
     sources: { type: Array, default: () => [] },
+    /** The interest tags that actually appear on leads — sponsor, trainee… */
+    interests: { type: Array, default: () => [] },
     can: { type: Object, default: () => ({}) },
     selected: { type: Object, default: null },
 });
 
 const { t } = useTranslation();
 const { dateTime } = useFormat();
+const page = usePage();
+
+/**
+ * An interest tag as a person should read it.
+ *
+ * The tag is a free string set from a section setting, so `t()` cannot be
+ * called on it directly — a value with no translation would render the key
+ * itself. Known tags get their Arabic label; anything the client invents later
+ * shows as typed, which is the correct failure.
+ */
+function interestLabel(value) {
+    return (page.props.translations ?? {})[`admin.interest_${value}`] ?? value;
+}
 
 const filters = reactive({
     q: props.filters.q ?? '',
@@ -35,6 +50,7 @@ const filters = reactive({
     source: props.filters.source ?? '',
     status: props.filters.status ?? '',
     crm: props.filters.crm ?? '',
+    interest: props.filters.interest ?? '',
 });
 
 let timer = null;
@@ -124,6 +140,16 @@ function closePanel() {
                     type="select"
                     :options="['pending', 'synced', 'failed'].map((s) => ({ value: s, label: t(`admin.crm_${s}`) }))"
                 />
+                <!-- Only offered once a page has actually produced tagged
+                     leads: an empty filter teaches an operator to distrust
+                     the ones beside it. -->
+                <Field
+                    v-if="interests.length"
+                    v-model="filters.interest"
+                    :label="t('admin.lead_interest')"
+                    type="select"
+                    :options="interests.map((i) => ({ value: i, label: interestLabel(i) }))"
+                />
             </div>
         </Panel>
 
@@ -138,6 +164,7 @@ function closePanel() {
                             <th>{{ t('admin.lead_contact') }}</th>
                             <th>{{ t('admin.lead_message') }}</th>
                             <th>{{ t('admin.lead_source') }}</th>
+                            <th>{{ t('admin.lead_interest') }}</th>
                             <th>{{ t('admin.lead_status') }}</th>
                             <th>{{ t('admin.crm_state') }}</th>
                         </tr>
@@ -152,6 +179,9 @@ function closePanel() {
                             </td>
                             <td class="table__msg">{{ lead.message ?? '—' }}</td>
                             <td>{{ lead.campaign ?? lead.source ?? '—' }}</td>
+                            <td class="nowrap">
+                                {{ lead.interest ? interestLabel(lead.interest) : '—' }}
+                            </td>
                             <td>
                                 <select
                                     v-if="can.updateStatus"
@@ -213,6 +243,9 @@ function closePanel() {
 
                     <dt>{{ t('admin.sectors') }}</dt>
                     <dd>{{ selected.sectorHint ?? '—' }}</dd>
+
+                    <dt>{{ t('admin.lead_interest') }}</dt>
+                    <dd>{{ selected.interest ? interestLabel(selected.interest) : '—' }}</dd>
                 </dl>
 
                 <h3 class="drawer__sub">{{ t('admin.attribution') }}</h3>

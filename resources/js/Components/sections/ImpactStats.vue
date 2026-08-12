@@ -4,6 +4,7 @@ import Container from '@/Components/ui/Container.vue';
 import Button from '@/Components/ui/Button.vue';
 import ImpactStat from '@/Components/sections/ImpactStat.vue';
 import { useReveal } from '@/Composables/useReveal';
+import { useTranslation } from '@/Composables/useTranslation';
 
 /**
  * sections/ImpactStats (§11.1) — the proof figures.
@@ -32,9 +33,12 @@ const props = defineProps({
         default: 'band',
         validator: (v) => ['band', 'overlap'].includes(v),
     },
+    /** Already formatted server-side; month names are a locale's business. */
+    measuredAt: { type: String, default: null },
 });
 
 const { root } = useReveal();
+const { t } = useTranslation();
 
 /** Four reads; five starts to look like a dashboard. */
 const shown = computed(() => props.items.slice(0, 4));
@@ -85,12 +89,33 @@ const columns = computed(() => Math.max(1, shown.value.length));
                         :metric-key="item.key"
                     />
                 </div>
+
+                <!--
+                    A figure with no date is a claim; a figure with a date is a
+                    measurement. This is derived from when the numbers were last
+                    edited, so it cannot drift from them the way a second field
+                    typed by hand would.
+                -->
+                <p v-if="measuredAt" class="impact__asof">
+                    {{ t('impact.measured_at') }}: <span class="tabular">{{ measuredAt }}</span>
+                </p>
             </div>
         </Container>
     </section>
 </template>
 
 <style scoped>
+.impact__asof {
+    margin-block-start: var(--s-6);
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+}
+
+/* On the navy band the muted paper grey would fall under AA. */
+.impact--band .impact__asof {
+    color: rgba(255, 255, 255, 0.62);
+}
+
 .impact {
     position: relative;
 }
@@ -106,14 +131,44 @@ const columns = computed(() => Math.max(1, shown.value.length));
     z-index: 5;
 }
 
+/*
+ * Octagon plus soft shadow on one element.
+ *
+ * `clip-path` cuts the box-shadow off with the corners, so the shadow moves to
+ * a `drop-shadow` filter on the section — filters follow the clipped outline,
+ * which is the only way to get both without a second wrapper element.
+ */
+.impact--overlap {
+    filter: drop-shadow(0 24px 40px rgba(0, 37, 70, 0.16));
+}
+
 .impact--overlap .impact__inner {
     background: var(--paper-warm);
-    border: 1px solid var(--hairline);
-    box-shadow: 0 24px 60px rgba(0, 37, 70, 0.13);
+    clip-path: polygon(
+        var(--cut-soft) 0, calc(100% - var(--cut-soft)) 0,
+        100% var(--cut-soft), 100% calc(100% - var(--cut-soft)),
+        calc(100% - var(--cut-soft)) 100%, var(--cut-soft) 100%,
+        0 calc(100% - var(--cut-soft)), 0 var(--cut-soft)
+    );
 }
 
 .impact--overlap .impact__grid > * {
     padding: var(--s-6) var(--s-5);
+}
+
+/*
+ * Two by two on a phone, not four in a column: four stacked figures push the
+ * rest of the page a screen and a half down, and the overlap that ties the
+ * card to the hero stops being visible at all.
+ */
+@media (max-width: 639px) {
+    .impact--overlap {
+        margin-block-start: -20px;
+    }
+
+    .impact--overlap .impact__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 /* ---- band ---- */

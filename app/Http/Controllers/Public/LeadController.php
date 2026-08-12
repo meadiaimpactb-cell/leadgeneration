@@ -41,7 +41,7 @@ class LeadController extends Controller
             attribution: $request->safe()->only([
                 'page_url', 'referrer',
                 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
-                'gclid', 'fbclid', 'campaign', 'sector_hint',
+                'gclid', 'fbclid', 'campaign', 'sector_hint', 'interest',
             ]),
             request: $request,
             // Answers to any field the client enabled beyond §6.1's two.

@@ -25,7 +25,18 @@ const props = defineProps({
     query: { type: String, default: null },
     // Where "open in Maps" goes.
     linkUrl: { type: String, default: null },
+    /**
+     * The visit request, if the page wants one.
+     *
+     * A showroom that receives institutional visitors by appointment needs a
+     * way to ask for the appointment; without it the section ends at a map,
+     * and a buyer who wanted to come has nothing to press. Empty label means
+     * no button — this component never invents a call to action (§22.1).
+     */
+    visitLabel: { type: String, default: null },
 });
+
+const emit = defineEmits(['visit']);
 
 const { t } = useTranslation();
 const loaded = ref(false);
@@ -59,16 +70,30 @@ const hasContent = computed(() => Boolean(props.address || src.value));
 
                     <p v-if="hours" class="map__hours">{{ hours }}</p>
 
-                    <a
-                        v-if="externalUrl"
-                        class="btn btn--secondary map__open"
-                        :href="externalUrl"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        {{ t('contact.open_in_maps') }}
-                        <span class="visually-hidden">{{ t('common.external_link') }}</span>
-                    </a>
+                    <!-- The appointment first, the directions second: the
+                         visitor who wants to come is worth more to §1 than the
+                         one who wants to look at a map. -->
+                    <div v-if="visitLabel || externalUrl" class="map__actions">
+                        <button
+                            v-if="visitLabel"
+                            type="button"
+                            class="btn btn--cta"
+                            @click="emit('visit')"
+                        >
+                            {{ visitLabel }}
+                        </button>
+
+                        <a
+                            v-if="externalUrl"
+                            class="btn btn--secondary"
+                            :href="externalUrl"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            {{ t('contact.open_in_maps') }}
+                            <span class="visually-hidden">{{ t('common.external_link') }}</span>
+                        </a>
+                    </div>
                 </div>
 
                 <div v-if="src" class="map__frame">
@@ -117,7 +142,10 @@ const hasContent = computed(() => Boolean(props.address || src.value));
     font-size: var(--fs-sm);
 }
 
-.map__open {
+.map__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
     margin-block-start: var(--s-5);
 }
 

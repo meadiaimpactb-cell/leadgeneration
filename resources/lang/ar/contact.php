@@ -22,4 +22,7 @@ return [
     'map_privacy' => 'تُحمَّل الخريطة من خرائط جوجل عند الضغط فقط.',
     'open_in_maps' => 'فتح في خرائط جوجل',
     'direct_channels' => 'أو تواصل مباشرةً',
+    // Mono, Latin, over the card's heading — the face carries no Arabic
+    // glyphs and letterspacing breaks the joins (see DESIGN_SYSTEM).
+    'direct_eyebrow' => 'DIRECT',
 ];

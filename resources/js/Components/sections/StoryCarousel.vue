@@ -1,7 +1,9 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import Container from '@/Components/ui/Container.vue';
 import SectionIndex from '@/Components/ui/SectionIndex.vue';
 import { useReveal } from '@/Composables/useReveal';
+import { useTranslation } from '@/Composables/useTranslation';
 
 /**
  * sections/StoryCarousel (§11.1) — artisan stories, portrait + quote.
@@ -19,11 +21,16 @@ defineProps({
     eyebrow: { type: String, default: null },
     items: { type: Array, default: () => [] },
     index: { type: Number, default: null },
+    /** The section counter — «03 / 05». Not the number of stories. */
     total: { type: Number, default: null },
     slug: { type: String, default: null },
+    /** How many published stories exist, including those not shown here. */
+    storiesTotal: { type: Number, default: 0 },
+    allUrl: { type: String, default: null },
 });
 
 const { root } = useReveal();
+const { t } = useTranslation();
 </script>
 
 <template>
@@ -48,8 +55,16 @@ const { root } = useReveal();
                     :style="{ '--step': i % 3 }"
                 >
                     <figure class="story">
-                        <div v-if="story.image" class="story__frame">
+                        <!--
+                            The frame stands whether or not a photograph has
+                            arrived. Empty, it is a warm placeholder and nothing
+                            else — no caption, because §22.1's instruction for
+                            missing content is to leave the container empty and
+                            report it, not to write a line apologising for it.
+                        -->
+                        <div class="story__frame" :class="{ 'story__frame--empty': !story.image }">
                             <img
+                                v-if="story.image"
                                 class="story__image"
                                 :src="story.image.webp ?? story.image.url"
                                 :alt="story.image.alt ?? ''"
@@ -67,10 +82,31 @@ const { root } = useReveal();
                             <p v-if="story.attribution" class="story__attribution">
                                 {{ story.attribution }}
                             </p>
+
+                            <Link
+                                v-if="story.hasFullStory"
+                                class="story__link link-weave"
+                                :href="story.url"
+                            >
+                                {{ t('impact.read_story') }}
+                            </Link>
                         </figcaption>
                     </figure>
                 </li>
             </ul>
+
+            <!--
+                Only once there are more than the three on show. A button
+                labelled "all stories" that leads to the same three is a
+                promise the page cannot keep.
+            -->
+            <Link
+                v-if="allUrl && storiesTotal > items.length"
+                class="stories__all link-weave"
+                :href="allUrl"
+            >
+                {{ t('impact.all_stories') }}
+            </Link>
         </Container>
     </section>
 </template>
@@ -106,33 +142,28 @@ const { root } = useReveal();
  * crops the maker out at the waist, 4:5 keeps the hands and the piece in the
  * same frame, which is the whole point of the section.
  */
-/*
- * No placeholder hatching on this frame, unlike the gallery's.
- *
- * These are product photographs shot on a white sweep, and `multiply` below
- * is what drops that white into the page. Anything painted behind the image —
- * the warm hatch the gallery uses — would show straight through the area the
- * white used to occupy, which is the whole frame minus the piece. The frame
- * carries the page's own ground instead, so the swap is invisible.
- */
 .story__frame {
     aspect-ratio: 4 / 5;
     overflow: hidden;
     background: var(--paper-warm);
 }
 
+.story__frame--empty {
+    background: var(--placeholder-warm);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+}
+
+/*
+ * `mix-blend-mode: multiply` used to sit here, to drop the white studio sweep
+ * of a product photograph into the page. That it was needed at all was the
+ * tell: this section is testimony, and a photograph of the object instead of
+ * the person is why a story about a grandmother's loom was illustrated with a
+ * notebook. The blend went with the product shots.
+ */
 .story__image {
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;
-    /*
-     * White × anything = anything, so the studio sweep disappears and the
-     * piece sits directly on the paper. It is not a cutout — a shadow or a
-     * grey gradient in the original still darkens what is under it — but on
-     * a clean white sweep that reads as the piece resting on the page, which
-     * is the intent.
-     */
-    mix-blend-mode: multiply;
 }
 
 .story__body {
@@ -152,6 +183,21 @@ const { root } = useReveal();
     font-weight: 500;
     line-height: 1.8;
     color: var(--navy-900);
+}
+
+.story__link {
+    display: inline-block;
+    margin-block-start: var(--s-3);
+    color: var(--link);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.stories__all {
+    display: inline-block;
+    margin-block-start: var(--s-7);
+    color: var(--link);
+    font-weight: 600;
 }
 
 .story__attribution {

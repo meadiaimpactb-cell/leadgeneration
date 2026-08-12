@@ -24,11 +24,16 @@ defineProps({
     note: { type: String, default: null },
     /** Page-specific label for the form's first field. The label only. */
     firstFieldLabel: { type: String, default: null },
+    /** Which of a page's audiences pressed the button that led here. */
+    interest: { type: String, default: null },
+    /** Page-specific example for the optional message. The placeholder only. */
+    messagePlaceholder: { type: String, default: null },
 });
 </script>
 
 <template>
-    <section class="band-outer">
+    <!-- Named so a hero action can point straight at the form. -->
+    <section id="lead" class="band-outer">
         <Container>
             <div class="band on-dark">
                 <!-- Sadu use 5 of 7: the thread on the card's reading edge. -->
@@ -50,9 +55,11 @@ defineProps({
                         <LeadField
                             layout="inline"
                             :first-field-label="firstFieldLabel"
+                            :message-placeholder="messagePlaceholder"
                             :submit-label="submitLabel"
                             :sector-hint="sectorHint"
                             :campaign="campaign"
+                            :interest="interest"
                         />
 
                         <p v-if="note" class="band__submit-note">{{ note }}</p>

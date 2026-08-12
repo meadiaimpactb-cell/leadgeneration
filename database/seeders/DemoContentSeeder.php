@@ -101,8 +101,11 @@ class DemoContentSeeder extends Seeder
             // Draft copy for the always-on-screen contact dock.
             'contact.dock_heading.ar' => 'حدّثونا عن مشروعكم',
             'contact.dock_heading.en' => 'Tell us about your project',
-            'contact.dock_note.ar' => 'حقل واحد يكفي — بريد إلكتروني أو رقم جوال، ونتولّى نحن الباقي.',
-            'contact.dock_note.en' => 'One field is enough — an email or a mobile number, and we take it from there.',
+            // The dock survives on campaign pages only, and it opens the same
+            // three-field form as everywhere else — so this line describes
+            // that form, not the single field it once described.
+            'contact.dock_note.ar' => 'ثلاث خانات وننطلق — اسم جهتكم ورقمكم، ونتولّى نحن الباقي.',
+            'contact.dock_note.en' => 'Three fields and we begin — your organisation and your number, and we take it from there.',
             // Not "request a quote": §2.2 forbids a purchase path, and a
             // button promising a price implies one. This opens a conversation.
             'contact.header_cta.ar' => 'لنبدأ معًا',
@@ -130,6 +133,24 @@ class DemoContentSeeder extends Seeder
             'contact.location_note.en' => 'We receive institutional visits by prior appointment.',
             'contact.directions_label.ar' => 'افتح الموقع في الخرائط',
             'contact.directions_label.en' => 'Open in Maps',
+
+            // The visit request on /contact, and the sentence it starts the
+            // message box with. Draft copy — the button disappears if the
+            // client empties the label.
+            'contact.visit_cta.ar' => 'احجزوا زيارة بموعد مسبق',
+            'contact.visit_cta.en' => 'Book a visit by appointment',
+            'contact.visit_prompt.ar' => 'نرغب بزيارة المعرض يوم…',
+            'contact.visit_prompt.en' => 'We would like to visit the showroom on…',
+
+            // What WhatsApp opens with. In this market it is the channel that
+            // actually gets answered, so it is a button, not a printed number.
+            'contact.whatsapp_message.ar' => 'مرحبًا أمد الحرف، أرغب بالتواصل بخصوص…',
+            'contact.whatsapp_message.en' => 'Hello Amad Craft, I would like to talk about…',
+
+            // ⚠️ Deliberately absent: contact.response_promise.* and its
+            // switch. See StructureSeeder — a reply-time commitment is Amad
+            // Craft's to make, and seeding one would publish a promise nobody
+            // at the company has agreed to.
 
             // Informational link to the Zid store — no price, no buy (§4).
             'store.url' => 'https://amadcraft.sa',
@@ -210,12 +231,24 @@ class DemoContentSeeder extends Seeder
             }
         }
 
-        // The optional message stays available but is no longer part of the
-        // shown form — three required fields plus an optional fourth is the
-        // point at which a B2B enquiry form starts losing people.
+        /*
+         * The optional message, back on (decision A).
+         *
+         * The company's decision fixed the three REQUIRED fields; it never
+         * removed §7's optional message, and turning it off left the contact
+         * page heading «أخبرونا كيف نخدمكم» asking a question the form had no
+         * way to receive. It costs the visitor nothing — `LeadField` keeps it
+         * collapsed behind a link until asked for (§10.6), so the form is
+         * still three inputs on arrival — and it catches the sentence that
+         * qualifies a lead: "we have a conference on the 14th".
+         *
+         * Nothing downstream needed building: `message` is a reserved column
+         * on `leads`, `LeadPayload` already carries it to the CRM, and
+         * `NewLeadReceived` already prints it.
+         */
         LeadField::query()
             ->where('key', LeadField::KEY_MESSAGE)
-            ->update(['is_enabled' => false]);
+            ->update(['is_enabled' => true, 'is_required' => false, 'sort_order' => 3]);
     }
 
     private function pages(): void
@@ -381,6 +414,21 @@ class DemoContentSeeder extends Seeder
                 'ar' => ['من نحن', 'حركة لإعادة الحرفة السعودية إلى موقعها في الاقتصاد، لا في المتاحف وحدها.'],
                 'en' => ['About us', 'A movement to return Saudi craft to the economy, not only to the museum.'],
                 'sections' => [
+                    /*
+                     * The hero's action is «زوروا معرضنا», not the site-wide
+                     * "let's begin". This is the page a visitor opens after a
+                     * solutions page has already convinced them; what is left
+                     * to settle is whether we are real, and the room in Riyadh
+                     * settles that better than any paragraph. It points at the
+                     * visit block above the footer, which carries the address,
+                     * the hours and the map. The form is still at the bottom
+                     * of the page — this adds a path, it does not replace one.
+                     */
+                    ['hero', [
+                        'ar' => [null, null, null, 'زوروا معرضنا', '#visit'],
+                        'en' => [null, null, null, 'Visit our showroom', '#visit'],
+                    ]],
+
                     ['rich_text', [
                         'ar' => ['لماذا وُجدنا', null,
                             '<p>الحرفة في المملكة لم تتوقف يومًا. ما توقّف هو الجسر بينها وبين السوق: الحرفي يصنع قطعة بديعة، ثم يقف أمام سؤال لا يملك إجابته — من يشتريها، وبأي سعر، وبأي كمية، وكيف تصل؟</p>'
@@ -390,21 +438,185 @@ class DemoContentSeeder extends Seeder
                             '<p>Craft in the Kingdom never stopped. What stopped was the bridge between it and the market: an artisan makes something remarkable, then faces a question they have no answer to — who buys it, at what price, in what quantity, and how does it get there?</p>'
                             .'<p>Amad Craft was built to be that bridge. We speak to both sides in their own terms: we learn from the artisan what their hands, materials and schedule can carry, and from the institution what its identity, procurement standards and event date demand. Then we take on the whole distance between them — design, sample, quality control, packaging and delivery.</p>'
                             .'<p>The result is a piece unlike anything else being handed out, and an artisan with steady work whose value is known before it begins.</p>'],
+                    ], [
+                        /*
+                         * The first photograph of the PLACE on this page, and
+                         * the reason the leather clutch that used to sit here
+                         * is gone. On the page telling the company's own story
+                         * the single image was a product shot repeated from
+                         * every other page; the showroom is the one subject
+                         * that belongs here and nowhere else.
+                         */
+                        'image' => $this->craftPayload('01', 'من داخل معرض أمد الحرف في الرياض', null),
                     ]],
 
-                    ['media_split', [
-                        'ar' => ['كيف نعمل', null, 'نبدأ بفهم المناسبة والجمهور والميزانية، ثم نقترح ثلاثة اتجاهات حرفية بخامات مختلفة. تختارون اتجاهًا، فنصنع عيّنة فعلية تُعتمد بالمعاينة لا بالصورة. بعد الاعتماد ندخل الإنتاج بجدول واضح، وتصلكم القطع مغلّفة وجاهزة للتوزيع.'],
-                        'en' => ['How we work', null, 'We start from the occasion, the audience and the budget, then propose three craft directions in different materials. You pick one, and we produce a real sample approved in the hand — not from a photograph. Once approved, production runs to a clear schedule, and the pieces arrive packaged and ready to hand out.'],
-                    ], ['image' => $this->imagePayload('14.jpeg', 1126, 1036)]],
+                    /*
+                     * The bridge model — this page's signature, and what
+                     * replaced the «كيف نعمل» media split that used to sit
+                     * here.
+                     *
+                     * That block described the operational process: understand
+                     * the occasion, propose directions, make a sample, produce.
+                     * All four solutions pages carry that same procedure, in
+                     * `process_steps`, per segment. On /about the question is
+                     * not "how will you run my order" — the visitor settled
+                     * that two pages ago — it is "what ARE you". Repeating the
+                     * procedure here answered a question nobody was asking and
+                     * put the same paragraph on a fifth page.
+                     *
+                     * Every string below is lifted from the opening story
+                     * directly above it: the two parties in their own terms,
+                     * and the five stages of «المسافة بينهما كاملة». Nothing
+                     * here is a new claim — it is the paragraph, drawn.
+                     */
+                    ['bridge_model', [
+                        'ar' => ['نموذجنا: جسر بين طرفين', 'طرفان لا يصل أحدهما إلى الآخر، ومسافة نتولّاها كاملة.'],
+                        'en' => ['Our model: a bridge between two sides', 'Two parties who cannot reach each other, and a distance we take on in full.'],
+                    ], [
+                        'start' => [
+                            'title' => 'الحرفي',
+                            'title_en' => 'The artisan',
+                            'body' => 'يده، وخامته، وجدوله',
+                            'body_en' => 'Their hands, their materials, their schedule',
+                        ],
+                        'end' => [
+                            'title' => 'الجهة',
+                            'title_en' => 'The institution',
+                            'body' => 'هويتها، ومعايير الشراء لديها، وتاريخ مناسبتها',
+                            'body_en' => 'Its identity, its procurement standards, its date',
+                        ],
+                        'middle' => [
+                            'title' => 'أمد الحرف',
+                            'title_en' => 'Amad Craft',
+                            'body' => 'نتولّى المسافة بينهما كاملة',
+                            'body_en' => 'We take on the whole distance between them',
+                        ],
+                        'items' => [
+                            ['title' => 'التصميم', 'title_en' => 'Design'],
+                            ['title' => 'العيّنة', 'title_en' => 'Sample'],
+                            ['title' => 'ضبط الجودة', 'title_en' => 'Quality control'],
+                            ['title' => 'التغليف', 'title_en' => 'Packaging'],
+                            ['title' => 'التسليم', 'title_en' => 'Delivery'],
+                        ],
+                    ]],
 
+                    /*
+                     * ⚠️ PLACEHOLDER HISTORY — the four years and the four
+                     * ✅ These four are REAL, and sourced.
+                     *
+                     * They come from Amad Craft's own «تقرير مركز التدريب
+                     * والإنتاج بالأحساء — سبتمبر 2025 إلى فبراير 2026»: the
+                     * cohort dates and workshop names (p.5), the Banan
+                     * recognition (p.25), the registration volume (p.7), the
+                     * 75 trainees (p.7, and the two cohort rosters on p.14 and
+                     * p.21 sum to the same number), and the 44 production
+                     * contracts (p.24).
+                     *
+                     * They replace four invented milestones — a 2022 founding,
+                     * a first institutional order, and so on — none of which
+                     * had a source. A founding year a developer chose is not a
+                     * placeholder, it is a published fact about the company.
+                     *
+                     * The period is stated as month · year rather than year
+                     * alone because that is the precision the report supports.
+                     * Nothing here reaches back before September 2025: the
+                     * report does not cover it, so the site does not claim it.
+                     *
+                     * Still panel-managed — year, title, note, add, reorder —
+                     * and `Timeline` renders nothing below three milestones.
+                     */
                     ['timeline', [
                         'ar' => ['محطات'],
                         'en' => ['Milestones'],
                     ], ['items' => [
-                        ['year' => '2022', 'title' => 'البداية', 'body' => 'انطلاق أمد الحرف بورشة واحدة ومجموعة من الحرفيين.'],
-                        ['year' => '2023', 'title' => 'أول طلب مؤسسي', 'body' => 'تنفيذ أول دفعة هدايا مؤسسية بهوية جهة كاملة.'],
-                        ['year' => '2024', 'title' => 'برامج التمكين', 'body' => 'إطلاق المسارات التدريبية وربط الحرفيين بطلبات مجدولة.'],
-                        ['year' => '2025', 'title' => 'التوسّع', 'body' => 'توسيع شبكة الحرفيين إلى مناطق جديدة وإطلاق خط الفعاليات.'],
+                        ['year' => '09 · 2025', 'title' => 'انطلاق المجموعة التدريبية الأولى',
+                            'title_en' => 'The first training cohort opens',
+                            'body' => 'ثلاث ورش في مركز التدريب والإنتاج بالأحساء: السدو للمبتدئين، والسجاد اليدوي، والنقش على الجبس.',
+                            'body_en' => 'Three workshops at the Al-Ahsa training and production centre: Sadu for beginners, hand-woven rugs, and gypsum carving.'],
+                        ['year' => '11 · 2025', 'title' => 'التكريم في أسبوع الحرف السعودي الدولي',
+                            'title_en' => 'Honoured at Saudi International Handicrafts Week',
+                            'body' => 'المشاركة في معرض بنان ضمن جناح الشركاء الرئيسيين، والتكريم من الرئيس التنفيذي لهيئة التراث.',
+                            'body_en' => 'A place in the principal partners’ pavilion at Banan, and recognition from the CEO of the Heritage Commission.'],
+                        ['year' => '12 · 2025', 'title' => 'انطلاق المجموعة الثانية',
+                            'title_en' => 'The second cohort opens',
+                            'body' => 'ورش الخوص، والسدو التطويرية، والنقش على الجبس، بعد استقبال أكثر من ثلاثمئة طلب تسجيل.',
+                            'body_en' => 'Palm-frond weaving, advanced Sadu and gypsum carving, after more than three hundred applications.'],
+                        ['year' => '02 · 2026', 'title' => 'اختتام الفترة الأولى',
+                            'title_en' => 'The first period closes',
+                            'body' => 'خمس وسبعون متدربة أنهين البرنامج، وأربعة وأربعون عقد إنتاج مبرمة مع حرفيات.',
+                            'body_en' => 'Seventy-five women completed the programme, and forty-four production contracts were signed with artisans.'],
+                    ]]],
+
+                    /*
+                     * The figures, the accreditations and the Vision 2030 band
+                     * are all CALLS to the components the home page and
+                     * /impact already use — one ImpactStats reading one set of
+                     * records, one PartnersLogos, one CardsGrid. They are
+                     * rendered in the position the panel puts them, through
+                     * SectionRenderer's `data` prop, so reordering this page
+                     * needs no developer and editing a figure changes it in
+                     * all three places at once.
+                     */
+                    ['stats', [
+                        'ar' => ['أمد الحرف بالأرقام'],
+                        'en' => ['Amad Craft in numbers'],
+                    ]],
+
+                    ['logos', [
+                        'ar' => ['اعتماداتنا وشركاؤنا'],
+                        'en' => ['Our accreditations and partners'],
+                    ]],
+
+                    /*
+                     * Seeded with its heading and NO points, exactly as on
+                     * /impact and for the same reason: which Vision 2030
+                     * objective this work sits under is a claim a semi-public
+                     * body scores against their own framework, and it is Amad
+                     * Craft's to make. `CardsGrid` renders `v-if items.length`,
+                     * so the section is silent until the panel fills it.
+                     */
+                    ['cards', [
+                        'ar' => ['امتدادنا في رؤية 2030'],
+                        'en' => ['Where this sits in Vision 2030'],
+                    ], ['items' => [], 'variant' => 'band']],
+
+                    /*
+                     * Built, and switched OFF — the fourth element.
+                     *
+                     * Publishing the team is Amad Craft's decision, and the
+                     * one thing that must never stand in for it is a grid of
+                     * invented names over stock portraits: that does not read
+                     * as a placeholder, it reads as a claim about who works
+                     * here (§22.1). The row exists with its heading and no
+                     * members, so the panel switches it on the day there are
+                     * real people and real photographs to put in it.
+                     */
+                    ['team', [
+                        'ar' => ['فريق العمل'],
+                        'en' => ['The team'],
+                    ], ['items' => []], false],
+
+                    /*
+                     * The place, at length. The editorial spread at the top of
+                     * the page opens with one showroom photograph; this is
+                     * where the page breathes.
+                     *
+                     * Four of the eleven photographs Amad Craft supplied, not
+                     * all eleven — the home page's mosaic already runs the
+                     * full set, and repeating it here would make the two pages
+                     * the same document. There is no photograph of the team,
+                     * of an artisan at work, or of a workshop anywhere in this
+                     * project; §22.1 forbids inventing one, so the subject
+                     * here is the room.
+                     */
+                    ['gallery', [
+                        'ar' => ['المعرض من الداخل'],
+                        'en' => ['Inside the showroom'],
+                    ], ['images' => [
+                        $this->craftPayload('03', 'من داخل معرض أمد الحرف في الرياض', null),
+                        $this->craftPayload('06', 'رفوف العرض في معرض أمد الحرف', null),
+                        $this->craftPayload('09', 'جدار العرض في معرض أمد الحرف', null),
+                        $this->craftPayload('11', 'صالة معرض أمد الحرف', null),
                     ]]],
 
                     ['cta_band', [
@@ -454,8 +666,62 @@ class DemoContentSeeder extends Seeder
                 'ar' => ['الأثر والتقارير', 'نقيس أثرنا بعدد الحرفيين الذين استقرّ دخلهم، لا بعدد القطع وحدها.'],
                 'en' => ['Impact & reports', 'We measure our impact by how many artisans found steady income — not by pieces alone.'],
                 'sections' => [
+                    /*
+                     * The hero's two actions. `page_translations` carries no
+                     * CTA columns, so they live on a section the way the four
+                     * segment heroes do: the label per locale in the section
+                     * translation, the second action in `settings` — which is
+                     * one JSON column, hence the `_en` suffix rather than a
+                     * second row (§12: no fallback, so English absent means
+                     * English absent).
+                     *
+                     * The first action goes to the report shelf rather than to
+                     * the form. A public body arriving here has usually come
+                     * for the document, and making them read the page first to
+                     * reach it is a toll, not a funnel.
+                     */
+                    ['hero', [
+                        'ar' => [null, null, null, 'حمّلوا تقرير الأثر'],
+                        'en' => [null, null, null, 'Download the impact report'],
+                    ], [
+                        'ctaUrl' => '#reports',
+                        'secondaryLabel' => 'لنبدأ معًا',
+                        'secondaryLabel_en' => 'Let us begin',
+                        'secondaryUrl' => '#lead',
+                    ]],
+
                     ['stats', ['ar' => ['أثرنا بالأرقام'], 'en' => ['Our impact in numbers']]],
+
+                    /*
+                     * «كيف نقيس» and «ارتباطنا برؤية 2030» are seeded with
+                     * their headings and NO items, so neither renders yet.
+                     *
+                     * Both are methodology, and methodology is the one thing
+                     * on this page that cannot be drafted from outside. The
+                     * hero promises we measure «استقرار الدخل» — whether that
+                     * means three consecutive months of orders or six is a
+                     * fact only Amad Craft holds, and a placeholder definition
+                     * on the page whose entire job is to be checkable would do
+                     * more damage than an absent section. Same for the Vision
+                     * 2030 wording, which a semi-public body scores against
+                     * their own framework.
+                     *
+                     * The rows exist in the section builder; `CardsGrid`
+                     * renders `v-if="items.length"`. Filling `items` in the
+                     * panel switches each section on with no further work.
+                     */
+                    ['cards', [
+                        'ar' => ['كيف نقيس', 'تعريف كل مؤشر من المؤشرات أعلاه.'],
+                        'en' => ['How we measure', 'What each of the figures above counts.'],
+                    ], ['items' => []]],
+
                     ['story_carousel', ['ar' => ['قصص من الميدان'], 'en' => ['Stories from the field']]],
+
+                    ['cards', [
+                        'ar' => ['ارتباطنا برؤية 2030'],
+                        'en' => ['How this aligns with Vision 2030'],
+                    ], ['items' => [], 'variant' => 'band']],
+
                     ['reports_list', ['ar' => ['التقارير المنشورة'], 'en' => ['Published reports']]],
                     ['cta_band', [
                         'ar' => ['تبحثون عن أثر يُوثَّق؟', 'نزوّد شركاءنا بتقرير أثر لكل مشروع، قابل للإدراج ضمن تقاريركم.', null, 'تواصلوا معي'],
@@ -468,19 +734,201 @@ class DemoContentSeeder extends Seeder
                 'ar' => ['التدريب والتمكين', 'لا يكفي أن نشتري من الحرفي. نُدرّبه على أن يسعّر بنفسه، ويبيع بنفسه، ويستمرّ بعدنا.'],
                 'en' => ['Training & empowerment', 'Buying from an artisan is not enough. We train them to price, to sell, and to keep going without us.'],
                 'sections' => [
-                    ['training_tracks', ['ar' => ['المسارات التدريبية'], 'en' => ['Training tracks']]],
-                    ['rich_text', [
-                        'ar' => ['لمن هذه المسارات', null,
-                            '<p>المسارات مفتوحة للحرفيين والحرفيات الراغبين في تحويل مهارتهم إلى دخل مستقر. لا تشترط خبرة سابقة في البيع، وتشترط إتقانًا فعليًا للحرفة.</p>'
-                            .'<p>وللجهات الراغبة في رعاية مسار كامل أو تنفيذه في منطقة محدّدة: نصمّم البرنامج ونُشغّله ونزوّدكم بتقرير أثر عند ختامه.</p>'],
-                        'en' => ['Who these tracks are for', null,
-                            '<p>The tracks are open to artisans who want to turn their skill into steady income. No selling experience is required; genuine command of the craft is.</p>'
-                            .'<p>For institutions wanting to sponsor a full track or run one in a specific region: we design it, operate it, and hand you an impact report at the end.</p>'],
+                    /*
+                     * Two doors from the hero, because this page has two
+                     * readers. The first is a plain fragment link down to the
+                     * tracks — an artisan wants to see what is on offer before
+                     * anything else. The second has no URL, so `PageHero`
+                     * renders a button and the page handles it: it records who
+                     * is asking before moving them to the form, which is not
+                     * something an href can carry.
+                     */
+                    ['hero', [
+                        'ar' => [null, null, null, 'التحقوا بمسار'],
+                        'en' => [null, null, null, 'Join a track'],
+                    ], [
+                        'ctaUrl' => '#tracks',
+                        'secondaryLabel' => 'ارعوا مسارًا',
+                        'secondaryLabel_en' => 'Sponsor a track',
+                        // The tag the lead is filed under. Here rather than in
+                        // code, so the vocabulary belongs to the panel.
+                        'secondaryInterest' => 'sponsor',
                     ]],
+
+                    ['training_tracks', ['ar' => ['المسارات التدريبية'], 'en' => ['Training tracks']]],
+
+                    /*
+                     * The same component the segment pages use for "how we
+                     * work". The fifth step is the one that matters: a track
+                     * here ends at Amad Craft's own orders, not at a
+                     * certificate, and that is the whole difference between
+                     * this and a training institute.
+                     */
+                    ['process_steps', [
+                        'ar' => ['كيف يعمل المسار'],
+                        'en' => ['How a track runs'],
+                    ], ['items' => [
+                        ['title' => 'التقديم', 'body' => 'عبر النموذج في هذه الصفحة أو بزيارة المعرض.',
+                            'title_en' => 'Apply', 'body_en' => 'Through the form on this page, or by visiting the showroom.'],
+                        ['title' => 'مقابلة تقييم', 'body' => 'نرى عملكم ونتحقّق من إتقان الحرفة — لا من خبرة البيع.',
+                            'title_en' => 'An assessment interview', 'body_en' => 'We see your work and check your command of the craft — not your selling experience.'],
+                        ['title' => 'التدريب العملي', 'body' => 'بمدة المسار المعلنة على بطاقته، على النول أو الخامة نفسها.',
+                            'title_en' => 'Hands-on training', 'body_en' => 'For the length stated on the track card, at the loom or the material itself.'],
+                        ['title' => 'مخرَج ملموس', 'body' => 'قطع جاهزة للعرض وملف تسعير مبني على التكلفة الحقيقية.',
+                            'title_en' => 'Something you can hold', 'body_en' => 'Display-ready pieces and a price file built on real cost.'],
+                        ['title' => 'الربط بالطلبات', 'body' => 'ما يُنتَج بعد المسار يدخل طلبات أمد الحرف، منسوبًا إلى صانعه.',
+                            'title_en' => 'A route to orders', 'body_en' => 'What you make after the track enters Amad Craft orders, credited to you.'],
+                    ]]],
+
+                    /*
+                     * The paragraph that used to close this page, split in two.
+                     *
+                     * Not a rewrite: the section was already two sentences
+                     * addressed to two different people, and as one block the
+                     * institution won — an artisan who read to the bottom of
+                     * the page met a form headed «ترغبون برعاية مسار تدريبي؟».
+                     * Two columns give each of them a door, and each door
+                     * carries the tag its lead is filed under.
+                     */
+                    ['audience_split', [
+                        'ar' => ['لمن هذه المسارات'],
+                        'en' => ['Who these tracks are for'],
+                    ], ['items' => [
+                        [
+                            'interest' => 'trainee',
+                            'title' => 'للحرفيين والحرفيات',
+                            'body' => 'المسارات مفتوحة لمن يريد تحويل مهارته إلى دخل مستقر. لا تشترط خبرة سابقة في البيع، وتشترط إتقانًا فعليًا للحرفة.',
+                            'actionLabel' => 'التحقوا بمسار',
+                            // The work being learned, photographed in the room
+                            // where it is learned. The alt describes the
+                            // action, because that is what the frame is for.
+                            'image' => $this->imagePayload('sojad.png', 220, 403),
+                            'imageAlt' => 'متدرّبة تعمل على نول السجاد داخل مركز التدريب',
+                            'imageAlt_en' => 'A trainee working at the rug loom in the training centre',
+                            'title_en' => 'For artisans',
+                            'body_en' => 'Open to anyone wanting to turn their skill into steady income. No selling experience is required; genuine command of the craft is.',
+                            'actionLabel_en' => 'Join a track',
+                        ],
+                        [
+                            'interest' => 'sponsor',
+                            'title' => 'للجهات الراعية',
+                            'body' => 'ترغبون برعاية مسار كامل أو تنفيذه في منطقة تحدّدونها؟ نصمّم البرنامج ونُشغّله ونزوّدكم بتقرير أثر عند ختامه.',
+                            'actionLabel' => 'ارعوا مسارًا',
+                            /*
+                             * A finished piece held up at the door of the
+                             * training centre — the sign is in the frame. It
+                             * is the one photograph that answers a sponsor's
+                             * actual question: what does a funded track hand
+                             * over, and does the place exist.
+                             */
+                            'image' => $this->imagePayload('gbs.png', 278, 485),
+                            'imageAlt' => 'قطعة جبس منقوشة من إنتاج مركز التدريب والتأهيل',
+                            'imageAlt_en' => 'A carved gypsum piece made at the training and qualification centre',
+                            // The measurement behind that report is stated once,
+                            // on /impact. A second account of it here would be a
+                            // second version of the same methodology.
+                            'linkLabel' => 'كيف نقيس الأثر',
+                            'linkUrl' => '/ar/impact',
+                            'title_en' => 'For sponsoring organisations',
+                            'body_en' => 'Want to sponsor a full track, or run one in a region you choose? We design it, operate it, and hand you an impact report at the end.',
+                            'actionLabel_en' => 'Sponsor a track',
+                            'linkLabel_en' => 'How we measure impact',
+                            'linkUrl_en' => '/en/impact',
+                        ],
+                    ]]],
+
+                    /*
+                     * Training figures, named by key and read from the one
+                     * register — never restated here. Two of the three have no
+                     * value yet and stay invisible until Amad Craft counts
+                     * them; see the metrics seeder.
+                     */
+                    ['stats', [
+                        'ar' => ['أثر التدريب بالأرقام'],
+                        'en' => ['Training impact in numbers'],
+                    ], ['keys' => ['training-hours', 'training-graduates', 'training-to-production']]],
+
+                    /*
+                     * Graduates of these tracks — the same story records
+                     * /impact publishes, filtered by tag. Seeded with the tag
+                     * and no tagged stories, so the section is silent: what
+                     * happened to somebody who took a track is theirs to say,
+                     * and a graduate testimonial written from outside is a
+                     * fabricated endorsement, not placeholder copy (§22.1).
+                     *
+                     * Tagging one real story in the panel switches it on.
+                     */
+                    ['story_carousel', [
+                        'ar' => ['من خريجي المسارات'],
+                        'en' => ['From the graduates'],
+                    ], ['tag' => 'training-graduate']],
+
+                    /*
+                     * Five, and not one of them carries a figure — no fee, no
+                     * income, no employment promise. §2.2 forbids this site
+                     * growing a commercial function, and a page about training
+                     * is exactly where one would start.
+                     */
+                    ['accordion', [
+                        'ar' => ['أسئلة متكررة'],
+                        'en' => ['Frequently asked'],
+                    ], ['items' => [
+                        [
+                            'question' => 'هل التدريب مجاني للحرفي؟',
+                            'answer' => 'التدريب جزء من التأهيل للعمل معنا. تفاصيل كل مسار تُوضَّح في مقابلة التقييم قبل أي التزام.',
+                            'question_en' => 'Is the training free for the artisan?',
+                            'answer_en' => 'Training is part of being qualified to work with us. Each track is explained in full at the assessment interview, before any commitment.',
+                        ],
+                        [
+                            'question' => 'أين تُقام المسارات، وهل تصل مناطق خارج الرياض؟',
+                            'answer' => 'نُنفّذ المسار حيث يتوفّر الحرفيون والمكان المناسب، وللجهة الراعية أن تحدّد منطقة تنفيذ المسار الذي ترعاه.',
+                            'question_en' => 'Where do the tracks run, and do they reach beyond Riyadh?',
+                            'answer_en' => 'A track runs where the artisans and a suitable space are, and a sponsoring organisation chooses the region for the track it funds.',
+                        ],
+                        [
+                            'question' => 'هل يُشترط سجل تجاري للالتحاق؟',
+                            'answer' => 'لا يُشترط للالتحاق. ونساعدكم على الترتيب النظامي عند الحاجة إليه.',
+                            'question_en' => 'Do I need a commercial registration to join?',
+                            'answer_en' => 'Not to join. We help with the paperwork if and when it becomes necessary.',
+                        ],
+                        [
+                            'question' => 'ماذا يحدث بعد إنهاء المسار؟',
+                            'answer' => 'يُربط المتدرّب بطلبات أمد الحرف، والقطعة تُعرض منسوبة إلى صانعها. تفاصيل العمل معنا في صفحة الحرفيين.',
+                            'question_en' => 'What happens once the track ends?',
+                            'answer_en' => 'You are connected to Amad Craft orders, and your piece is shown credited to you. How working with us runs is set out on the artisans page.',
+                        ],
+                        [
+                            'question' => 'كيف ترعى جهتنا مسارًا، وماذا نستلم في الختام؟',
+                            'answer' => 'نصمّم البرنامج ونُشغّله ونزوّدكم بتقرير أثر عند ختامه. أرسلوا لنا ما ترغبون بتحقيقه ونعود إليكم بمقترح مسار.',
+                            'question_en' => 'How does our organisation sponsor a track, and what do we receive at the end?',
+                            'answer_en' => 'We design the programme, operate it, and hand you an impact report when it closes. Send us what you want it to achieve and we will come back with a proposed track.',
+                        ],
+                    ]]],
+
+                    /*
+                     * One form, two faces. The three fields never change (§6.1)
+                     * — only the heading, the example in the message box, and
+                     * the tag the lead is stored with. The section's own
+                     * heading is what a visitor who pressed nothing sees, and
+                     * that lead carries no tag: they did not say.
+                     */
                     ['cta_band', [
                         'ar' => ['ترغبون برعاية مسار تدريبي؟', 'نصمّم البرنامج ونشغّله ونوثّق أثره لكم.', null, 'تواصلوا معي'],
                         'en' => ['Interested in sponsoring a track?', 'We design it, run it, and document its impact for you.', null, 'Contact me'],
-                    ]],
+                    ], ['variants' => [
+                        'sponsor' => [
+                            'messagePlaceholder' => 'نرغب برعاية مسار تدريبي في منطقتنا',
+                            'messagePlaceholder_en' => 'We would like to sponsor a track in our region',
+                        ],
+                        'trainee' => [
+                            'heading' => 'جاهزون تنضمّون لمسار؟',
+                            'heading_en' => 'Ready to join a track?',
+                            'subheading' => 'اتركوا وسيلة تواصل واحدة، ونرتّب معكم مقابلة التقييم.',
+                            'subheading_en' => 'Leave one way to reach you and we will arrange the assessment interview.',
+                            'messagePlaceholder' => 'أعمل في حرفة الخوص وأرغب بالالتحاق',
+                            'messagePlaceholder_en' => 'I work in palm-frond weaving and would like to join',
+                        ],
+                    ]]],
                 ],
             ],
 
@@ -505,13 +953,19 @@ class DemoContentSeeder extends Seeder
                 ],
             ],
 
+            // The subtitle and the reassurance line describe the form that is
+            // actually on the page. They used to describe the §6.1 single
+            // field, which the client replaced with three required ones — so a
+            // visitor read "we ask for no name" directly above a required
+            // company-name field. A form that contradicts its own promise
+            // costs more trust than a long form does.
             'contact' => [
-                'ar' => ['تواصلوا معنا', 'حقل واحد يكفي — بريد إلكتروني أو رقم جوال، ونتولّى نحن الباقي.'],
-                'en' => ['Contact us', 'One field is enough — an email or a mobile number, and we take it from there.'],
+                'ar' => ['تواصلوا معنا', 'ثلاث خانات وننطلق — اسم جهتكم ورقمكم، ونتولّى نحن الباقي.'],
+                'en' => ['Contact us', 'Three fields and we begin — your organisation and your number, and we take it from there.'],
                 'sections' => [
                     ['contact_block', [
-                        'ar' => ['أخبرونا كيف نخدمكم', 'لا نطلب اسمًا ولا بيانات إضافية. اتركوا وسيلة تواصل واحدة فقط.', null, 'تواصلوا معي'],
-                        'en' => ['Tell us how we can help', 'We ask for no name and no extra details. One way to reach you is all we need.', null, 'Contact me'],
+                        'ar' => ['أخبرونا كيف نخدمكم', 'لا استمارات طويلة ولا تفاصيل الآن — البقية نستكملها معكم في أول مكالمة.', null, 'تواصلوا معي'],
+                        'en' => ['Tell us how we can help', 'No long forms and no details now — we cover the rest with you on the first call.', null, 'Contact me'],
                     ]],
                     ['map', [
                         'ar' => ['موقعنا'],
@@ -523,7 +977,12 @@ class DemoContentSeeder extends Seeder
     }
 
     /**
-     * @param  list<array{0: string, 1: array<string, list<string|null>>, 2?: array<string, mixed>}>  $sections
+     * The fourth element switches a section OFF. It exists for a section that
+     * is built, correct and deliberately not published yet — the About page's
+     * team grid — so that turning it on is a toggle in the panel rather than
+     * a developer's afternoon.
+     *
+     * @param  list<array{0: string, 1: array<string, list<string|null>>, 2?: array<string, mixed>, 3?: bool}>  $sections
      */
     private function attachSections(Model $owner, array $sections): void
     {
@@ -533,7 +992,7 @@ class DemoContentSeeder extends Seeder
             $section = $owner->sections()->create([
                 'type' => $type,
                 'sort_order' => $position,
-                'is_active' => true,
+                'is_active' => $spec[3] ?? true,
                 'settings' => $spec[2] ?? null,
             ]);
 
@@ -667,24 +1126,36 @@ class DemoContentSeeder extends Seeder
     {
         $cards = match ($key) {
             Sector::KEY_GOVERNMENT => [
-                ['icon' => 'fields', 'title' => 'توثيق كامل', 'body' => 'ملف مصدر لكل قطعة يوضّح الحرفة والحرفيين المشاركين فيها.'],
-                ['icon' => 'campaigns', 'title' => 'التزام بالتاريخ', 'body' => 'جدول عكسي من تاريخ المناسبة، ومتابعة موثّقة حتى التسليم.'],
-                ['icon' => 'impact', 'title' => 'تقرير أثر', 'body' => 'قابل للإدراج ضمن تقاريركم السنوية ومبادراتكم المجتمعية.'],
+                ['icon' => 'fields', 'title' => 'توثيق كامل', 'body' => 'ملف مصدر لكل قطعة يوضّح الحرفة والحرفيين المشاركين فيها.',
+                    'title_en' => 'Full documentation', 'body_en' => 'A provenance file for each piece, naming the craft and the artisans who made it.'],
+                ['icon' => 'campaigns', 'title' => 'التزام بالتاريخ', 'body' => 'جدول عكسي من تاريخ المناسبة، ومتابعة موثّقة حتى التسليم.',
+                    'title_en' => 'The date is held', 'body_en' => 'A schedule built backwards from the occasion, tracked in writing through to delivery.'],
+                ['icon' => 'impact', 'title' => 'تقرير أثر', 'body' => 'قابل للإدراج ضمن تقاريركم السنوية ومبادراتكم المجتمعية.',
+                    'title_en' => 'An impact report', 'body_en' => 'Publishable inside your annual reporting and your community initiatives.'],
             ],
             Sector::KEY_PRIVATE => [
-                ['icon' => 'brand', 'title' => 'هويتكم أولًا', 'body' => 'الشعار والألوان والتغليف تتبع دليل هويتكم، لا العكس.'],
-                ['icon' => 'products', 'title' => 'كميات مرنة', 'body' => 'من دفعة صغيرة لفريق، إلى إنتاج موسمي لقاعدة عملاء.'],
-                ['icon' => 'activity', 'title' => 'جدول واضح', 'body' => 'تعرفون تاريخ التسليم قبل بدء الإنتاج لا بعده.'],
+                ['icon' => 'brand', 'title' => 'هويتكم أولًا', 'body' => 'الشعار والألوان والتغليف تتبع دليل هويتكم، لا العكس.',
+                    'title_en' => 'Your identity first', 'body_en' => 'Mark, colours and packaging follow your brand guide, not the other way round.'],
+                ['icon' => 'products', 'title' => 'كميات مرنة', 'body' => 'من دفعة صغيرة لفريق، إلى إنتاج موسمي لقاعدة عملاء.',
+                    'title_en' => 'Flexible quantities', 'body_en' => 'From a small batch for one team to seasonal production for a client base.'],
+                ['icon' => 'activity', 'title' => 'جدول واضح', 'body' => 'تعرفون تاريخ التسليم قبل بدء الإنتاج لا بعده.',
+                    'title_en' => 'A clear schedule', 'body_en' => 'You know the delivery date before production starts, not after.'],
             ],
             Sector::KEY_PARTNERS => [
-                ['icon' => 'sourcing', 'title' => 'مورّد خلفي', 'body' => 'نعمل باسمكم أمام عميلكم، ولا نتجاوزكم إليه.'],
-                ['icon' => 'campaigns', 'title' => 'استجابة سريعة', 'body' => 'اقتراح مبدئي وتسعير أوّلي للعروض العاجلة.'],
-                ['icon' => 'reports', 'title' => 'تسعير واضح', 'body' => 'هوامش معروفة مسبقًا تتيح لكم بناء عرضكم بثقة.'],
+                ['icon' => 'sourcing', 'title' => 'مورّد خلفي', 'body' => 'نعمل باسمكم أمام عميلكم، ولا نتجاوزكم إليه.',
+                    'title_en' => 'A supplier behind you', 'body_en' => 'We work under your name in front of your client, and never go around you.'],
+                ['icon' => 'campaigns', 'title' => 'استجابة سريعة', 'body' => 'اقتراح مبدئي وتسعير أوّلي للعروض العاجلة.',
+                    'title_en' => 'A fast response', 'body_en' => 'An initial proposal and an indicative price for urgent bids.'],
+                ['icon' => 'reports', 'title' => 'تسعير واضح', 'body' => 'هوامش معروفة مسبقًا تتيح لكم بناء عرضكم بثقة.',
+                    'title_en' => 'Pricing you can plan on', 'body_en' => 'Margins known in advance, so you can build your own proposal with confidence.'],
             ],
             Sector::KEY_ARTISANS => [
-                ['icon' => 'impact', 'title' => 'طلب مستقر', 'body' => 'دفعات مجدولة تعرف حجمها وموعدها قبل أن تبدأ.'],
-                ['icon' => 'training', 'title' => 'تدريب عملي', 'body' => 'مسارات في الجودة والتسعير والتغليف ترفع قيمة قطعتك.'],
-                ['icon' => 'sourcing', 'title' => 'تسعير عادل', 'body' => 'السعر متفق عليه ومكتوب قبل بدء العمل.'],
+                ['icon' => 'impact', 'title' => 'طلب مستقر', 'body' => 'دفعات مجدولة تعرف حجمها وموعدها قبل أن تبدأ.',
+                    'title_en' => 'Steady orders', 'body_en' => 'Scheduled batches whose size and date you know before you begin.'],
+                ['icon' => 'training', 'title' => 'تدريب عملي', 'body' => 'مسارات في الجودة والتسعير والتغليف ترفع قيمة قطعتك.',
+                    'title_en' => 'Hands-on training', 'body_en' => 'Tracks in quality, pricing and packaging that raise what your piece is worth.'],
+                ['icon' => 'sourcing', 'title' => 'تسعير عادل', 'body' => 'السعر متفق عليه ومكتوب قبل بدء العمل.',
+                    'title_en' => 'Fair pricing', 'body_en' => 'The price is agreed and written down before work begins.'],
             ],
             default => [],
         };
@@ -695,12 +1166,18 @@ class DemoContentSeeder extends Seeder
          * has to wrap twice stops being scannable.
          */
         $occasions = $key === Sector::KEY_PRIVATE ? [
-            ['icon' => 'gifts', 'title' => 'هدايا نهاية العام', 'body' => 'دفعة موحّدة للعملاء أو للفريق، بجدول يبدأ قبل الموسم لا فيه.'],
-            ['icon' => 'partners', 'title' => 'تكريم الموظفين', 'body' => 'قطع للتقاعد وسنوات الخدمة، تُصنع فرادى وتُنقش بالاسم.'],
-            ['icon' => 'campaigns', 'title' => 'إطلاق منتج أو فرع', 'body' => 'قطعة تُوزَّع في اليوم نفسه وتبقى على المكتب بعده.'],
-            ['icon' => 'contact', 'title' => 'ضيافة كبار العملاء', 'body' => 'عدد محدود بمستوى تشطيب أعلى، بتغليف يُفتح ولا يُرمى.'],
-            ['icon' => 'events', 'title' => 'المؤتمرات والمعارض', 'body' => 'كميات للمنصّة، ودروع للمتحدّثين، بموعد تسليم مربوط بالتاريخ.'],
-            ['icon' => 'users', 'title' => 'أطقم الترحيب', 'body' => 'طقم للموظف الجديد يصله في أول يوم، يُنتَج على دفعات.'],
+            ['icon' => 'gifts', 'title' => 'هدايا نهاية العام', 'body' => 'دفعة موحّدة للعملاء أو للفريق، بجدول يبدأ قبل الموسم لا فيه.',
+                'title_en' => 'Year-end gifts', 'body_en' => 'One consistent batch for clients or for the team, on a schedule that starts before the season rather than inside it.'],
+            ['icon' => 'partners', 'title' => 'تكريم الموظفين', 'body' => 'قطع للتقاعد وسنوات الخدمة، تُصنع فرادى وتُنقش بالاسم.',
+                'title_en' => 'Recognising employees', 'body_en' => 'Pieces for retirements and service years, made one at a time and engraved with the name.'],
+            ['icon' => 'campaigns', 'title' => 'إطلاق منتج أو فرع', 'body' => 'قطعة تُوزَّع في اليوم نفسه وتبقى على المكتب بعده.',
+                'title_en' => 'A launch or a new branch', 'body_en' => 'A piece handed out on the day that stays on the desk afterwards.'],
+            ['icon' => 'contact', 'title' => 'ضيافة كبار العملاء', 'body' => 'عدد محدود بمستوى تشطيب أعلى، بتغليف يُفتح ولا يُرمى.',
+                'title_en' => 'Hosting key clients', 'body_en' => 'A limited number at a higher finish, in packaging that is opened rather than thrown away.'],
+            ['icon' => 'events', 'title' => 'المؤتمرات والمعارض', 'body' => 'كميات للمنصّة، ودروع للمتحدّثين، بموعد تسليم مربوط بالتاريخ.',
+                'title_en' => 'Conferences and exhibitions', 'body_en' => 'Volume for the stand and awards for the speakers, delivered against the date.'],
+            ['icon' => 'users', 'title' => 'أطقم الترحيب', 'body' => 'طقم للموظف الجديد يصله في أول يوم، يُنتَج على دفعات.',
+                'title_en' => 'Welcome sets', 'body_en' => 'A set that reaches a new joiner on their first day, produced in batches.'],
         ] : [];
 
         /*
@@ -712,16 +1189,22 @@ class DemoContentSeeder extends Seeder
          * is answered elsewhere; this is answered nowhere else.
          */
         $pledges = $key === Sector::KEY_PARTNERS ? [
-            ['icon' => 'shield', 'title' => 'عميلكم يبقى عميلكم', 'body' => 'لا نتواصل معه مباشرة إلا بطلبكم.'],
-            ['icon' => 'brand', 'title' => 'نظهر بالقدر الذي تختارونه', 'body' => 'باسمكم بالكامل، أو كشريك معلن — القرار قراركم.'],
-            ['icon' => 'campaigns', 'title' => 'مواعيدكم التزامنا', 'body' => 'تاريخ فعاليتكم هو خط الإنتاج عندنا.'],
+            ['icon' => 'shield', 'title' => 'عميلكم يبقى عميلكم', 'body' => 'لا نتواصل معه مباشرة إلا بطلبكم.',
+                'title_en' => 'Your client stays yours', 'body_en' => 'We do not approach them directly unless you ask us to.'],
+            ['icon' => 'brand', 'title' => 'نظهر بالقدر الذي تختارونه', 'body' => 'باسمكم بالكامل، أو كشريك معلن — القرار قراركم.',
+                'title_en' => 'We appear as much as you choose', 'body_en' => 'Entirely under your name, or as a named partner — your decision.'],
+            ['icon' => 'campaigns', 'title' => 'مواعيدكم التزامنا', 'body' => 'تاريخ فعاليتكم هو خط الإنتاج عندنا.',
+                'title_en' => 'Your dates are our commitment', 'body_en' => 'The date of your event is what our production line is built around.'],
         ] : [];
 
         /** How a partner works with us, as three named arrangements. */
         $models = $key === Sector::KEY_PARTNERS ? [
-            ['icon' => 'events', 'title' => 'شركات الفعاليات والمؤتمرات', 'body' => 'هدايا المتحدّثين وكبار الحضور، ودروع وتذكارات، وأطقم ضيافة — بجدول مربوط بتاريخ الفعالية.'],
-            ['icon' => 'store', 'title' => 'شركات المعارض', 'body' => 'ركن حرفي حيّ أو قطع جاهزة لأجنحة عملائكم، بكميات مضبوطة.'],
-            ['icon' => 'partners', 'title' => 'التسويق بالعمولة', 'body' => 'تعرّفوننا على العميل ونتولّى التنفيذ. تفاصيل النموذج مع فريق المبيعات.'],
+            ['icon' => 'events', 'title' => 'شركات الفعاليات والمؤتمرات', 'body' => 'هدايا المتحدّثين وكبار الحضور، ودروع وتذكارات، وأطقم ضيافة — بجدول مربوط بتاريخ الفعالية.',
+                'title_en' => 'Event and conference companies', 'body_en' => 'Speaker and VIP gifts, awards and keepsakes, hospitality sets — on a schedule tied to the event date.'],
+            ['icon' => 'store', 'title' => 'شركات المعارض', 'body' => 'ركن حرفي حيّ أو قطع جاهزة لأجنحة عملائكم، بكميات مضبوطة.',
+                'title_en' => 'Exhibition companies', 'body_en' => 'A live craft corner or finished pieces for your clients\' stands, in controlled quantities.'],
+            ['icon' => 'partners', 'title' => 'التسويق بالعمولة', 'body' => 'تعرّفوننا على العميل ونتولّى التنفيذ. تفاصيل النموذج مع فريق المبيعات.',
+                'title_en' => 'Referral partnerships', 'body_en' => 'You introduce the client and we handle delivery. The detail of the arrangement sits with the sales team.'],
         ] : [];
 
         /*
@@ -739,10 +1222,14 @@ class DemoContentSeeder extends Seeder
          * with the content file.
          */
         $targets = $key === Sector::KEY_ARTISANS ? [
-            ['icon' => 'stories', 'title' => 'الحرفة الأولى', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
-            ['icon' => 'stories', 'title' => 'الحرفة الثانية', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
-            ['icon' => 'stories', 'title' => 'الحرفة الثالثة', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
-            ['icon' => 'stories', 'title' => 'الحرفة الرابعة', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الأولى', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.',
+                'title_en' => 'The first craft', 'body_en' => 'Name and description are entered from the admin panel.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الثانية', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.',
+                'title_en' => 'The second craft', 'body_en' => 'Name and description are entered from the admin panel.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الثالثة', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.',
+                'title_en' => 'The third craft', 'body_en' => 'Name and description are entered from the admin panel.'],
+            ['icon' => 'stories', 'title' => 'الحرفة الرابعة', 'body' => 'يُدخل الاسم والوصف من لوحة التحكم.',
+                'title_en' => 'The fourth craft', 'body_en' => 'Name and description are entered from the admin panel.'],
         ] : [];
 
         /*
@@ -751,9 +1238,12 @@ class DemoContentSeeder extends Seeder
          * this page.
          */
         $gains = $key === Sector::KEY_ARTISANS ? [
-            ['icon' => 'store', 'title' => 'قناة بيع مؤسسية', 'body' => 'منتجاتكم تصل إلى جهات وشركات لا يصلها الحرفي منفردًا.'],
-            ['icon' => 'training', 'title' => 'تطوير مهني', 'body' => 'تدريب مستمر على الجودة والتغليف والتسعير.'],
-            ['icon' => 'stories', 'title' => 'اسمكم وقصتكم', 'body' => 'القطعة تُعرض باسم صانعها، وقصته تُروى معها.'],
+            ['icon' => 'store', 'title' => 'قناة بيع مؤسسية', 'body' => 'منتجاتكم تصل إلى جهات وشركات لا يصلها الحرفي منفردًا.',
+                'title_en' => 'An institutional channel', 'body_en' => 'Your work reaches organisations an artisan working alone does not reach.'],
+            ['icon' => 'training', 'title' => 'تطوير مهني', 'body' => 'تدريب مستمر على الجودة والتغليف والتسعير.',
+                'title_en' => 'Professional development', 'body_en' => 'Continuing training in quality, packaging and pricing.'],
+            ['icon' => 'stories', 'title' => 'اسمكم وقصتكم', 'body' => 'القطعة تُعرض باسم صانعها، وقصته تُروى معها.',
+                'title_en' => 'Your name and your story', 'body_en' => 'A piece is shown under its maker\'s name, with their story told alongside it.'],
         ] : [];
 
         $steps = match ($key) {
@@ -798,6 +1288,17 @@ class DemoContentSeeder extends Seeder
             ],
         };
 
+        /*
+         * Both languages on every item.
+         *
+         * `settings` is one JSON column shared by the two locales, so a
+         * repeatable list inside it carries `question` and `question_en` — the
+         * same shape the process steps already used. Until these were added,
+         * `FaqAccordion` printed the Arabic keys verbatim on /en, so an
+         * English-reading buyer met six Arabic questions under an English
+         * heading. §12 forbids that far more strongly than it forbids a
+         * shorter page.
+         */
         $faq = match ($key) {
             /*
              * A partner's six. Every one of them is about the relationship,
@@ -805,20 +1306,32 @@ class DemoContentSeeder extends Seeder
              * because a percentage on a public page is a price list (§2.2).
              */
             Sector::KEY_PARTNERS => [
-                ['question' => 'هل تتعاملون مع عميلنا مباشرة أم من خلالنا فقط؟', 'answer' => 'من خلالكم، ما لم تطلبوا غير ذلك كتابةً. العميل الذي تُعرّفوننا به يبقى عميلكم.'],
-                ['question' => 'هل يمكن أن تصلنا القطع بدون أي إشارة إلى أمد الحرف؟', 'answer' => 'نعم. التغليف والبطاقات تُنفَّذ باسمكم بالكامل إن أردتم، أو باسم الطرفين — أنتم تحدّدون.'],
-                ['question' => 'ما أسرع مدة لتسعير أوّلي لمنافسة عاجلة؟', 'answer' => 'أرسلوا الموجز ونعود إليكم برقم مبدئي في أقرب وقت ممكن حسب وضوح المتطلّب. الرقم النهائي بعد اعتماد العيّنة.'],
-                ['question' => 'هل يمكن إحضار عميلنا لزيارة المعرض معنا؟', 'answer' => 'نعم، وبموعد مسبق. كثير من الشركاء يجعلون الزيارة جزءًا من عرضهم.'],
-                ['question' => 'هل تخدمون أكثر من فعالية لنفس الشريك في وقت واحد؟', 'answer' => 'نعم. كل فعالية تُدار كطلب مستقل بجدولها الخاص.'],
-                ['question' => 'كيف يعمل نموذج الإحالة أو العمولة؟', 'answer' => 'يُتّفق عليه كتابةً قبل البدء ويختلف بحسب حجم التعاون ودوركم فيه. التفاصيل مع فريق المبيعات.'],
+                ['question' => 'هل تتعاملون مع عميلنا مباشرة أم من خلالنا فقط؟', 'answer' => 'من خلالكم، ما لم تطلبوا غير ذلك كتابةً. العميل الذي تُعرّفوننا به يبقى عميلكم.',
+                    'question_en' => 'Do you deal with our client directly, or only through us?', 'answer_en' => 'Through you, unless you ask otherwise in writing. A client you introduce us to stays your client.'],
+                ['question' => 'هل يمكن أن تصلنا القطع بدون أي إشارة إلى أمد الحرف؟', 'answer' => 'نعم. التغليف والبطاقات تُنفَّذ باسمكم بالكامل إن أردتم، أو باسم الطرفين — أنتم تحدّدون.',
+                    'question_en' => 'Can the pieces reach us with no mention of Amad Craft?', 'answer_en' => 'Yes. Packaging and cards can carry your name alone, or both names — you decide.'],
+                ['question' => 'ما أسرع مدة لتسعير أوّلي لمنافسة عاجلة؟', 'answer' => 'أرسلوا الموجز ونعود إليكم برقم مبدئي في أقرب وقت ممكن حسب وضوح المتطلّب. الرقم النهائي بعد اعتماد العيّنة.',
+                    'question_en' => 'How fast can we get an indicative price for an urgent bid?', 'answer_en' => 'Send the brief and we come back with an indicative figure as soon as the requirement is clear. The final figure follows sample approval.'],
+                ['question' => 'هل يمكن إحضار عميلنا لزيارة المعرض معنا؟', 'answer' => 'نعم، وبموعد مسبق. كثير من الشركاء يجعلون الزيارة جزءًا من عرضهم.',
+                    'question_en' => 'Can we bring our client to the showroom with us?', 'answer_en' => 'Yes, by appointment. Many partners make the visit part of their own pitch.'],
+                ['question' => 'هل تخدمون أكثر من فعالية لنفس الشريك في وقت واحد؟', 'answer' => 'نعم. كل فعالية تُدار كطلب مستقل بجدولها الخاص.',
+                    'question_en' => 'Can you run more than one of our events at the same time?', 'answer_en' => 'Yes. Each event is handled as its own order on its own schedule.'],
+                ['question' => 'كيف يعمل نموذج الإحالة أو العمولة؟', 'answer' => 'يُتّفق عليه كتابةً قبل البدء ويختلف بحسب حجم التعاون ودوركم فيه. التفاصيل مع فريق المبيعات.',
+                    'question_en' => 'How does the referral or commission model work?', 'answer_en' => 'Agreed in writing before we begin, and it varies with the size of the collaboration and your role in it. The detail sits with the sales team.'],
             ],
             Sector::KEY_ARTISANS => [
-                ['question' => 'هل أحتاج سجلًا تجاريًا للبدء؟', 'answer' => 'لا يُشترط للبدء. ونساعدكم على الترتيب النظامي عند الحاجة إليه.'],
-                ['question' => 'من يتحمّل تكلفة الخامات؟', 'answer' => 'يُحدَّد ذلك في الاتفاق قبل البدء، ويختلف بحسب حجم الطلب ونوع الحرفة.'],
-                ['question' => 'متى يصلني المقابل؟', 'answer' => 'جدول الدفع يُكتب ضمن الاتفاق، ويُربط بمراحل التسليم لا بنهايتها فقط.'],
-                ['question' => 'هل أعمل معكم حصريًا أم أستطيع البيع في مكاني؟', 'answer' => 'لا حصرية. تبيعون حيث شئتم، وما تنتجونه لنا يُتفق عليه طلبًا بطلب.'],
-                ['question' => 'هل التدريب مدفوع أم مجاني؟', 'answer' => 'التدريب جزء من التأهيل للعمل معنا. تفاصيل كل مسار تُوضَّح في جلسة التعارف قبل أي التزام.'],
-                ['question' => 'كيف تُعرض منتجاتي وباسم من تُباع؟', 'answer' => 'باسمكم. القطعة تُعرض منسوبة إلى صانعها، وقصته تُروى معها.'],
+                ['question' => 'هل أحتاج سجلًا تجاريًا للبدء؟', 'answer' => 'لا يُشترط للبدء. ونساعدكم على الترتيب النظامي عند الحاجة إليه.',
+                    'question_en' => 'Do I need a commercial registration to start?', 'answer_en' => 'Not to start. We help with the paperwork if and when it becomes necessary.'],
+                ['question' => 'من يتحمّل تكلفة الخامات؟', 'answer' => 'يُحدَّد ذلك في الاتفاق قبل البدء، ويختلف بحسب حجم الطلب ونوع الحرفة.',
+                    'question_en' => 'Who covers the cost of materials?', 'answer_en' => 'It is set in the agreement before work begins, and varies with the size of the order and the craft.'],
+                ['question' => 'متى يصلني المقابل؟', 'answer' => 'جدول الدفع يُكتب ضمن الاتفاق، ويُربط بمراحل التسليم لا بنهايتها فقط.',
+                    'question_en' => 'When am I paid?', 'answer_en' => 'The payment schedule is written into the agreement and tied to delivery stages, not only to the end of them.'],
+                ['question' => 'هل أعمل معكم حصريًا أم أستطيع البيع في مكاني؟', 'answer' => 'لا حصرية. تبيعون حيث شئتم، وما تنتجونه لنا يُتفق عليه طلبًا بطلب.',
+                    'question_en' => 'Is this exclusive, or can I still sell where I am?', 'answer_en' => 'No exclusivity. Sell wherever you like; what you make for us is agreed order by order.'],
+                ['question' => 'هل التدريب مدفوع أم مجاني؟', 'answer' => 'التدريب جزء من التأهيل للعمل معنا. تفاصيل كل مسار تُوضَّح في جلسة التعارف قبل أي التزام.',
+                    'question_en' => 'Is the training paid or free?', 'answer_en' => 'Training is part of being qualified to work with us. Each track is explained in full at the first meeting, before any commitment.'],
+                ['question' => 'كيف تُعرض منتجاتي وباسم من تُباع؟', 'answer' => 'باسمكم. القطعة تُعرض منسوبة إلى صانعها، وقصته تُروى معها.',
+                    'question_en' => 'How are my pieces shown, and under whose name?', 'answer_en' => 'Yours. A piece is shown credited to the person who made it, with their story alongside it.'],
             ],
             /*
              * The four a private-sector buyer asks that a government one does
@@ -827,18 +1340,28 @@ class DemoContentSeeder extends Seeder
              * by answering a question about it.
              */
             Sector::KEY_PRIVATE => [
-                ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية المطلوبة ونوضّح لكم الممكن بصدق.'],
-                ['question' => 'كم تستغرق المدة؟', 'answer' => 'نبني الجدول عكسيًا من تاريخ مناسبتكم، ونخبركم مبكرًا إن كان التاريخ غير كافٍ.'],
-                ['question' => 'هل يمكن وضع شعارنا على القطعة نفسها لا التغليف فقط؟', 'answer' => 'نعم، بحسب الخامة: النقش على الخشب والجلد، والتطريز على المنسوجات. نوضّح لكم في العيّنة كيف يظهر الشعار قبل الإنتاج.'],
-                ['question' => 'هل يمكن تخصيص التغليف؟', 'answer' => 'نعم. التغليف عندنا جزء من التصميم لا إضافة عليه.'],
-                ['question' => 'هل توجد عيّنة قبل اعتماد الكمية؟', 'answer' => 'دائمًا. لا يبدأ الإنتاج قبل أن تعاينوا قطعة فعلية وتعتمدوها باليد.'],
-                ['question' => 'هل يمكن التسليم على أكثر من فرع أو مدينة؟', 'answer' => 'نعم. تُقسَّم الدفعة حسب الفروع وتُغلَّف لكل وجهة على حدة.'],
-                ['question' => 'هل تتوفر فاتورة ضريبية باسم الشركة؟', 'answer' => 'نعم. الفوترة تتم عبر فريق المبيعات خارج الموقع بعد الاتفاق على الطلب.'],
+                ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية المطلوبة ونوضّح لكم الممكن بصدق.',
+                    'question_en' => 'What is the minimum order?', 'answer_en' => 'It varies with the craft and the piece. Tell us the quantity you need and we will tell you honestly what is possible.'],
+                ['question' => 'كم تستغرق المدة؟', 'answer' => 'نبني الجدول عكسيًا من تاريخ مناسبتكم، ونخبركم مبكرًا إن كان التاريخ غير كافٍ.',
+                    'question_en' => 'How long does it take?', 'answer_en' => 'We build the schedule backwards from your date, and tell you early if the date is not enough.'],
+                ['question' => 'هل يمكن وضع شعارنا على القطعة نفسها لا التغليف فقط؟', 'answer' => 'نعم، بحسب الخامة: النقش على الخشب والجلد، والتطريز على المنسوجات. نوضّح لكم في العيّنة كيف يظهر الشعار قبل الإنتاج.',
+                    'question_en' => 'Can our mark go on the piece itself, not just the packaging?', 'answer_en' => 'Yes, depending on the material: engraving on wood and leather, embroidery on textiles. The sample shows you how it sits before production.'],
+                ['question' => 'هل يمكن تخصيص التغليف؟', 'answer' => 'نعم. التغليف عندنا جزء من التصميم لا إضافة عليه.',
+                    'question_en' => 'Can the packaging be customised?', 'answer_en' => 'Yes. Packaging here is part of the design, not an addition to it.'],
+                ['question' => 'هل توجد عيّنة قبل اعتماد الكمية؟', 'answer' => 'دائمًا. لا يبدأ الإنتاج قبل أن تعاينوا قطعة فعلية وتعتمدوها باليد.',
+                    'question_en' => 'Is there a sample before we commit to the quantity?', 'answer_en' => 'Always. Production does not begin until you have held a real piece and approved it.'],
+                ['question' => 'هل يمكن التسليم على أكثر من فرع أو مدينة؟', 'answer' => 'نعم. تُقسَّم الدفعة حسب الفروع وتُغلَّف لكل وجهة على حدة.',
+                    'question_en' => 'Can you deliver to more than one branch or city?', 'answer_en' => 'Yes. The batch is split by destination and packed separately for each.'],
+                ['question' => 'هل تتوفر فاتورة ضريبية باسم الشركة؟', 'answer' => 'نعم. الفوترة تتم عبر فريق المبيعات خارج الموقع بعد الاتفاق على الطلب.',
+                    'question_en' => 'Is a tax invoice available in the company name?', 'answer_en' => 'Yes. Invoicing is handled by the sales team off the site, once the order is agreed.'],
             ],
             default => [
-                ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية المطلوبة ونوضّح لكم الممكن بصدق.'],
-                ['question' => 'كم تستغرق المدة؟', 'answer' => 'نبني الجدول عكسيًا من تاريخ مناسبتكم، ونخبركم مبكرًا إن كان التاريخ غير كافٍ.'],
-                ['question' => 'هل يمكن تخصيص التغليف؟', 'answer' => 'نعم. التغليف عندنا جزء من التصميم لا إضافة عليه.'],
+                ['question' => 'ما أقل كمية للطلب؟', 'answer' => 'تختلف بحسب الحرفة والقطعة. أخبرونا بالكمية المطلوبة ونوضّح لكم الممكن بصدق.',
+                    'question_en' => 'What is the minimum order?', 'answer_en' => 'It varies with the craft and the piece. Tell us the quantity you need and we will tell you honestly what is possible.'],
+                ['question' => 'كم تستغرق المدة؟', 'answer' => 'نبني الجدول عكسيًا من تاريخ مناسبتكم، ونخبركم مبكرًا إن كان التاريخ غير كافٍ.',
+                    'question_en' => 'How long does it take?', 'answer_en' => 'We build the schedule backwards from your date, and tell you early if the date is not enough.'],
+                ['question' => 'هل يمكن تخصيص التغليف؟', 'answer' => 'نعم. التغليف عندنا جزء من التصميم لا إضافة عليه.',
+                    'question_en' => 'Can the packaging be customised?', 'answer_en' => 'Yes. Packaging here is part of the design, not an addition to it.'],
             ],
         };
 
@@ -1039,6 +1562,20 @@ class DemoContentSeeder extends Seeder
             ['pieces', 18500, '+', 'قطعة حرفية سُلّمت', 'Craft pieces delivered', 'لجهات ومؤسسات', 'To institutions'],
             ['entities', 36, '', 'جهة ومؤسسة', 'Entities served', 'حكومية وخاصة', 'Public and private'],
             ['training-hours', 4200, '+', 'ساعة تدريب', 'Training hours', 'ضمن مسارات التمكين', 'Across the empowerment tracks'],
+
+            /*
+             * The two figures /training asks for and Amad Craft has not
+             * counted yet. Seeded with their labels and NO value, so the
+             * register holds the definition — which is the part that can be
+             * agreed now — and the page shows nothing until somebody types the
+             * number in the panel.
+             *
+             * A drafted number here would be worse than an absent section: a
+             * count of people whose livelihoods changed is precisely the claim
+             * a sponsor would repeat in their own reporting.
+             */
+            ['training-graduates', null, '', 'متدربًا أنهى مسارًا', 'Trainees who completed a track', null, null],
+            ['training-to-production', null, '', 'تحوّلوا لحرفيين منتِجين معنا', 'Now producing artisans with us', null, null],
         ];
 
         foreach ($metrics as $order => [$key, $value, $suffix, $labelAr, $labelEn, $noteAr, $noteEn]) {
@@ -1061,28 +1598,57 @@ class DemoContentSeeder extends Seeder
     /**
      * ⚠️ Composed illustrations, not real people. Replace with real artisans,
      * their own words, and documented consent before launch.
+     *
+     * The photographs are Amad Craft's own, from their workshop: hands at the
+     * loom, palm fronds being split at the bench.
+     *
+     * They replace `craft-03/06/11.webp`, which were also Amad Craft's but of
+     * the showroom and of finished pieces on a white sweep — so a story about
+     * a grandmother's loom arrived illustrated with a blue notebook, and the
+     * section that exists to put a person in front of the reader showed them
+     * merchandise instead.
+     *
+     * Matched to the craft each story names, because the caption states it and
+     * a photograph that contradicts its caption is the same defect in a new
+     * coat:
+     *
+     *   story-sadu   → the ground loom, red and black warp        (exact)
+     *   story-khoos  → palm fronds split at the bench             (exact)
+     *   story-zari   → a loom with coloured warp                  (APPROXIMATE)
+     *
+     * ⚠️ The third is weaving, not Zari — Zari is gold thread worked onto
+     * fabric, and no photograph of it exists here. It is the closest of the
+     * three and it is still the wrong craft; swap it the moment a Zari
+     * photograph arrives.
+     *
+     * The faces are turned away or cropped in all three, which is what makes
+     * them usable before written consent per person; the warning above still
+     * stands for the words.
      */
     private function stories(): void
     {
         $stories = [
-            ['story-sadu', 'craft/craft-03.webp',
+            ['story-sadu', 'image (2).jpg',
                 'من النول إلى المكتب', 'From the loom to the office',
                 'السدو ليس نقشًا على قماش، هو ذاكرة نسجتها جدّتي وسلّمتها لي. اليوم يخرج من بيتي إلى مكاتب لم أتخيّل يومًا أن يصلها.',
                 'Sadu is not a pattern on cloth. It is a memory my grandmother wove and handed to me. Today it leaves my house for offices I never imagined it reaching.',
-                'حرفية سدو · القصيم', 'Sadu weaver · Al-Qassim'],
-            ['story-khoos', 'craft/craft-06.webp',
+                'حرفية سدو · القصيم', 'Sadu weaver · Al-Qassim',
+                'حرفيات ينسجن السدو على النول في ورشة أمد الحرف', 'Artisans weaving Sadu at the loom in the Amad Craft workshop'],
+            ['story-khoos', 'image (4).jpg',
                 'طلب أعرف موعده', 'An order with a date on it',
                 'كنت أبيع القطعة في السوق الأسبوعي وأنتظر من يمرّ. الآن أُنتج بطلبات مجدولة، وأعرف كم سأصنع الشهر القادم.',
                 'I used to sell a piece at the weekly market and wait for someone to pass. Now I work to scheduled orders, and I know what I will make next month.',
-                'حرفي خوص · الأحساء', 'Palm-frond weaver · Al-Ahsa'],
-            ['story-zari', 'craft/craft-11.webp',
+                'حرفي خوص · الأحساء', 'Palm-frond weaver · Al-Ahsa',
+                'حرفيات يجهّزن سعف النخيل على طاولة العمل', 'Artisans preparing palm fronds at the workbench'],
+            ['story-zari', 'image (3).jpg',
                 'خيط ذهبي بيدي', 'A gold thread, by my hand',
                 'أصعب ما في الزري هو الصبر. وأجملُ ما فيه أن ترى خيطًا ذهبيًا صنعتِه بيدك على حقيبة تُهدى لضيف دولة.',
                 'The hardest thing about Zari is patience. The most beautiful is seeing a gold thread you made by hand on a bag presented to a state guest.',
-                'حرفية زري · المدينة المنورة', 'Zari artisan · Madinah'],
+                'حرفية زري · المدينة المنورة', 'Zari artisan · Madinah',
+                'حرفية تُعِدّ خيوط السداة على النول', 'An artisan setting the warp threads on the loom'],
         ];
 
-        foreach ($stories as $order => [$slug, $image, $titleAr, $titleEn, $quoteAr, $quoteEn, $attrAr, $attrEn]) {
+        foreach ($stories as $order => [$slug, $image, $titleAr, $titleEn, $quoteAr, $quoteEn, $attrAr, $attrEn, $altAr, $altEn]) {
             $story = Story::query()->updateOrCreate(
                 ['slug' => $slug],
                 ['sort_order' => $order, 'is_published' => true, 'published_at' => now()]
@@ -1095,26 +1661,75 @@ class DemoContentSeeder extends Seeder
                 'title' => $titleEn, 'quote' => $quoteEn, 'attribution' => $attrEn,
             ]);
 
-            $this->attachImage($story, 'person', $image);
+            // Clears what earlier revisions attached here — before attaching,
+            // because `attachImage` returns early when the collection is
+            // occupied, and the old catalogue shot would keep its place.
+            $this->detachSeededMedia($story, 'person', [
+                'craft-03.webp', 'craft-06.webp', 'craft-11.webp',
+                '7.webp', '8.jpeg', '11.webp',
+            ]);
+
+            if ($image !== null) {
+                // Describes what is in the frame — people at work — not "a
+                // craft piece", which is what the shared default says and
+                // what these photographs are precisely not.
+                $this->attachImage($story, 'person', $image, [
+                    'ar' => $altAr,
+                    'en' => $altEn,
+                ]);
+            }
         }
     }
 
+    /**
+     * ⚠️ Illustrative track descriptions. The outcome line on each is the
+     * field the card is built around and is required in the panel.
+     *
+     * Only the Sadu track is illustrated, and it is illustrated by its own
+     * room: `sadu.png` is Amad Craft's photograph of a trainee at the Sadu
+     * loom. The other two frames stay empty on purpose.
+     *
+     * They used to hold `7.webp` / `8.jpeg` / `2.jpeg` — also the client's own
+     * photographs, but of finished pieces on a shelf, so the craft-business
+     * track was illustrated with a wall clock. This section is about people
+     * learning; a photograph of merchandise is not a photograph of a track.
+     *
+     * All three frames are now filled from Amad Craft's workshop photography:
+     *
+     *   sadu-track     → sadu.png        the loom                    (exact)
+     *   khoos-track    → image (4).jpg   fronds split at the bench   (exact)
+     *   business-track → gbs.png         a finished piece held up at
+     *                                    the centre's own door    (APPROXIMATE)
+     *
+     * ⚠️ The third is the honest weak point. The craft-business track teaches
+     * pricing, photography and portfolios, and no photograph of those sessions
+     * exists. `gbs.png` was chosen because it is the only frame that reads as
+     * "a result, held up, at the training centre" rather than as a particular
+     * craft — but it is a gypsum piece, and a picture that argues with its own
+     * caption is the defect this section already had once. Replace it the
+     * moment a photograph of a pricing or portfolio session arrives.
+     *
+     * `image (4).jpg` is also the artisan story's photograph on /impact. One
+     * image in two places is a smaller fault than an empty frame, and the
+     * training report (pp.10–23) is full of alternatives that would separate
+     * them — they need exporting out of the PDF first.
+     */
     private function training(): void
     {
         $programs = [
-            ['sadu-track', 8, '7.webp',
+            ['sadu-track', 8, 'sadu.png',
                 'مسار السدو', 'Sadu track',
                 'تدريب عملي على نول السدو من الغزل حتى القطعة الجاهزة، مع وحدة في التسعير والتغليف.',
                 'Hands-on training at the Sadu loom, from yarn to finished piece, with a unit on pricing and packaging.',
                 'يُنهي المتدرّب المسار بثلاث قطع جاهزة للعرض، وملف تسعير لمنتجه، وربط مباشر بطلبات أمد الحرف.',
                 'Graduates finish with three display-ready pieces, a pricing file for their product, and a direct link to Amad Craft orders.'],
-            ['khoos-track', 6, '8.jpeg',
+            ['khoos-track', 6, 'image (4).jpg',
                 'مسار الخوص', 'Khoos track',
                 'من تجهيز السعف حتى الجدل والتشطيب، مع تركيز على ثبات الجودة عبر الكميات الكبيرة.',
                 'From preparing the frond through plaiting to finishing, focused on holding quality steady across volume.',
                 'إتقان ثلاثة أنماط جدل، والقدرة على تنفيذ دفعة متجانسة من خمسين قطعة.',
                 'Command of three plaiting patterns and the ability to deliver a consistent batch of fifty.'],
-            ['business-track', 4, '2.jpeg',
+            ['business-track', 4, 'gbs.png',
                 'مسار ريادة الأعمال الحرفية', 'Craft-business track',
                 'التسعير، والتصوير، والتعامل مع الطلبات المؤسسية، وبناء ملف تعريفي للحرفي.',
                 'Pricing, photography, handling institutional orders, and building an artisan portfolio.',
@@ -1135,7 +1750,20 @@ class DemoContentSeeder extends Seeder
                 'name' => $nameEn, 'summary' => $sumEn, 'outcomes' => $outEn,
             ]);
 
-            $this->attachImage($program, 'hero', $image);
+            // Clears the catalogue photographs earlier revisions attached here.
+            // Before attaching, not after: `attachImage` declines a collection
+            // that already holds something, so the clock would have kept its
+            // place and the new photograph would have been dropped silently.
+            $this->detachSeededMedia($program, 'hero', ['7.webp', '8.jpeg', '2.jpeg']);
+
+            if ($image !== null) {
+                // Describes the room, not the object — this frame's whole
+                // purpose is to show a person learning the craft.
+                $this->attachImage($program, 'hero', $image, [
+                    'ar' => 'متدرّبة على نول السدو داخل مركز التدريب',
+                    'en' => 'A trainee at the Sadu loom in the training centre',
+                ]);
+            }
         }
     }
 
@@ -1248,6 +1876,27 @@ class DemoContentSeeder extends Seeder
         $media->translations()->updateOrCreate(['locale' => 'en'], ['alt_text' => "{$en} logo"]);
     }
 
+    /**
+     * Removes an image an earlier revision of this seeder attached, and only
+     * that image.
+     *
+     * Matched by file name against an explicit list, never "delete whatever is
+     * in this collection": the client uploads through the panel into the same
+     * collections, and a seeder that clears a collection wholesale destroys
+     * their work on the next `migrate --seed`. The standing rule is no data
+     * loss in any migration; this is the same rule one layer up.
+     *
+     * @param  list<string>  $fileNames
+     */
+    private function detachSeededMedia(Model $model, string $collection, array $fileNames): void
+    {
+        foreach ($model->getMedia($collection) as $media) {
+            if (in_array($media->file_name, $fileNames, true)) {
+                $media->delete();
+            }
+        }
+    }
+
     /** ⚠️ Illustrative. Replace with Amad Craft's real publications. */
     private function reports(): void
     {
@@ -1257,16 +1906,30 @@ class DemoContentSeeder extends Seeder
                 ['year' => $year, 'sort_order' => $order, 'is_public' => true]
             );
 
+            /*
+             * The year is NOT in the title. It is one fact, and it already has
+             * a field — `year` — which drives both the badge and the generated
+             * cover. Typing it into the title as well is how a card came to be
+             * headed 2025 while wearing a 2023 badge: two places to state one
+             * thing, and only one of them got corrected.
+             */
             $report->translations()->updateOrCreate(['locale' => 'ar'], [
-                'title' => "تقرير الأثر السنوي {$year}",
+                'title' => 'تقرير الأثر السنوي',
                 'summary' => 'ملخّص لما أُنجز خلال العام: عدد الحرفيين، والقطع المسلَّمة، والجهات التي عملنا معها.',
             ]);
             $report->translations()->updateOrCreate(['locale' => 'en'], [
-                'title' => "Annual impact report {$year}",
+                'title' => 'Annual impact report',
                 'summary' => 'A summary of the year: artisans engaged, pieces delivered, and the institutions we worked with.',
             ]);
 
-            $this->attachImage($report, 'cover', '13.webp');
+            /*
+             * No cover attached. `13.webp` was here — a stock photograph of a
+             * necklace on a model, identical on both reports, from outside the
+             * identity, in the space a document cover belongs. `ReportCover`
+             * draws a navy face with the mark and the year instead, and an
+             * uploaded cover still wins over it the moment one arrives.
+             */
+            $this->detachSeededMedia($report, 'cover', ['13.webp']);
         }
     }
 
@@ -1284,11 +1947,23 @@ class DemoContentSeeder extends Seeder
          */
         $menus = [
             'header' => [
+                /*
+                 * The four descriptions turn the panel from a list of links
+                 * into a chooser. A visitor hesitating between «الشركاء» and
+                 * «شركات القطاع الخاص» is one wrong click from a page written
+                 * for someone else; one line each settles it before the click.
+                 *
+                 * Draft wording, editable from the panel like any other copy.
+                 */
                 ['/{l}/solutions', 'الحلول', 'Solutions', [
-                    ['/{l}/solutions/government', 'الجهات الحكومية وشبه الحكومية', 'Government & quasi-government'],
-                    ['/{l}/solutions/companies', 'شركات القطاع الخاص', 'Private-sector companies'],
-                    ['/{l}/solutions/partners', 'الشركاء', 'Partners'],
-                    ['/{l}/solutions/artisans', 'الحرفيون', 'Artisans'],
+                    ['/{l}/solutions/government', 'الجهات الحكومية وشبه الحكومية', 'Government & quasi-government',
+                        [], 'هدايا رسمية بتوثيق كامل', 'Official gifts, fully documented'],
+                    ['/{l}/solutions/companies', 'شركات القطاع الخاص', 'Private-sector companies',
+                        [], 'هدايا تحمل هوية شركتكم', 'Gifts carrying your company identity'],
+                    ['/{l}/solutions/partners', 'الشركاء', 'Partners',
+                        [], 'مورّدكم الخلفي للفعاليات', 'Your behind-the-scenes events supplier'],
+                    ['/{l}/solutions/artisans', 'الحرفيون', 'Artisans',
+                        [], 'انضموا لشبكة الحرفيين', 'Join the artisan network'],
                 ]],
                 ['/{l}/impact', 'الأثر', 'Impact'],
                 ['/{l}/training', 'التدريب والتمكين', 'Training & enablement'],
@@ -1331,13 +2006,16 @@ class DemoContentSeeder extends Seeder
     }
 
     /**
-     * One menu entry, with its two labels.
+     * One menu entry, with its two labels and — where it has one — the
+     * one-line description the solutions panel shows beneath the name.
      *
-     * @param  array{0: string, 1: string, 2: string, 3?: array<int, mixed>}  $spec
+     * @param  array{0: string, 1: string, 2: string, 3?: array<int, mixed>, 4?: string, 5?: string}  $spec
      */
     private function navigationItem(Navigation $navigation, array $spec, int $order, ?int $parentId): NavigationItem
     {
         [$url, $ar, $en] = $spec;
+        $descriptionAr = $spec[4] ?? null;
+        $descriptionEn = $spec[5] ?? null;
 
         $item = $navigation->items()->getModel()->query()->create([
             'navigation_id' => $navigation->id,
@@ -1349,15 +2027,27 @@ class DemoContentSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $item->translations()->updateOrCreate(['locale' => 'ar'], ['label' => $ar]);
-        $item->translations()->updateOrCreate(['locale' => 'en'], ['label' => $en]);
+        $item->translations()->updateOrCreate(['locale' => 'ar'], [
+            'label' => $ar, 'description' => $descriptionAr,
+        ]);
+        $item->translations()->updateOrCreate(['locale' => 'en'], [
+            'label' => $en, 'description' => $descriptionEn,
+        ]);
 
         return $item;
     }
 
     // ---------------------------------------------------------------- //
 
-    private function attachImage(Model $model, string $collection, string $file): void
+    /**
+     * @param  array{ar: string, en: string}|null  $alt  Overrides the default
+     *                                                   description. A photograph of
+     *                                                   people at work is not "a craft
+     *                                                   piece", and alt text that
+     *                                                   describes the wrong thing is
+     *                                                   worse than none.
+     */
+    private function attachImage(Model $model, string $collection, string $file, ?array $alt = null): void
     {
         $path = public_path("images/{$file}");
 
@@ -1374,7 +2064,9 @@ class DemoContentSeeder extends Seeder
         $media = $model->addMedia($path)->preservingOriginal()->toMediaCollection($collection);
 
         // Alt text is content and is managed per locale (§10.8).
-        foreach (['ar' => 'قطعة حرفية من إنتاج أمد الحرف', 'en' => 'A craft piece made by Amad Craft'] as $locale => $text) {
+        $alt ??= ['ar' => 'قطعة حرفية من إنتاج أمد الحرف', 'en' => 'A craft piece made by Amad Craft'];
+
+        foreach ($alt as $locale => $text) {
             $media->translations()->updateOrCreate(['locale' => $locale], ['alt_text' => $text]);
         }
     }

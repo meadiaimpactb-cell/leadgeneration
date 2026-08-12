@@ -38,7 +38,7 @@ class LeadController extends Controller
 
         return Inertia::render('Admin/Leads/Index', [
             'leads' => $leads,
-            'filters' => $request->only(['from', 'to', 'campaign', 'source', 'status', 'crm', 'q']),
+            'filters' => $request->only(['from', 'to', 'campaign', 'source', 'status', 'crm', 'q', 'interest']),
             'statuses' => Lead::STATUSES,
             'campaigns' => Campaign::query()->orderBy('slug')->get()
                 ->map(fn (Campaign $c): array => ['id' => $c->id, 'slug' => $c->slug]),
@@ -47,6 +47,17 @@ class LeadController extends Controller
                 ->distinct()
                 ->orderBy('utm_source')
                 ->pluck('utm_source'),
+            /*
+             * Read from the leads themselves rather than from a fixed list.
+             * The tag is set by a section setting in the panel, so the day a
+             * second page grows its own pair of audiences the filter offers
+             * them without a developer.
+             */
+            'interests' => Lead::query()
+                ->whereNotNull('interest')
+                ->distinct()
+                ->orderBy('interest')
+                ->pluck('interest'),
             'can' => [
                 'updateStatus' => $request->user()->can('update', $lead ?? new Lead),
                 'export' => $request->user()->can('export', Lead::class),
@@ -150,7 +161,7 @@ class LeadController extends Controller
             fputcsv($out, [
                 'التاريخ', 'وسيلة التواصل', 'النوع', 'الرسالة', 'الحالة',
                 'حالة CRM', 'الحملة', 'المصدر', 'الوسيط', 'الحملة الإعلانية',
-                'القطاع', 'اللغة', 'الصفحة', 'المُحيل',
+                'القطاع', 'الاهتمام', 'اللغة', 'الصفحة', 'المُحيل',
                 // Answers to any field enabled beyond §6.1's two. One column,
                 // so enabling a field never breaks an existing import.
                 'حقول إضافية',
@@ -170,6 +181,7 @@ class LeadController extends Controller
                         $lead->utm_medium,
                         $lead->utm_campaign,
                         $lead->sector_hint,
+                        $lead->interest,
                         $lead->locale,
                         $lead->page_url,
                         $lead->referrer,
@@ -203,6 +215,7 @@ class LeadController extends Controller
             ->when($request->filled('source'), fn (Builder $q) => $q->where('utm_source', $request->string('source')->toString()))
             ->when($request->filled('status'), fn (Builder $q) => $q->where('status', $request->string('status')->toString()))
             ->when($request->filled('crm'), fn (Builder $q) => $q->where('crm_status', $request->string('crm')->toString()))
+            ->when($request->filled('interest'), fn (Builder $q) => $q->where('interest', $request->string('interest')->toString()))
             ->when($request->filled('q'), function (Builder $q) use ($request): void {
                 $term = '%'.$request->string('q')->toString().'%';
                 $q->where(fn (Builder $inner) => $inner
@@ -224,6 +237,10 @@ class LeadController extends Controller
             'crmStatus' => $lead->crm_status,
             'campaign' => $lead->campaign?->slug,
             'source' => $lead->utm_source,
+            // In the row, not only in the side panel: on a page with two
+            // audiences this is what decides who picks the enquiry up, and a
+            // fact you must open a drawer to learn is one nobody sorts by.
+            'interest' => $lead->interest,
             'createdAt' => $lead->created_at?->toIso8601String(),
         ];
     }

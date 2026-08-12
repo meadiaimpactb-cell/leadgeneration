@@ -135,6 +135,21 @@ class StructureSeeder extends Seeder
             ['contact', 'directions_label.ar', null, true],
             ['contact', 'directions_label.en', null, true],
 
+            // The visit request and the WhatsApp opener on the contact page.
+            ['contact', 'visit_cta.ar', null, true],
+            ['contact', 'visit_cta.en', null, true],
+            ['contact', 'visit_prompt.ar', null, true],
+            ['contact', 'visit_prompt.en', null, true],
+            ['contact', 'whatsapp_message.ar', null, true],
+            ['contact', 'whatsapp_message.en', null, true],
+
+            // OFF, with no text. A response commitment is a promise about how
+            // the company behaves, and code must never make one on its behalf
+            // (§22.1). The client turns it on when they mean it.
+            ['contact', 'response_promise_enabled', false, true],
+            ['contact', 'response_promise.ar', null, true],
+            ['contact', 'response_promise.en', null, true],
+
             // Where the company is (§5 contact page). A plain search query is
             // enough for the embed; paste a full Maps embed URL into
             // map_embed_url once the exact pin is confirmed.

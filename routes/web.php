@@ -77,6 +77,15 @@ Route::prefix('{locale}')
 
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/impact', [ImpactController::class, 'index'])->name('impact.index');
+        /*
+         * Literal before wildcard. `/impact/stories` and `/impact/stories/{slug}`
+         * are distinct routes rather than one optional parameter, for the same
+         * reason the four solution segments are four literal routes: Laravel
+         * keys its route collection by method+URI, and a second registration on
+         * one URI silently replaces the first.
+         */
+        Route::get('/impact/stories', [ImpactController::class, 'stories'])->name('impact.stories');
+        Route::get('/impact/stories/{slug}', [ImpactController::class, 'story'])->name('impact.story');
         Route::get('/training', [TrainingController::class, 'index'])->name('training.index');
         Route::get('/partners', [PartnerController::class, 'index'])->name('partners.index');
         Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');

@@ -13,8 +13,25 @@ defineProps({
     subtitle: { type: String, default: null },
     ctaLabel: { type: String, default: null },
     ctaUrl: { type: String, default: null },
+    /**
+     * A second, quieter action. On /impact this is what sends a public body
+     * straight to the report shelf without reading the page first — the one
+     * thing they arrived for.
+     */
+    secondaryLabel: { type: String, default: null },
+    secondaryUrl: { type: String, default: null },
     image: { type: Object, default: null },
 });
+
+/**
+ * An action with no URL is an action on this page, and the page says what it
+ * does. /training uses it for «ارعوا مساراً», which has to set who is asking
+ * before it moves the visitor to the form — something no href can express.
+ *
+ * A label with a URL still renders as a link, so nothing that navigates
+ * becomes a button (§7.2).
+ */
+const emit = defineEmits(['action']);
 </script>
 
 <template>
@@ -24,9 +41,27 @@ defineProps({
                 <div>
                     <h1 v-if="title">{{ title }}</h1>
                     <p v-if="subtitle" class="phero__sub">{{ subtitle }}</p>
-                    <Button v-if="ctaLabel" variant="cta-lg" :href="ctaUrl" class="phero__cta">
-                        {{ ctaLabel }}
-                    </Button>
+                    <div v-if="ctaLabel || secondaryLabel" class="phero__actions">
+                        <Button
+                            v-if="ctaLabel"
+                            variant="cta-lg"
+                            :href="ctaUrl"
+                            class="phero__cta"
+                            @click="ctaUrl || emit('action', 'primary')"
+                        >
+                            {{ ctaLabel }}
+                        </Button>
+
+                        <Button
+                            v-if="secondaryLabel"
+                            variant="secondary"
+                            :href="secondaryUrl"
+                            class="phero__cta"
+                            @click="secondaryUrl || emit('action', 'secondary')"
+                        >
+                            {{ secondaryLabel }}
+                        </Button>
+                    </div>
                 </div>
 
                 <img
@@ -63,8 +98,17 @@ defineProps({
     max-inline-size: 56ch;
 }
 
-.phero__cta {
+.phero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4);
     margin-block-start: var(--s-7);
+}
+
+/* The margin now belongs to the row, not to each button in it. */
+.phero__cta {
+    margin-block-start: 0;
 }
 
 .phero__image {

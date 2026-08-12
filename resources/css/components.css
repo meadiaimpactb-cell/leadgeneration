@@ -24,8 +24,15 @@
      6. .sadu-mark      — the small swatch beside a hero eyebrow
      7. the hero media's clipped tooth edge (in Hero.vue —
         clip-path cannot be expressed as a background)
+     8. .sadu-rail      — the thread the bridge diagram's stages
+        sit on (sections/BridgeModel). Added on the client's
+        written instruction in the /about brief, which asked
+        for the five stages to sit "على خط بزخرفة السدو". It is
+        the only place the thread carries content rather than
+        edging it, and it exists once, on one section, on one
+        page.
 
-   Do not add an eighth.
+   Do not add a ninth.
    ============================================================ */
 
 .sadu-divider {
@@ -625,6 +632,20 @@ html[dir="rtl"] .link-weave:focus-visible .arrow { transform: scaleX(-1) transla
   color: var(--text-muted);
 }
 
+/* The column count follows the number of steps, not a fixed four.
+
+   Hard-coded at `repeat(4, 1fr)`, a five-step procedure wrapped its last
+   stage onto a row of its own — «الربط بالطلبات» on /training and «شراكة
+   مستمرة» on the artisan page both hung there alone, reading as an
+   afterthought rather than as the end of the sequence. `--steps-count` is
+   set by ProcessSteps from the data; four remains the default for the
+   segment pages that have four.
+
+   `minmax(0, …)` because a step's title is a long Arabic phrase and a bare
+   fr track sizes to it before sharing the row. */
 @media (min-width: 768px) {
-  .steps { grid-template-columns: repeat(4, 1fr); gap: var(--s-5); }
+  .steps {
+    grid-template-columns: repeat(var(--steps-count, 4), minmax(0, 1fr));
+    gap: var(--s-5);
+  }
 }

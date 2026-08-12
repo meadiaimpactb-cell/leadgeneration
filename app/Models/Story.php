@@ -37,6 +37,16 @@ class Story extends Model implements HasMedia
         $this->addMediaCollection('person')->singleFile();
     }
 
+    /**
+     * The stories carrying one label — «خريج مسار» and whatever the client
+     * adds next. One record read by two pages, never a second copy of a
+     * person's own words.
+     */
+    public function scopeTagged(Builder $query, string $tag): Builder
+    {
+        return $query->where('tag', $tag);
+    }
+
     public function scopeVisible(Builder $query): Builder
     {
         return $query->where('is_published', true)

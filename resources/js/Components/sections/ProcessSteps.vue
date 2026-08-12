@@ -1,7 +1,7 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3';
 import Container from '@/Components/ui/Container.vue';
 import { useReveal } from '@/Composables/useReveal';
+import { useSettingText } from '@/Composables/useSettingText';
 
 /**
  * sections/ProcessSteps — "how we work with you", as a procedure.
@@ -22,24 +22,13 @@ defineProps({
 });
 
 const { root } = useReveal();
-const page = usePage();
 
 /**
- * A step's text in the current language.
- *
- * `settings` is a single JSON column on the section — it is NOT per-locale
- * like the translated fields are — so a repeatable list inside it carries
- * both languages on each item, `title` and `title_en`. Falling back to the
- * Arabic key would serve Arabic to an English reader, which §12 forbids, so
- * a missing English string yields nothing and the line simply does not
- * render.
- *
- * The media library will make this unnecessary for images; for repeatable
- * text it is the shape the section builder already stores.
+ * A step's text in the current language. The rule — both languages on each
+ * item, no fallback between them — is `useSettingText`, shared with every
+ * other section whose repeatable content lives in `settings`.
  */
-function text(step, field) {
-    return page.props.locale === 'en' ? (step[`${field}_en`] ?? null) : (step[field] ?? null);
-}
+const { text } = useSettingText();
 </script>
 
 <template>
@@ -56,10 +45,17 @@ function text(step, field) {
             </h2>
 
             <!-- An ordered list, because the order is the content. -->
-            <ol class="steps">
+            <!-- Capped at five: six stages across a 768px row give each one
+                 about 120px, which is narrower than the shortest Arabic step
+                 title. Below that the grid is a single column anyway. -->
+            <ol class="steps" :style="{ '--steps-count': Math.min(items.length, 5) }">
                 <li v-for="(step, i) in items" :key="i" class="step reveal">
-                    <h3 v-if="text(step, 'title')" class="step__title">{{ text(step, 'title') }}</h3>
-                    <p v-if="text(step, 'body')" class="step__body">{{ text(step, 'body') }}</p>
+                    <h3 v-if="text(step, 'title')" class="step__title">
+                        {{ text(step, 'title') }}
+                    </h3>
+                    <p v-if="text(step, 'body')" class="step__body">
+                        {{ text(step, 'body') }}
+                    </p>
                 </li>
             </ol>
         </Container>

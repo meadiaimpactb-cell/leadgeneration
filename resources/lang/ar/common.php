@@ -34,4 +34,8 @@ return [
     'required' => 'مطلوب',
     'optional' => 'اختياري',
     'other_segments' => 'شرائح أخرى قد تعنيكم',
+    // Names the bridge diagram for a reader who cannot see it. A label, not a
+    // description: the diagram's own labels are real text in reading order,
+    // so a screen reader gets the model itself rather than a paraphrase.
+    'diagram' => 'رسم توضيحي',
 ];

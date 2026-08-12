@@ -33,4 +33,5 @@ return [
     'required' => 'Required',
     'optional' => 'Optional',
     'other_segments' => 'Other segments that may fit you',
+    'diagram' => 'Diagram',
 ];

@@ -175,6 +175,7 @@ function removeMedia(id) {
                     v-model="form.translations"
                     :locales="locales"
                     :fields="meta.fields"
+                    :required="meta.required ?? []"
                     :errors="form.errors"
                 />
             </Panel>
