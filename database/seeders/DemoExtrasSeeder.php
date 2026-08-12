@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Campaign;
+use App\Models\ImpactMetric;
 use App\Models\Page;
+use App\Models\Partner;
 use App\Models\Report;
+use App\Models\Sector;
 use App\Models\Solution;
 use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +25,8 @@ use Illuminate\Database\Seeder;
  *   · a live campaign landing page at /{locale}/c/{slug}
  *   · sections on each solution page, so they are not bare
  *   · partner logos and downloadable report files
+ *   · the trust strip and the number band a segment page reserves — both were
+ *     absent rather than empty, so neither could be judged
  *
  * Draft copy, to be reviewed and edited in the admin panel. The legal text
  * in particular is not legal advice and needs a lawyer before launch.
@@ -46,8 +51,9 @@ class DemoExtrasSeeder extends Seeder
         // craft photo library, which put an unrelated photograph on each real
         // organisation's row.
         $this->reportFiles();
+        $this->segmentTrustBlocks();
 
-        $this->command?->info('Demo extras seeded: legal pages, campaign, solution sections, report files.');
+        $this->command?->info('Demo extras seeded: legal pages, campaign, solution sections, report files, segment trust blocks.');
     }
 
     /**
@@ -342,6 +348,241 @@ class DemoExtrasSeeder extends Seeder
     }
 
     // ---------------------------------------------------------------- //
+
+    /**
+     * ⚠️ PLACEHOLDER — the two blocks a segment page reserves and has nothing
+     * to put in.
+     *
+     * §11.2 gives a segment page a trust strip under the hero and a band of
+     * numbers further down. Both render from data — `sector.clients` and
+     * `sector.impactMetrics` — and no row has ever been pinned to a sector, so
+     * on all four pages both blocks were simply absent. Absent is not the same
+     * as empty: nobody could see what the strip does with five marks, or what
+     * the band does with four figures, and so nobody could judge them.
+     *
+     * WHAT IS INVENTED HERE, PRECISELY
+     *
+     * The four labels are NOT invented. They are the wording already on the
+     * six site-wide metrics — «جهة ومؤسسة», «قطعة حرفية سُلّمت» — reused, so
+     * the only new thing is the number beside them. Those numbers are round
+     * stand-ins and are wrong; the site-wide rows deliberately carry no value
+     * at all because Amad Craft has not supplied one.
+     *
+     * The five client logos name nobody. See make-placeholder-logos.mjs for
+     * why: the five real organisations on this site are published as partners,
+     * and filing one under "client" asserts a relationship it has not itself
+     * published.
+     *
+     * REPLACING THIS IS PANEL WORK, NOT CODE WORK
+     *
+     * Both are ordinary records. «أرقام الأثر» edits the figures; «الشركاء»
+     * swaps a logo through the media picker and renames the row.
+     *
+     * Every one is marked `placeholder-*` / "Placeholder client N" — but on
+     * the row itself, not in the list beside it, which shows the translated
+     * display name («جهة حكومية») as its title. So they are unmistakable once
+     * opened and not before; the five identical grey marks in the strip are
+     * what gives them away from outside.
+     *
+     * And it is guarded twice over — this seeder refuses to run in production,
+     * and `deleteWhenReplaced()` removes the whole set the moment real rows
+     * for the segment exist, so the stand-ins cannot outlive their purpose.
+     */
+    private function segmentTrustBlocks(): void
+    {
+        $sector = Sector::query()->where('key', Sector::KEY_GOVERNMENT)->first();
+
+        if ($sector === null) {
+            $this->command?->warn('No government sector: skipping the placeholder trust blocks.');
+
+            return;
+        }
+
+        $this->placeholderMetrics($sector);
+        $this->placeholderClients($sector);
+        $this->blockHeadings($sector);
+        $this->deleteWhenReplaced($sector);
+    }
+
+    /**
+     * A title for each of the two blocks.
+     *
+     * `Sector.vue` renders the strip and the band itself and takes their
+     * headings from a `logos` and a `stats` section — which the segment pages
+     * have never had, so both blocks would arrive captionless: five grey marks
+     * and four figures with nothing saying what they are.
+     *
+     * NOT WRITTEN HERE. Both strings are lifted verbatim from sections the
+     * client already has — «عملاؤنا» from the partners page's client strip,
+     * «أثرنا بالأرقام» from the home page's number band. A seeder inventing a
+     * heading is a seeder writing copy (§22.1); reusing the client's own
+     * wording is neither.
+     *
+     * The rows are ordinary sections, so the heading is editable and either
+     * block can be switched off from the panel like any other.
+     */
+    private function blockHeadings(Sector $sector): void
+    {
+        $headings = [
+            'logos' => ['ar' => 'عملاؤنا', 'en' => 'Our clients'],
+            'stats' => ['ar' => 'أثرنا بالأرقام', 'en' => 'Our impact in numbers'],
+        ];
+
+        $order = (int) $sector->sections()->max('sort_order');
+
+        foreach ($headings as $type => $copy) {
+            $section = $this->seedRow(
+                $sector->sections(),
+                ['type' => $type],
+                ['sort_order' => ++$order, 'is_active' => true],
+            );
+
+            foreach ($copy as $locale => $heading) {
+                $section->translations()->updateOrCreate(['locale' => $locale], ['heading' => $heading]);
+            }
+        }
+    }
+
+    /**
+     * A stand-in disappears the moment the real thing exists.
+     *
+     * The failure this prevents is the quiet one: Amad Craft adds two genuine
+     * client logos from the panel, and the strip shows them beside five grey
+     * marks — which reads as five clients too shy to be named rather than as
+     * leftovers. Same for the numbers.
+     *
+     * Per block, not all-or-nothing: real metrics do not retire the logos.
+     * And only rows this seeder created are ever deleted — matched by the
+     * `placeholder-` key and the "Placeholder client" name, never "everything
+     * pinned to this sector", which would destroy the client's own work.
+     */
+    private function deleteWhenReplaced(Sector $sector): void
+    {
+        $realMetrics = ImpactMetric::query()
+            ->where('sector_id', $sector->id)
+            ->where('key', 'not like', 'placeholder-%')
+            ->exists();
+
+        if ($realMetrics) {
+            ImpactMetric::query()
+                ->where('sector_id', $sector->id)
+                ->where('key', 'like', 'placeholder-%')
+                ->delete();
+        }
+
+        $realClients = Partner::query()
+            ->where('sector_id', $sector->id)
+            ->where('type', Partner::TYPE_CLIENT)
+            ->where('name', 'not like', 'Placeholder client%')
+            ->exists();
+
+        if ($realClients) {
+            // Through the model, one at a time: the media library's delete
+            // hook is what removes the logo file from disk, and a mass
+            // `delete()` on the query builder never fires it.
+            Partner::query()
+                ->where('sector_id', $sector->id)
+                ->where('name', 'like', 'Placeholder client%')
+                ->get()
+                ->each(fn (Partner $partner) => $partner->delete());
+        }
+    }
+
+    /**
+     * Four figures, with the labels the client has already approved.
+     *
+     * @see segmentTrustBlocks() for what is and is not invented
+     */
+    private function placeholderMetrics(Sector $sector): void
+    {
+        // [source key, stand-in value, suffix]. The label is copied from the
+        // site-wide metric of that key rather than written here, so this
+        // seeder cannot put words in the client's mouth.
+        $figures = [
+            ['entities', 40, null],
+            ['pieces', 12000, null],
+            ['artisans', 85, null],
+            ['training-hours', 1200, null],
+        ];
+
+        foreach ($figures as $order => [$sourceKey, $value, $suffix]) {
+            $source = ImpactMetric::query()->with('translations')
+                ->whereNull('sector_id')->where('key', $sourceKey)->first();
+
+            if ($source === null) {
+                $this->command?->warn("No site-wide «{$sourceKey}» metric to borrow a label from.");
+
+                continue;
+            }
+
+            $metric = $this->seedRow(
+                ImpactMetric::query(),
+                ['key' => "placeholder-{$sector->key}-{$sourceKey}"],
+                [
+                    'sector_id' => $sector->id,
+                    'value_numeric' => $value,
+                    'value_suffix' => $suffix,
+                    'sort_order' => $order,
+                    'is_active' => true,
+                ],
+            );
+
+            foreach ($source->translations as $translation) {
+                $metric->translations()->updateOrCreate(
+                    ['locale' => $translation->locale],
+                    ['label' => $translation->label, 'note' => $translation->note],
+                );
+            }
+        }
+    }
+
+    /**
+     * Five silent marks, so the strip can be looked at.
+     *
+     * @see segmentTrustBlocks() for why they carry no organisation's name
+     */
+    private function placeholderClients(Sector $sector): void
+    {
+        for ($i = 1; $i <= 5; $i++) {
+            $partner = $this->seedRow(
+                Partner::query(),
+                ['name' => "Placeholder client {$i}"],
+                [
+                    'type' => Partner::TYPE_CLIENT,
+                    'sector_id' => $sector->id,
+                    'sort_order' => $i,
+                    'is_active' => true,
+                ],
+            );
+
+            /*
+             * A category, not a name — this is the alt text a screen reader
+             * reads for a mark that stands for nobody in particular. Saying
+             * «شعار جهة حكومية» claims nothing; a company name would.
+             */
+            $partner->translations()->updateOrCreate(['locale' => 'ar'], ['display_name' => 'جهة حكومية']);
+            $partner->translations()->updateOrCreate(['locale' => 'en'], ['display_name' => 'Government entity']);
+
+            $file = public_path("images/placeholder/segment-client-{$i}.webp");
+
+            if (! is_file($file)) {
+                $this->command?->warn("Missing placeholder logo {$i}: run node scripts/make-placeholder-logos.mjs");
+
+                continue;
+            }
+
+            // Re-running must not churn storage: the file is already the one
+            // intended, so there is nothing to replace.
+            if ($partner->getFirstMedia('logo')?->file_name === basename($file)) {
+                continue;
+            }
+
+            $media = $partner->addMedia($file)->preservingOriginal()->toMediaCollection('logo');
+
+            $media->translations()->updateOrCreate(['locale' => 'ar'], ['alt_text' => 'شعار جهة حكومية']);
+            $media->translations()->updateOrCreate(['locale' => 'en'], ['alt_text' => 'Government entity logo']);
+        }
+    }
 
     /**
      * DRAFT legal text.
