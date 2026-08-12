@@ -9,6 +9,7 @@ use Database\Seeders\DemoContentSeeder;
 use Database\Seeders\DemoExtrasSeeder;
 use Database\Seeders\NavigationSeeder;
 use Database\Seeders\StructureSeeder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -53,19 +54,32 @@ class PartnerLogosTest extends TestCase
         ]);
     }
 
+    /**
+     * Site-wide rows, which is what this page publishes.
+     *
+     * Scoped to `sector_id IS NULL` since DemoExtrasSeeder began pinning
+     * stand-in client marks to a segment: those belong to that segment's own
+     * strip and never to this list. The guard is unchanged in substance —
+     * this page still shows exactly the five and nothing else.
+     */
+    private function published(): Builder
+    {
+        return Partner::query()->visible()->whereNull('sector_id');
+    }
+
     #[Test]
     public function the_seeded_partners_are_the_ones_the_official_site_publishes(): void
     {
         $this->assertSame(
             array_keys(self::EXPECTED),
-            Partner::query()->visible()->pluck('name')->all(),
+            $this->published()->pluck('name')->all(),
         );
     }
 
     #[Test]
     public function every_partner_carries_its_own_logo_and_not_a_craft_photograph(): void
     {
-        foreach (Partner::query()->visible()->get() as $partner) {
+        foreach ($this->published()->get() as $partner) {
             $logo = $partner->getFirstMedia('logo');
 
             $this->assertNotNull($logo, "{$partner->name} has no logo");
@@ -95,8 +109,35 @@ class PartnerLogosTest extends TestCase
         // never claimed is an assertion about that body, not a layout choice.
         $this->assertSame(
             [Partner::TYPE_PARTNER],
-            Partner::query()->distinct()->pluck('type')->all(),
+            // reorder(): visible() sorts by sort_order, and MySQL rejects
+            // an ORDER BY on a column a DISTINCT does not select.
+            $this->published()->reorder()->distinct()->pluck('type')->all(),
         );
+    }
+
+    /**
+     * And a segment's stand-in marks stay on that segment's page.
+     *
+     * The reason the scope above is safe: the rows exist, they are just not
+     * this page's. If they ever reach it they arrive under «عملاؤنا» — which
+     * would present five blank marks as Amad Craft's clients, the exact claim
+     * the test above exists to prevent.
+     */
+    #[Test]
+    public function a_logo_pinned_to_a_segment_never_reaches_the_partners_page(): void
+    {
+        $pinned = Partner::query()->whereNotNull('sector_id')->get();
+
+        $this->assertNotEmpty($pinned, 'Nothing is pinned to a segment: this guard is testing nothing.');
+
+        $props = $this->get('/ar/partners')->assertOk()->viewData('page')['props'];
+
+        $shown = array_merge($props['partners'], $props['accreditations'], $props['clients']);
+
+        foreach ($pinned as $partner) {
+            $this->assertNotContains($partner->id, array_column($shown, 'id'),
+                "«{$partner->name}» is pinned to a segment and is being shown site-wide.");
+        }
     }
 
     #[Test]
@@ -118,7 +159,7 @@ class PartnerLogosTest extends TestCase
 
         $after = Partner::query()->where('name', 'Alinma Bank')->sole()->getFirstMedia('logo');
 
-        $this->assertSame(count(self::EXPECTED), Partner::query()->count());
+        $this->assertSame(count(self::EXPECTED), $this->published()->count());
         $this->assertSame($before->id, $after->id);
     }
 

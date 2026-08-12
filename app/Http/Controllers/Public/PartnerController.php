@@ -18,7 +18,17 @@ class PartnerController extends PublicController
     {
         [$page, $previewing] = $this->requirePage('partners');
 
-        $partners = Partner::query()->visible()->translatedIn($locale)
+        /*
+         * Site-wide rows only.
+         *
+         * A logo pinned to a segment is shown by that segment's page — it is
+         * there to tell a procurement officer who else in their position has
+         * bought, which is a narrower claim than "these are our clients".
+         * Repeating it here would widen the claim and duplicate the mark, and
+         * this page has no way to say which audience it belonged to.
+         */
+        $partners = Partner::query()->visible()->whereNull('sector_id')
+            ->translatedIn($locale)
             ->withTranslation()->with('media')->get();
 
         return Inertia::render('Public/Partners', [
