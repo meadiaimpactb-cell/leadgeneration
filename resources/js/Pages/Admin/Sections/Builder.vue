@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
+import MediaSlot from '@/Components/admin/MediaSlot.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -64,9 +65,18 @@ const ITEM_SCHEMAS = {
 /** Section types that take a single illustration. */
 const IMAGE_TYPES = ['hero', 'media_split', 'testimonial'];
 
+/**
+ * Section types that take a set of images.
+ *
+ * `logos` is deliberately absent: a logos section renders the partners table,
+ * not its own pictures, so its images are chosen on the partners screen. Same
+ * for `story_carousel`. Offering a gallery here that the page would ignore is
+ * worse than offering nothing.
+ */
+const GALLERY_TYPES = ['gallery'];
+
 const open = ref(props.sections.length ? props.sections[0].id : null);
 const dragging = ref(null);
-const uploading = ref(null);
 
 const addForm = useForm({ type: props.types[0] ?? 'rich_text' });
 
@@ -152,33 +162,27 @@ function moveItem(section, index, delta) {
 
 // ---- media -----------------------------------------------------------
 
-function uploadKey(section, collection) {
-    return `${section.id}-${collection}`;
-}
-
-function uploadMedia(section, collection, event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    uploading.value = uploadKey(section, collection);
+/**
+ * The chosen images for a slot, saved the moment they change.
+ *
+ * Saved on the spot rather than with the section's Save button because
+ * choosing an image already felt like a completed action before this screen
+ * existed — the upload button saved immediately — and making it suddenly
+ * require a second, different Save is how images go missing.
+ *
+ * The whole arrangement is sent every time: insert, replace, remove and
+ * reorder are one operation as far as the server is concerned, so the panel
+ * cannot end up with an order the database disagrees with.
+ */
+function setMedia(section, collection, items) {
+    section.media = section.media ?? {};
+    section.media[collection] = items;
 
     router.post(
-        '/admin/media',
-        { entity: 'section', id: section.id, collection, file },
-        {
-            forceFormData: true,
-            preserveScroll: true,
-            onFinish: () => {
-                uploading.value = null;
-                event.target.value = '';
-            },
-        }
+        `/admin/sections/${section.id}/media`,
+        { collection, media: items.map((i) => i.id) },
+        { preserveScroll: true, preserveState: true }
     );
-}
-
-function removeMedia(id) {
-    if (!confirm(t('admin.confirm_delete'))) return;
-    router.delete(`/admin/media/${id}`, { preserveScroll: true });
 }
 
 // ---- advanced --------------------------------------------------------
@@ -267,43 +271,22 @@ function updateSettings(section, text) {
                         :fields="FIELDS"
                     />
 
-                    <!-- A real image picker, so a hero can be changed without
-                         hand-editing a file path inside JSON. -->
-                    <div v-if="IMAGE_TYPES.includes(section.type)" class="media">
-                        <p class="media__label">{{ t('admin.section_image') }}</p>
+                    <!-- Chosen from the library and shown as pictures, so the
+                         panel answers "what is on this page" by itself. -->
+                    <MediaSlot
+                        v-if="IMAGE_TYPES.includes(section.type)"
+                        :model-value="section.media?.image ?? []"
+                        :limit="1"
+                        :label="t('admin.section_image')"
+                        @update:model-value="(v) => setMedia(section, 'image', v)"
+                    />
 
-                        <ul v-if="section.media?.image?.length" class="media__list">
-                            <li v-for="m in section.media.image" :key="m.id">
-                                <img :src="m.url" :alt="m.name" class="media__thumb" />
-                                <button class="btn btn--ghost danger" type="button" @click="removeMedia(m.id)">
-                                    {{ t('admin.delete') }}
-                                </button>
-                            </li>
-                        </ul>
-
-                        <label class="media__upload">
-                            <span>{{ uploading === uploadKey(section, 'image') ? t('admin.saving') : t('admin.upload') }}</span>
-                            <input type="file" accept="image/*" @change="(e) => uploadMedia(section, 'image', e)" />
-                        </label>
-                    </div>
-
-                    <div v-if="section.type === 'gallery'" class="media">
-                        <p class="media__label">{{ t('admin.section_gallery') }}</p>
-
-                        <ul v-if="section.media?.gallery?.length" class="media__list">
-                            <li v-for="m in section.media.gallery" :key="m.id">
-                                <img :src="m.url" :alt="m.name" class="media__thumb" />
-                                <button class="btn btn--ghost danger" type="button" @click="removeMedia(m.id)">
-                                    {{ t('admin.delete') }}
-                                </button>
-                            </li>
-                        </ul>
-
-                        <label class="media__upload">
-                            <span>{{ uploading === uploadKey(section, 'gallery') ? t('admin.saving') : t('admin.upload') }}</span>
-                            <input type="file" accept="image/*" @change="(e) => uploadMedia(section, 'gallery', e)" />
-                        </label>
-                    </div>
+                    <MediaSlot
+                        v-if="GALLERY_TYPES.includes(section.type)"
+                        :model-value="section.media?.gallery ?? []"
+                        :label="t('admin.section_gallery')"
+                        @update:model-value="(v) => setMedia(section, 'gallery', v)"
+                    />
 
                     <!-- Repeatable items as a form, not as JSON. -->
                     <div v-if="itemSchema(section)" class="items">
@@ -445,44 +428,6 @@ function updateSettings(section, text) {
     font-size: var(--fs-sm);
     font-weight: 600;
     margin-block-end: var(--s-3);
-}
-
-.media__list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3);
-    margin-block-end: var(--s-3);
-}
-
-/* See Content/Edit.vue: `cover` cropped every non-square upload. */
-.media__thumb {
-    inline-size: 160px;
-    block-size: 120px;
-    object-fit: contain;
-    padding: var(--s-2);
-    border: 1px solid var(--hairline);
-    border-radius: var(--r-sm);
-    background: var(--paper-alt);
-}
-
-.media__upload {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    min-block-size: 44px;
-    padding-inline: var(--s-4);
-    border-radius: var(--r-sm);
-    background: var(--navy-100);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.media__upload input {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    opacity: 0;
 }
 
 .items__head {

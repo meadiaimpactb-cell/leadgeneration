@@ -394,6 +394,99 @@ class MediaLibraryTest extends TestCase
         $this->assertNotEmpty($section->fresh()->galleryPayload());
     }
 
+    // ---------------------------------------------------------------- //
+    // The whole errand, in one test
+    // ---------------------------------------------------------------- //
+
+    /**
+     * Upload five, reorder them, swap one for an image already in the library,
+     * drop another — then read the page back in both languages.
+     *
+     * Written as one long test on purpose. Each of these steps passes on its
+     * own above; what an editor actually does is all of them in a row against
+     * the same section, and that is the sequence where an off-by-one in the
+     * ordering or a stale reference would show up.
+     */
+    #[Test]
+    public function an_editor_can_fill_a_gallery_and_the_page_shows_it_in_order(): void
+    {
+        $section = $this->gallerySection();
+
+        $uploaded = collect(['one', 'two', 'three', 'four', 'five'])
+            ->map(fn (string $name): Media => $this->upload("{$name}.jpg"));
+
+        // 1. five in one go — the picker sends one request per file.
+        $this->actingAs($this->admin)
+            ->post("/admin/sections/{$section->id}/media", [
+                'collection' => 'gallery',
+                'media' => $uploaded->pluck('id')->all(),
+            ])
+            ->assertRedirect();
+
+        $this->assertCount(5, $section->fresh()->galleryPayload());
+
+        // 2. drag the last one to the front.
+        $order = $uploaded->pluck('id')->all();
+        array_unshift($order, array_pop($order));
+
+        $this->actingAs($this->admin)
+            ->post("/admin/sections/{$section->id}/media", ['collection' => 'gallery', 'media' => $order])
+            ->assertRedirect();
+
+        // 3. replace the middle one with something already in the library —
+        //    an image owned by another record, never uploaded here.
+        $existing = Media::query()
+            ->where('collection_name', '!=', MediaLibrary::COLLECTION)
+            ->firstOrFail();
+
+        $order[2] = $existing->id;
+
+        $this->actingAs($this->admin)
+            ->post("/admin/sections/{$section->id}/media", ['collection' => 'gallery', 'media' => $order])
+            ->assertRedirect();
+
+        // 4. remove one.
+        $removed = array_pop($order);
+
+        $this->actingAs($this->admin)
+            ->delete("/admin/sections/{$section->id}/media/{$removed}", ['collection' => 'gallery'])
+            ->assertRedirect();
+
+        // 5. read it back.
+        $payload = $section->fresh()->galleryPayload();
+
+        $this->assertSame($order, array_column($payload, 'id'), 'the page shows exactly what the panel shows');
+        $this->assertCount(4, $payload);
+        $this->assertNotNull(Media::query()->find($removed), 'removed from the section, not from the library');
+
+        // And on the live page, in both languages — the URLs arrive in the
+        // same sequence, which is the thing a visitor actually sees.
+        $page = $section->sectionable;
+        $path = $page->slug === 'home' ? '' : '/'.$page->slug;
+
+        foreach (['ar', 'en'] as $locale) {
+            $html = $this->get("/{$locale}{$path}")->assertOk()->getContent();
+
+            $positions = array_map(
+                fn (array $image): int => (int) mb_strpos($html, $this->escaped($image['url'])),
+                $payload
+            );
+
+            $this->assertNotContains(false, $positions, "every chosen image reaches the {$locale} page");
+
+            $sorted = $positions;
+            sort($sorted);
+
+            $this->assertSame($sorted, $positions, "the {$locale} page renders them in the chosen order");
+        }
+    }
+
+    /** URLs arrive inside Inertia's JSON payload, where slashes are escaped. */
+    private function escaped(string $url): string
+    {
+        return trim(json_encode($url), '"');
+    }
+
     #[Test]
     public function the_usage_endpoint_names_where_an_image_is_used(): void
     {

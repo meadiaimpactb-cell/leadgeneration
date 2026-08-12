@@ -30,7 +30,7 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const _sfc_main$1n = {
+const _sfc_main$1p = {
   __name: "Logo",
   __ssrInlineRender: true,
   props: {
@@ -80,14 +80,14 @@ const _sfc_main$1n = {
     };
   }
 };
-const _sfc_setup$1n = _sfc_main$1n.setup;
-_sfc_main$1n.setup = (props, ctx) => {
+const _sfc_setup$1p = _sfc_main$1p.setup;
+_sfc_main$1p.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Logo.vue");
-  return _sfc_setup$1n ? _sfc_setup$1n(props, ctx) : void 0;
+  return _sfc_setup$1p ? _sfc_setup$1p(props, ctx) : void 0;
 };
-const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1n, [["__scopeId", "data-v-ef29b1f9"]]);
-const _sfc_main$1m = {
+const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1p, [["__scopeId", "data-v-ef29b1f9"]]);
+const _sfc_main$1o = {
   __name: "NavIcon",
   __ssrInlineRender: true,
   props: {
@@ -167,13 +167,13 @@ const _sfc_main$1m = {
     };
   }
 };
-const _sfc_setup$1m = _sfc_main$1m.setup;
-_sfc_main$1m.setup = (props, ctx) => {
+const _sfc_setup$1o = _sfc_main$1o.setup;
+_sfc_main$1o.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/NavIcon.vue");
-  return _sfc_setup$1m ? _sfc_setup$1m(props, ctx) : void 0;
+  return _sfc_setup$1o ? _sfc_setup$1o(props, ctx) : void 0;
 };
-const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1m, [["__scopeId", "data-v-64039991"]]);
+const NavIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1o, [["__scopeId", "data-v-64039991"]]);
 const NAV_GROUPS = [
   {
     key: "overview",
@@ -265,7 +265,7 @@ const NAV_GROUPS = [
   }
 ];
 NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href));
-const _sfc_main$1l = {
+const _sfc_main$1n = {
   __name: "AdminLayout",
   __ssrInlineRender: true,
   props: {
@@ -405,13 +405,13 @@ const _sfc_main$1l = {
     };
   }
 };
-const _sfc_setup$1l = _sfc_main$1l.setup;
-_sfc_main$1l.setup = (props, ctx) => {
+const _sfc_setup$1n = _sfc_main$1n.setup;
+_sfc_main$1n.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Layouts/AdminLayout.vue");
-  return _sfc_setup$1l ? _sfc_setup$1l(props, ctx) : void 0;
+  return _sfc_setup$1n ? _sfc_setup$1n(props, ctx) : void 0;
 };
-const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$1l, [["__scopeId", "data-v-b13ef224"]]);
+const AdminLayout = /* @__PURE__ */ _export_sfc(_sfc_main$1n, [["__scopeId", "data-v-b13ef224"]]);
 const AR = "ar-SA-u-ca-gregory-nu-latn";
 const EN = "en-GB";
 function useFormat() {
@@ -447,7 +447,7 @@ function useFormat() {
   }
   return { number, date, dateTime, dayMonth };
 }
-const _sfc_main$1k = {
+const _sfc_main$1m = {
   __name: "Workspace",
   __ssrInlineRender: true,
   props: {
@@ -579,14 +579,14 @@ const _sfc_main$1k = {
     };
   }
 };
-const _sfc_setup$1k = _sfc_main$1k.setup;
-_sfc_main$1k.setup = (props, ctx) => {
+const _sfc_setup$1m = _sfc_main$1m.setup;
+_sfc_main$1m.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Workspace.vue");
-  return _sfc_setup$1k ? _sfc_setup$1k(props, ctx) : void 0;
+  return _sfc_setup$1m ? _sfc_setup$1m(props, ctx) : void 0;
 };
-const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$1k, [["__scopeId", "data-v-dec49d27"]]);
-const _sfc_main$1j = {
+const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$1m, [["__scopeId", "data-v-dec49d27"]]);
+const _sfc_main$1l = {
   __name: "Panel",
   __ssrInlineRender: true,
   props: {
@@ -626,14 +626,14 @@ const _sfc_main$1j = {
     };
   }
 };
-const _sfc_setup$1j = _sfc_main$1j.setup;
-_sfc_main$1j.setup = (props, ctx) => {
+const _sfc_setup$1l = _sfc_main$1l.setup;
+_sfc_main$1l.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Panel.vue");
-  return _sfc_setup$1j ? _sfc_setup$1j(props, ctx) : void 0;
+  return _sfc_setup$1l ? _sfc_setup$1l(props, ctx) : void 0;
 };
-const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$1j, [["__scopeId", "data-v-5a439de4"]]);
-const _sfc_main$1i = {
+const Panel = /* @__PURE__ */ _export_sfc(_sfc_main$1l, [["__scopeId", "data-v-5a439de4"]]);
+const _sfc_main$1k = {
   __name: "Brand",
   __ssrInlineRender: true,
   props: {
@@ -943,18 +943,18 @@ const _sfc_main$1i = {
     };
   }
 };
-const _sfc_setup$1i = _sfc_main$1i.setup;
-_sfc_main$1i.setup = (props, ctx) => {
+const _sfc_setup$1k = _sfc_main$1k.setup;
+_sfc_main$1k.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Brand.vue");
-  return _sfc_setup$1i ? _sfc_setup$1i(props, ctx) : void 0;
+  return _sfc_setup$1k ? _sfc_setup$1k(props, ctx) : void 0;
 };
-const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$1i, [["__scopeId", "data-v-d1bab7a5"]]);
+const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$1k, [["__scopeId", "data-v-d1bab7a5"]]);
 const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Brand
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$1h = {
+const _sfc_main$1j = {
   __name: "Field",
   __ssrInlineRender: true,
   props: {
@@ -1014,14 +1014,14 @@ const _sfc_main$1h = {
     };
   }
 };
-const _sfc_setup$1h = _sfc_main$1h.setup;
-_sfc_main$1h.setup = (props, ctx) => {
+const _sfc_setup$1j = _sfc_main$1j.setup;
+_sfc_main$1j.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Field.vue");
-  return _sfc_setup$1h ? _sfc_setup$1h(props, ctx) : void 0;
+  return _sfc_setup$1j ? _sfc_setup$1j(props, ctx) : void 0;
 };
-const Field = /* @__PURE__ */ _export_sfc(_sfc_main$1h, [["__scopeId", "data-v-4723bd15"]]);
-const _sfc_main$1g = {
+const Field = /* @__PURE__ */ _export_sfc(_sfc_main$1j, [["__scopeId", "data-v-4723bd15"]]);
+const _sfc_main$1i = {
   __name: "BilingualFields",
   __ssrInlineRender: true,
   props: {
@@ -1088,14 +1088,14 @@ const _sfc_main$1g = {
     };
   }
 };
-const _sfc_setup$1g = _sfc_main$1g.setup;
-_sfc_main$1g.setup = (props, ctx) => {
+const _sfc_setup$1i = _sfc_main$1i.setup;
+_sfc_main$1i.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/BilingualFields.vue");
-  return _sfc_setup$1g ? _sfc_setup$1g(props, ctx) : void 0;
+  return _sfc_setup$1i ? _sfc_setup$1i(props, ctx) : void 0;
 };
-const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-07256d16"]]);
-const _sfc_main$1f = {
+const BilingualFields = /* @__PURE__ */ _export_sfc(_sfc_main$1i, [["__scopeId", "data-v-07256d16"]]);
+const _sfc_main$1h = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -1464,18 +1464,18 @@ const _sfc_main$1f = {
     };
   }
 };
-const _sfc_setup$1f = _sfc_main$1f.setup;
-_sfc_main$1f.setup = (props, ctx) => {
+const _sfc_setup$1h = _sfc_main$1h.setup;
+_sfc_main$1h.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Edit.vue");
-  return _sfc_setup$1f ? _sfc_setup$1f(props, ctx) : void 0;
+  return _sfc_setup$1h ? _sfc_setup$1h(props, ctx) : void 0;
 };
-const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1f, [["__scopeId", "data-v-81e9c2fe"]]);
+const Edit$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1h, [["__scopeId", "data-v-81e9c2fe"]]);
 const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$3
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$1e = {
+const _sfc_main$1g = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -1739,18 +1739,18 @@ const _sfc_main$1e = {
     };
   }
 };
-const _sfc_setup$1e = _sfc_main$1e.setup;
-_sfc_main$1e.setup = (props, ctx) => {
+const _sfc_setup$1g = _sfc_main$1g.setup;
+_sfc_main$1g.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Campaigns/Index.vue");
-  return _sfc_setup$1e ? _sfc_setup$1e(props, ctx) : void 0;
+  return _sfc_setup$1g ? _sfc_setup$1g(props, ctx) : void 0;
 };
-const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$1e, [["__scopeId", "data-v-66c2bead"]]);
+const Index$4 = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-66c2bead"]]);
 const __vite_glob_0_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$4
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$1d = {
+const _sfc_main$1f = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -2211,18 +2211,18 @@ const _sfc_main$1d = {
     };
   }
 };
-const _sfc_setup$1d = _sfc_main$1d.setup;
-_sfc_main$1d.setup = (props, ctx) => {
+const _sfc_setup$1f = _sfc_main$1f.setup;
+_sfc_main$1f.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Edit.vue");
-  return _sfc_setup$1d ? _sfc_setup$1d(props, ctx) : void 0;
+  return _sfc_setup$1f ? _sfc_setup$1f(props, ctx) : void 0;
 };
-const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$1d, [["__scopeId", "data-v-01fa0006"]]);
+const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$1f, [["__scopeId", "data-v-01fa0006"]]);
 const __vite_glob_0_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$2
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$1c = {
+const _sfc_main$1e = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -2564,18 +2564,18 @@ const _sfc_main$1c = {
     };
   }
 };
-const _sfc_setup$1c = _sfc_main$1c.setup;
-_sfc_main$1c.setup = (props, ctx) => {
+const _sfc_setup$1e = _sfc_main$1e.setup;
+_sfc_main$1e.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Index.vue");
-  return _sfc_setup$1c ? _sfc_setup$1c(props, ctx) : void 0;
+  return _sfc_setup$1e ? _sfc_setup$1e(props, ctx) : void 0;
 };
-const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1c, [["__scopeId", "data-v-83be9b57"]]);
+const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1e, [["__scopeId", "data-v-83be9b57"]]);
 const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$3
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$1b = {
+const _sfc_main$1d = {
   __name: "Crm",
   __ssrInlineRender: true,
   props: {
@@ -2928,18 +2928,18 @@ const _sfc_main$1b = {
     };
   }
 };
-const _sfc_setup$1b = _sfc_main$1b.setup;
-_sfc_main$1b.setup = (props, ctx) => {
+const _sfc_setup$1d = _sfc_main$1d.setup;
+_sfc_main$1d.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Crm.vue");
-  return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
+  return _sfc_setup$1d ? _sfc_setup$1d(props, ctx) : void 0;
 };
-const Crm = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-8e6716e7"]]);
+const Crm = /* @__PURE__ */ _export_sfc(_sfc_main$1d, [["__scopeId", "data-v-8e6716e7"]]);
 const __vite_glob_0_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Crm
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$1a = {
+const _sfc_main$1c = {
   __name: "Dashboard",
   __ssrInlineRender: true,
   props: {
@@ -3379,18 +3379,18 @@ const _sfc_main$1a = {
     };
   }
 };
-const _sfc_setup$1a = _sfc_main$1a.setup;
-_sfc_main$1a.setup = (props, ctx) => {
+const _sfc_setup$1c = _sfc_main$1c.setup;
+_sfc_main$1c.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
-  return _sfc_setup$1a ? _sfc_setup$1a(props, ctx) : void 0;
+  return _sfc_setup$1c ? _sfc_setup$1c(props, ctx) : void 0;
 };
-const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$1a, [["__scopeId", "data-v-711b8eb4"]]);
+const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$1c, [["__scopeId", "data-v-711b8eb4"]]);
 const __vite_glob_0_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Dashboard
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$19 = {
+const _sfc_main$1b = {
   __name: "Languages",
   __ssrInlineRender: true,
   props: {
@@ -3577,18 +3577,18 @@ const _sfc_main$19 = {
     };
   }
 };
-const _sfc_setup$19 = _sfc_main$19.setup;
-_sfc_main$19.setup = (props, ctx) => {
+const _sfc_setup$1b = _sfc_main$1b.setup;
+_sfc_main$1b.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Languages.vue");
-  return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
+  return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
 };
-const Languages = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-6adf93fd"]]);
+const Languages = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-6adf93fd"]]);
 const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Languages
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$18 = {
+const _sfc_main$1a = {
   __name: "LeadFields",
   __ssrInlineRender: true,
   props: {
@@ -3908,18 +3908,18 @@ const _sfc_main$18 = {
     };
   }
 };
-const _sfc_setup$18 = _sfc_main$18.setup;
-_sfc_main$18.setup = (props, ctx) => {
+const _sfc_setup$1a = _sfc_main$1a.setup;
+_sfc_main$1a.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/LeadFields.vue");
-  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
+  return _sfc_setup$1a ? _sfc_setup$1a(props, ctx) : void 0;
 };
-const LeadFields = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-4196502c"]]);
+const LeadFields = /* @__PURE__ */ _export_sfc(_sfc_main$1a, [["__scopeId", "data-v-4196502c"]]);
 const __vite_glob_0_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: LeadFields
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$17 = {
+const _sfc_main$19 = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -4560,18 +4560,18 @@ const _sfc_main$17 = {
     };
   }
 };
-const _sfc_setup$17 = _sfc_main$17.setup;
-_sfc_main$17.setup = (props, ctx) => {
+const _sfc_setup$19 = _sfc_main$19.setup;
+_sfc_main$19.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Leads/Index.vue");
-  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
+  return _sfc_setup$19 ? _sfc_setup$19(props, ctx) : void 0;
 };
-const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-4ba05a66"]]);
+const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-4ba05a66"]]);
 const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$2
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$16 = {
+const _sfc_main$18 = {
   __name: "Button",
   __ssrInlineRender: true,
   props: {
@@ -4625,13 +4625,13 @@ const _sfc_main$16 = {
     };
   }
 };
-const _sfc_setup$16 = _sfc_main$16.setup;
-_sfc_main$16.setup = (props, ctx) => {
+const _sfc_setup$18 = _sfc_main$18.setup;
+_sfc_main$18.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Button.vue");
-  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
+  return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
 };
-const _sfc_main$15 = {
+const _sfc_main$17 = {
   __name: "Login",
   __ssrInlineRender: true,
   setup(__props) {
@@ -4677,7 +4677,7 @@ const _sfc_main$15 = {
         label: unref(t)("admin.remember"),
         type: "checkbox"
       }, null, _parent));
-      _push(ssrRenderComponent(_sfc_main$16, {
+      _push(ssrRenderComponent(_sfc_main$18, {
         type: "submit",
         variant: "primary",
         loading: unref(form).processing
@@ -4697,18 +4697,18 @@ const _sfc_main$15 = {
     };
   }
 };
-const _sfc_setup$15 = _sfc_main$15.setup;
-_sfc_main$15.setup = (props, ctx) => {
+const _sfc_setup$17 = _sfc_main$17.setup;
+_sfc_main$17.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Login.vue");
-  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
+  return _sfc_setup$17 ? _sfc_setup$17(props, ctx) : void 0;
 };
-const Login = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-b2b9b1a9"]]);
+const Login = /* @__PURE__ */ _export_sfc(_sfc_main$17, [["__scopeId", "data-v-b2b9b1a9"]]);
 const __vite_glob_0_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$14 = {
+const _sfc_main$16 = {
   __name: "Navigation",
   __ssrInlineRender: true,
   props: {
@@ -4978,18 +4978,18 @@ const _sfc_main$14 = {
     };
   }
 };
-const _sfc_setup$14 = _sfc_main$14.setup;
-_sfc_main$14.setup = (props, ctx) => {
+const _sfc_setup$16 = _sfc_main$16.setup;
+_sfc_main$16.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Navigation.vue");
-  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
+  return _sfc_setup$16 ? _sfc_setup$16(props, ctx) : void 0;
 };
-const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-7004d226"]]);
+const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$16, [["__scopeId", "data-v-7004d226"]]);
 const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Navigation
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$13 = {
+const _sfc_main$15 = {
   __name: "Edit",
   __ssrInlineRender: true,
   props: {
@@ -5277,18 +5277,18 @@ const _sfc_main$13 = {
     };
   }
 };
-const _sfc_setup$13 = _sfc_main$13.setup;
-_sfc_main$13.setup = (props, ctx) => {
+const _sfc_setup$15 = _sfc_main$15.setup;
+_sfc_main$15.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Pages/Edit.vue");
-  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
+  return _sfc_setup$15 ? _sfc_setup$15(props, ctx) : void 0;
 };
-const Edit$1 = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-17c730d0"]]);
+const Edit$1 = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-17c730d0"]]);
 const __vite_glob_0_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$1
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$12 = {
+const _sfc_main$14 = {
   __name: "Index",
   __ssrInlineRender: true,
   props: {
@@ -5588,18 +5588,18 @@ const _sfc_main$12 = {
     };
   }
 };
-const _sfc_setup$12 = _sfc_main$12.setup;
-_sfc_main$12.setup = (props, ctx) => {
+const _sfc_setup$14 = _sfc_main$14.setup;
+_sfc_main$14.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Pages/Index.vue");
-  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
+  return _sfc_setup$14 ? _sfc_setup$14(props, ctx) : void 0;
 };
-const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-931dad69"]]);
+const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-931dad69"]]);
 const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$1
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$11 = {
+const _sfc_main$13 = {
   __name: "Profile",
   __ssrInlineRender: true,
   props: {
@@ -6263,18 +6263,18 @@ const _sfc_main$11 = {
     };
   }
 };
-const _sfc_setup$11 = _sfc_main$11.setup;
-_sfc_main$11.setup = (props, ctx) => {
+const _sfc_setup$13 = _sfc_main$13.setup;
+_sfc_main$13.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Profile.vue");
-  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
+  return _sfc_setup$13 ? _sfc_setup$13(props, ctx) : void 0;
 };
-const Profile = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-c5983eaf"]]);
+const Profile = /* @__PURE__ */ _export_sfc(_sfc_main$13, [["__scopeId", "data-v-c5983eaf"]]);
 const __vite_glob_0_14 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Profile
 }, Symbol.toStringTag, { value: "Module" }));
-const _sfc_main$10 = {
+const _sfc_main$12 = {
   __name: "Redirects",
   __ssrInlineRender: true,
   props: {
@@ -6504,17 +6504,288 @@ const _sfc_main$10 = {
     };
   }
 };
-const _sfc_setup$10 = _sfc_main$10.setup;
-_sfc_main$10.setup = (props, ctx) => {
+const _sfc_setup$12 = _sfc_main$12.setup;
+_sfc_main$12.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Redirects.vue");
-  return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
+  return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
 };
-const Redirects = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-1f23add1"]]);
+const Redirects = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-1f23add1"]]);
 const __vite_glob_0_15 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Redirects
 }, Symbol.toStringTag, { value: "Module" }));
+const ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/svg+xml";
+const _sfc_main$11 = {
+  __name: "MediaPicker",
+  __ssrInlineRender: true,
+  props: {
+    open: { type: Boolean, default: false },
+    /** How many may be chosen: 1 for a single slot, 0 for no limit. */
+    limit: { type: Number, default: 0 },
+    /** Ids already in the slot, so re-opening shows them ticked. */
+    selected: { type: Array, default: () => [] }
+  },
+  emits: ["close", "insert"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const { t } = useTranslation();
+    const locale = computed(() => usePage().props.locale ?? "ar");
+    const LOCALES = ["ar", "en"];
+    const tab = ref("library");
+    const items = ref([]);
+    const page = ref(1);
+    const lastPage = ref(1);
+    const total = ref(0);
+    const loading = ref(false);
+    const search = ref("");
+    const chosen = ref([]);
+    const active = ref(null);
+    const savingAlt = ref(false);
+    const uploads = ref([]);
+    const dragOver = ref(false);
+    ref(null);
+    const searchTimer = ref(null);
+    computed(() => props.limit === 1);
+    const activeItem = computed(() => items.value.find((i) => i.id === active.value) ?? null);
+    const canInsert = computed(() => chosen.value.length > 0);
+    watch(
+      () => props.open,
+      (isOpen) => {
+        if (!isOpen) return;
+        tab.value = "library";
+        chosen.value = [...props.selected];
+        active.value = props.selected[0] ?? null;
+        uploads.value = [];
+        load(1, true);
+      }
+    );
+    watch(search, () => {
+      clearTimeout(searchTimer.value);
+      searchTimer.value = setTimeout(() => load(1, true), 250);
+    });
+    async function load(target = 1, replace = false) {
+      loading.value = true;
+      try {
+        const url = new URL("/admin/media/library", window.location.origin);
+        url.searchParams.set("page", target);
+        if (search.value.trim() !== "") url.searchParams.set("search", search.value.trim());
+        const response = await fetch(url, {
+          headers: { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" },
+          credentials: "same-origin"
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        items.value = replace ? data.items : [...items.value, ...data.items];
+        page.value = data.page;
+        lastPage.value = data.lastPage;
+        total.value = data.total;
+      } finally {
+        loading.value = false;
+      }
+    }
+    function isChosen(item) {
+      return chosen.value.includes(item.id);
+    }
+    function formatSize(bytes) {
+      if (!bytes) return "—";
+      const mb = bytes / (1024 * 1024);
+      return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
+    }
+    function formatDate(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleDateString(locale.value === "ar" ? "ar" : "en", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      if (__props.open) {
+        _push(`<div${ssrRenderAttrs(mergeProps({
+          class: "picker",
+          role: "dialog",
+          "aria-modal": "true"
+        }, _attrs))} data-v-c3a43226><div class="picker__scrim" data-v-c3a43226></div><div class="picker__panel" data-v-c3a43226><header class="picker__head" data-v-c3a43226><div class="picker__tabs" role="tablist" data-v-c3a43226><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "library" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "library")} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_tab_library"))}</button><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "upload" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "upload")} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_tab_upload"))}</button></div><button type="button" class="btn btn--ghost" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_close"))}</button></header><div class="picker__body" style="${ssrRenderStyle(tab.value === "library" ? null : { display: "none" })}" data-v-c3a43226><div class="picker__main" data-v-c3a43226><input${ssrRenderAttr("value", search.value)} type="search" class="picker__search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-c3a43226>`);
+        if (!loading.value && items.value.length === 0) {
+          _push(`<p class="picker__empty" data-v-c3a43226>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`<ul class="grid" data-v-c3a43226><!--[-->`);
+        ssrRenderList(items.value, (item) => {
+          _push(`<li data-v-c3a43226><button type="button" class="${ssrRenderClass([{ "is-chosen": isChosen(item), "is-active": active.value === item.id }, "grid__cell"])}"${ssrRenderAttr("aria-pressed", isChosen(item))} data-v-c3a43226><img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-c3a43226>`);
+          if (isChosen(item)) {
+            _push(`<span class="grid__tick" aria-hidden="true" data-v-c3a43226>✓</span>`);
+          } else {
+            _push(`<!---->`);
+          }
+          _push(`</button></li>`);
+        });
+        _push(`<!--]--></ul>`);
+        if (page.value < lastPage.value) {
+          _push(`<button type="button" class="btn btn--ghost picker__more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div>`);
+        if (activeItem.value) {
+          _push(`<aside class="picker__side" data-v-c3a43226><img${ssrRenderAttr("src", activeItem.value.thumb)}${ssrRenderAttr("alt", "")} class="picker__preview" data-v-c3a43226><dl class="facts" data-v-c3a43226><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-c3a43226>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-c3a43226>`);
+          if (activeItem.value.width) {
+            _push(`<span data-v-c3a43226>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+          } else {
+            _push(`<span data-v-c3a43226>—</span>`);
+          }
+          _push(`</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-c3a43226>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-c3a43226>${ssrInterpolate(formatDate(activeItem.value.createdAt))}</dd><dt data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_used_in"))}</dt><dd data-v-c3a43226>${ssrInterpolate(activeItem.value.usageCount ? unref(t)("admin.media_usage_count", { count: activeItem.value.usageCount }) : unref(t)("admin.media_unused"))}</dd></dl><!--[-->`);
+          ssrRenderList(LOCALES, (code) => {
+            _push(`<div class="picker__alt" data-v-c3a43226><label${ssrRenderAttr("for", `alt-${code}`)} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-c3a43226></div>`);
+          });
+          _push(`<!--]--><p class="picker__hint" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.alt_text_hint"))}</p>`);
+          if (savingAlt.value) {
+            _push(`<p class="picker__hint" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
+          } else {
+            _push(`<!---->`);
+          }
+          _push(`</aside>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div><div class="picker__body" style="${ssrRenderStyle(tab.value === "upload" ? null : { display: "none" })}" data-v-c3a43226><div class="picker__main" data-v-c3a43226><div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-c3a43226><p class="drop__label" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT)} class="drop__input" data-v-c3a43226></div>`);
+        if (uploads.value.length) {
+          _push(`<ul class="queue" data-v-c3a43226><!--[-->`);
+          ssrRenderList(uploads.value, (entry, i) => {
+            _push(`<li class="queue__row" data-v-c3a43226><span class="queue__name" dir="auto" data-v-c3a43226>${ssrInterpolate(entry.name)}</span>`);
+            if (entry.error) {
+              _push(`<span class="queue__error" data-v-c3a43226>${ssrInterpolate(entry.error)}</span>`);
+            } else if (entry.done) {
+              _push(`<span class="queue__done" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
+            } else {
+              _push(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-c3a43226><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-c3a43226></span></span>`);
+            }
+            _push(`</li>`);
+          });
+          _push(`<!--]--></ul>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div></div><footer class="picker__foot" data-v-c3a43226><p class="picker__count" data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_selected", { count: chosen.value.length }))}</p><button type="button" class="btn btn--primary"${ssrIncludeBooleanAttr(!canInsert.value) ? " disabled" : ""} data-v-c3a43226>${ssrInterpolate(unref(t)("admin.media_insert_count", { count: chosen.value.length }))}</button></footer></div></div>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$11 = _sfc_main$11.setup;
+_sfc_main$11.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/MediaPicker.vue");
+  return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
+};
+const MediaPicker = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-c3a43226"]]);
+const _sfc_main$10 = {
+  __name: "MediaSlot",
+  __ssrInlineRender: true,
+  props: {
+    /** The chosen images, in order: [{ id, thumb, url, name, translations }] */
+    modelValue: { type: Array, default: () => [] },
+    /** 1 for a single-image slot, 0 for as many as they like. */
+    limit: { type: Number, default: 0 },
+    label: { type: String, default: null },
+    /** Shown under the grid; the caller explains what this slot is for. */
+    hint: { type: String, default: null }
+  },
+  emits: ["update:modelValue"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit = __emit;
+    const { t } = useTranslation();
+    const locale = computed(() => usePage().props.locale ?? "ar");
+    const picking = ref(false);
+    const replacingAt = ref(null);
+    ref(null);
+    const single = computed(() => props.limit === 1);
+    const items = computed(() => props.modelValue ?? []);
+    const full = computed(() => single.value && items.value.length >= 1);
+    function onInsert(chosen) {
+      if (chosen.length === 0) return;
+      if (replacingAt.value !== null) {
+        const next = [...items.value];
+        next.splice(replacingAt.value, 1, chosen[0]);
+        replacingAt.value = null;
+        emit("update:modelValue", dedupe(next));
+        return;
+      }
+      if (single.value) {
+        emit("update:modelValue", [chosen[0]]);
+        return;
+      }
+      emit("update:modelValue", dedupe([...items.value, ...chosen]));
+    }
+    function dedupe(list) {
+      const seen = /* @__PURE__ */ new Set();
+      return list.filter((item) => {
+        if (seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
+    }
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "slot" }, _attrs))} data-v-c9ff8c37>`);
+      if (__props.label) {
+        _push(`<p class="slot__label" data-v-c9ff8c37>${ssrInterpolate(__props.label)}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (items.value.length) {
+        _push(`<ul class="slot__grid" data-v-c9ff8c37><!--[-->`);
+        ssrRenderList(items.value, (item, index) => {
+          _push(`<li class="slot__cell"${ssrRenderAttr("draggable", !single.value)} data-v-c9ff8c37><img${ssrRenderAttr("src", item.thumb ?? item.url)}${ssrRenderAttr("alt", item.translations?.[locale.value]?.alt_text ?? "")} data-v-c9ff8c37><div class="slot__tools" data-v-c9ff8c37><button type="button" class="btn btn--ghost" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_replace"))}</button><button type="button" class="btn btn--ghost danger" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_remove"))}</button></div>`);
+          if (!single.value) {
+            _push(`<div class="slot__order" data-v-c9ff8c37><button type="button" class="btn btn--ghost"${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))} data-v-c9ff8c37> ↑ </button><button type="button" class="btn btn--ghost"${ssrIncludeBooleanAttr(index === items.value.length - 1) ? " disabled" : ""}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))} data-v-c9ff8c37> ↓ </button></div>`);
+          } else {
+            _push(`<!---->`);
+          }
+          _push(`</li>`);
+        });
+        _push(`<!--]--></ul>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (!full.value) {
+        _push(`<button type="button" class="btn btn--ghost slot__add" data-v-c9ff8c37>${ssrInterpolate(single.value ? unref(t)("admin.media_add_image") : unref(t)("admin.media_add_images"))}</button>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (__props.hint) {
+        _push(`<p class="slot__hint" data-v-c9ff8c37>${ssrInterpolate(__props.hint)}</p>`);
+      } else if (items.value.length > 1) {
+        _push(`<p class="slot__hint" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_reorder_hint"))}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      if (items.value.length) {
+        _push(`<p class="slot__hint" data-v-c9ff8c37>${ssrInterpolate(unref(t)("admin.media_remove_hint"))}</p>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(ssrRenderComponent(MediaPicker, {
+        open: picking.value,
+        limit: replacingAt.value !== null ? 1 : __props.limit,
+        selected: replacingAt.value !== null ? [] : items.value.map((i) => i.id),
+        onClose: ($event) => picking.value = false,
+        onInsert
+      }, null, _parent));
+      _push(`</div>`);
+    };
+  }
+};
+const _sfc_setup$10 = _sfc_main$10.setup;
+_sfc_main$10.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/MediaSlot.vue");
+  return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
+};
+const MediaSlot = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-c9ff8c37"]]);
 const _sfc_main$$ = {
   __name: "Builder",
   __ssrInlineRender: true,
@@ -6553,9 +6824,9 @@ const _sfc_main$$ = {
       ]
     };
     const IMAGE_TYPES = ["hero", "media_split", "testimonial"];
+    const GALLERY_TYPES = ["gallery"];
     const open = ref(props.sections.length ? props.sections[0].id : null);
     const dragging = ref(null);
-    const uploading = ref(null);
     const addForm = useForm({ type: props.types[0] ?? "rich_text" });
     function addSection() {
       addForm.post(`/admin/sections/${props.ownerType}/${props.ownerId}`, { preserveScroll: true });
@@ -6621,29 +6892,14 @@ const _sfc_main$$ = {
       if (next < 0 || next >= list.length) return;
       [list[index], list[next]] = [list[next], list[index]];
     }
-    function uploadKey(section, collection) {
-      return `${section.id}-${collection}`;
-    }
-    function uploadMedia(section, collection, event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      uploading.value = uploadKey(section, collection);
+    function setMedia(section, collection, items2) {
+      section.media = section.media ?? {};
+      section.media[collection] = items2;
       router.post(
-        "/admin/media",
-        { entity: "section", id: section.id, collection, file },
-        {
-          forceFormData: true,
-          preserveScroll: true,
-          onFinish: () => {
-            uploading.value = null;
-            event.target.value = "";
-          }
-        }
+        `/admin/sections/${section.id}/media`,
+        { collection, media: items2.map((i) => i.id) },
+        { preserveScroll: true, preserveState: true }
       );
-    }
-    function removeMedia(id) {
-      if (!confirm(t("admin.confirm_delete"))) return;
-      router.delete(`/admin/media/${id}`, { preserveScroll: true });
     }
     function settingsText(section) {
       return JSON.stringify(section.settings ?? {}, null, 2);
@@ -6668,7 +6924,7 @@ const _sfc_main$$ = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<form class="add" data-v-e079d442${_scopeId2}>`);
+                  _push3(`<form class="add" data-v-ac8b5424${_scopeId2}>`);
                   _push3(ssrRenderComponent(Field, {
                     modelValue: unref(addForm).type,
                     "onUpdate:modelValue": ($event) => unref(addForm).type = $event,
@@ -6676,7 +6932,7 @@ const _sfc_main$$ = {
                     type: "select",
                     options: __props.types.map((ty) => ({ value: ty, label: ty }))
                   }, null, _parent3, _scopeId2));
-                  _push3(`<button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-e079d442${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button></form>`);
+                  _push3(`<button class="btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-ac8b5424${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</button></form>`);
                 } else {
                   return [
                     createVNode("form", {
@@ -6702,21 +6958,21 @@ const _sfc_main$$ = {
               _: 1
             }, _parent2, _scopeId));
             if (!__props.sections.length) {
-              _push2(`<p class="empty" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+              _push2(`<p class="empty" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<ol class="list" data-v-e079d442${_scopeId}><!--[-->`);
+            _push2(`<ol class="list" data-v-ac8b5424${_scopeId}><!--[-->`);
             ssrRenderList(__props.sections, (section, index) => {
-              _push2(`<li class="item" draggable="true" data-v-e079d442${_scopeId}><header class="item__head" data-v-e079d442${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-e079d442${_scopeId}><span class="item__type latin" data-v-e079d442${_scopeId}>${ssrInterpolate(section.type)}</span>`);
+              _push2(`<li class="item" draggable="true" data-v-ac8b5424${_scopeId}><header class="item__head" data-v-ac8b5424${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-ac8b5424${_scopeId}><span class="item__type latin" data-v-ac8b5424${_scopeId}>${ssrInterpolate(section.type)}</span>`);
               if (!section.isActive) {
-                _push2(`<span class="chip" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
+                _push2(`<span class="chip" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`</button><div class="item__tools" data-v-e079d442${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-e079d442${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-e079d442${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></header>`);
+              _push2(`</button><div class="item__tools" data-v-ac8b5424${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></header>`);
               if (open.value === section.id) {
-                _push2(`<div class="item__body" data-v-e079d442${_scopeId}>`);
+                _push2(`<div class="item__body" data-v-ac8b5424${_scopeId}>`);
                 _push2(ssrRenderComponent(Field, {
                   modelValue: section.isActive,
                   "onUpdate:modelValue": ($event) => section.isActive = $event,
@@ -6730,39 +6986,28 @@ const _sfc_main$$ = {
                   fields: FIELDS
                 }, null, _parent2, _scopeId));
                 if (IMAGE_TYPES.includes(section.type)) {
-                  _push2(`<div class="media" data-v-e079d442${_scopeId}><p class="media__label" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.section_image"))}</p>`);
-                  if (section.media?.image?.length) {
-                    _push2(`<ul class="media__list" data-v-e079d442${_scopeId}><!--[-->`);
-                    ssrRenderList(section.media.image, (m) => {
-                      _push2(`<li data-v-e079d442${_scopeId}><img${ssrRenderAttr("src", m.url)}${ssrRenderAttr("alt", m.name)} class="media__thumb" data-v-e079d442${_scopeId}><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></li>`);
-                    });
-                    _push2(`<!--]--></ul>`);
-                  } else {
-                    _push2(`<!---->`);
-                  }
-                  _push2(`<label class="media__upload" data-v-e079d442${_scopeId}><span data-v-e079d442${_scopeId}>${ssrInterpolate(uploading.value === uploadKey(section, "image") ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*" data-v-e079d442${_scopeId}></label></div>`);
+                  _push2(ssrRenderComponent(MediaSlot, {
+                    "model-value": section.media?.image ?? [],
+                    limit: 1,
+                    label: unref(t)("admin.section_image"),
+                    "onUpdate:modelValue": (v) => setMedia(section, "image", v)
+                  }, null, _parent2, _scopeId));
                 } else {
                   _push2(`<!---->`);
                 }
-                if (section.type === "gallery") {
-                  _push2(`<div class="media" data-v-e079d442${_scopeId}><p class="media__label" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.section_gallery"))}</p>`);
-                  if (section.media?.gallery?.length) {
-                    _push2(`<ul class="media__list" data-v-e079d442${_scopeId}><!--[-->`);
-                    ssrRenderList(section.media.gallery, (m) => {
-                      _push2(`<li data-v-e079d442${_scopeId}><img${ssrRenderAttr("src", m.url)}${ssrRenderAttr("alt", m.name)} class="media__thumb" data-v-e079d442${_scopeId}><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></li>`);
-                    });
-                    _push2(`<!--]--></ul>`);
-                  } else {
-                    _push2(`<!---->`);
-                  }
-                  _push2(`<label class="media__upload" data-v-e079d442${_scopeId}><span data-v-e079d442${_scopeId}>${ssrInterpolate(uploading.value === uploadKey(section, "gallery") ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*" data-v-e079d442${_scopeId}></label></div>`);
+                if (GALLERY_TYPES.includes(section.type)) {
+                  _push2(ssrRenderComponent(MediaSlot, {
+                    "model-value": section.media?.gallery ?? [],
+                    label: unref(t)("admin.section_gallery"),
+                    "onUpdate:modelValue": (v) => setMedia(section, "gallery", v)
+                  }, null, _parent2, _scopeId));
                 } else {
                   _push2(`<!---->`);
                 }
                 if (itemSchema(section)) {
-                  _push2(`<div class="items" data-v-e079d442${_scopeId}><div class="items__head" data-v-e079d442${_scopeId}><p class="media__label" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--ghost" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</button></div><!--[-->`);
+                  _push2(`<div class="items" data-v-ac8b5424${_scopeId}><div class="items__head" data-v-ac8b5424${_scopeId}><p class="media__label" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--ghost" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</button></div><!--[-->`);
                   ssrRenderList(items(section), (item, i) => {
-                    _push2(`<div class="items__row" data-v-e079d442${_scopeId}><!--[-->`);
+                    _push2(`<div class="items__row" data-v-ac8b5424${_scopeId}><!--[-->`);
                     ssrRenderList(itemSchema(section), (f) => {
                       _push2(ssrRenderComponent(Field, {
                         key: f.key,
@@ -6773,13 +7018,13 @@ const _sfc_main$$ = {
                         rows: 2
                       }, null, _parent2, _scopeId));
                     });
-                    _push2(`<!--]--><div class="items__tools" data-v-e079d442${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-e079d442${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-e079d442${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></div>`);
+                    _push2(`<!--]--><div class="items__tools" data-v-ac8b5424${_scopeId}><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↑</button><button class="btn btn--ghost" type="button"${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-ac8b5424${_scopeId}>↓</button><button class="btn btn--ghost danger" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div></div>`);
                   });
                   _push2(`<!--]--></div>`);
                 } else {
                   _push2(`<!---->`);
                 }
-                _push2(`<details class="advanced" data-v-e079d442${_scopeId}><summary data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
+                _push2(`<details class="advanced" data-v-ac8b5424${_scopeId}><summary data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
                 _push2(ssrRenderComponent(Field, {
                   label: "settings",
                   type: "textarea",
@@ -6788,7 +7033,7 @@ const _sfc_main$$ = {
                   error: section.settingsError,
                   "onUpdate:modelValue": (v) => updateSettings(section, v)
                 }, null, _parent2, _scopeId));
-                _push2(`</details><button class="btn btn--cta" type="button" data-v-e079d442${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</button></div>`);
+                _push2(`</details><button class="btn btn--cta" type="button" data-v-ac8b5424${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</button></div>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -6888,76 +7133,19 @@ const _sfc_main$$ = {
                         locales: __props.locales,
                         fields: FIELDS
                       }, null, 8, ["modelValue", "onUpdate:modelValue", "locales"]),
-                      IMAGE_TYPES.includes(section.type) ? (openBlock(), createBlock("div", {
+                      IMAGE_TYPES.includes(section.type) ? (openBlock(), createBlock(MediaSlot, {
                         key: 0,
-                        class: "media"
-                      }, [
-                        createVNode("p", { class: "media__label" }, toDisplayString(unref(t)("admin.section_image")), 1),
-                        section.media?.image?.length ? (openBlock(), createBlock("ul", {
-                          key: 0,
-                          class: "media__list"
-                        }, [
-                          (openBlock(true), createBlock(Fragment, null, renderList(section.media.image, (m) => {
-                            return openBlock(), createBlock("li", {
-                              key: m.id
-                            }, [
-                              createVNode("img", {
-                                src: m.url,
-                                alt: m.name,
-                                class: "media__thumb"
-                              }, null, 8, ["src", "alt"]),
-                              createVNode("button", {
-                                class: "btn btn--ghost danger",
-                                type: "button",
-                                onClick: ($event) => removeMedia(m.id)
-                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
-                            ]);
-                          }), 128))
-                        ])) : createCommentVNode("", true),
-                        createVNode("label", { class: "media__upload" }, [
-                          createVNode("span", null, toDisplayString(uploading.value === uploadKey(section, "image") ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
-                          createVNode("input", {
-                            type: "file",
-                            accept: "image/*",
-                            onChange: (e) => uploadMedia(section, "image", e)
-                          }, null, 40, ["onChange"])
-                        ])
-                      ])) : createCommentVNode("", true),
-                      section.type === "gallery" ? (openBlock(), createBlock("div", {
+                        "model-value": section.media?.image ?? [],
+                        limit: 1,
+                        label: unref(t)("admin.section_image"),
+                        "onUpdate:modelValue": (v) => setMedia(section, "image", v)
+                      }, null, 8, ["model-value", "label", "onUpdate:modelValue"])) : createCommentVNode("", true),
+                      GALLERY_TYPES.includes(section.type) ? (openBlock(), createBlock(MediaSlot, {
                         key: 1,
-                        class: "media"
-                      }, [
-                        createVNode("p", { class: "media__label" }, toDisplayString(unref(t)("admin.section_gallery")), 1),
-                        section.media?.gallery?.length ? (openBlock(), createBlock("ul", {
-                          key: 0,
-                          class: "media__list"
-                        }, [
-                          (openBlock(true), createBlock(Fragment, null, renderList(section.media.gallery, (m) => {
-                            return openBlock(), createBlock("li", {
-                              key: m.id
-                            }, [
-                              createVNode("img", {
-                                src: m.url,
-                                alt: m.name,
-                                class: "media__thumb"
-                              }, null, 8, ["src", "alt"]),
-                              createVNode("button", {
-                                class: "btn btn--ghost danger",
-                                type: "button",
-                                onClick: ($event) => removeMedia(m.id)
-                              }, toDisplayString(unref(t)("admin.delete")), 9, ["onClick"])
-                            ]);
-                          }), 128))
-                        ])) : createCommentVNode("", true),
-                        createVNode("label", { class: "media__upload" }, [
-                          createVNode("span", null, toDisplayString(uploading.value === uploadKey(section, "gallery") ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
-                          createVNode("input", {
-                            type: "file",
-                            accept: "image/*",
-                            onChange: (e) => uploadMedia(section, "gallery", e)
-                          }, null, 40, ["onChange"])
-                        ])
-                      ])) : createCommentVNode("", true),
+                        "model-value": section.media?.gallery ?? [],
+                        label: unref(t)("admin.section_gallery"),
+                        "onUpdate:modelValue": (v) => setMedia(section, "gallery", v)
+                      }, null, 8, ["model-value", "label", "onUpdate:modelValue"])) : createCommentVNode("", true),
                       itemSchema(section) ? (openBlock(), createBlock("div", {
                         key: 2,
                         class: "items"
@@ -7043,7 +7231,7 @@ _sfc_main$$.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Sections/Builder.vue");
   return _sfc_setup$$ ? _sfc_setup$$(props, ctx) : void 0;
 };
-const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-e079d442"]]);
+const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$$, [["__scopeId", "data-v-ac8b5424"]]);
 const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Builder
@@ -8797,7 +8985,7 @@ const _sfc_main$T = {
             _push2(`<div class="header__actions" data-v-b7f80b5a${_scopeId}>`);
             _push2(ssrRenderComponent(LangSwitch, null, null, _parent2, _scopeId));
             if (ctaLabel.value) {
-              _push2(ssrRenderComponent(_sfc_main$16, {
+              _push2(ssrRenderComponent(_sfc_main$18, {
                 variant: "cta",
                 class: "header__cta",
                 onClick: start
@@ -8871,7 +9059,7 @@ const _sfc_main$T = {
             });
             _push2(`<!--]-->`);
             if (ctaLabel.value) {
-              _push2(ssrRenderComponent(_sfc_main$16, {
+              _push2(ssrRenderComponent(_sfc_main$18, {
                 variant: "cta",
                 class: "header__mobile-cta",
                 onClick: start
@@ -8997,7 +9185,7 @@ const _sfc_main$T = {
                 ], 8, ["aria-label"])) : createCommentVNode("", true),
                 createVNode("div", { class: "header__actions" }, [
                   createVNode(LangSwitch),
-                  ctaLabel.value ? (openBlock(), createBlock(_sfc_main$16, {
+                  ctaLabel.value ? (openBlock(), createBlock(_sfc_main$18, {
                     key: 0,
                     variant: "cta",
                     class: "header__cta",
@@ -9098,7 +9286,7 @@ const _sfc_main$T = {
                     ]) : createCommentVNode("", true)
                   ]);
                 }), 128)),
-                ctaLabel.value ? (openBlock(), createBlock(_sfc_main$16, {
+                ctaLabel.value ? (openBlock(), createBlock(_sfc_main$18, {
                   key: 0,
                   variant: "cta",
                   class: "header__mobile-cta",
@@ -10016,7 +10204,7 @@ const _sfc_main$O = {
             if (__props.ctaLabel || __props.secondaryLabel) {
               _push2(`<div class="phero__actions" data-v-d5985743${_scopeId}>`);
               if (__props.ctaLabel) {
-                _push2(ssrRenderComponent(_sfc_main$16, {
+                _push2(ssrRenderComponent(_sfc_main$18, {
                   variant: "cta-lg",
                   href: __props.ctaUrl,
                   class: "phero__cta",
@@ -10037,7 +10225,7 @@ const _sfc_main$O = {
                 _push2(`<!---->`);
               }
               if (__props.secondaryLabel) {
-                _push2(ssrRenderComponent(_sfc_main$16, {
+                _push2(ssrRenderComponent(_sfc_main$18, {
                   variant: "secondary",
                   href: __props.secondaryUrl,
                   class: "phero__cta",
@@ -10081,7 +10269,7 @@ const _sfc_main$O = {
                     key: 2,
                     class: "phero__actions"
                   }, [
-                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$16, {
+                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$18, {
                       key: 0,
                       variant: "cta-lg",
                       href: __props.ctaUrl,
@@ -10093,7 +10281,7 @@ const _sfc_main$O = {
                       ]),
                       _: 1
                     }, 8, ["href", "onClick"])) : createCommentVNode("", true),
-                    __props.secondaryLabel ? (openBlock(), createBlock(_sfc_main$16, {
+                    __props.secondaryLabel ? (openBlock(), createBlock(_sfc_main$18, {
                       key: 1,
                       variant: "secondary",
                       href: __props.secondaryUrl,
@@ -10309,7 +10497,7 @@ const _sfc_main$M = {
               _push2(`<!---->`);
             }
             if (__props.ctaLabel) {
-              _push2(ssrRenderComponent(_sfc_main$16, {
+              _push2(ssrRenderComponent(_sfc_main$18, {
                 variant: "secondary",
                 href: __props.ctaUrl,
                 class: "split__cta"
@@ -10346,7 +10534,7 @@ const _sfc_main$M = {
                     key: 1,
                     class: "split__body"
                   }, toDisplayString(__props.body), 1)) : createCommentVNode("", true),
-                  __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$16, {
+                  __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$18, {
                     key: 2,
                     variant: "secondary",
                     href: __props.ctaUrl,
@@ -11337,7 +11525,7 @@ const _sfc_main$C = {
             _push(`<!---->`);
           }
           _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-fba884df></div>`);
-          _push(ssrRenderComponent(_sfc_main$16, {
+          _push(ssrRenderComponent(_sfc_main$18, {
             type: "submit",
             variant: __props.layout === "inline" ? "cta-lg" : "cta",
             loading: processing.value,
@@ -11971,7 +12159,7 @@ const _sfc_main$x = {
                 }
                 _push2(`</div>`);
                 if (__props.ctaLabel) {
-                  _push2(ssrRenderComponent(_sfc_main$16, {
+                  _push2(ssrRenderComponent(_sfc_main$18, {
                     variant: "secondary",
                     href: __props.ctaUrl,
                     class: "impact__cta"
@@ -12030,7 +12218,7 @@ const _sfc_main$x = {
                         class: "h2 reveal"
                       }, toDisplayString(__props.heading), 1)) : createCommentVNode("", true)
                     ]),
-                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$16, {
+                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$18, {
                       key: 0,
                       variant: "secondary",
                       href: __props.ctaUrl,
@@ -13538,7 +13726,7 @@ const _sfc_main$m = {
       if (__props.ctaLabel || __props.secondaryLabel) {
         _push(`<div class="hero__actions" data-v-4064e441>`);
         if (__props.ctaLabel) {
-          _push(ssrRenderComponent(_sfc_main$16, {
+          _push(ssrRenderComponent(_sfc_main$18, {
             variant: "cta-lg",
             href: __props.ctaUrl,
             onClick: onCta
@@ -13558,7 +13746,7 @@ const _sfc_main$m = {
           _push(`<!---->`);
         }
         if (__props.secondaryLabel) {
-          _push(ssrRenderComponent(_sfc_main$16, {
+          _push(ssrRenderComponent(_sfc_main$18, {
             variant: "secondary",
             href: __props.secondaryUrl,
             external: secondaryDownloads.value,
@@ -15462,7 +15650,7 @@ const _sfc_main$9 = {
             if (__props.ctaLabel || __props.secondaryLabel) {
               _push2(`<div class="shero__actions" data-v-e5d9ccbd${_scopeId}>`);
               if (__props.ctaLabel) {
-                _push2(ssrRenderComponent(_sfc_main$16, {
+                _push2(ssrRenderComponent(_sfc_main$18, {
                   variant: "cta-lg",
                   href: __props.ctaUrl
                 }, {
@@ -15481,7 +15669,7 @@ const _sfc_main$9 = {
                 _push2(`<!---->`);
               }
               if (__props.secondaryLabel) {
-                _push2(ssrRenderComponent(_sfc_main$16, {
+                _push2(ssrRenderComponent(_sfc_main$18, {
                   variant: "secondary",
                   href: __props.secondaryUrl
                 }, {
@@ -15531,7 +15719,7 @@ const _sfc_main$9 = {
                     key: 2,
                     class: "shero__actions"
                   }, [
-                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$16, {
+                    __props.ctaLabel ? (openBlock(), createBlock(_sfc_main$18, {
                       key: 0,
                       variant: "cta-lg",
                       href: __props.ctaUrl
@@ -15541,7 +15729,7 @@ const _sfc_main$9 = {
                       ]),
                       _: 1
                     }, 8, ["href"])) : createCommentVNode("", true),
-                    __props.secondaryLabel ? (openBlock(), createBlock(_sfc_main$16, {
+                    __props.secondaryLabel ? (openBlock(), createBlock(_sfc_main$18, {
                       key: 1,
                       variant: "secondary",
                       href: __props.secondaryUrl
@@ -16652,7 +16840,7 @@ const _sfc_main$1 = {
                   _push2(`<!---->`);
                 }
                 if (unref(text)(item, "actionLabel")) {
-                  _push2(ssrRenderComponent(_sfc_main$16, {
+                  _push2(ssrRenderComponent(_sfc_main$18, {
                     variant: i === 0 ? "cta" : "secondary",
                     class: "split__action",
                     onClick: ($event) => emit("choose", item.interest ?? null)
@@ -16719,7 +16907,7 @@ const _sfc_main$1 = {
                         ]),
                         _: 2
                       }, 1032, ["href"])) : createCommentVNode("", true),
-                      unref(text)(item, "actionLabel") ? (openBlock(), createBlock(_sfc_main$16, {
+                      unref(text)(item, "actionLabel") ? (openBlock(), createBlock(_sfc_main$18, {
                         key: 4,
                         variant: i === 0 ? "cta" : "secondary",
                         class: "split__action",
