@@ -82,6 +82,15 @@ class SectorController extends PublicController
             'seo' => $this->seo([
                 'title' => $sector->t('meta_title') ?: $sector->t('name'),
                 'description' => $sector->t('meta_description') ?: $sector->t('summary'),
+                /*
+                 * Passed explicitly because `seo()` defaults keywords from
+                 * the current *page* record, and a segment page has none —
+                 * which is why these four pages carried no keywords at all
+                 * until the column existed. `?: null` and not `??`: the panel
+                 * saves an untouched field as '', and an empty meta tag is
+                 * worse than no meta tag.
+                 */
+                'keywords' => $sector->t('meta_keywords') ?: null,
                 'image' => $sector->getFirstMediaUrl('hero') ?: null,
             ], $sector->translatedLocales()),
         ]);

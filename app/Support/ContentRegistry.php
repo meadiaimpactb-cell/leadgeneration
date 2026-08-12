@@ -82,6 +82,11 @@ class ContentRegistry
                     'body' => 'richtext',
                     'meta_title' => 'text',
                     'meta_description' => 'textarea',
+                    // §13's target terms for this segment, per language. The
+                    // only public pages that had a title and a description
+                    // but nowhere to put the words they are meant to be
+                    // found by.
+                    'meta_keywords' => 'text',
                 ],
                 'attributes' => [
                     'slug' => 'slug',

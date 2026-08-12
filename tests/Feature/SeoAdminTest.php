@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Page;
+use App\Models\Sector;
 use App\Models\Setting;
 use App\Models\User;
 use App\Support\Settings;
@@ -167,6 +168,74 @@ class SeoAdminTest extends TestCase
     public function a_page_without_keywords_emits_no_keywords_tag(): void
     {
         $this->get('/ar/about')->assertOk()->assertDontSee('name="keywords"', false);
+    }
+
+    /**
+     * A segment page has keywords of its own.
+     *
+     * `seo()` defaults keywords from the current *page* record, and a segment
+     * page is not a `pages` row — so until `sector_translations.meta_keywords`
+     * existed, the four pages written to be found by a searching procurement
+     * officer were the only public pages with a title and a description and
+     * nowhere to put their target terms.
+     */
+    #[Test]
+    public function a_segment_page_carries_its_own_keywords(): void
+    {
+        $sector = Sector::query()->where('key', Sector::KEY_GOVERNMENT)->sole();
+        $sector->translationFor('ar')->update(['meta_keywords' => 'دروع تكريم للجهات الحكومية']);
+
+        $this->get('/ar/solutions/government')->assertOk()
+            ->assertSee('name="keywords"', false)
+            ->assertSee('دروع تكريم للجهات الحكومية', false);
+    }
+
+    /** The English page chases different terms — hence per translation. */
+    #[Test]
+    public function the_english_segment_page_carries_its_own_keywords(): void
+    {
+        $sector = Sector::query()->where('key', Sector::KEY_GOVERNMENT)->sole();
+        $sector->translationFor('en')->update(['meta_keywords' => 'government corporate gifts']);
+
+        $this->get('/en/solutions/government')->assertOk()
+            ->assertSee('government corporate gifts', false);
+    }
+
+    /**
+     * The panel writes '' for a field the editor never touched, and an empty
+     * `<meta name="keywords" content="">` is worse than no tag: it states that
+     * the page targets nothing.
+     */
+    #[Test]
+    public function a_segment_without_keywords_emits_no_keywords_tag(): void
+    {
+        Sector::query()->where('key', Sector::KEY_GOVERNMENT)->sole()
+            ->translationFor('ar')->update(['meta_keywords' => '']);
+
+        $this->get('/ar/solutions/government')->assertOk()
+            ->assertDontSee('name="keywords"', false);
+    }
+
+    /** Every segment offers the full trio in the panel, in every locale. */
+    #[Test]
+    public function the_panel_offers_the_whole_seo_trio_for_every_segment(): void
+    {
+        foreach (Sector::query()->pluck('id') as $id) {
+            $props = $this->actingAs($this->admin)
+                ->get("/admin/content/sectors/{$id}/edit")
+                ->assertOk()
+                ->viewData('page')['props'];
+
+            foreach (['meta_title', 'meta_description', 'meta_keywords'] as $field) {
+                $this->assertArrayHasKey($field, $props['meta']['fields'],
+                    "Sector {$id} cannot be given a {$field} from the panel.");
+            }
+
+            foreach (['ar', 'en'] as $locale) {
+                $this->assertArrayHasKey('meta_keywords', $props['record']['translations'][$locale],
+                    "Sector {$id} has no meta_keywords field in {$locale}.");
+            }
+        }
     }
 
     #[Test]

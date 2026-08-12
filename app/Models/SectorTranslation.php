@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $body
  * @property string|null $meta_title
  * @property string|null $meta_description
+ * @property string|null $meta_keywords
  */
 class SectorTranslation extends Model
 {
