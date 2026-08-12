@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\LeadField;
+use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Seeder;
 
 /**
@@ -24,6 +25,8 @@ use Illuminate\Database\Seeder;
  */
 class LeadFieldsSeeder extends Seeder
 {
+    use SeedsRows;
+
     public function run(): void
     {
         $fields = [
@@ -112,23 +115,56 @@ class LeadFieldsSeeder extends Seeder
         ];
 
         foreach ($fields as $order => $spec) {
-            $field = LeadField::query()->firstOrCreate(
-                ['key' => $spec['key']],
-                [
+            /*
+             * `is_locked` is the one that has to be enforced. It is what
+             * keeps `contact` un-switchable-off in the panel — without it
+             * there is no lead at all (§6.1) — and LeadFieldController reads
+             * it to decide whether to obey the toggle it was sent. A row
+             * created down another path with is_locked = false would hand
+             * an editor the power to disable the only field on the form.
+             *
+             * `type` and `options` join it: the panel does not expose either,
+             * so this file is their only author.
+             *
+             * `is_enabled` and `is_required` follow the lock, because that is
+             * the rule LeadFieldController already enforces — for a locked
+             * field it writes `true` whatever the request said, so they are
+             * not the client's to hold and this file must repair them too.
+             * For every unlocked field they are the client's entirely: the
+             * point of the extra fields is that Amad Craft can switch one on,
+             * and a re-seed must not switch it back off.
+             *
+             * `sort_order` and `max_length` are the client's in all cases —
+             * the panel writes both for every field, locked or not.
+             */
+            $enforcedByLock = $spec['locked']
+                ? ['is_enabled' => $spec['enabled'], 'is_required' => $spec['required']]
+                : [];
+
+            $field = $this->seedRow(
+                LeadField::query(),
+                identity: ['key' => $spec['key']],
+                structure: [
                     'type' => $spec['type'],
-                    'is_enabled' => $spec['enabled'],
-                    'is_required' => $spec['required'],
                     'is_locked' => $spec['locked'],
+                    'options' => $spec['options'] ?? null,
+                    ...$enforcedByLock,
+                ],
+                owned: [
                     'sort_order' => $order,
                     'max_length' => $spec['max'],
-                    'options' => $spec['options'] ?? null,
-                ]
+                    ...($spec['locked'] ? [] : [
+                        'is_enabled' => $spec['enabled'],
+                        'is_required' => $spec['required'],
+                    ]),
+                ],
             );
 
             foreach (['ar', 'en'] as $locale) {
                 [$label, $placeholder, $help] = $spec[$locale];
 
-                $field->translations()->firstOrCreate(['locale' => $locale], [
+                // Labels are edited in the panel and are never rewritten.
+                $this->seedRow($field->translations(), identity: ['locale' => $locale], owned: [
                     'label' => $label,
                     'placeholder' => $placeholder,
                     'help' => $help,

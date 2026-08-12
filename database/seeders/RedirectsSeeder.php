@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Redirect;
+use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Seeder;
 
 /**
@@ -26,6 +27,8 @@ use Illuminate\Database\Seeder;
  */
 class RedirectsSeeder extends Seeder
 {
+    use SeedsRows;
+
     public function run(): void
     {
         $segments = [
@@ -43,14 +46,21 @@ class RedirectsSeeder extends Seeder
     }
 
     /**
-     * Never overwrites an existing row: if the client has already redirected
-     * a path somewhere, that decision outranks this file.
+     * Nothing here is enforced, and that is the decision — not an oversight.
+     *
+     * Every column below is editable in the redirects screen: the target, the
+     * status code and the active switch. If the client has already pointed
+     * `/ar/sectors/artisans` somewhere else, or turned the rule off because
+     * it was sending traffic to the wrong page, that outranks this file.
+     * Re-imposing 301 → /solutions/artisans on every seeder run would undo a
+     * live SEO decision silently, which is the failure §22.7 is about.
      */
     private function add(string $from, string $to): void
     {
-        Redirect::query()->firstOrCreate(
-            ['from_path' => $from],
-            ['to_path' => $to, 'status_code' => 301, 'is_active' => true],
+        $this->seedRow(
+            Redirect::query(),
+            identity: ['from_path' => $from],
+            owned: ['to_path' => $to, 'status_code' => 301, 'is_active' => true],
         );
     }
 }

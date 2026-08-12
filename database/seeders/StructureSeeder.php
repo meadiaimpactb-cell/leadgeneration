@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Page;
 use App\Models\Sector;
 use App\Models\Setting;
+use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Seeder;
 
 /**
@@ -24,6 +25,8 @@ use Illuminate\Database\Seeder;
  */
 class StructureSeeder extends Seeder
 {
+    use SeedsRows;
+
     public function run(): void
     {
         $this->pages();
@@ -51,15 +54,20 @@ class StructureSeeder extends Seeder
         $order = 0;
 
         foreach ($pages as $slug => [$ar, $en]) {
-            $page = Page::query()->firstOrCreate(
-                ['slug' => $slug],
-                ['template' => $slug, 'sort_order' => $order++, 'status' => 'draft']
+            // Nothing is enforced here, deliberately. All three columns are
+            // editable in the panel: `template` and `sort_order` in the page
+            // editor, and `status` is the publish button itself. Re-running
+            // this seeder must never unpublish a live page or undo a reorder.
+            $page = $this->seedRow(
+                Page::query(),
+                identity: ['slug' => $slug],
+                owned: ['template' => $slug, 'sort_order' => $order++, 'status' => 'draft'],
             );
 
             // Placeholder titles so the row is identifiable in the admin list.
             // Real titles are entered by Amad Craft.
-            $page->translations()->firstOrCreate(['locale' => 'ar'], ['title' => $ar]);
-            $page->translations()->firstOrCreate(['locale' => 'en'], ['title' => $en]);
+            $this->seedRow($page->translations(), identity: ['locale' => 'ar'], owned: ['title' => $ar]);
+            $this->seedRow($page->translations(), identity: ['locale' => 'en'], owned: ['title' => $en]);
         }
     }
 
@@ -79,13 +87,20 @@ class StructureSeeder extends Seeder
         $order = 0;
 
         foreach ($sectors as $key => [$slug, $ar, $en]) {
-            $sector = Sector::query()->firstOrCreate(
-                ['key' => $key],
-                ['slug' => $slug, 'sort_order' => $order++, 'is_active' => true]
+            // `key` is the identity and is not editable — ContentRegistry
+            // leaves it out of the sector form on purpose, because code
+            // branches on it. Everything else is the client's: the panel
+            // exposes the slug, the order and the active toggle, and a
+            // re-seed that reset them would resurrect a sector they had
+            // switched off and break the slug the redirects point at.
+            $sector = $this->seedRow(
+                Sector::query(),
+                identity: ['key' => $key],
+                owned: ['slug' => $slug, 'sort_order' => $order++, 'is_active' => true],
             );
 
-            $sector->translations()->firstOrCreate(['locale' => 'ar'], ['name' => $ar]);
-            $sector->translations()->firstOrCreate(['locale' => 'en'], ['name' => $en]);
+            $this->seedRow($sector->translations(), identity: ['locale' => 'ar'], owned: ['name' => $ar]);
+            $this->seedRow($sector->translations(), identity: ['locale' => 'en'], owned: ['name' => $en]);
         }
     }
 
@@ -185,32 +200,24 @@ class StructureSeeder extends Seeder
         ];
 
         /*
-         * `is_public` is corrected on every run; the value is only set on
-         * create.
+         * `is_public` is structure and is corrected on every run; `value` is
+         * the client's and is written once.
          *
-         * The split matters. The value is the client's — once they have edited
-         * a heading in the panel, a seeder must never overwrite it. But
-         * `is_public` is structure: it decides whether a setting is shared with
-         * the browser at all, and this list is the only place that knows the
-         * answer.
+         * The split matters. Once they have edited a heading in the panel, a
+         * seeder must never overwrite it. But `is_public` decides whether a
+         * setting is shared with the browser at all, it is not exposed in the
+         * panel, and this list is the only place that knows the answer.
          *
-         * With `firstOrCreate` alone the flag was set only at creation, so a
-         * row created by any other path kept whatever default it was born
-         * with. That is exactly what happened: a failed seeder run let
-         * DemoContentSeeder create `contact.header_cta.*` first — its writer
-         * sets `value` and nothing else — and the header's «لنبدأ معًا» button
-         * silently disappeared from every page, because the setting was in the
-         * database and simply never reached the front end.
+         * This is the site that failed, and the reason SeedsRows exists —
+         * the story is in its docblock.
          */
         foreach ($settings as [$group, $key, $value, $isPublic]) {
-            $setting = Setting::query()->firstOrCreate(
-                ['group' => $group, 'key' => $key],
-                ['value' => $value, 'is_public' => $isPublic]
+            $this->seedRow(
+                Setting::query(),
+                identity: ['group' => $group, 'key' => $key],
+                structure: ['is_public' => $isPublic],
+                owned: ['value' => $value],
             );
-
-            if ($setting->is_public !== $isPublic) {
-                $setting->forceFill(['is_public' => $isPublic])->save();
-            }
         }
     }
 }

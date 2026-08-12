@@ -20,6 +20,7 @@ use App\Models\Story;
 use App\Models\TrainingProgram;
 use App\Support\NavigationBuilder;
 use App\Support\Settings;
+use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
@@ -47,6 +48,8 @@ use Illuminate\Database\Seeder;
  */
 class DemoContentSeeder extends Seeder
 {
+    use SeedsRows;
+
     public function run(): void
     {
         if (app()->environment('production')) {
@@ -254,9 +257,17 @@ class DemoContentSeeder extends Seeder
     private function pages(): void
     {
         foreach ($this->pageCopy() as $slug => $data) {
-            $page = Page::query()->firstOrCreate(['slug' => $slug], ['template' => $slug]);
-
-            $page->forceFill(['status' => 'published', 'published_at' => now()])->save();
+            // A demo seeder owns the pages it draws: it deletes and rebuilds
+            // their sections a few lines down. So the three columns that
+            // decide whether the page renders at all are enforced rather than
+            // set-on-create — a `home` row left as a draft, or pointed at the
+            // wrong template by an earlier run, would leave this seeder
+            // reporting success over a page nobody can see.
+            $page = $this->seedRow(
+                Page::query(),
+                identity: ['slug' => $slug],
+                structure: ['template' => $slug, 'status' => 'published', 'published_at' => now()],
+            );
 
             foreach (['ar', 'en'] as $locale) {
                 $page->translations()->updateOrCreate(['locale' => $locale], [
@@ -2002,7 +2013,15 @@ class DemoContentSeeder extends Seeder
         ];
 
         foreach ($menus as $key => $items) {
-            $navigation = Navigation::query()->firstOrCreate(['key' => $key], ['is_active' => true]);
+            // Enforced for the same reason as NavigationSeeder: an inactive
+            // menu row is invisible to NavigationBuilder and unreachable from
+            // the panel, and this seeder is about to rewrite every item in it.
+            $navigation = $this->seedRow(
+                Navigation::query(),
+                identity: ['key' => $key],
+                structure: ['is_active' => true],
+            );
+
             $navigation->items()->getModel()->query()->where('navigation_id', $navigation->id)->delete();
 
             foreach ($items as $order => $spec) {

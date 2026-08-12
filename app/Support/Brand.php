@@ -111,12 +111,32 @@ class Brand
     /**
      * The settings row the assets hang off, created on first use so no
      * migration or seeder has to know about it.
+     *
+     * `is_public` is re-asserted rather than only set at creation. It is not
+     * editable anywhere in the panel, and if this row is ever born down
+     * another path with the flag off, every logo on the site stops reaching
+     * the browser while the media is still sitting in the library — the same
+     * silent failure that lost the header CTA (see StructureSeeder).
      */
     private function owner(): Setting
     {
-        return Setting::query()->firstOrCreate(
-            ['group' => self::OWNER_GROUP, 'key' => self::OWNER_KEY],
-            ['value' => null, 'is_public' => true],
-        );
+        $setting = Setting::query()
+            ->where(['group' => self::OWNER_GROUP, 'key' => self::OWNER_KEY])
+            ->first();
+
+        if ($setting === null) {
+            return Setting::query()->create([
+                'group' => self::OWNER_GROUP,
+                'key' => self::OWNER_KEY,
+                'value' => null,
+                'is_public' => true,
+            ]);
+        }
+
+        if (! $setting->is_public) {
+            $setting->forceFill(['is_public' => true])->save();
+        }
+
+        return $setting;
     }
 }

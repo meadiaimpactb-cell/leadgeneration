@@ -79,16 +79,30 @@ class KeywordController extends Controller
             $next = (int) Keyword::query()->where('locale', $data['locale'])->max('sort_order');
 
             foreach ($terms as $term) {
-                // firstOrCreate, so pasting an overlapping list is safe and an
-                // editor never has to de-duplicate by hand.
-                $keyword = Keyword::query()->firstOrCreate(
-                    ['locale' => $data['locale'], 'term' => $term],
-                    ['group' => $data['group'] ?? null, 'sort_order' => ++$next, 'is_active' => true],
-                );
+                $exists = Keyword::query()
+                    ->where(['locale' => $data['locale'], 'term' => $term])
+                    ->exists();
 
-                if ($keyword->wasRecentlyCreated) {
-                    $added++;
+                // A term already on the list is left exactly as it is —
+                // group, order and active state included. Pasting an
+                // overlapping list is how an editor works, and it must not
+                // reactivate a keyword they switched off or drag a grouped
+                // term back to the end of the order. The row is written only
+                // when it is genuinely new, which is also what the count
+                // reported back to them means.
+                if ($exists) {
+                    continue;
                 }
+
+                Keyword::query()->create([
+                    'locale' => $data['locale'],
+                    'term' => $term,
+                    'group' => $data['group'] ?? null,
+                    'sort_order' => ++$next,
+                    'is_active' => true,
+                ]);
+
+                $added++;
             }
         });
 

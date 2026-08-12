@@ -8,6 +8,7 @@ use App\Models\Campaign;
 use App\Models\Page;
 use App\Models\Report;
 use App\Models\Solution;
+use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 
@@ -27,6 +28,8 @@ use Illuminate\Database\Seeder;
  */
 class DemoExtrasSeeder extends Seeder
 {
+    use SeedsRows;
+
     public function run(): void
     {
         if (app()->environment('production')) {
@@ -68,15 +71,21 @@ class DemoExtrasSeeder extends Seeder
         ];
 
         foreach ($pages as $slug => $copy) {
-            $page = Page::query()->firstOrCreate(['slug' => $slug], ['template' => 'legal']);
-
-            $page->forceFill([
-                'status' => 'published',
-                'published_at' => now(),
-                // Legal pages carry no ranking value and dilute the crawl
-                // budget across two locales (§13).
-                'is_indexable' => false,
-            ])->save();
+            $page = $this->seedRow(
+                Page::query(),
+                identity: ['slug' => $slug],
+                structure: [
+                    // `template` is enforced alongside the rest: a legal page
+                    // rendered with the default template loses the layout the
+                    // footer links expect, and nothing would report it.
+                    'template' => 'legal',
+                    'status' => 'published',
+                    'published_at' => now(),
+                    // Legal pages carry no ranking value and dilute the crawl
+                    // budget across two locales (§13).
+                    'is_indexable' => false,
+                ],
+            );
 
             foreach (['ar', 'en'] as $locale) {
                 $page->translations()->updateOrCreate(['locale' => $locale], [
@@ -245,24 +254,26 @@ class DemoExtrasSeeder extends Seeder
      */
     private function campaign(): void
     {
-        $campaign = Campaign::query()->firstOrCreate(
-            ['slug' => 'riyadh-season'],
-            [
+        // The window is enforced on every run: this campaign exists to be
+        // walked, and /{locale}/c/{slug} 404s outside its dates, so a run in
+        // three months' time must move them forward rather than leave a demo
+        // page that has quietly expired. The UTM defaults are the campaign
+        // manager's to change in the wizard (§9.1) and are written once.
+        $campaign = $this->seedRow(
+            Campaign::query(),
+            identity: ['slug' => 'riyadh-season'],
+            structure: [
                 'is_active' => true,
                 'starts_at' => now()->subMonth(),
                 'ends_at' => now()->addMonths(3),
+            ],
+            owned: [
                 'default_utm_source' => 'google',
                 'default_utm_medium' => 'cpc',
                 'default_utm_campaign' => 'riyadh-season',
                 'template' => 'default',
-            ]
+            ],
         );
-
-        $campaign->forceFill([
-            'is_active' => true,
-            'starts_at' => now()->subMonth(),
-            'ends_at' => now()->addMonths(3),
-        ])->save();
 
         $campaign->translations()->updateOrCreate(['locale' => 'ar'], [
             'title' => 'هدايا موسم الرياض — بحرفة سعودية',

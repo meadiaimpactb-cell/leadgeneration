@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Navigation;
 use App\Support\NavigationBuilder;
+use Database\Seeders\Concerns\SeedsRows;
 use Illuminate\Database\Seeder;
 
 /**
@@ -17,10 +18,22 @@ use Illuminate\Database\Seeder;
  */
 class NavigationSeeder extends Seeder
 {
+    use SeedsRows;
+
     public function run(): void
     {
         foreach ([Navigation::HEADER, Navigation::FOOTER_MAIN, Navigation::FOOTER_LEGAL] as $key) {
-            Navigation::query()->firstOrCreate(['key' => $key], ['is_active' => true]);
+            // Enforced, not set-on-create. NavigationBuilder skips any menu
+            // whose `is_active` is false, and the panel edits menu ITEMS —
+            // there is no switch anywhere for the menu row itself. So an
+            // inactive one is not a decision anybody made; it is a row born
+            // wrong, and its whole menu disappears from every page with no
+            // error to explain it.
+            $this->seedRow(
+                Navigation::query(),
+                identity: ['key' => $key],
+                structure: ['is_active' => true],
+            );
         }
 
         NavigationBuilder::flush();
