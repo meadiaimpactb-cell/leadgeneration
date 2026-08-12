@@ -91,6 +91,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Anchor targets clear the fixed header.
+
+   Without this the browser scrolls the target to y=0, which is underneath the
+   header — so «ابدأ مشروعك معنا» landed on a form whose first field was hidden
+   behind the navigation. `scroll-margin` is the property built for exactly
+   this, and it costs nothing at load: it only applies when something scrolls
+   to the element. */
+#lead,
+#reports,
+#visit {
+  scroll-margin-block-start: calc(var(--header-h) + var(--s-5));
+}
+
 body {
   margin: 0;
   background: var(--bg);

@@ -315,14 +315,24 @@ class DemoContentSeeder extends Seeder
                             'نحوّل السدو والخوص والزري والنقش الحساوي إلى هدايا ومقتنيات مؤسسية تحمل هويتكم، وتُقدَّم لضيوفكم بما يليق بهم.',
                             null,
                             'ابدأ مشروعك معنا',
-                            '/ar/contact',
+                            /*
+                             * The form on this page, not a trip to /contact.
+                             *
+                             * The home page ends in the one form (§6.1), and
+                             * `CtaBand` carries `id="lead"` on every page that
+                             * renders it. Sending a visitor who has just
+                             * decided to act through a full page load — and
+                             * making them find the form again at the other end
+                             * — is a step this site exists to remove.
+                             */
+                            '#lead',
                         ],
                         'en' => [
                             "Saudi craft,\nworthy of your name",
                             'We turn Sadu, palm-frond weaving, Zari and Al-Ahsa engraving into corporate gifts that carry your identity — and meet your guests at the standard they expect.',
                             null,
                             'Start your project with us',
-                            '/en/contact',
+                            '#lead',
                         ],
                     ], [
                         'eyebrow' => 'B2B · CRAFT SUPPLY',
