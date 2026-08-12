@@ -13489,44 +13489,59 @@ const _sfc_main$m = {
     const secondaryDownloads = computed(
       () => /\.(pdf|docx?|pptx?|zip)(\?|$)/i.test(props.secondaryUrl ?? "")
     );
+    function onCta(event) {
+      const href = props.ctaUrl ?? "";
+      if (!href.startsWith("#") || typeof document === "undefined") {
+        return;
+      }
+      const target = document.querySelector(href);
+      if (!target) {
+        return;
+      }
+      event.preventDefault();
+      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      target.querySelector("input, textarea, select")?.focus({ preventScroll: true });
+    }
     const paneGround = computed(
       () => props.image?.poster && !isVideo.value ? { backgroundImage: `url("${props.image.poster}")` } : null
     );
     return (_ctx, _push, _parent, _attrs) => {
       _push(`<section${ssrRenderAttrs(mergeProps({
         class: ["hero on-dark", { "hero--has-media": mediaUrl.value }]
-      }, _attrs))} data-v-57e3d00b><div class="hero__panes" data-v-57e3d00b><div class="hero__copy" data-v-57e3d00b>`);
+      }, _attrs))} data-v-4064e441><div class="hero__panes" data-v-4064e441><div class="hero__copy" data-v-4064e441>`);
       if (__props.eyebrow) {
-        _push(`<span class="hero__spine mono-label" aria-hidden="true" data-v-57e3d00b>${ssrInterpolate(__props.eyebrow)}</span>`);
+        _push(`<span class="hero__spine mono-label" aria-hidden="true" data-v-4064e441>${ssrInterpolate(__props.eyebrow)}</span>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`<div class="hero__inner" data-v-57e3d00b>`);
+      _push(`<div class="hero__inner" data-v-4064e441>`);
       if (__props.eyebrow) {
-        _push(`<p class="hero__eyebrow" data-v-57e3d00b><span class="sadu-mark sadu-weave" aria-hidden="true" data-v-57e3d00b></span><span class="mono-label mono-label--gold" data-v-57e3d00b>${ssrInterpolate(__props.eyebrow)}</span></p>`);
+        _push(`<p class="hero__eyebrow" data-v-4064e441><span class="sadu-mark sadu-weave" aria-hidden="true" data-v-4064e441></span><span class="mono-label mono-label--gold" data-v-4064e441>${ssrInterpolate(__props.eyebrow)}</span></p>`);
       } else {
         _push(`<!---->`);
       }
       if (headingLines.value.length) {
-        _push(`<h1 class="hero__heading" data-v-57e3d00b><!--[-->`);
+        _push(`<h1 class="hero__heading" data-v-4064e441><!--[-->`);
         ssrRenderList(headingLines.value, (line, i) => {
-          _push(`<span class="${ssrRenderClass([{ "hero__line--accent": i > 0 }, "hero__line"])}" data-v-57e3d00b>${ssrInterpolate(line)}</span>`);
+          _push(`<span class="${ssrRenderClass([{ "hero__line--accent": i > 0 }, "hero__line"])}" data-v-4064e441>${ssrInterpolate(line)}</span>`);
         });
         _push(`<!--]--></h1>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.subheading) {
-        _push(`<p class="hero__sub" data-v-57e3d00b>${ssrInterpolate(__props.subheading)}</p>`);
+        _push(`<p class="hero__sub" data-v-4064e441>${ssrInterpolate(__props.subheading)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.ctaLabel || __props.secondaryLabel) {
-        _push(`<div class="hero__actions" data-v-57e3d00b>`);
+        _push(`<div class="hero__actions" data-v-4064e441>`);
         if (__props.ctaLabel) {
           _push(ssrRenderComponent(_sfc_main$16, {
             variant: "cta-lg",
-            href: __props.ctaUrl
+            href: __props.ctaUrl,
+            onClick: onCta
           }, {
             default: withCtx((_, _push2, _parent2, _scopeId) => {
               if (_push2) {
@@ -13564,7 +13579,7 @@ const _sfc_main$m = {
               name: "icon-start",
               fn: withCtx((_, _push2, _parent2, _scopeId) => {
                 if (_push2) {
-                  _push2(`<svg class="hero__download" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-57e3d00b${_scopeId}><path d="M12 4v12" data-v-57e3d00b${_scopeId}></path><path d="M7 12l5 5 5-5" data-v-57e3d00b${_scopeId}></path><path d="M4 20h16" data-v-57e3d00b${_scopeId}></path></svg>`);
+                  _push2(`<svg class="hero__download" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-4064e441${_scopeId}><path d="M12 4v12" data-v-4064e441${_scopeId}></path><path d="M7 12l5 5 5-5" data-v-4064e441${_scopeId}></path><path d="M4 20h16" data-v-4064e441${_scopeId}></path></svg>`);
                 } else {
                   return [
                     (openBlock(), createBlock("svg", {
@@ -13598,11 +13613,11 @@ const _sfc_main$m = {
       }
       _push(`</div></div>`);
       if (mediaUrl.value) {
-        _push(`<div class="hero__media" style="${ssrRenderStyle(paneGround.value)}" data-v-57e3d00b>`);
+        _push(`<div class="hero__media" style="${ssrRenderStyle(paneGround.value)}" data-v-4064e441>`);
         if (isVideo.value) {
-          _push(`<video class="hero__asset" autoplay muted loop playsinline preload="metadata"${ssrRenderAttr("poster", __props.image?.poster ?? void 0)}${ssrRenderAttr("aria-label", __props.image?.alt || void 0)} data-v-57e3d00b><source${ssrRenderAttr("src", mediaUrl.value)} data-v-57e3d00b></video>`);
+          _push(`<video class="hero__asset" autoplay muted loop playsinline preload="metadata"${ssrRenderAttr("poster", __props.image?.poster ?? void 0)}${ssrRenderAttr("aria-label", __props.image?.alt || void 0)} data-v-4064e441><source${ssrRenderAttr("src", mediaUrl.value)} data-v-4064e441></video>`);
         } else {
-          _push(`<img class="hero__asset"${ssrRenderAttr("src", mediaUrl.value)}${ssrRenderAttr("alt", __props.image?.alt ?? "")}${ssrRenderAttr("width", __props.image?.width ?? void 0)}${ssrRenderAttr("height", __props.image?.height ?? void 0)} fetchpriority="high" decoding="async" data-v-57e3d00b>`);
+          _push(`<img class="hero__asset"${ssrRenderAttr("src", mediaUrl.value)}${ssrRenderAttr("alt", __props.image?.alt ?? "")}${ssrRenderAttr("width", __props.image?.width ?? void 0)}${ssrRenderAttr("height", __props.image?.height ?? void 0)} fetchpriority="high" decoding="async" data-v-4064e441>`);
         }
         _push(`</div>`);
       } else {
@@ -13618,7 +13633,7 @@ _sfc_main$m.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/Hero.vue");
   return _sfc_setup$m ? _sfc_setup$m(props, ctx) : void 0;
 };
-const Hero = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["__scopeId", "data-v-57e3d00b"]]);
+const Hero = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["__scopeId", "data-v-4064e441"]]);
 const COLUMNS = 2;
 const _sfc_main$l = {
   __name: "SolutionsGrid",
