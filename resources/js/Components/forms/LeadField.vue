@@ -99,7 +99,20 @@ const values = reactive({
     ...Object.fromEntries(fields.value.map((f) => [f.key, f.type === 'checkbox' ? false : ''])),
 });
 
-const showMessage = ref(false);
+const showMessage = ref(true);
+
+/*
+ * Direction for the text fields.
+ *
+ * dir="auto" decides from the FIRST strong character typed — so an empty
+ * field has nothing to judge and falls back to LTR. On the Arabic site that
+ * put the caret and the placeholder on the wrong side of every box until the
+ * visitor had typed a letter. Binding to the page locale is what uto was
+ * standing in for.
+ *
+ * Email and phone stay ltr regardless: both are Latin in every locale.
+ */
+const textDir = computed(() => (page.props.locale === 'en' ? 'ltr' : 'rtl'));
 
 // A placeholder handed over at the moment the box is opened — see openMessage.
 const messageHint = ref(null);
@@ -316,7 +329,7 @@ function submit() {
                         :type="field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text'"
                         :placeholder="field.placeholder ?? ''"
                         :maxlength="field.maxLength ?? undefined"
-                        :dir="field.type === 'email' || field.type === 'tel' ? 'ltr' : 'auto'"
+                        :dir="field.type === 'email' || field.type === 'tel' ? 'ltr' : textDir"
                         :class="{ 'lead-input--mono': field.type === 'email' || field.type === 'tel' }"
                         :required="field.required || undefined"
                         :aria-required="field.required ? 'true' : undefined"
@@ -381,17 +394,18 @@ function submit() {
             </p>
 
             <template v-if="messageField">
-                <!-- Collapsed by default to keep cognitive load minimal (§10.6). -->
-                <button
-                    v-if="!showMessage"
-                    type="button"
-                    class="lead__toggle link-weave"
-                    @click="showMessage = true"
-                >
-                    {{ t('leads.add_message') }}
-                </button>
+                <!--
+                    The box is open from the start.
 
-                <div v-else class="lead__message">
+                    It was collapsed behind a link to keep the form to three
+                    controls (§10.6), and the reasoning holds for the required
+                    fields — but the message is where a buyer writes «عندي
+                    مؤتمر بتاريخ كذا», which is the single most useful line the
+                    sales team can receive. A field nobody sees is a field
+                    nobody fills; the cost of one visible optional box is far
+                    smaller than the qualification it buys.
+                -->
+                <div class="lead__message">
                     <label class="visually-hidden" :for="fieldId(MESSAGE)">
                         {{ messageField.label }}
                     </label>
@@ -400,8 +414,8 @@ function submit() {
                         v-model="values[MESSAGE]"
                         class="lead-input lead-textarea"
                         :name="MESSAGE"
-                        rows="1"
-                        dir="auto"
+                        rows="2"
+                        :dir="textDir"
                         :placeholder="messageHint ?? messagePlaceholder ?? messageField.placeholder ?? ''"
                         :maxlength="messageField.maxLength ?? undefined"
                     />

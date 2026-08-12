@@ -184,11 +184,33 @@ class StructureSeeder extends Seeder
             ['tracking', 'meta_capi_token', null, false],
         ];
 
+        /*
+         * `is_public` is corrected on every run; the value is only set on
+         * create.
+         *
+         * The split matters. The value is the client's — once they have edited
+         * a heading in the panel, a seeder must never overwrite it. But
+         * `is_public` is structure: it decides whether a setting is shared with
+         * the browser at all, and this list is the only place that knows the
+         * answer.
+         *
+         * With `firstOrCreate` alone the flag was set only at creation, so a
+         * row created by any other path kept whatever default it was born
+         * with. That is exactly what happened: a failed seeder run let
+         * DemoContentSeeder create `contact.header_cta.*` first — its writer
+         * sets `value` and nothing else — and the header's «لنبدأ معًا» button
+         * silently disappeared from every page, because the setting was in the
+         * database and simply never reached the front end.
+         */
         foreach ($settings as [$group, $key, $value, $isPublic]) {
-            Setting::query()->firstOrCreate(
+            $setting = Setting::query()->firstOrCreate(
                 ['group' => $group, 'key' => $key],
                 ['value' => $value, 'is_public' => $isPublic]
             );
+
+            if ($setting->is_public !== $isPublic) {
+                $setting->forceFill(['is_public' => $isPublic])->save();
+            }
         }
     }
 }
