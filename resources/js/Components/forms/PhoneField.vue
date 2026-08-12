@@ -235,6 +235,12 @@ watch(
 .iti {
     display: block;
     inline-size: 100%;
+
+    /* The knobs the library itself exposes, pointed at this site's tokens
+       rather than overridden rule by rule. */
+    --iti-border-color: var(--hairline);
+    --iti-hover-color: var(--gold-100);
+    --iti-country-selector-bg: transparent;
 }
 
 /* The number itself stays left-to-right in an RTL page — a phone number is
@@ -267,10 +273,29 @@ watch(
     border: 1px solid var(--hairline);
     border-radius: var(--r-md);
     background: var(--paper);
-    color: var(--ink);
     box-shadow:
         0 1px 2px rgba(0, 37, 70, 0.06),
         0 8px 24px rgba(0, 37, 70, 0.06);
+}
+
+/*
+ * The country names, coloured on the elements that draw them.
+ *
+ * They were invisible: white on white. The list is rendered inside the CTA
+ * band, `.on-dark` sets white text there, and the names carry no colour of
+ * their own — so they inherited the band's. Setting a colour on the dropdown
+ * and letting it cascade is not enough, because the library's stylesheet is
+ * imported at runtime and lands after this one. Naming the elements
+ * themselves is what survives that, whichever order the two arrive in.
+ */
+.iti__country,
+.iti__country-name,
+.iti__search-input {
+    color: var(--ink);
+}
+
+.iti__search-input::placeholder {
+    color: var(--muted);
 }
 
 .iti__search-input {
@@ -280,7 +305,6 @@ watch(
     border-block-end: 1px solid var(--hairline);
     border-radius: 0;
     background: var(--paper);
-    color: var(--ink);
     font: inherit;
 }
 
@@ -293,9 +317,12 @@ watch(
     font-size: var(--fs-sm);
 }
 
+/* Highlight and hover keep dark text — the ground is light in both. */
 .iti__country.iti__highlight,
-.iti__country:hover {
+.iti__country:hover,
+.iti__country[aria-selected='true'] {
     background: var(--gold-100);
+    color: var(--ink);
 }
 
 .iti__dial-code {
