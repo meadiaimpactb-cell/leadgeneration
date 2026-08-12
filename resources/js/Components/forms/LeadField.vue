@@ -4,7 +4,7 @@ import { router, usePage } from '@inertiajs/vue3';
 import { useTranslation } from '@/Composables/useTranslation';
 import Button from '@/Components/ui/Button.vue';
 import PhoneField from '@/Components/forms/PhoneField.vue';
-import ResultDialog from '@/Components/ui/ResultDialog.vue';
+import Toast from '@/Components/ui/Toast.vue';
 
 /**
  * forms/LeadField — the single most important control on the site (§10.6).
@@ -680,13 +680,20 @@ function submit() {
             </div>
         </form>
 
-        <!-- The visible answer. The form behind it keeps its place. -->
-        <ResultDialog
+        <!--
+            The visible answer, in the corner rather than over the page.
+
+            A modal here was the wrong shape twice over: it covered the work
+            the visitor had just done, and it demanded a click to acknowledge
+            something they had already seen happen. The form keeps its place
+            underneath and stays usable.
+        -->
+        <Toast
             :open="outcome !== null"
-            :tone="outcome ?? 'success'"
+            :type="outcome ?? 'success'"
             :title="outcome === 'error' ? t('leads.error_title') : t('leads.success_title')"
             :message="outcome === 'error' ? t('leads.error_body') : t('leads.success_body')"
-            :auto-close-ms="outcome === 'error' ? 0 : 5000"
+            :duration="outcome === 'error' ? 0 : 5000"
             @close="dismiss"
         />
     </div>

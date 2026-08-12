@@ -190,6 +190,69 @@ class LeadFormAnswersInPlaceTest extends TestCase
     }
 
     // ---------------------------------------------------------------- //
+    // The toast
+    // ---------------------------------------------------------------- //
+
+    /**
+     * The confirmation is an announcement, not a dialogue.
+     *
+     * It replaced a modal that covered the work the visitor had just done and
+     * asked them to click to acknowledge something they had already watched
+     * happen. `role="status"` with `aria-live="polite"` is how a screen reader
+     * is told without focus being taken from the form.
+     */
+    #[Test]
+    public function nothing_on_the_page_blocks_it_any_more(): void
+    {
+        $html = $this->home();
+
+        // The toast itself is only drawn once something has happened, so what
+        // is checkable here is the absence of the thing it replaced: no
+        // scrim, no modal semantics, nothing that takes the page hostage.
+        $this->assertStringNotContainsString('dialog__scrim', $html);
+        $this->assertStringNotContainsString('aria-modal', $html);
+    }
+
+    /**
+     * Announced rather than demanded.
+     *
+     * Asserted against the component rather than the page because the toast
+     * renders only after a submission — but these two attributes are the
+     * whole difference between a screen reader being told and a keyboard user
+     * being trapped, so they are worth a guard that does not depend on
+     * driving a browser.
+     */
+    #[Test]
+    public function the_confirmation_is_announced_not_forced(): void
+    {
+        $source = file_get_contents(resource_path('js/Components/ui/Toast.vue'));
+
+        $this->assertStringContainsString('role="status"', $source);
+        $this->assertStringContainsString('aria-live="polite"', $source);
+        $this->assertStringNotContainsString('aria-modal', $source);
+
+        // It leaves on its own, and reading it does not cost you the chance
+        // to finish reading it.
+        $this->assertStringContainsString('@mouseenter="hold"', $source);
+        $this->assertStringContainsString("event.key === 'Escape'", $source);
+    }
+
+    /**
+     * The toast carries the Sadu edge the sections carry — the detail that
+     * makes it part of this site rather than a borrowed component. Recorded
+     * as the ninth and last home of the thread in components.css.
+     */
+    #[Test]
+    public function the_confirmation_is_dressed_in_the_sites_own_thread(): void
+    {
+        $css = file_get_contents(resource_path('css/components.css'));
+
+        $this->assertStringContainsString("9. ui/Toast's edge", $css,
+            'a use of the Sadu thread that is not in the inventory is a use nobody agreed to');
+        $this->assertStringContainsString('Do not add a tenth.', $css);
+    }
+
+    // ---------------------------------------------------------------- //
     // Still a lead
     // ---------------------------------------------------------------- //
 

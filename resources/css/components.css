@@ -31,8 +31,15 @@
         the only place the thread carries content rather than
         edging it, and it exists once, on one section, on one
         page.
+     9. ui/Toast's edge  — the strip down the side of the
+        confirmation toast. Added on the client's written
+        instruction, which asked for "الشريط المسنن/الزخرفي
+        (zigzag) المستخدم في حواف أقسام الموقع" on the toast so
+        it would read as part of this site rather than as a
+        borrowed component. Same treatment as .sadu-edge, on a
+        surface that is a section in miniature.
 
-   Do not add a ninth.
+   Do not add a tenth.
    ============================================================ */
 
 .sadu-divider {

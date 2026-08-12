@@ -12294,54 +12294,72 @@ _sfc_main$E.setup = (props, ctx) => {
   return _sfc_setup$E ? _sfc_setup$E(props, ctx) : void 0;
 };
 const _sfc_main$D = {
-  __name: "ResultDialog",
+  __name: "Toast",
   __ssrInlineRender: true,
   props: {
     open: { type: Boolean, default: false },
-    /** `success` or `error` — decides the mark and the accent, nothing else. */
-    tone: { type: String, default: "success" },
+    /** `success`, `error` or `info` — decides the mark and the accent. */
+    type: { type: String, default: "success" },
     title: { type: String, default: null },
     message: { type: String, default: null },
-    /** Milliseconds until it closes itself; 0 to stay until dismissed. */
-    autoCloseMs: { type: Number, default: 5e3 }
+    /** Milliseconds on screen; 0 stays until dismissed. */
+    duration: { type: Number, default: 5e3 }
   },
   emits: ["close"],
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emit = __emit;
     const { t } = useTranslation();
-    ref(null);
-    const closeButton = ref(null);
+    const isError = computed(() => props.type === "error");
+    const paused = ref(false);
     const timer = ref(null);
-    const previouslyFocused = ref(null);
-    const isError = computed(() => props.tone === "error");
+    const remaining = ref(props.duration);
+    const startedAt = ref(0);
+    function start() {
+      if (props.duration <= 0 || remaining.value <= 0) return;
+      startedAt.value = Date.now();
+      timer.value = setTimeout(() => emit("close"), remaining.value);
+    }
+    function stop() {
+      clearTimeout(timer.value);
+      timer.value = null;
+    }
     watch(
       () => props.open,
-      async (open) => {
-        clearTimeout(timer.value);
-        if (!open) {
-          previouslyFocused.value?.focus?.();
-          previouslyFocused.value = null;
-          return;
-        }
-        previouslyFocused.value = document.activeElement;
-        await nextTick();
-        closeButton.value?.$el?.focus?.() ?? closeButton.value?.focus?.();
-        if (props.autoCloseMs > 0) {
-          timer.value = setTimeout(() => emit("close"), props.autoCloseMs);
-        }
-      }
+      (open) => {
+        stop();
+        paused.value = false;
+        remaining.value = props.duration;
+        if (open) start();
+      },
+      { immediate: true }
     );
-    onBeforeUnmount(() => clearTimeout(timer.value));
+    onBeforeUnmount(stop);
     return (_ctx, _push, _parent, _attrs) => {
       if (__props.open) {
-        _push(`<div${ssrRenderAttrs(mergeProps({ class: "dialog" }, _attrs))} data-v-d97406d3><div class="dialog__scrim" data-v-d97406d3></div><div class="dialog__panel" role="dialog" aria-modal="true"${ssrRenderAttr("aria-labelledby", `dialog-title-${__props.tone}`)}${ssrRenderAttr("aria-describedby", `dialog-text-${__props.tone}`)} data-v-d97406d3><svg class="${ssrRenderClass([{ "is-error": isError.value }, "dialog__mark"])}" viewBox="0 0 52 52" aria-hidden="true" data-v-d97406d3><circle class="dialog__ring" cx="26" cy="26" r="24" data-v-d97406d3></circle>`);
+        _push(`<div${ssrRenderAttrs(mergeProps({
+          class: ["toast", [`toast--${__props.type}`, { "is-held": paused.value }]],
+          role: "status",
+          "aria-live": "polite"
+        }, _attrs))} data-v-133d59e4><span class="sadu-edge sadu-weave toast__edge" aria-hidden="true" data-v-133d59e4></span><span class="toast__mark" aria-hidden="true" data-v-133d59e4><svg viewBox="0 0 44 44" data-v-133d59e4><circle class="toast__ring" cx="22" cy="22" r="20" data-v-133d59e4></circle>`);
         if (!isError.value) {
-          _push(`<path class="dialog__glyph" d="M14 27l8 8 16-16" data-v-d97406d3></path>`);
+          _push(`<path class="toast__glyph" d="M13 22.5l6 6 12-12" data-v-133d59e4></path>`);
         } else {
-          _push(`<path class="dialog__glyph" d="M26 15v16M26 37v.5" data-v-d97406d3></path>`);
+          _push(`<path class="toast__glyph" d="M22 12v13M22 30v.5" data-v-133d59e4></path>`);
         }
-        _push(`</svg><h2${ssrRenderAttr("id", `dialog-title-${__props.tone}`)} class="dialog__title" data-v-d97406d3>${ssrInterpolate(__props.title)}</h2><p${ssrRenderAttr("id", `dialog-text-${__props.tone}`)} class="dialog__text" data-v-d97406d3>${ssrInterpolate(__props.message)}</p><button type="button" class="dialog__button" data-v-d97406d3>${ssrInterpolate(unref(t)("common.done"))}</button></div></div>`);
+        _push(`</svg></span><div class="toast__body" data-v-133d59e4><p class="toast__title" data-v-133d59e4>${ssrInterpolate(__props.title)}</p>`);
+        if (__props.message) {
+          _push(`<p class="toast__text" data-v-133d59e4>${ssrInterpolate(__props.message)}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div><button type="button" class="toast__close"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-133d59e4><svg viewBox="0 0 16 16" aria-hidden="true" data-v-133d59e4><path d="M4 4l8 8M12 4l-8 8" data-v-133d59e4></path></svg></button>`);
+        if (__props.duration > 0) {
+          _push(`<span class="toast__timer" style="${ssrRenderStyle({ animationDuration: `${__props.duration}ms` })}" aria-hidden="true" data-v-133d59e4></span>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div>`);
       } else {
         _push(`<!---->`);
       }
@@ -12351,10 +12369,10 @@ const _sfc_main$D = {
 const _sfc_setup$D = _sfc_main$D.setup;
 _sfc_main$D.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/ResultDialog.vue");
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Toast.vue");
   return _sfc_setup$D ? _sfc_setup$D(props, ctx) : void 0;
 };
-const ResultDialog = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-d97406d3"]]);
+const Toast = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-133d59e4"]]);
 const CONTACT = "contact";
 const MESSAGE = "message";
 const honeypotName = "company_website";
@@ -12486,41 +12504,41 @@ const _sfc_main$C = {
         ref_key: "root",
         ref: root,
         class: ["lead", `lead--${__props.layout}`]
-      }, _attrs))} data-v-5c2bae86>`);
+      }, _attrs))} data-v-f676be4c>`);
       if (submitted.value) {
-        _push(`<p class="visually-hidden" role="status" aria-live="polite" data-v-5c2bae86>${ssrInterpolate(unref(t)("leads.success"))}</p>`);
+        _push(`<p class="visually-hidden" role="status" aria-live="polite" data-v-f676be4c>${ssrInterpolate(unref(t)("leads.success"))}</p>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`<form novalidate data-v-5c2bae86>`);
+      _push(`<form novalidate data-v-f676be4c>`);
       if (__props.heading) {
-        _push(`<p class="lead__heading" data-v-5c2bae86>${ssrInterpolate(__props.heading)}</p>`);
+        _push(`<p class="lead__heading" data-v-f676be4c>${ssrInterpolate(__props.heading)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.reassurance) {
-        _push(`<p class="lead__reassurance" data-v-5c2bae86>${ssrInterpolate(__props.reassurance)}</p>`);
+        _push(`<p class="lead__reassurance" data-v-f676be4c>${ssrInterpolate(__props.reassurance)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (extraFields.value.length) {
-        _push(`<div class="lead__extras" data-v-5c2bae86><!--[-->`);
+        _push(`<div class="lead__extras" data-v-f676be4c><!--[-->`);
         ssrRenderList(extraFields.value, (field, i) => {
-          _push(`<div class="lead__extra" data-v-5c2bae86><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-5c2bae86>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
+          _push(`<div class="lead__extra" data-v-f676be4c><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-f676be4c>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
           if (field.required) {
-            _push(`<span class="lead__required" aria-hidden="true" data-v-5c2bae86>*</span>`);
+            _push(`<span class="lead__required" aria-hidden="true" data-v-f676be4c>*</span>`);
           } else {
-            _push(`<span class="lead__optional" data-v-5c2bae86>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
+            _push(`<span class="lead__optional" data-v-f676be4c>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
           }
           _push(`</label>`);
           if (field.type === "select") {
-            _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-5c2bae86><option value="" data-v-5c2bae86${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
+            _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-f676be4c><option value="" data-v-f676be4c${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
             ssrRenderList(field.options, (opt) => {
-              _push(`<option${ssrRenderAttr("value", opt.value)} data-v-5c2bae86${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
+              _push(`<option${ssrRenderAttr("value", opt.value)} data-v-f676be4c${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
             });
             _push(`<!--]--></select>`);
           } else if (field.type === "checkbox") {
-            _push(`<label class="lead__check" data-v-5c2bae86><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-5c2bae86><span data-v-5c2bae86>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
+            _push(`<label class="lead__check" data-v-f676be4c><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-f676be4c><span data-v-f676be4c>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
           } else if (field.type === "tel") {
             _push(ssrRenderComponent(_sfc_main$E, {
               id: fieldId(field.key),
@@ -12533,12 +12551,12 @@ const _sfc_main$C = {
               onValidity: (state) => onPhoneValidity(field.key, state)
             }, null, _parent));
           } else if (field.type === "textarea") {
-            _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-5c2bae86>${ssrInterpolate(values[field.key])}</textarea>`);
+            _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-f676be4c>${ssrInterpolate(values[field.key])}</textarea>`);
           } else {
-            _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : textDir.value)} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] || liveErrors[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] || liveErrors[field.key] ? errorId(field.key) : void 0)} data-v-5c2bae86>`);
+            _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : textDir.value)} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] || liveErrors[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] || liveErrors[field.key] ? errorId(field.key) : void 0)} data-v-f676be4c>`);
           }
           if (errors.value[field.key] || liveErrors[field.key]) {
-            _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-5c2bae86>${ssrInterpolate(errors.value[field.key] ?? liveErrors[field.key])}</p>`);
+            _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-f676be4c>${ssrInterpolate(errors.value[field.key] ?? liveErrors[field.key])}</p>`);
           } else {
             _push(`<!---->`);
           }
@@ -12549,13 +12567,13 @@ const _sfc_main$C = {
         _push(`<!---->`);
       }
       if (contactField.value) {
-        _push(`<div class="lead__row" data-v-5c2bae86><div class="lead__field" data-v-5c2bae86><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-5c2bae86>${ssrInterpolate(contactField.value.label)} `);
+        _push(`<div class="lead__row" data-v-f676be4c><div class="lead__field" data-v-f676be4c><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-f676be4c>${ssrInterpolate(contactField.value.label)} `);
         if (__props.layout === "inline") {
-          _push(`<span class="lead__required" aria-hidden="true" data-v-5c2bae86> * </span>`);
+          _push(`<span class="lead__required" aria-hidden="true" data-v-f676be4c> * </span>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-5c2bae86></div>`);
+        _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-f676be4c></div>`);
         if (!messageField.value) {
           _push(ssrRenderComponent(_sfc_main$1a, {
             type: "submit",
@@ -12582,14 +12600,14 @@ const _sfc_main$C = {
         _push(`<!---->`);
       }
       if (errors.value[CONTACT]) {
-        _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-5c2bae86>${ssrInterpolate(errors.value[CONTACT])}</p>`);
+        _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-f676be4c>${ssrInterpolate(errors.value[CONTACT])}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (messageField.value) {
-        _push(`<div class="lead__message" data-v-5c2bae86><label class="lead__label"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-5c2bae86>${ssrInterpolate(messageField.value.label)} <span class="lead__optional" data-v-5c2bae86>${ssrInterpolate(unref(t)("leads.optional"))}</span></label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="3"${ssrRenderAttr("dir", textDir.value)}${ssrRenderAttr("placeholder", messageHint.value ?? __props.messagePlaceholder ?? messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-5c2bae86>${ssrInterpolate(values[MESSAGE])}</textarea>`);
+        _push(`<div class="lead__message" data-v-f676be4c><label class="lead__label"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-f676be4c>${ssrInterpolate(messageField.value.label)} <span class="lead__optional" data-v-f676be4c>${ssrInterpolate(unref(t)("leads.optional"))}</span></label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="3"${ssrRenderAttr("dir", textDir.value)}${ssrRenderAttr("placeholder", messageHint.value ?? __props.messagePlaceholder ?? messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-f676be4c>${ssrInterpolate(values[MESSAGE])}</textarea>`);
         if (errors.value[MESSAGE]) {
-          _push(`<p class="lead-error" data-v-5c2bae86>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
+          _push(`<p class="lead-error" data-v-f676be4c>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
         } else {
           _push(`<!---->`);
         }
@@ -12598,7 +12616,7 @@ const _sfc_main$C = {
         _push(`<!---->`);
       }
       if (messageField.value) {
-        _push(`<div class="lead__actions" data-v-5c2bae86>`);
+        _push(`<div class="lead__actions" data-v-f676be4c>`);
         _push(ssrRenderComponent(_sfc_main$1a, {
           type: "submit",
           variant: __props.layout === "inline" ? "cta-lg" : "cta",
@@ -12620,13 +12638,13 @@ const _sfc_main$C = {
       } else {
         _push(`<!---->`);
       }
-      _push(`<div class="lead__trap" aria-hidden="true" data-v-5c2bae86><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-5c2bae86>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-5c2bae86></div></form>`);
-      _push(ssrRenderComponent(ResultDialog, {
+      _push(`<div class="lead__trap" aria-hidden="true" data-v-f676be4c><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-f676be4c>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-f676be4c></div></form>`);
+      _push(ssrRenderComponent(Toast, {
         open: outcome.value !== null,
-        tone: outcome.value ?? "success",
+        type: outcome.value ?? "success",
         title: outcome.value === "error" ? unref(t)("leads.error_title") : unref(t)("leads.success_title"),
         message: outcome.value === "error" ? unref(t)("leads.error_body") : unref(t)("leads.success_body"),
-        "auto-close-ms": outcome.value === "error" ? 0 : 5e3,
+        duration: outcome.value === "error" ? 0 : 5e3,
         onClose: dismiss
       }, null, _parent));
       _push(`</div>`);
@@ -12639,7 +12657,7 @@ _sfc_main$C.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/forms/LeadField.vue");
   return _sfc_setup$C ? _sfc_setup$C(props, ctx) : void 0;
 };
-const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["__scopeId", "data-v-5c2bae86"]]);
+const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["__scopeId", "data-v-f676be4c"]]);
 const _sfc_main$B = {
   __name: "CtaBand",
   __ssrInlineRender: true,
