@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasAttachedMedia;
 use App\Models\Concerns\HasSections;
 use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  */
 class Solution extends Model implements HasMedia
 {
+    use HasAttachedMedia;
     use HasFactory;
     use HasSections;
     use HasTranslations;

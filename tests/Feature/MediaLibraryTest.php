@@ -7,7 +7,9 @@ namespace Tests\Feature;
 use App\Models\Media;
 use App\Models\MediaAttachment;
 use App\Models\Page;
+use App\Models\Partner;
 use App\Models\Section;
+use App\Models\Story;
 use App\Models\User;
 use App\Support\MediaLibrary;
 use Database\Seeders\DemoContentSeeder;
@@ -485,6 +487,83 @@ class MediaLibraryTest extends TestCase
     private function escaped(string $url): string
     {
         return trim(json_encode($url), '"');
+    }
+
+    // ---------------------------------------------------------------- //
+    // The two sections whose pictures are not section media
+    // ---------------------------------------------------------------- //
+
+    /**
+     * A logos section renders the partners table, so its images are chosen on
+     * the partners screen. The same picker, a different screen — and this is
+     * the test that proves the strip really changes.
+     */
+    #[Test]
+    public function a_partner_logo_chosen_from_the_library_reaches_the_logo_strip(): void
+    {
+        $partner = Partner::query()->where('is_active', true)->firstOrFail();
+        $media = $this->upload('accreditation.jpg');
+
+        $this->actingAs($this->admin)
+            ->post("/admin/content/partners/{$partner->id}/media", [
+                'collection' => 'logo',
+                'media' => [$media->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame($media->id, $partner->fresh()->mediaFor('logo')?->id);
+
+        $html = $this->get('/ar')->assertOk()->getContent();
+
+        $this->assertStringContainsString($this->escaped($media->getUrl()), $html,
+            'the logo strip reads the partners table, so choosing there is what changes the page');
+    }
+
+    /**
+     * Same again for the story carousel, which renders the stories table.
+     */
+    #[Test]
+    public function an_artisan_portrait_chosen_from_the_library_reaches_the_story_carousel(): void
+    {
+        $story = Story::query()->where('is_published', true)->firstOrFail();
+        $media = $this->upload('artisan.jpg');
+
+        $this->actingAs($this->admin)
+            ->post("/admin/content/stories/{$story->id}/media", [
+                'collection' => 'person',
+                'media' => [$media->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame($media->id, $story->fresh()->mediaFor('person')?->id);
+
+        $html = $this->get('/ar')->assertOk()->getContent();
+
+        $this->assertStringContainsString($this->escaped($media->getUrl()), $html);
+    }
+
+    /** One image, two screens, still one file — the rule holds across models. */
+    #[Test]
+    public function the_same_image_serves_a_section_and_a_partner_without_being_copied(): void
+    {
+        $media = $this->upload('shared.jpg');
+        $partner = Partner::query()->firstOrFail();
+        $section = $this->gallerySection();
+
+        $before = Media::query()->count();
+
+        $section->syncAttachedMedia('gallery', [$media->id]);
+
+        $this->actingAs($this->admin)
+            ->post("/admin/content/partners/{$partner->id}/media", [
+                'collection' => 'logo',
+                'media' => [$media->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame($before, Media::query()->count());
+        $this->assertSame($media->id, $partner->fresh()->mediaFor('logo')?->id);
+        $this->assertSame($media->id, $section->fresh()->attachedMedia('gallery')->first()->id);
     }
 
     #[Test]

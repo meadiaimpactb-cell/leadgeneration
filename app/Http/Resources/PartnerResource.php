@@ -22,7 +22,7 @@ class PartnerResource extends JsonResource
             'name' => $this->t('display_name') ?? $this->name,
             'note' => $this->t('note'),
             'url' => $this->website_url,
-            'logo' => MediaResource::make($this->getFirstMedia('logo')),
+            'logo' => MediaResource::make($this->mediaFor('logo')),
         ];
     }
 }

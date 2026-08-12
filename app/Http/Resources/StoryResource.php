@@ -25,7 +25,7 @@ class StoryResource extends JsonResource
             'quote' => $this->t('quote'),
             'body' => $body,
             'attribution' => $this->t('attribution'),
-            'image' => MediaResource::make($this->getFirstMedia('person')),
+            'image' => MediaResource::make($this->mediaFor('person')),
             'url' => url($request->route('locale').'/impact/stories/'.$this->slug),
             /*
              * The "read the full story" button keys off there being a full

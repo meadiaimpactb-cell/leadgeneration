@@ -24,7 +24,7 @@ class ReportResource extends JsonResource
             'year' => $this->year,
             'title' => $this->t('title'),
             'summary' => $this->t('summary'),
-            'cover' => MediaResource::make($this->getFirstMedia('cover')),
+            'cover' => MediaResource::make($this->mediaFor('cover')),
             // Relative, for the same reason as MediaResource: a download link
             // must not carry a hostname that may not be the one serving it.
             'fileUrl' => $file?->getUrl(),

@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
+import MediaSlot from '@/Components/admin/MediaSlot.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -27,6 +28,9 @@ const props = defineProps({
 });
 
 const { t } = useTranslation();
+
+/** Collections that hold a document rather than a picture. */
+const DOCUMENTS = ['file'];
 const uploading = ref(null);
 
 function blankTranslations() {
@@ -117,6 +121,21 @@ function removeMedia(id) {
     if (!confirm(t('admin.confirm_delete'))) return;
     router.delete(`/admin/media/${id}`, { preserveScroll: true });
 }
+
+/**
+ * Saved on the spot, like the section builder and like the upload button this
+ * replaced. Choosing a picture has always been a finished action here; making
+ * it wait for the form's Save is how a logo goes missing.
+ */
+function setMedia(collection, items) {
+    props.record.media[collection] = items;
+
+    router.post(
+        `/admin/content/${props.entity}/${props.record.id}/media`,
+        { collection, media: items.map((i) => i.id) },
+        { preserveScroll: true, preserveState: true }
+    );
+}
 </script>
 
 <template>
@@ -194,21 +213,37 @@ function removeMedia(id) {
              the record exists. -->
         <Panel v-if="record && meta.media.length" :title="t('admin.media')">
             <div v-for="collection in meta.media" :key="collection" class="media">
-                <p class="media__label latin">{{ collection }}</p>
+                <!-- Images are chosen from the library: this is where a
+                     partner's logo and an artisan's portrait come from, and
+                     therefore where the logo strip and the story carousel get
+                     their pictures. -->
+                <MediaSlot
+                    v-if="!DOCUMENTS.includes(collection)"
+                    :model-value="record.media[collection] ?? []"
+                    :limit="collection === 'gallery' ? 0 : 1"
+                    :label="collection"
+                    @update:model-value="(v) => setMedia(collection, v)"
+                />
 
-                <ul v-if="record.media[collection]?.length" class="media__list">
-                    <li v-for="item in record.media[collection]" :key="item.id" class="media__item">
-                        <img :src="item.url" :alt="item.name" class="media__thumb" />
-                        <button class="btn btn--ghost danger" type="button" @click="removeMedia(item.id)">
-                            {{ t('admin.delete') }}
-                        </button>
-                    </li>
-                </ul>
+                <!-- A report's PDF is not a picture and has no business in an
+                     image library. It keeps the plain upload it always had. -->
+                <template v-else>
+                    <p class="media__label latin">{{ collection }}</p>
 
-                <label class="media__upload">
-                    <span>{{ uploading === collection ? t('admin.saving') : t('admin.upload') }}</span>
-                    <input type="file" @change="(e) => upload(collection, e)" />
-                </label>
+                    <ul v-if="record.media[collection]?.length" class="media__list">
+                        <li v-for="item in record.media[collection]" :key="item.id" class="media__item">
+                            <span dir="auto">{{ item.name }}</span>
+                            <button class="btn btn--ghost danger" type="button" @click="removeMedia(item.id)">
+                                {{ t('admin.delete') }}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <label class="media__upload">
+                        <span>{{ uploading === collection ? t('admin.saving') : t('admin.upload') }}</span>
+                        <input type="file" @change="(e) => upload(collection, e)" />
+                    </label>
+                </template>
             </div>
         </Panel>
     </AdminLayout>

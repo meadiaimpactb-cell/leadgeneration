@@ -30,7 +30,7 @@ class ShowcaseProductResource extends JsonResource
             // Informational link only. The frontend renders it as a plain
             // outbound link, never as a "buy" button.
             'storeUrl' => $this->external_store_url,
-            'image' => MediaResource::make($this->getFirstMedia('primary')),
+            'image' => MediaResource::make($this->mediaFor('primary')),
         ];
     }
 }

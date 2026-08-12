@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -161,6 +162,42 @@ class ResourceController extends Controller
         return back()->with('success', __('admin.saved'));
     }
 
+    /**
+     * Which library images this record uses, and in what order.
+     *
+     * The same contract as the section builder's: the panel sends the whole
+     * arrangement and gets it. This is what puts the picker on the partners
+     * and stories screens — and those two are not a side note, they are where
+     * the logo strip and the story carousel actually get their pictures, since
+     * those sections render tables rather than their own media.
+     */
+    public function media(Request $request, string $entity, int $id): RedirectResponse
+    {
+        $config = $this->config($entity);
+        $this->authorizeEntity($request, $config);
+
+        $data = $request->validate([
+            'collection' => ['required', 'string', Rule::in($config['media'])],
+            'media' => ['present', 'array'],
+            'media.*' => ['integer', 'exists:media,id'],
+        ]);
+
+        $record = $config['model']::query()->findOrFail($id);
+
+        $ids = array_map('intval', $data['media']);
+
+        // Every collection on these screens is a single image except the
+        // product gallery. A slot that holds one must be held to one, or the
+        // component reads the first and ignores the rest without saying so.
+        if ($data['collection'] !== 'gallery') {
+            $ids = array_slice($ids, 0, 1);
+        }
+
+        $record->syncAttachedMedia($data['collection'], $ids);
+
+        return back()->with('success', __('admin.saved'));
+    }
+
     // ---------------------------------------------------------------- //
 
     /**
@@ -287,8 +324,9 @@ class ResourceController extends Controller
     private function payload(Model $record, array $config): array
     {
         $translations = [];
+        $locales = array_keys(config('site.locales'));
 
-        foreach (array_keys(config('site.locales')) as $locale) {
+        foreach ($locales as $locale) {
             $row = $record->translationFor($locale);
 
             foreach (array_keys($config['fields']) as $field) {
@@ -305,18 +343,41 @@ class ResourceController extends Controller
         $media = [];
 
         foreach ($config['media'] as $collection) {
-            $media[$collection] = $record->getMedia($collection)
-                ->map(fn ($item): array => [
-                    'id' => $item->id,
-                    // getUrl(), not getFullUrl(): the latter prefixes APP_URL,
-                    // so every thumbnail in the panel breaks the moment the
-                    // site is opened on a host APP_URL does not name — the dev
-                    // port, staging, or after the §16 domain move. Same reason
-                    // MediaResource and SectionController use it. An <img>
-                    // never needs the host.
-                    'url' => $item->getUrl(),
-                    'name' => $item->file_name,
-                ])->values();
+            // Images chosen from the library first, the record's own uploads
+            // only when there are none — the same order of authority the
+            // public resources read through `mediaFor()`, so the panel and the
+            // page cannot disagree about which picture is current.
+            $attached = $record->attachedMedia($collection);
+
+            $items = $attached->isNotEmpty() ? $attached : $record->getMedia($collection);
+
+            $media[$collection] = $items
+                ->map(function ($item) use ($locales): array {
+                    $translations = [];
+
+                    foreach ($locales as $locale) {
+                        $row = $item->translation($locale);
+
+                        $translations[$locale] = [
+                            'alt_text' => $row?->alt_text,
+                            'caption' => $row?->caption,
+                        ];
+                    }
+
+                    return [
+                        'id' => $item->id,
+                        // getUrl(), not getFullUrl(): the latter prefixes APP_URL,
+                        // so every thumbnail in the panel breaks the moment the
+                        // site is opened on a host APP_URL does not name — the dev
+                        // port, staging, or after the §16 domain move. Same reason
+                        // MediaResource and SectionController use it. An <img>
+                        // never needs the host.
+                        'url' => $item->getUrl(),
+                        'thumb' => $item->thumbUrl(),
+                        'name' => $item->file_name,
+                        'translations' => $translations,
+                    ];
+                })->values();
         }
 
         return [

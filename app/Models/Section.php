@@ -30,17 +30,6 @@ class Section extends Model implements HasMedia
     use HasTranslations;
     use InteractsWithMedia;
 
-    /**
-     * Referenced library images are always loaded with the section.
-     *
-     * Declared here rather than added to each controller's `with()` because
-     * `Model::preventLazyLoading()` is on in local (§7.4): a public page that
-     * forgot one would throw in development and, worse, quietly issue a query
-     * per section in production. Eleven controllers render sections, and this
-     * is one place instead of eleven chances to miss one.
-     */
-    protected $with = ['mediaAttachments.media.translations'];
-
     /** Section types, matching the sections/ component inventory (§10.5). */
     public const TYPES = [
         'hero',

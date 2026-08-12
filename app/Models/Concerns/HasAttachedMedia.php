@@ -22,6 +22,35 @@ use Illuminate\Support\Facades\DB;
  */
 trait HasAttachedMedia
 {
+    /**
+     * Referenced images are always loaded with the record.
+     *
+     * Eloquent calls this for every model using the trait, which is the only
+     * arrangement that holds: `Model::preventLazyLoading()` is on in local
+     * (§7.4), so a controller that forgot to eager-load would throw in
+     * development and silently issue a query per row in production. Eleven
+     * controllers render sections and nine screens render content records —
+     * this is one place instead of twenty chances to miss one.
+     */
+    public function initializeHasAttachedMedia(): void
+    {
+        $this->with = array_values(array_unique(
+            array_merge($this->with, ['mediaAttachments.media.translations'])
+        ));
+    }
+
+    /**
+     * The image to use for a slot: the one chosen from the library, or the one
+     * uploaded onto this record before the library existed.
+     *
+     * The single accessor every resource goes through, so "which image wins"
+     * is answered once rather than in each of the nine screens that ask.
+     */
+    public function mediaFor(string $collection): ?Media
+    {
+        return $this->attachedMedia($collection)->first() ?? $this->getFirstMedia($collection);
+    }
+
     /** @return MorphMany<MediaAttachment, $this> */
     public function mediaAttachments(): MorphMany
     {

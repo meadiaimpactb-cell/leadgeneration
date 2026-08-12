@@ -26,7 +26,7 @@ class SectorResource extends JsonResource
             // The four audience segments live under /solutions — see the
             // constrained route in routes/web.php.
             'url' => url(app()->getLocale().'/solutions/'.$this->slug),
-            'image' => MediaResource::make($this->getFirstMedia('hero')),
+            'image' => MediaResource::make($this->mediaFor('hero')),
         ];
     }
 }

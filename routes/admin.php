@@ -104,6 +104,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::delete('content/{entity}/{id}', [ResourceController::class, 'destroy'])->name('content.destroy');
         Route::post('content/{entity}/reorder', [ResourceController::class, 'reorder'])->name('content.reorder');
 
+        // Which library images a content record uses. This is where a
+        // partner's logo and an artisan's portrait are chosen — the logo strip
+        // and the story carousel render those tables, not section media.
+        Route::post('content/{entity}/{id}/media', [ResourceController::class, 'media'])
+            ->whereNumber('id')->name('content.media');
+
         // ---- Media -------------------------------------------------------
         // The library reads and writes as JSON: the same list is browsed from
         // inside the picker modal, from the content screens and from the media

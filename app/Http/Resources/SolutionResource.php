@@ -23,7 +23,7 @@ class SolutionResource extends JsonResource
             'name' => $this->t('name'),
             'summary' => $this->t('summary'),
             'url' => url(app()->getLocale().'/solutions/'.$this->slug),
-            'image' => MediaResource::make($this->getFirstMedia('hero')),
+            'image' => MediaResource::make($this->mediaFor('hero')),
         ];
     }
 }

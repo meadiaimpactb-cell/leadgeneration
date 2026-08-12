@@ -27,7 +27,7 @@ class TrainingProgramResource extends JsonResource
             // this holds something (§22.1: no invented dates on a page).
             'nextCohort' => $this->t('next_cohort'),
             'durationWeeks' => $this->duration_weeks,
-            'image' => MediaResource::make($this->getFirstMedia('hero')),
+            'image' => MediaResource::make($this->mediaFor('hero')),
         ];
     }
 }
