@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -72,6 +73,20 @@ class Section extends Model implements HasMedia
     public function sectionable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * The section's repeatable items, in panel order.
+     *
+     * Nothing reads this yet — `settings->items[]` is still the live source
+     * until the migration command has run and been verified. Both exist on
+     * purpose during the changeover; see docs/dynamic-audit.md.
+     *
+     * @return HasMany<SectionItem, $this>
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(SectionItem::class)->orderBy('sort_order');
     }
 
     public function registerMediaCollections(): void
