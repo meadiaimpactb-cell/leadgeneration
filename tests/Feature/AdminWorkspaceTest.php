@@ -311,7 +311,12 @@ class AdminWorkspaceTest extends TestCase
     #[Test]
     public function an_uploaded_favicon_replaces_the_built_in_one(): void
     {
-        $this->get('/ar')->assertOk()->assertSee('/favicon.svg', false);
+        // The built-in default is the set scripts/make-favicons.mjs generates
+        // from the client's own icon. It was a hand-drawn favicon.svg once;
+        // that file is gone, so this asserts the sizes actually shipped.
+        $body = $this->get('/ar')->assertOk()->getContent();
+        $this->assertStringContainsString('/favicon-32x32.png', $body);
+        $this->assertStringContainsString('/favicon.ico', $body);
 
         $this->actingAs($this->admin)->post('/admin/brand', [
             'collection' => 'favicon',
@@ -320,8 +325,10 @@ class AdminWorkspaceTest extends TestCase
 
         $body = $this->get('/ar')->assertOk()->getContent();
 
+        // An upload replaces the whole built-in set, not just one line of it.
         $this->assertStringContainsString(app(Brand::class)->url('favicon'), $body);
-        $this->assertStringNotContainsString('/favicon.svg', $body);
+        $this->assertStringNotContainsString('/favicon-32x32.png', $body);
+        $this->assertStringNotContainsString('/favicon-16x16.png', $body);
     }
 
     #[Test]

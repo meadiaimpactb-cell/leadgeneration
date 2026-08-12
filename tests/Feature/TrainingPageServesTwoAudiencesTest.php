@@ -86,9 +86,17 @@ class TrainingPageServesTwoAudiencesTest extends TestCase
          * a bound modifier into `class="lead-input lead-input--mono"`, so
          * matching the attribute string finds two of the three fields. That
          * lesson cost three attempts on the artisan page.
+         *
+         * And counted against the ENABLED fields rather than a literal, for
+         * the reason `submission()` below already gives: the number of fields
+         * is the client's to change from the panel. Hard-coding it made this
+         * test fail the day the message field was turned on — which is the
+         * form working, not breaking. What matters here is that both doors
+         * land on ONE form, and that is what `name="contact"` above proves.
          */
-        $this->assertSame(3, preg_match_all('/class="[^"]*\blead-input\b/', $body),
-            'The form no longer carries exactly the three fields §6.1 fixes.');
+        $this->assertSame(LeadField::query()->enabled()->count(),
+            preg_match_all('/class="[^"]*\blead-input\b/', $body),
+            'The page renders a different number of fields than the panel enables.');
     }
 
     // ---------------------------------------------------------------- //
