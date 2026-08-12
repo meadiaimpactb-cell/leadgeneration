@@ -1,0 +1,6 @@
+@include('errors._locale')
+@extends('errors.layout')
+@section('title', __('errors.500_heading'))
+@section('code', '500')
+@section('heading', __('errors.500_heading'))
+@section('body', __('errors.500_body'))

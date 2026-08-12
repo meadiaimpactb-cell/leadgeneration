@@ -4338,9 +4338,9 @@ const _sfc_main$1b = {
             }, {
               actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<button class="btn btn--ghost" type="button" data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.reset"))}</button>`);
+                  _push3(`<button class="btn btn--ghost" type="button" data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.reset"))}</button>`);
                   if (__props.can.export) {
-                    _push3(`<a class="btn btn--secondary"${ssrRenderAttr("href", exportUrl())} data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.export_csv"))}</a>`);
+                    _push3(`<a class="btn btn--secondary"${ssrRenderAttr("href", exportUrl())} data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.export_csv"))}</a>`);
                   } else {
                     _push3(`<!---->`);
                   }
@@ -4361,7 +4361,7 @@ const _sfc_main$1b = {
               }),
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<div class="filters" data-v-4ba05a66${_scopeId2}>`);
+                  _push3(`<div class="filters" data-v-ac8d27fb${_scopeId2}>`);
                   _push3(ssrRenderComponent(Field, {
                     modelValue: filters.q,
                     "onUpdate:modelValue": ($event) => filters.q = $event,
@@ -4487,11 +4487,11 @@ const _sfc_main$1b = {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
                   if (!__props.leads.data.length) {
-                    _push3(`<p class="empty" data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    _push3(`<p class="empty" data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                   } else {
-                    _push3(`<div class="table-wrap" data-v-4ba05a66${_scopeId2}><table class="table" data-v-4ba05a66${_scopeId2}><thead data-v-4ba05a66${_scopeId2}><tr data-v-4ba05a66${_scopeId2}><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_date"))}</th><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</th><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_message"))}</th><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_source"))}</th><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_interest"))}</th><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_status"))}</th><th data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_state"))}</th></tr></thead><tbody data-v-4ba05a66${_scopeId2}><!--[-->`);
+                    _push3(`<div class="table-wrap" data-v-ac8d27fb${_scopeId2}><table class="table" data-v-ac8d27fb${_scopeId2}><thead data-v-ac8d27fb${_scopeId2}><tr data-v-ac8d27fb${_scopeId2}><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_date"))}</th><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</th><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_message"))}</th><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_source"))}</th><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_interest"))}</th><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_status"))}</th><th data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_state"))}</th></tr></thead><tbody data-v-ac8d27fb${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.leads.data, (lead) => {
-                      _push3(`<tr data-v-4ba05a66${_scopeId2}><td class="nowrap" data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(dateTime)(lead.createdAt))}</td><td data-v-4ba05a66${_scopeId2}>`);
+                      _push3(`<tr data-v-ac8d27fb${_scopeId2}><td class="nowrap" data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(dateTime)(lead.createdAt))}</td><td data-v-ac8d27fb${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: `/admin/leads/${lead.id}`,
                         class: "table__link latin"
@@ -4507,22 +4507,22 @@ const _sfc_main$1b = {
                         }),
                         _: 2
                       }, _parent3, _scopeId2));
-                      _push3(`</td><td class="table__msg" data-v-4ba05a66${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</td><td data-v-4ba05a66${_scopeId2}>${ssrInterpolate(lead.campaign ?? lead.source ?? "—")}</td><td class="nowrap" data-v-4ba05a66${_scopeId2}>${ssrInterpolate(lead.interest ? interestLabel(lead.interest) : "—")}</td><td data-v-4ba05a66${_scopeId2}>`);
+                      _push3(`</td><td class="table__msg"${ssrRenderAttr("title", lead.message ?? void 0)} data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</td><td data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(lead.campaign ?? lead.source ?? "—")}</td><td class="nowrap" data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(lead.interest ? interestLabel(lead.interest) : "—")}</td><td data-v-ac8d27fb${_scopeId2}>`);
                       if (__props.can.updateStatus) {
-                        _push3(`<select class="table__select"${ssrRenderAttr("value", lead.status)}${ssrRenderAttr("aria-label", unref(t)("admin.lead_status"))} data-v-4ba05a66${_scopeId2}><!--[-->`);
+                        _push3(`<select class="table__select"${ssrRenderAttr("value", lead.status)}${ssrRenderAttr("aria-label", unref(t)("admin.lead_status"))} data-v-ac8d27fb${_scopeId2}><!--[-->`);
                         ssrRenderList(__props.statuses, (s) => {
-                          _push3(`<option${ssrRenderAttr("value", s)} data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${s}`))}</option>`);
+                          _push3(`<option${ssrRenderAttr("value", s)} data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${s}`))}</option>`);
                         });
                         _push3(`<!--]--></select>`);
                       } else {
-                        _push3(`<span data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span>`);
+                        _push3(`<span data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span>`);
                       }
-                      _push3(`</td><td data-v-4ba05a66${_scopeId2}><span class="${ssrRenderClass([`chip--${lead.crmStatus}`, "chip"])}" data-v-4ba05a66${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></td></tr>`);
+                      _push3(`</td><td data-v-ac8d27fb${_scopeId2}><span class="${ssrRenderClass([`chip--${lead.crmStatus}`, "chip"])}" data-v-ac8d27fb${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></td></tr>`);
                     });
                     _push3(`<!--]--></tbody></table></div>`);
                   }
                   if (__props.leads.last_page > 1) {
-                    _push3(`<nav class="pager" aria-label="pagination" data-v-4ba05a66${_scopeId2}><!--[-->`);
+                    _push3(`<nav class="pager" aria-label="pagination" data-v-ac8d27fb${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.leads.links, (link) => {
                       _push3(ssrRenderComponent(unref(Link), {
                         key: link.label,
@@ -4572,7 +4572,10 @@ const _sfc_main$1b = {
                                   _: 2
                                 }, 1032, ["href"])
                               ]),
-                              createVNode("td", { class: "table__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                              createVNode("td", {
+                                class: "table__msg",
+                                title: lead.message ?? void 0
+                              }, toDisplayString(lead.message ?? "—"), 9, ["title"]),
                               createVNode("td", null, toDisplayString(lead.campaign ?? lead.source ?? "—"), 1),
                               createVNode("td", { class: "nowrap" }, toDisplayString(lead.interest ? interestLabel(lead.interest) : "—"), 1),
                               createVNode("td", null, [
@@ -4621,30 +4624,30 @@ const _sfc_main$1b = {
               _: 1
             }, _parent2, _scopeId));
             if (__props.selected) {
-              _push2(`<aside class="drawer" role="dialog" aria-modal="false" data-v-4ba05a66${_scopeId}><header class="drawer__head" data-v-4ba05a66${_scopeId}><h2 class="drawer__title latin" data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.contact)}</h2><button class="drawer__close" type="button"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-4ba05a66${_scopeId}> ✕ </button></header><div class="drawer__body" data-v-4ba05a66${_scopeId}><dl class="pairs" data-v-4ba05a66${_scopeId}><dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_date"))}</dt><dd data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(dateTime)(__props.selected.createdAt))}</dd><dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_message"))}</dt><dd data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.message ?? "—")}</dd><dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_status"))}</dt><dd data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)(`admin.status_${__props.selected.status}`))}</dd><dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_campaign"))}</dt><dd data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.campaign ?? "—")}</dd><dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.sectors"))}</dt><dd data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.sectorHint ?? "—")}</dd><dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_interest"))}</dt><dd data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.interest ? interestLabel(__props.selected.interest) : "—")}</dd></dl><h3 class="drawer__sub" data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution"))}</h3><dl class="pairs" data-v-4ba05a66${_scopeId}><dt data-v-4ba05a66${_scopeId}>Page</dt><dd class="ltr" data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.pageUrl ?? "—")}</dd><dt data-v-4ba05a66${_scopeId}>Referrer</dt><dd class="ltr" data-v-4ba05a66${_scopeId}>${ssrInterpolate(__props.selected.referrer ?? "—")}</dd><!--[-->`);
+              _push2(`<aside class="drawer" role="dialog" aria-modal="false" data-v-ac8d27fb${_scopeId}><header class="drawer__head" data-v-ac8d27fb${_scopeId}><h2 class="drawer__title latin" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.contact)}</h2><button class="drawer__close" type="button"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-ac8d27fb${_scopeId}> ✕ </button></header><div class="drawer__body" data-v-ac8d27fb${_scopeId}><dl class="pairs" data-v-ac8d27fb${_scopeId}><dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_date"))}</dt><dd data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(dateTime)(__props.selected.createdAt))}</dd><dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_message"))}</dt><dd data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.message ?? "—")}</dd><dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_status"))}</dt><dd data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)(`admin.status_${__props.selected.status}`))}</dd><dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_campaign"))}</dt><dd data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.campaign ?? "—")}</dd><dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.sectors"))}</dt><dd data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.sectorHint ?? "—")}</dd><dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_interest"))}</dt><dd data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.interest ? interestLabel(__props.selected.interest) : "—")}</dd></dl><h3 class="drawer__sub" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution"))}</h3><dl class="pairs" data-v-ac8d27fb${_scopeId}><dt data-v-ac8d27fb${_scopeId}>Page</dt><dd class="ltr" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.pageUrl ?? "—")}</dd><dt data-v-ac8d27fb${_scopeId}>Referrer</dt><dd class="ltr" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(__props.selected.referrer ?? "—")}</dd><!--[-->`);
               ssrRenderList(__props.selected.utm, (value, key) => {
-                _push2(`<dt data-v-4ba05a66${_scopeId}>${ssrInterpolate(key)}</dt>`);
+                _push2(`<dt data-v-ac8d27fb${_scopeId}>${ssrInterpolate(key)}</dt>`);
               });
               _push2(`<!--]--><!--[-->`);
               ssrRenderList(__props.selected.utm, (value, key) => {
-                _push2(`<dd class="ltr" data-v-4ba05a66${_scopeId}>${ssrInterpolate(value ?? "—")}</dd>`);
+                _push2(`<dd class="ltr" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(value ?? "—")}</dd>`);
               });
-              _push2(`<!--]--></dl><h3 class="drawer__sub" data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_log"))}</h3><p class="drawer__crm" data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)(`admin.crm_${__props.selected.crmStatus}`))} `);
+              _push2(`<!--]--></dl><h3 class="drawer__sub" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_log"))}</h3><p class="drawer__crm" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)(`admin.crm_${__props.selected.crmStatus}`))} `);
               if (__props.selected.crmProvider) {
-                _push2(`<span class="latin" data-v-4ba05a66${_scopeId}>· ${ssrInterpolate(__props.selected.crmProvider)}</span>`);
+                _push2(`<span class="latin" data-v-ac8d27fb${_scopeId}>· ${ssrInterpolate(__props.selected.crmProvider)}</span>`);
               } else {
                 _push2(`<!---->`);
               }
               _push2(`</p>`);
               if (__props.can.updateStatus && __props.selected.crmStatus !== "synced") {
-                _push2(`<button class="btn btn--secondary" type="button" data-v-4ba05a66${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_resync"))}</button>`);
+                _push2(`<button class="btn btn--secondary" type="button" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_resync"))}</button>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.selected.syncLogs?.length) {
-                _push2(`<ul class="logs" data-v-4ba05a66${_scopeId}><!--[-->`);
+                _push2(`<ul class="logs" data-v-ac8d27fb${_scopeId}><!--[-->`);
                 ssrRenderList(__props.selected.syncLogs, (log) => {
-                  _push2(`<li class="logs__row" data-v-4ba05a66${_scopeId}><span class="tabular" data-v-4ba05a66${_scopeId}>#${ssrInterpolate(log.attempt)}</span><span class="latin" data-v-4ba05a66${_scopeId}>${ssrInterpolate(log.provider)}</span><span class="tabular" data-v-4ba05a66${_scopeId}>${ssrInterpolate(log.httpStatus ?? "—")}</span><span class="logs__error" data-v-4ba05a66${_scopeId}>${ssrInterpolate(log.error ?? "")}</span></li>`);
+                  _push2(`<li class="logs__row" data-v-ac8d27fb${_scopeId}><span class="tabular" data-v-ac8d27fb${_scopeId}>#${ssrInterpolate(log.attempt)}</span><span class="latin" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(log.provider)}</span><span class="tabular" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(log.httpStatus ?? "—")}</span><span class="logs__error" data-v-ac8d27fb${_scopeId}>${ssrInterpolate(log.error ?? "")}</span></li>`);
                 });
                 _push2(`<!--]--></ul>`);
               } else {
@@ -4770,7 +4773,10 @@ const _sfc_main$1b = {
                                 _: 2
                               }, 1032, ["href"])
                             ]),
-                            createVNode("td", { class: "table__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                            createVNode("td", {
+                              class: "table__msg",
+                              title: lead.message ?? void 0
+                            }, toDisplayString(lead.message ?? "—"), 9, ["title"]),
                             createVNode("td", null, toDisplayString(lead.campaign ?? lead.source ?? "—"), 1),
                             createVNode("td", { class: "nowrap" }, toDisplayString(lead.interest ? interestLabel(lead.interest) : "—"), 1),
                             createVNode("td", null, [
@@ -4908,7 +4914,7 @@ _sfc_main$1b.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Leads/Index.vue");
   return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
 };
-const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-4ba05a66"]]);
+const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-ac8d27fb"]]);
 const __vite_glob_0_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$3

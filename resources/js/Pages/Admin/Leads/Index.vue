@@ -177,7 +177,15 @@ function closePanel() {
                                     {{ lead.contact }}
                                 </Link>
                             </td>
-                            <td class="table__msg">{{ lead.message ?? '—' }}</td>
+                            <!--
+                                Clamped, with the whole thing one click away
+                                on the lead's own page. `title` puts it in a
+                                tooltip too, so scanning the column does not
+                                cost a page load.
+                            -->
+                            <td class="table__msg" :title="lead.message ?? undefined">
+                                {{ lead.message ?? '—' }}
+                            </td>
                             <td>{{ lead.campaign ?? lead.source ?? '—' }}</td>
                             <td class="nowrap">
                                 {{ lead.interest ? interestLabel(lead.interest) : '—' }}
@@ -324,8 +332,21 @@ function closePanel() {
     color: var(--link);
 }
 
+/*
+ * Two lines, then an ellipsis.
+ *
+ * The width was capped and the text was not, so a 500-character message —
+ * and people do paste their whole CV into a contact form — became a
+ * fifteen-line row and pushed every other lead off the screen. The full text
+ * is on the lead's own page, which the contact link opens.
+ */
 .table__msg {
     max-inline-size: 24rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .table__select {

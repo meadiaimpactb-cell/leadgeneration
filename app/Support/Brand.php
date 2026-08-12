@@ -101,13 +101,6 @@ class Brand
         return $urls;
     }
 
-    public function forget(): void
-    {
-        foreach (self::COLLECTIONS as $collection) {
-            Cache::forget(self::CACHE_KEY.".{$collection}");
-        }
-    }
-
     /**
      * The settings row the assets hang off, created on first use so no
      * migration or seeder has to know about it.
