@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Listeners\RecordMediaDimensions;
+use App\Models\Page;
+use App\Models\PageTranslation;
+use App\Models\Section;
+use App\Models\SectionTranslation;
 use App\Models\User;
+use App\Observers\PageContentObserver;
 use App\Support\Settings;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -62,6 +67,19 @@ class AppServiceProvider extends ServiceProvider
         // Every uploaded image records its own pixel size, so <img> can carry
         // width/height and the browser reserves the box (§15.1).
         Event::listen(MediaHasBeenAddedEvent::class, RecordMediaDimensions::class);
+
+        /*
+         * A page's keyword scores follow the page.
+         *
+         * Registered on all four models that can change what a page says, so
+         * an editor who adds their target phrase to a headline sees the bar
+         * turn green without running anything. The observer decides what is
+         * worth dispatching; see it for why a section owned by a sector is
+         * skipped.
+         */
+        foreach ([Page::class, PageTranslation::class, Section::class, SectionTranslation::class] as $model) {
+            $model::observe(PageContentObserver::class);
+        }
 
         $this->configureRateLimiting();
         $this->configureGates();

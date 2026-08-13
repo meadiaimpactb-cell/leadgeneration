@@ -77,6 +77,7 @@ export const NAV_GROUPS = [
         items: [
             { icon: 'seo', label: 'settings.screen.seo', href: '/admin/settings/seo', can: 'settings.manage' },
             { icon: 'keywords', label: 'settings.screen.keywords', href: '/admin/seo/keywords', can: 'pages.view' },
+            { icon: 'keywords', label: 'settings.screen.page_keywords', href: '/admin/seo/page-keywords', can: 'pages.view' },
             { icon: 'robots', label: 'settings.screen.robots', href: '/admin/settings/robots', can: 'settings.manage' },
             { icon: 'sitemap', label: 'admin.sitemap', href: '/admin/seo/sitemap', can: 'settings.manage', soon: true },
             { icon: 'tracking', label: 'settings.screen.tracking', href: '/admin/settings/tracking', can: 'settings.manage' },

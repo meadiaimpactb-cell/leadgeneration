@@ -1,0 +1,236 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Jobs\AnalysePageKeywords;
+use App\Models\Page;
+use App\Models\PageKeyword;
+use App\Services\Seo\KeywordAnalyzer;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response;
+
+/**
+ * Keywords aimed at one page, and how well that page serves each of them.
+ *
+ * The second SEO screen, beside the site-wide one rather than instead of it.
+ * That one asks "does the site say this anywhere" and is where a list starts;
+ * this one asks "is this page built around it", which is the question whose
+ * answer is a list of edits.
+ *
+ * Three steps in the interface, in the order the work actually happens: pick
+ * the page, pick the language, paste the words. Everything after that is
+ * automatic — the score is written on entry and rewritten by
+ * PageContentObserver whenever the page changes.
+ */
+class PageKeywordController extends Controller
+{
+    /** The same permission that governs the site-wide keyword screen. */
+    private const PERMISSION = 'pages.view';
+
+    public function index(Request $request): Response
+    {
+        abort_unless($request->user()->can(self::PERMISSION), 403);
+
+        $locales = array_keys(config('site.locales'));
+        $locale = $request->string('locale')->toString();
+        $locale = in_array($locale, $locales, true) ? $locale : $locales[0];
+
+        $pages = $this->pages();
+        $pageId = (int) $request->integer('page_id');
+
+        // Defaults to the first page rather than to nothing: a screen that
+        // opens empty and demands a choice before showing anything teaches
+        // people it is broken.
+        $pageId = collect($pages)->contains('id', $pageId)
+            ? $pageId
+            : (int) ($pages[0]['id'] ?? 0);
+
+        return Inertia::render('Admin/Seo/PageKeywords', [
+            'locales' => $locales,
+            'locale' => $locale,
+            'pages' => $pages,
+            'pageId' => $pageId,
+            'keywords' => $this->keywords($pageId, $locale),
+            'weights' => KeywordAnalyzer::WEIGHTS,
+            'bands' => [
+                'weakBelow' => PageKeyword::WEAK_BELOW,
+                'strongFrom' => PageKeyword::STRONG_FROM,
+            ],
+            'editUrl' => $pageId !== 0 ? "/admin/pages/{$pageId}/edit" : null,
+        ]);
+    }
+
+    /**
+     * Bulk entry: one box, any number of phrases, newline or comma separated.
+     *
+     * Copied from the site-wide screen deliberately — the same hands paste
+     * the same list from the same spreadsheet, and two different entry
+     * conventions in one panel is a thing to remember for no reason.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()->can(self::PERMISSION), 403);
+
+        $data = $request->validate([
+            'page_id' => ['required', 'integer', 'exists:pages,id'],
+            'locale' => ['required', 'string', 'in:'.implode(',', array_keys(config('site.locales')))],
+            'terms' => ['required', 'string', 'max:20000'],
+        ]);
+
+        $page = Page::query()->findOrFail($data['page_id']);
+        $analyzer = app(KeywordAnalyzer::class);
+
+        $added = 0;
+        $duplicates = 0;
+        $seen = [];
+
+        foreach ($this->split($data['terms']) as $term) {
+            $normalized = $analyzer->normalise($term, $data['locale']);
+
+            if ($normalized === '') {
+                continue;
+            }
+
+            /*
+             * Duplicates are dropped in silence, and counted.
+             *
+             * Refusing the whole paste because one of sixty phrases is
+             * already there is the behaviour that makes people stop pasting.
+             * `$seen` catches repeats inside the same paste, before the
+             * database sees them.
+             */
+            $exists = in_array($normalized, $seen, true) || PageKeyword::query()
+                ->where('page_id', $page->id)
+                ->where('locale', $data['locale'])
+                ->where('keyword_normalized', $normalized)
+                ->exists();
+
+            if ($exists) {
+                $duplicates++;
+
+                continue;
+            }
+
+            $seen[] = $normalized;
+
+            $result = $analyzer->analyse($page, $data['locale'], $term);
+
+            PageKeyword::query()->create([
+                'page_id' => $page->id,
+                'locale' => $data['locale'],
+                'keyword' => Str::limit(trim($term), 180, ''),
+                'keyword_normalized' => Str::limit($normalized, 180, ''),
+                'score' => $result['score'],
+                'checks' => $result['checks'] + ['occurrences' => $result['occurrences']],
+                'analyzed_at' => now(),
+            ]);
+
+            $added++;
+        }
+
+        return back()->with('success', __('settings.page_keywords.added', [
+            'added' => $added,
+            'duplicates' => $duplicates,
+        ]));
+    }
+
+    public function destroy(Request $request, PageKeyword $pageKeyword): RedirectResponse
+    {
+        abort_unless($request->user()->can(self::PERMISSION), 403);
+
+        $pageKeyword->delete();
+
+        return back()->with('success', __('settings.page_keywords.removed'));
+    }
+
+    /** Re-run every keyword on one page and language, on demand. */
+    public function reanalyse(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()->can(self::PERMISSION), 403);
+
+        $data = $request->validate([
+            'page_id' => ['required', 'integer', 'exists:pages,id'],
+            'locale' => ['required', 'string', 'in:'.implode(',', array_keys(config('site.locales')))],
+        ]);
+
+        AnalysePageKeywords::dispatchSync($data['page_id'], $data['locale']);
+
+        return back()->with('success', __('settings.page_keywords.reanalysed'));
+    }
+
+    /**
+     * Published pages, named as the editor knows them.
+     *
+     * @return list<array{id: int, title: string, slug: string}>
+     */
+    private function pages(): array
+    {
+        return Page::query()
+            ->published()
+            ->with('translations')
+            ->get()
+            ->map(fn (Page $page): array => [
+                'id' => $page->id,
+                // The Arabic title is the one on the sidebar and the one they
+                // will recognise; the slug disambiguates two pages that share
+                // a title.
+                'title' => $page->translationFor('ar')?->title
+                    ?? $page->translationFor('en')?->title
+                    ?? $page->slug,
+                'slug' => $page->slug,
+            ])
+            ->sortBy('title', SORT_NATURAL)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function keywords(int $pageId, string $locale): array
+    {
+        if ($pageId === 0) {
+            return [];
+        }
+
+        return PageKeyword::query()
+            ->where('page_id', $pageId)
+            ->forLocale($locale)
+            // Worst first: the list is a worklist, not an inventory.
+            ->orderBy('score')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (PageKeyword $row): array => [
+                'id' => $row->id,
+                'keyword' => $row->keyword,
+                'score' => $row->score,
+                'band' => $row->band(),
+                'checks' => $row->checks ?? [],
+                'analyzedAt' => $row->analyzed_at?->toIso8601String(),
+            ])
+            ->all();
+    }
+
+    /**
+     * One paste into many phrases.
+     *
+     * @return list<string>
+     */
+    private function split(string $terms): array
+    {
+        // U+060C is the Arabic comma and is what an Arabic keyboard produces —
+        // omitting it turned «دروع تكريم، تذكارات المؤتمرات» into one keyword
+        // that matched nothing, silently, for every Arabic list pasted in.
+        return collect(preg_split('/[\r\n,،؛;]+/u', $terms) ?: [])
+            ->map(fn (string $term): string => trim($term))
+            ->filter()
+            ->values()
+            ->all();
+    }
+}

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KeywordController;
+use App\Http\Controllers\Admin\PageKeywordController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\LeadFieldController;
@@ -147,6 +148,14 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('seo/keywords', [KeywordController::class, 'store'])->name('seo.keywords.store');
         Route::put('seo/keywords/{keyword}', [KeywordController::class, 'update'])->name('seo.keywords.update');
         Route::delete('seo/keywords/{keyword}', [KeywordController::class, 'destroy'])->name('seo.keywords.destroy');
+
+        // The same words, aimed at one page — how well that page serves each.
+        // Beside the screen above, not instead of it: one is where a list
+        // starts, the other is where it turns into edits.
+        Route::get('seo/page-keywords', [PageKeywordController::class, 'index'])->name('seo.page-keywords');
+        Route::post('seo/page-keywords', [PageKeywordController::class, 'store'])->name('seo.page-keywords.store');
+        Route::post('seo/page-keywords/reanalyse', [PageKeywordController::class, 'reanalyse'])->name('seo.page-keywords.reanalyse');
+        Route::delete('seo/page-keywords/{pageKeyword}', [PageKeywordController::class, 'destroy'])->name('seo.page-keywords.destroy');
 
         // Everyone manages their own account, whatever their role — the
         // credentials handed over at launch (§19.3) are meant to be replaced
