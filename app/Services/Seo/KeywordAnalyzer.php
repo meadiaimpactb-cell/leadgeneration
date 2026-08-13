@@ -7,6 +7,8 @@ namespace App\Services\Seo;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\Section;
+use App\Models\SectionItem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -25,13 +27,10 @@ use Illuminate\Support\Str;
  * is worth measuring precisely because it is so often skipped — a page about
  * government gift protocols whose title says «حلولنا» and nothing else.
  *
- * THE ARABIC NORMALISATION IS THE WHOLE THING
+ * THE ARABIC FOLDING IS THE WHOLE THING
  *
- * Without it this tool is worse than useless: it reports words the page
- * plainly contains as missing, the editor sees red on text they are looking
- * at, and they stop believing any of it. «هدايا مؤسّسية» typed with a shadda
- * must match «هدايا مؤسسية» in the page, «إهداء» must match «اهداء», and
- * «هدية» must match «هديه». See normalise().
+ * See TextNormalizer. Without it this tool reports words the page plainly
+ * contains as missing, and nothing on the screen is believed again.
  */
 class KeywordAnalyzer
 {
@@ -59,6 +58,27 @@ class KeywordAnalyzer
     ];
 
     /**
+     * Above this share of the page's words, the phrase is being stuffed.
+     *
+     * Warned about and never scored. A penalty here would mean the bar drops
+     * while the editor is doing the thing the bar just asked for — mentioning
+     * the phrase — and no explanation survives that. Three percent is the
+     * conventional line; the point is not the exact number but that somebody
+     * repeating a phrase forty times is told, in words, to stop.
+     */
+    public const STUFFING_DENSITY = 0.03;
+
+    /**
+     * No phrase used this few times is being stuffed, whatever the density
+     * says. See isStuffing() — the density line alone flagged a single
+     * mention in a short excerpt.
+     */
+    public const STUFFING_MIN_REPEATS = 3;
+
+    /** Below this, a share of the text is not a meaningful measurement. */
+    public const STUFFING_MIN_WORDS = 60;
+
+    /**
      * Settings keys that hold a machine value, not prose.
      *
      * A URL containing "government" is not the page discussing government,
@@ -70,21 +90,73 @@ class KeywordAnalyzer
         'color', 'flip', 'align', 'columns', 'anchor', 'file',
     ];
 
+    public function __construct(private readonly TextNormalizer $normalizer) {}
+
+    /**
+     * Everything content() needs, in one place.
+     *
+     * Shared with the job so the two cannot drift: a relation missing from one
+     * of them is a lazy load, and `preventLazyLoading` turns that into an
+     * exception mid-save in development and a query per row in production.
+     *
+     * @return array<string, mixed>
+     */
+    public static function eagerLoads(): array
+    {
+        return [
+            'translations',
+            'sections' => fn ($q) => $q->where('is_active', true)
+                ->with([
+                    'translations',
+                    'media.translations',
+                    'mediaAttachments.media.translations',
+                    // Only live items: an item switched off is not on the page,
+                    // and scoring the page for words nobody can read is the
+                    // same lie as scoring it for its own footer.
+                    'items' => fn ($items) => $items->where('is_active', true)
+                        ->with(['translations', 'media.translations']),
+                ]),
+        ];
+    }
+
     /**
      * The full result for one keyword against one page.
      *
-     * @return array{score: int, checks: array<string, array{passed: bool, weight: int}>, occurrences: int}
+     * @return array{score: int, checks: array<string, array{passed: bool, weight: int}>, occurrences: int, density: float, stuffed: bool, content_hash: string}
      */
     public function analyse(Page $page, string $locale, string $keyword): array
     {
-        $needle = $this->normalise($keyword, $locale);
-        $content = $this->content($page, $locale);
+        return $this->analyseAgainst($this->content($page, $locale), $locale, $keyword);
+    }
+
+    /**
+     * The same, against content already gathered.
+     *
+     * The entry point every batch uses. Reading a page, its translations, its
+     * sections, their translations, their items and every alt text costs the
+     * same whether one keyword or sixty are being scored against it — so the
+     * caller gathers once and scores many. Sixty keywords used to mean sixty
+     * rebuilds of the identical string.
+     *
+     * @param  array<string, mixed>  $content  from content()
+     * @return array{score: int, checks: array<string, array{passed: bool, weight: int}>, occurrences: int, density: float, stuffed: bool, content_hash: string}
+     */
+    public function analyseAgainst(array $content, string $locale, string $keyword): array
+    {
+        $needle = $this->normalizer->normalise($keyword, $locale);
 
         if ($needle === '') {
-            return ['score' => 0, 'checks' => $this->emptyChecks(), 'occurrences' => 0];
+            return [
+                'score' => 0,
+                'checks' => $this->emptyChecks(),
+                'occurrences' => 0,
+                'density' => 0.0,
+                'stuffed' => false,
+                'content_hash' => (string) $content['hash'],
+            ];
         }
 
-        $occurrences = substr_count($content['body'], $needle);
+        $occurrences = substr_count((string) $content['body'], $needle);
 
         $results = [
             'meta_title' => $this->contains($content['meta_title'], $needle),
@@ -113,55 +185,32 @@ class KeywordAnalyzer
             $score += $passed ? $weight : 0;
         }
 
-        return ['score' => $score, 'checks' => $checks, 'occurrences' => $occurrences];
+        $density = $this->density($needle, $occurrences, (int) $content['words']);
+
+        return [
+            'score' => $score,
+            'checks' => $checks,
+            'occurrences' => $occurrences,
+            'density' => $density,
+            'stuffed' => $this->isStuffing($occurrences, (int) $content['words'], $density),
+            'content_hash' => (string) $content['hash'],
+        ];
     }
 
     /**
-     * The matching form of a string.
+     * A fingerprint of everything a score depends on.
      *
-     * Applied to the keyword and to the page's text alike — normalising only
-     * one side is the same as not normalising at all.
-     *
-     * Arabic, in order:
-     *
-     *   · harakat and the dagger alef removed — a shadda in the page and none
-     *     in the keyword is not a different word
-     *   · أ إ آ ٱ → ا, and ؤ ئ → و ي, so hamza spelling stops mattering
-     *   · ة → ه, because «هدية» and «هديه» are the same word to a reader and
-     *     the site is not consistent about which it uses
-     *   · ى → ي, same reason
-     *   · tatweel removed, and Arabic-Indic digits folded to Latin so ٢٠٢٤
-     *     matches 2024
-     *
-     * Both languages: lowercased, punctuation reduced to spaces so a phrase
-     * followed by a comma still matches, and whitespace collapsed.
+     * Two uses, both in page_keywords.content_hash: skipping a re-analysis
+     * that cannot change any answer, and telling the screen that a stored
+     * score describes a page that has since been edited.
      */
-    public function normalise(string $text, string $locale = 'ar'): string
+    public function fingerprint(Page $page, string $locale): string
     {
-        $text = Str::lower(trim($text));
-
-        // Harakat, tanween, shadda, sukun, dagger alef, and the tatweel.
-        $text = preg_replace('/[\x{0610}-\x{061A}\x{064B}-\x{065F}\x{0670}\x{06D6}-\x{06ED}\x{0640}]/u', '', $text) ?? $text;
-
-        $text = strtr($text, [
-            'أ' => 'ا', 'إ' => 'ا', 'آ' => 'ا', 'ٱ' => 'ا',
-            'ؤ' => 'و', 'ئ' => 'ي', 'ة' => 'ه', 'ى' => 'ي',
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
-            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
-        ]);
-
-        /*
-         * Punctuation to spaces, not to nothing: «الحرف،» must match «الحرف»,
-         * but «حرف-يدوي» must not silently become one word «حرفيدوي» that
-         * matches neither half.
-         */
-        $text = preg_replace('/[^\p{L}\p{N}\s]+/u', ' ', $text) ?? $text;
-
-        return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+        return (string) $this->content($page, $locale)['hash'];
     }
 
     /**
-     * Everything the page says in this language, by field.
+     * What the page says in this language, by field, already normalised.
      *
      * Read from the database rather than by fetching the rendered page: the
      * markup is the same words plus a great deal of navigation, footer and
@@ -169,21 +218,24 @@ class KeywordAnalyzer
      * because it appears in the site footer would make every page look
      * equally good at everything.
      *
-     * @return array{meta_title: string, heading: string, meta_description: string, body: string, first_paragraph: string, image_alt: string, slug: string}
+     * @return array{meta_title: string, heading: string, meta_description: string, body: string, first_paragraph: string, image_alt: string, slug: string, words: int, hash: string}
      */
     public function content(Page $page, string $locale): array
     {
-        $page->loadMissing([
-            'translations',
-            'sections' => fn ($q) => $q->where('is_active', true)
-                ->with(['translations', 'media.translations', 'mediaAttachments.media.translations']),
-        ]);
+        /*
+         * `load`, not `loadMissing`: a caller that already eager-loaded
+         * `sections` without `items` would keep its shallower version, and the
+         * card copy would silently vanish from the body — the exact failure
+         * this method exists to prevent.
+         */
+        $page->load(self::eagerLoads());
 
         $translation = $page->translationFor($locale);
 
         $body = [$translation?->subtitle, $translation?->excerpt];
         $alts = [];
-        $firstParagraph = null;
+        $heroHeading = null;
+        $openingProse = null;
 
         foreach ($page->sections->sortBy('sort_order') as $section) {
             $row = $section->translations->firstWhere('locale', $locale);
@@ -192,38 +244,133 @@ class KeywordAnalyzer
                 $body[] = $field;
             }
 
-            // Cards, steps, questions — the copy inside a section's own JSON.
+            /*
+             * Repeatable copy — cards, steps, questions, stations — from both
+             * of its homes.
+             *
+             * `section_items` is the table it is moving to; `settings->items[]`
+             * is where all of it still lives until that migration has run and
+             * been verified (see docs/dynamic-audit.md). Reading only one of
+             * them would mean the analyser is wrong either today or on the day
+             * of the changeover, and the failure would be silent both times:
+             * a page whose three cards carry the phrase, scored as never
+             * mentioning it.
+             */
             $body[] = $this->prose($section->settings ?? [], $locale);
 
-            $firstParagraph ??= $this->firstProse($row?->body ?? $row?->subheading);
+            foreach ($section->items as $item) {
+                $body[] = $this->itemProse($item, $locale);
+                $alts[] = $this->altsOf($item->media, $locale);
+            }
+
+            // The visible H1 is usually the page title, but a page whose hero
+            // carries the real headline is just as much a match — §13 cares
+            // about the first heading a reader meets, not which table it is in.
+            if ($section->type === 'hero') {
+                $heroHeading ??= $row?->heading;
+            }
+
+            $openingProse ??= $this->firstProse($row?->body ?? $row?->subheading);
 
             $alts[] = $this->altText($section, $locale);
         }
 
-        return [
+        $bodyText = $this->normalise($this->flatten($body), $locale);
+
+        $fields = [
             'meta_title' => $this->normalise((string) $translation?->meta_title, $locale),
-            // The H1 is the page's own title; meta_title is only what the tab
-            // and the search result show, and they are edited separately.
-            'heading' => $this->normalise((string) $translation?->title, $locale),
+            // The page's own title, plus the hero headline when it has one:
+            // either is the heading a reader sees first, and matching either
+            // is the thing being measured.
+            'heading' => $this->normalise($this->flatten([$translation?->title, $heroHeading]), $locale),
             'meta_description' => $this->normalise((string) $translation?->meta_description, $locale),
-            'body' => $this->normalise($this->flatten($body), $locale),
+            'body' => $bodyText,
             /*
              * What a visitor reads first, in the order they meet it: the line
-             * under the page title, then the first section that says anything,
-             * then the summary. Reading only the sections missed pages whose
-             * opening sentence is the subtitle — which is most of them.
+             * under the page title and the first section that says anything.
+             * Reading only the sections missed pages whose opening sentence is
+             * the subtitle — which is most of them.
              */
             'first_paragraph' => $this->normalise(
-                (string) ($translation?->subtitle ?: $firstParagraph ?: $translation?->excerpt),
+                $this->flatten([$translation?->subtitle, $openingProse])
+                    ?: (string) $translation?->excerpt,
                 $locale,
             ),
             'image_alt' => $this->normalise($this->flatten($alts), $locale),
             'slug' => $this->normalise(str_replace(['-', '/'], ' ', (string) $page->slug), $locale),
         ];
+
+        return $fields + [
+            'words' => $this->normalizer->wordCount($bodyText),
+            // Every field a check reads, so the fingerprint changes when and
+            // only when some answer could have changed.
+            'hash' => sha1(implode("\n", $fields)),
+        ];
     }
 
     /**
-     * Prose inside a section's settings, in this locale only.
+     * What share of the page's words this phrase is.
+     *
+     * Counted in words on both sides: three occurrences of a three-word phrase
+     * account for nine of the page's words, not three. Measuring occurrences
+     * against words would call a long phrase sparse when it dominates the copy.
+     */
+    /**
+     * Whether repetition has crossed from emphasis into stuffing.
+     *
+     * Density alone cannot answer this, and using it alone was wrong: one
+     * mention of a two-word phrase in a thirty-one-word excerpt is 6% — twice
+     * the limit, and completely ordinary writing. The screen would have told
+     * an editor to stop doing the thing it had just asked them to do.
+     *
+     * So two gates come first, and both are about what the word means rather
+     * than about arithmetic:
+     *
+     *   · stuffing IS repetition. A phrase used three times or fewer is not
+     *     being stuffed however short the page is.
+     *   · a percentage of a very short text is noise. Under a paragraph or
+     *     two there is no share to speak of.
+     *
+     * Only past both does the density line apply.
+     */
+    private function isStuffing(int $occurrences, int $bodyWords, float $density): bool
+    {
+        if ($occurrences <= self::STUFFING_MIN_REPEATS || $bodyWords < self::STUFFING_MIN_WORDS) {
+            return false;
+        }
+
+        return $density > self::STUFFING_DENSITY;
+    }
+
+    private function density(string $needle, int $occurrences, int $bodyWords): float
+    {
+        if ($occurrences === 0 || $bodyWords === 0) {
+            return 0.0;
+        }
+
+        return ($occurrences * $this->normalizer->wordCount($needle)) / $bodyWords;
+    }
+
+    /**
+     * One repeatable item's copy, in this locale.
+     *
+     * `cta_url` is skipped for the same reason a settings URL is: an address
+     * containing the phrase is not the page saying it.
+     */
+    private function itemProse(SectionItem $item, string $locale): string
+    {
+        $row = $item->translations->firstWhere('locale', $locale);
+
+        return $this->flatten([
+            $row?->title,
+            $row?->body,
+            $row?->cta_label,
+            $this->prose($item->settings ?? [], $locale),
+        ]);
+    }
+
+    /**
+     * Prose inside a settings array, in this locale only.
      *
      * The project's JSON convention is a plain key for Arabic and the same
      * key suffixed `_en` for English — `title` / `title_en`. Taking every
@@ -272,9 +419,9 @@ class KeywordAnalyzer
     /**
      * The alt text of every image the section shows, in this locale.
      *
-     * Both slots: the single image and the gallery, and both sources — the
-     * library reference and an older direct upload — because `mediaFor()`'s
-     * rule about which wins applies here too.
+     * Both slots — the single image and the gallery — and both sources, the
+     * library reference and an older direct upload, because `mediaFor()`'s
+     * rule about which one wins applies here too.
      */
     private function altText(Section $section, string $locale): string
     {
@@ -284,7 +431,15 @@ class KeywordAnalyzer
             ->merge($section->media)
             ->unique('id');
 
-        return $media
+        return $this->altsOf($media, $locale);
+    }
+
+    /**
+     * @param  Collection<int, Media>|\Illuminate\Database\Eloquent\Collection<int, Media>  $media
+     */
+    private function altsOf($media, string $locale): string
+    {
+        return collect($media)
             ->map(fn (Media $item): ?string => $item->translations->firstWhere('locale', $locale)?->alt_text)
             ->filter()
             ->implode(' ');
@@ -316,29 +471,22 @@ class KeywordAnalyzer
     /** @param  list<string|null>  $fields */
     private function flatten(array $fields): string
     {
-        return implode(' ', array_filter(array_map(
+        return trim(implode(' ', array_filter(array_map(
             fn (?string $field): string => trim(html_entity_decode(
                 strip_tags((string) $field), ENT_QUOTES | ENT_HTML5, 'UTF-8'
             )),
             $fields,
-        )));
+        ))));
     }
 
-    /**
-     * Word-boundary-free containment, deliberately.
-     *
-     * Arabic prefixes attach to the word: «الهدايا» is «هدايا» with the
-     * article, «وللجهات» is «جهات» with two. A boundary check would fail on
-     * text a reader plainly sees as containing the phrase, which is the
-     * failure mode that destroys trust in the whole screen.
-     *
-     * The cost is that a keyword which is a fragment of a longer word can
-     * match it. For phrases — what people actually target — that is rare, and
-     * the wrong direction to err in is the other one.
-     */
+    private function normalise(string $text, string $locale): string
+    {
+        return $this->normalizer->normalise($text, $locale);
+    }
+
     private function contains(string $haystack, string $needle): bool
     {
-        return $haystack !== '' && str_contains($haystack, $needle);
+        return $this->normalizer->contains($haystack, $needle);
     }
 
     /** @return array<string, array{passed: bool, weight: int}> */

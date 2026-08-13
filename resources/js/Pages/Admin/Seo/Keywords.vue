@@ -172,6 +172,21 @@ function remove(row) {
                                         : t('settings.keywords.state_gap') }}
                             </span>
 
+                            <!-- The next question, one click away.
+                                 This screen answers "does the site say this
+                                 anywhere"; once it does, the useful question is
+                                 whether the page that says it is built around
+                                 it. The first matching page is carried across
+                                 so the other screen opens on it already. -->
+                            <Link
+                                class="term__analyse"
+                                :href="`/admin/seo/page-keywords?locale=${row.locale}${
+                                    row.pages.length ? `&page_id=${row.pages[0].id}` : ''
+                                }`"
+                            >
+                                {{ t('settings.keywords.analyse_page') }}
+                            </Link>
+
                             <button class="term__del" type="button" @click="remove(row)">
                                 {{ t('admin.delete') }}
                             </button>
@@ -330,8 +345,21 @@ function remove(row) {
     background: var(--paper-alt);
 }
 
-.term__del {
+/* This pair sits at the trailing edge of the row. The auto margin lives on
+   the first of the two so they stay together rather than splitting the gap. */
+.term__analyse {
     margin-inline-start: auto;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--action-600);
+    min-block-size: 44px;
+    padding-inline: var(--s-2);
+    display: inline-flex;
+    align-items: center;
+    text-decoration: underline;
+}
+
+.term__del {
     font-size: var(--fs-xs);
     font-weight: 600;
     color: var(--action-600);

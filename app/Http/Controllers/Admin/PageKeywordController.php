@@ -9,6 +9,7 @@ use App\Jobs\AnalysePageKeywords;
 use App\Models\Page;
 use App\Models\PageKeyword;
 use App\Services\Seo\KeywordAnalyzer;
+use App\Services\Seo\TextNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -85,13 +86,21 @@ class PageKeywordController extends Controller
 
         $page = Page::query()->findOrFail($data['page_id']);
         $analyzer = app(KeywordAnalyzer::class);
+        $normalizer = app(TextNormalizer::class);
+
+        /*
+         * Gathered once for the whole paste. Sixty phrases used to mean sixty
+         * rebuilds of the same string — the page, every section, every card
+         * and every alt text — for one substring search each.
+         */
+        $content = $analyzer->content($page, $data['locale']);
 
         $added = 0;
         $duplicates = 0;
         $seen = [];
 
         foreach ($this->split($data['terms']) as $term) {
-            $normalized = $analyzer->normalise($term, $data['locale']);
+            $normalized = $normalizer->normalise($term, $data['locale']);
 
             if ($normalized === '') {
                 continue;
@@ -119,7 +128,7 @@ class PageKeywordController extends Controller
 
             $seen[] = $normalized;
 
-            $result = $analyzer->analyse($page, $data['locale'], $term);
+            $result = $analyzer->analyseAgainst($content, $data['locale'], $term);
 
             PageKeyword::query()->create([
                 'page_id' => $page->id,
@@ -127,7 +136,12 @@ class PageKeywordController extends Controller
                 'keyword' => Str::limit(trim($term), 180, ''),
                 'keyword_normalized' => Str::limit($normalized, 180, ''),
                 'score' => $result['score'],
-                'checks' => $result['checks'] + ['occurrences' => $result['occurrences']],
+                'checks' => $result['checks'] + [
+                    'occurrences' => $result['occurrences'],
+                    'density' => round($result['density'], 4),
+                    'stuffed' => $result['stuffed'],
+                ],
+                'content_hash' => $result['content_hash'],
                 'analyzed_at' => now(),
             ]);
 
@@ -149,7 +163,19 @@ class PageKeywordController extends Controller
         return back()->with('success', __('settings.page_keywords.removed'));
     }
 
-    /** Re-run every keyword on one page and language, on demand. */
+    /**
+     * Re-run every keyword on one page and language, on demand.
+     *
+     * Run here and now rather than queued, unlike the observer's automatic
+     * pass. Somebody pressing "re-check everything" is standing in front of
+     * the screen waiting for the numbers to move; handing them back the same
+     * page with the same values and a cheerful message is indistinguishable
+     * from the button being broken.
+     *
+     * Forced past the fingerprint for the same reason: the button exists for
+     * the moment somebody doubts the numbers, and "nothing changed, so I did
+     * nothing" is not an answer to a doubt.
+     */
     public function reanalyse(Request $request): RedirectResponse
     {
         abort_unless($request->user()->can(self::PERMISSION), 403);
@@ -159,7 +185,7 @@ class PageKeywordController extends Controller
             'locale' => ['required', 'string', 'in:'.implode(',', array_keys(config('site.locales')))],
         ]);
 
-        AnalysePageKeywords::dispatchSync($data['page_id'], $data['locale']);
+        AnalysePageKeywords::dispatchSync($data['page_id'], $data['locale'], force: true);
 
         return back()->with('success', __('settings.page_keywords.reanalysed'));
     }
@@ -199,19 +225,41 @@ class PageKeywordController extends Controller
             return [];
         }
 
-        return PageKeyword::query()
+        $rows = PageKeyword::query()
             ->where('page_id', $pageId)
             ->forLocale($locale)
             // Worst first: the list is a worklist, not an inventory.
             ->orderBy('score')
             ->orderBy('id')
-            ->get()
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return [];
+        }
+
+        /*
+         * The page as it stands right now, against the content each score was
+         * calculated from.
+         *
+         * The automatic re-analysis is queued, so between an editor saving a
+         * page and a worker picking the job up, these rows describe the page
+         * as it was. That window is normally a second and is occasionally
+         * forever — nobody started a worker. Either way the screen says so
+         * rather than presenting an old number as a current one, which is the
+         * single thing that would make every other number here worthless.
+         */
+        $page = Page::query()->find($pageId);
+        $current = $page !== null ? app(KeywordAnalyzer::class)->fingerprint($page, $locale) : null;
+
+        return $rows
             ->map(fn (PageKeyword $row): array => [
                 'id' => $row->id,
                 'keyword' => $row->keyword,
                 'score' => $row->score,
                 'band' => $row->band(),
                 'checks' => $row->checks ?? [],
+                'stuffed' => (bool) ($row->checks['stuffed'] ?? false),
+                'stale' => $current !== null && $row->content_hash !== $current,
                 'analyzedAt' => $row->analyzed_at?->toIso8601String(),
             ])
             ->all();

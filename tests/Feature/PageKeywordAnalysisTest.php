@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageKeyword;
 use App\Models\User;
 use App\Services\Seo\KeywordAnalyzer;
+use App\Services\Seo\TextNormalizer;
 use Database\Seeders\NavigationSeeder;
 use Database\Seeders\RolesSeeder;
 use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -64,6 +67,11 @@ class PageKeywordAnalysisTest extends TestCase
         return app(KeywordAnalyzer::class);
     }
 
+    private function normalizer(): TextNormalizer
+    {
+        return app(TextNormalizer::class);
+    }
+
     /** @param  array<string, mixed>  $fields */
     private function translate(array $fields, string $locale = 'ar'): void
     {
@@ -78,47 +86,86 @@ class PageKeywordAnalysisTest extends TestCase
     #[Test]
     public function hamza_spelling_does_not_change_the_match(): void
     {
-        $analyzer = $this->analyzer();
+        $normalizer = $this->normalizer();
 
         $this->assertSame(
-            $analyzer->normalise('إهداء أمد'),
-            $analyzer->normalise('اهداء امد'),
+            $normalizer->normalise('إهداء أمد'),
+            $normalizer->normalise('اهداء امد'),
         );
     }
 
     #[Test]
     public function diacritics_are_ignored(): void
     {
-        $analyzer = $this->analyzer();
+        $normalizer = $this->normalizer();
 
         $this->assertSame(
-            $analyzer->normalise('الحِرفة السعوديّة'),
-            $analyzer->normalise('الحرفة السعودية'),
+            $normalizer->normalise('الحِرفة السعوديّة'),
+            $normalizer->normalise('الحرفة السعودية'),
         );
     }
 
     #[Test]
     public function taa_marbuta_and_alef_maqsura_are_unified(): void
     {
-        $analyzer = $this->analyzer();
+        $normalizer = $this->normalizer();
 
-        $this->assertSame($analyzer->normalise('هدية'), $analyzer->normalise('هديه'));
-        $this->assertSame($analyzer->normalise('مقهى'), $analyzer->normalise('مقهي'));
+        $this->assertSame($normalizer->normalise('هدية'), $normalizer->normalise('هديه'));
+        $this->assertSame($normalizer->normalise('مقهى'), $normalizer->normalise('مقهي'));
     }
 
     #[Test]
     public function tatweel_and_arabic_digits_are_folded(): void
     {
-        $analyzer = $this->analyzer();
+        $normalizer = $this->normalizer();
 
-        $this->assertSame($analyzer->normalise('حــرف'), $analyzer->normalise('حرف'));
-        $this->assertSame($analyzer->normalise('رؤية ٢٠٣٠'), $analyzer->normalise('رؤية 2030'));
+        $this->assertSame($normalizer->normalise('حــرف'), $normalizer->normalise('حرف'));
+        $this->assertSame($normalizer->normalise('رؤية ٢٠٣٠'), $normalizer->normalise('رؤية 2030'));
     }
 
     #[Test]
     public function english_is_lowercased_and_trimmed(): void
     {
-        $this->assertSame('corporate gifts', $this->analyzer()->normalise('  Corporate  GIFTS ', 'en'));
+        $this->assertSame('corporate gifts', $this->normalizer()->normalise('  Corporate  GIFTS ', 'en'));
+    }
+
+    /**
+     * Punctuation separates rather than disappears.
+     *
+     * Both halves matter: a phrase followed by a comma must still match, and
+     * a hyphenated pair must not fuse into a word that matches neither side.
+     */
+    #[Test]
+    public function punctuation_becomes_a_space_and_not_nothing(): void
+    {
+        $normalizer = $this->normalizer();
+
+        $this->assertSame($normalizer->normalise('الحرف'), $normalizer->normalise('الحرف،'));
+        $this->assertSame('حرف يدوي', $normalizer->normalise('حرف-يدوي'));
+    }
+
+    /** Density counts words, so the phrase and the page use the same unit. */
+    #[Test]
+    public function words_are_counted_after_folding(): void
+    {
+        $this->assertSame(0, $this->normalizer()->wordCount(''));
+        $this->assertSame(3, $this->normalizer()->wordCount('هدايا مؤسسية حكومية'));
+    }
+
+    /**
+     * The site-wide screen is deliberately left on its old matching.
+     *
+     * Pointing KeywordCoverage at the normalizer would change numbers an
+     * editor has already read and acted on, in a screen this work was told not
+     * to touch. If that becomes desirable it is its own decision — this test
+     * exists so it cannot happen by accident.
+     */
+    #[Test]
+    public function the_site_wide_coverage_service_does_not_fold_arabic(): void
+    {
+        $source = file_get_contents(app_path('Services/Seo/KeywordCoverage.php'));
+
+        $this->assertStringNotContainsString('TextNormalizer', (string) $source);
     }
 
     /** The point of all of the above, end to end. */
@@ -309,6 +356,241 @@ class PageKeywordAnalysisTest extends TestCase
         );
     }
 
+    /**
+     * The check the whole `section_items` migration exists for.
+     *
+     * Cards, steps and questions are moving out of `settings->items[]` into
+     * rows of their own. A phrase living only in one of those rows and scored
+     * as absent would be the worst kind of wrong: the editor is looking at the
+     * words on the page while the screen says they are missing.
+     */
+    #[Test]
+    public function copy_that_lives_only_in_a_section_item_still_counts(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $section = $this->page->sections()->create([
+            'type' => 'cards', 'sort_order' => 0, 'is_active' => true,
+        ]);
+        $section->translations()->create(['locale' => 'ar', 'heading' => 'ما نقدّمه']);
+
+        $item = $section->items()->create(['sort_order' => 0, 'is_active' => true]);
+        $item->translations()->create([
+            'locale' => 'ar',
+            'title' => 'تذكارات المؤتمرات',
+            'body' => 'قطع حرفية تُسلَّم بالتاريخ المتفق عليه.',
+            // Never prose: an address containing the phrase is not the page
+            // saying it.
+            'cta_url' => '/ar/تذكارات-المؤتمرات',
+        ]);
+
+        $this->page->refresh();
+
+        $result = $this->analyzer()->analyse($this->page, 'ar', 'تذكارات المؤتمرات');
+
+        $this->assertTrue($result['checks']['in_body_once']['passed'],
+            'A card stored as a section_item row is not being read into the body.');
+        $this->assertSame(1, $result['occurrences'],
+            'The phrase was counted twice — the item CTA URL is being scored as prose.');
+    }
+
+    #[Test]
+    public function an_item_switched_off_is_not_counted(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $section = $this->page->sections()->create([
+            'type' => 'cards', 'sort_order' => 0, 'is_active' => true,
+        ]);
+        $item = $section->items()->create(['sort_order' => 0, 'is_active' => false]);
+        $item->translations()->create(['locale' => 'ar', 'title' => 'سعف النخيل']);
+
+        $this->page->refresh();
+
+        $this->assertFalse(
+            $this->analyzer()->analyse($this->page, 'ar', 'سعف النخيل')['checks']['in_body_once']['passed'],
+            'A card nobody can see is scoring for its words.',
+        );
+    }
+
+    #[Test]
+    public function an_item_in_the_other_language_does_not_leak(): void
+    {
+        $this->translate(['title' => 'من نحن'], 'ar');
+        $this->translate(['title' => 'About'], 'en');
+
+        $section = $this->page->sections()->create([
+            'type' => 'cards', 'sort_order' => 0, 'is_active' => true,
+        ]);
+        $item = $section->items()->create(['sort_order' => 0, 'is_active' => true]);
+        $item->translations()->create(['locale' => 'en', 'title' => 'Conference keepsakes']);
+
+        $this->page->refresh();
+
+        $this->assertFalse(
+            $this->analyzer()->analyse($this->page, 'ar', 'conference keepsakes')['checks']['in_body_once']['passed'],
+        );
+        $this->assertTrue(
+            $this->analyzer()->analyse($this->page, 'en', 'conference keepsakes')['checks']['in_body_once']['passed'],
+        );
+    }
+
+    /** A page whose real headline is in its hero, not in the title field. */
+    #[Test]
+    public function a_hero_heading_counts_as_the_visible_heading(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $hero = $this->page->sections()->create([
+            'type' => 'hero', 'sort_order' => 0, 'is_active' => true,
+        ]);
+        $hero->translations()->create(['locale' => 'ar', 'heading' => 'حرفة سعودية تليق بمقام جهتكم']);
+
+        $this->page->refresh();
+
+        $this->assertTrue(
+            $this->analyzer()->analyse($this->page, 'ar', 'حرفة سعودية')['checks']['heading']['passed'],
+            'The headline a reader actually meets first is not being read as the heading.',
+        );
+    }
+
+    // ------------------------------------------------------------------ //
+    // Over-repetition
+    // ------------------------------------------------------------------ //
+
+    /**
+     * Warned about, never scored.
+     *
+     * A penalty here would drop the bar while the editor is doing the thing
+     * the bar just asked for, and no wording survives that.
+     */
+    #[Test]
+    public function a_phrase_repeated_past_the_limit_is_flagged_without_costing_points(): void
+    {
+        $term = 'هدايا مؤسسية';
+
+        $natural = 'نصنع '.$term.' للجهات الحكومية والشركات في المملكة، '
+            .'ونسلّمها بالتاريخ المتفق عليه مع تقرير أثر مفصّل يوثّق كل قطعة وحرفيّها '
+            .'وكل مرحلة من مراحل الإنتاج والتسليم والتغليف والشحن حتى تصل إليكم.';
+
+        $this->translate(['title' => 'من نحن', 'excerpt' => $natural]);
+        $sane = $this->analyzer()->analyse($this->page, 'ar', $term);
+
+        $this->assertFalse($sane['stuffed'], 'Ordinary copy was called stuffing.');
+
+        // The same paragraph with the phrase jammed in twenty more times. Kept
+        // long enough to clear STUFFING_MIN_WORDS: a short page has no share
+        // worth measuring, which is the whole reason that gate exists.
+        $this->translate([
+            'title' => 'من نحن',
+            'excerpt' => $natural.' '.str_repeat($term.' ', 20),
+        ]);
+        $stuffed = $this->analyzer()->analyse($this->page, 'ar', $term);
+
+        $this->assertTrue($stuffed['stuffed'], 'Twenty repetitions in a row was not flagged.');
+        $this->assertGreaterThan(KeywordAnalyzer::STUFFING_DENSITY, $stuffed['density']);
+        $this->assertGreaterThanOrEqual($sane['score'], $stuffed['score'],
+            'Stuffing cost points — the warning must not also be a penalty.');
+    }
+
+    // ------------------------------------------------------------------ //
+    // The fingerprint
+    // ------------------------------------------------------------------ //
+
+    #[Test]
+    public function the_fingerprint_changes_only_when_the_scored_content_does(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $before = $this->analyzer()->fingerprint($this->page, 'ar');
+
+        // Not read by any check.
+        $this->page->forceFill(['is_indexable' => false])->save();
+        $this->assertSame($before, $this->analyzer()->fingerprint($this->page->refresh(), 'ar'));
+
+        // Read by two.
+        $this->translate(['title' => 'هدايا مؤسسية']);
+        $this->assertNotSame($before, $this->analyzer()->fingerprint($this->page->refresh(), 'ar'));
+    }
+
+    /** A save that cannot change an answer must not rewrite sixty rows. */
+    #[Test]
+    public function an_unchanged_page_is_not_rescored(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
+        ]);
+
+        $keyword = PageKeyword::query()->sole();
+        $stamp = $keyword->analyzed_at;
+
+        $this->assertNotNull($keyword->content_hash, 'The fingerprint was not stored on entry.');
+
+        $this->travel(2)->seconds();
+        // A save that touches nothing the analyser reads.
+        $this->page->forceFill(['sort_order' => 3])->save();
+
+        $this->assertEquals($stamp, $keyword->refresh()->analyzed_at,
+            'A save that changed nothing scored still rewrote the row.');
+    }
+
+    /** And the button that exists for doubt ignores the fingerprint. */
+    #[Test]
+    public function re_check_everything_runs_even_when_nothing_changed(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
+        ]);
+
+        $stamp = PageKeyword::query()->sole()->analyzed_at;
+
+        $this->travel(2)->seconds();
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords/reanalyse', [
+            'page_id' => $this->page->id, 'locale' => 'ar',
+        ])->assertRedirect();
+
+        $this->assertNotEquals($stamp, PageKeyword::query()->sole()->analyzed_at,
+            'The re-check button did nothing, which is indistinguishable from it being broken.');
+    }
+
+    /**
+     * The screen says a number is out of date rather than showing it as fact.
+     *
+     * The automatic pass is queued. If a worker is not running, this flag is
+     * the only thing between an editor and a stale colour they cannot tell
+     * from a current one.
+     */
+    #[Test]
+    public function a_score_from_before_the_last_edit_is_marked_as_updating(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
+        ]);
+
+        $fresh = $this->actingAs($this->admin)
+            ->get('/admin/seo/page-keywords?page_id='.$this->page->id.'&locale=ar')
+            ->viewData('page')['props']['keywords'];
+
+        $this->assertFalse($fresh[0]['stale']);
+
+        // The page moves on without the job running.
+        PageKeyword::query()->sole()->forceFill(['content_hash' => 'stale-by-hand'])->save();
+
+        $stale = $this->actingAs($this->admin)
+            ->get('/admin/seo/page-keywords?page_id='.$this->page->id.'&locale=ar')
+            ->viewData('page')['props']['keywords'];
+
+        $this->assertTrue($stale[0]['stale'],
+            'A score describing an older version of the page was presented as current.');
+    }
+
     // ------------------------------------------------------------------ //
     // Entry, duplicates, deletion
     // ------------------------------------------------------------------ //
@@ -421,6 +703,78 @@ class PageKeywordAnalysisTest extends TestCase
         $section->translations()->create(['locale' => 'ar', 'body' => "<p>{$term} من الأحساء.</p>"]);
 
         $this->assertGreaterThan($before, $keyword->refresh()->score);
+    }
+
+    #[Test]
+    public function saving_a_card_rescores_too(): void
+    {
+        $term = 'تذكارات المؤتمرات';
+
+        $this->translate(['title' => 'من نحن']);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $term,
+        ]);
+
+        $keyword = PageKeyword::query()->sole();
+        $before = $keyword->score;
+
+        $section = $this->page->sections()->create([
+            'type' => 'cards', 'sort_order' => 0, 'is_active' => true,
+        ]);
+        $item = $section->items()->create(['sort_order' => 0, 'is_active' => true]);
+        $item->translations()->create(['locale' => 'ar', 'title' => $term]);
+
+        $this->assertGreaterThan($before, $keyword->refresh()->score,
+            'A card was added and the score did not follow it.');
+    }
+
+    /**
+     * Alt text is scored, and attaching an image is what makes it reachable.
+     *
+     * The alt check is the one nobody thinks to re-run by hand, so the
+     * attachment itself has to trigger the pass.
+     */
+    #[Test]
+    public function attaching_an_image_brings_its_alt_text_into_the_score(): void
+    {
+        $term = 'سعف النخيل';
+
+        $this->translate(['title' => 'من نحن']);
+
+        $section = $this->page->sections()->create([
+            'type' => 'gallery', 'sort_order' => 0, 'is_active' => true,
+        ]);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $term,
+        ]);
+
+        $keyword = PageKeyword::query()->sole();
+        $this->assertFalse($keyword->checks['image_alt']['passed']);
+
+        $media = Media::query()->create([
+            'model_type' => Page::class,
+            'model_id' => $this->page->id,
+            'uuid' => (string) Str::uuid(),
+            'collection_name' => 'library',
+            'name' => 'palm',
+            'file_name' => 'palm.jpg',
+            'mime_type' => 'image/jpeg',
+            'disk' => 'public',
+            'size' => 1024,
+            'manipulations' => [],
+            'custom_properties' => [],
+            'generated_conversions' => [],
+            'responsive_images' => [],
+        ]);
+
+        $media->translations()->create(['locale' => 'ar', 'alt_text' => "سلة من {$term}"]);
+
+        $section->syncAttachedMedia('gallery', [$media->id]);
+
+        $this->assertTrue($keyword->refresh()->checks['image_alt']['passed'],
+            'An image was attached and its alt text never reached the score.');
     }
 
     /** Editing one language must not restamp the other. */

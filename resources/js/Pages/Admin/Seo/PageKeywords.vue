@@ -41,6 +41,25 @@ const { number } = useFormat();
 const terms = ref('');
 const processing = ref(false);
 const open = ref(null);
+const search = ref('');
+
+/**
+ * The page list, filtered by what has been typed.
+ *
+ * The selected page is always kept in the list even when it does not match:
+ * a select whose value is not among its own options renders blank, and a
+ * screen that appears to have forgotten which page you were on because you
+ * typed in a search box is a screen people stop trusting.
+ */
+const shownPages = computed(() => {
+    const needle = search.value.trim().toLowerCase();
+
+    if (!needle) return props.pages;
+
+    return props.pages.filter(
+        (p) => p.id === props.pageId || `${p.title} ${p.slug}`.toLowerCase().includes(needle)
+    );
+});
 
 /** The order the detail list is read in — effort ascending. */
 const CHECKS = [
@@ -138,13 +157,29 @@ function passed(row, name) {
                     <div class="steps">
                         <div class="step">
                             <span class="step__label">{{ t('settings.page_keywords.step_page') }}</span>
+
+                            <!-- A search box above the list rather than a
+                                 custom dropdown: ten pages today, and typing
+                                 two letters is faster than scrolling however
+                                 many there are tomorrow. -->
+                            <Field
+                                v-model="search"
+                                :label="t('settings.page_keywords.search')"
+                                :hint="t('settings.page_keywords.search_hint')"
+                                type="text"
+                            />
+
                             <Field
                                 :model-value="pageId"
                                 :label="t('settings.page_keywords.page')"
                                 type="select"
-                                :options="pages.map((p) => ({ value: p.id, label: p.title }))"
+                                :options="shownPages.map((p) => ({ value: p.id, label: p.title }))"
                                 @update:model-value="(v) => reload({ pageId: Number(v) })"
                             />
+
+                            <p v-if="!shownPages.length" class="hint-none">
+                                {{ t('settings.page_keywords.no_page_match') }}
+                            </p>
                         </div>
 
                         <div class="step">
@@ -238,6 +273,16 @@ function passed(row, name) {
                                     {{ t(`settings.page_keywords.${row.band}`) }}
                                 </span>
 
+                                <!-- Both flags are warnings, not scores: the
+                                     bar behind them is still the answer. -->
+                                <span v-if="row.stuffed" class="flag flag--stuffed">
+                                    ⚠ {{ t('settings.page_keywords.stuffing_short') }}
+                                </span>
+
+                                <span v-if="row.stale" class="flag flag--stale">
+                                    {{ t('settings.page_keywords.stale_short') }}
+                                </span>
+
                                 <button
                                     class="row__btn"
                                     type="button"
@@ -252,6 +297,20 @@ function passed(row, name) {
                                     {{ t('settings.page_keywords.delete') }}
                                 </button>
                             </div>
+
+                            <template v-if="open === row.id">
+                                <p v-if="row.stale" class="note note--stale">
+                                    {{ t('settings.page_keywords.stale') }}
+                                </p>
+
+                                <!-- Placed above the checks, not among them:
+                                     it carries no weight, and a line in the
+                                     scored list with no number beside it reads
+                                     as a check that failed silently. -->
+                                <p v-if="row.stuffed" class="note note--stuffed">
+                                    ⚠ {{ t('settings.page_keywords.stuffing') }}
+                                </p>
+                            </template>
 
                             <ul v-if="open === row.id" class="checks">
                                 <li
@@ -439,6 +498,50 @@ function passed(row, name) {
 }
 
 .row__band {
+    font-size: var(--fs-caption);
+    color: var(--ink-600);
+}
+
+/* Warnings, deliberately quieter than the band label beside them: neither of
+   these changes the score, and one that shouted would be read as one that did. */
+.flag {
+    padding-block: 2px;
+    padding-inline: var(--s-2);
+    font-size: var(--fs-caption);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.flag--stuffed {
+    background: #FBF0DA;
+    color: #7A5B12;
+}
+
+.flag--stale {
+    background: var(--hairline);
+    color: var(--ink-600);
+}
+
+.note {
+    margin-block-start: var(--s-3);
+    padding: var(--s-3);
+    font-size: var(--fs-caption);
+    line-height: var(--lh-body);
+}
+
+.note--stuffed {
+    background: #FBF0DA;
+    color: #7A5B12;
+}
+
+.note--stale {
+    background: var(--sand-100, var(--paper));
+    color: var(--ink-600);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+}
+
+.hint-none {
+    margin-block-start: var(--s-2);
     font-size: var(--fs-caption);
     color: var(--ink-600);
 }

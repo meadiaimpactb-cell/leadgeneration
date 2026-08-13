@@ -8056,7 +8056,7 @@ const _sfc_main$12 = {
                   }, {
                     default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
-                        _push4(`<p class="intro" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.intro"))}</p><p class="honest" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.honest"))}</p><div class="add" data-v-6f7b571d${_scopeId3}><div class="add__row" data-v-6f7b571d${_scopeId3}>`);
+                        _push4(`<p class="intro" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.intro"))}</p><p class="honest" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.honest"))}</p><div class="add" data-v-b2f5a647${_scopeId3}><div class="add__row" data-v-b2f5a647${_scopeId3}>`);
                         _push4(ssrRenderComponent(Field, {
                           modelValue: locale.value,
                           "onUpdate:modelValue": ($event) => locale.value = $event,
@@ -8082,25 +8082,41 @@ const _sfc_main$12 = {
                           rows: 4,
                           dir: locale.value === "en" ? "ltr" : null
                         }, null, _parent4, _scopeId3));
-                        _push4(`<button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-6f7b571d${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("admin.saving") : unref(t)("settings.keywords.add"))}</button></div><div class="tally" role="group" data-v-6f7b571d${_scopeId3}><button class="${ssrRenderClass([{ "is-active": filter.value === "all" }, "tally__cell"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(rows.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.all"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "gaps" }, "tally__cell tally__cell--gap"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(gaps.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.gaps"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "weak" }, "tally__cell tally__cell--weak"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(weak.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.weak"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "strong" }, "tally__cell tally__cell--strong"])}" type="button" data-v-6f7b571d${_scopeId3}><span class="tally__n" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(number)(strong.value.length))}</span><span class="tally__l" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.strong"))}</span></button></div>`);
+                        _push4(`<button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-b2f5a647${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("admin.saving") : unref(t)("settings.keywords.add"))}</button></div><div class="tally" role="group" data-v-b2f5a647${_scopeId3}><button class="${ssrRenderClass([{ "is-active": filter.value === "all" }, "tally__cell"])}" type="button" data-v-b2f5a647${_scopeId3}><span class="tally__n" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(number)(rows.value.length))}</span><span class="tally__l" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.all"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "gaps" }, "tally__cell tally__cell--gap"])}" type="button" data-v-b2f5a647${_scopeId3}><span class="tally__n" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(number)(gaps.value.length))}</span><span class="tally__l" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.gaps"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "weak" }, "tally__cell tally__cell--weak"])}" type="button" data-v-b2f5a647${_scopeId3}><span class="tally__n" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(number)(weak.value.length))}</span><span class="tally__l" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.weak"))}</span></button><button class="${ssrRenderClass([{ "is-active": filter.value === "strong" }, "tally__cell tally__cell--strong"])}" type="button" data-v-b2f5a647${_scopeId3}><span class="tally__n" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(number)(strong.value.length))}</span><span class="tally__l" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.strong"))}</span></button></div>`);
                         if (!rows.value.length) {
-                          _push4(`<p class="empty" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.none"))}</p>`);
+                          _push4(`<p class="empty" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.none"))}</p>`);
                         } else {
-                          _push4(`<ul class="terms" data-v-6f7b571d${_scopeId3}><!--[-->`);
+                          _push4(`<ul class="terms" data-v-b2f5a647${_scopeId3}><!--[-->`);
                           ssrRenderList(shown.value, (row) => {
-                            _push4(`<li class="${ssrRenderClass([row.strong ? "is-strong" : row.covered ? "is-weak" : "is-gap", "term"])}" data-v-6f7b571d${_scopeId3}><div class="term__head" data-v-6f7b571d${_scopeId3}><span class="term__text" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(row.term)}</span>`);
+                            _push4(`<li class="${ssrRenderClass([row.strong ? "is-strong" : row.covered ? "is-weak" : "is-gap", "term"])}" data-v-b2f5a647${_scopeId3}><div class="term__head" data-v-b2f5a647${_scopeId3}><span class="term__text" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(row.term)}</span>`);
                             if (row.group) {
-                              _push4(`<span class="term__group" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(row.group)}</span>`);
+                              _push4(`<span class="term__group" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(row.group)}</span>`);
                             } else {
                               _push4(`<!---->`);
                             }
-                            _push4(`<span class="term__state" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap"))}</span><button class="term__del" type="button" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div>`);
+                            _push4(`<span class="term__state" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap"))}</span>`);
+                            _push4(ssrRenderComponent(unref(Link), {
+                              class: "term__analyse",
+                              href: `/admin/seo/page-keywords?locale=${row.locale}${row.pages.length ? `&page_id=${row.pages[0].id}` : ""}`
+                            }, {
+                              default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                                if (_push5) {
+                                  _push5(`${ssrInterpolate(unref(t)("settings.keywords.analyse_page"))}`);
+                                } else {
+                                  return [
+                                    createTextVNode(toDisplayString(unref(t)("settings.keywords.analyse_page")), 1)
+                                  ];
+                                }
+                              }),
+                              _: 2
+                            }, _parent4, _scopeId3));
+                            _push4(`<button class="term__del" type="button" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("admin.delete"))}</button></div>`);
                             if (!row.covered) {
-                              _push4(`<p class="term__advice" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.gap_advice"))}</p>`);
+                              _push4(`<p class="term__advice" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(unref(t)("settings.keywords.gap_advice"))}</p>`);
                             } else {
-                              _push4(`<ul class="hits" data-v-6f7b571d${_scopeId3}><!--[-->`);
+                              _push4(`<ul class="hits" data-v-b2f5a647${_scopeId3}><!--[-->`);
                               ssrRenderList(row.pages, (page) => {
-                                _push4(`<li class="hit" data-v-6f7b571d${_scopeId3}>`);
+                                _push4(`<li class="hit" data-v-b2f5a647${_scopeId3}>`);
                                 _push4(ssrRenderComponent(unref(Link), {
                                   class: "link-weave",
                                   href: `/admin/pages/${page.id}/edit`
@@ -8116,7 +8132,7 @@ const _sfc_main$12 = {
                                   }),
                                   _: 2
                                 }, _parent4, _scopeId3));
-                                _push4(`<span class="${ssrRenderClass([{ "is-title": page.inTitle }, "hit__where"])}" data-v-6f7b571d${_scopeId3}>${ssrInterpolate(page.inTitle ? unref(t)("settings.keywords.in_title") : unref(t)("settings.keywords.in_body"))}</span></li>`);
+                                _push4(`<span class="${ssrRenderClass([{ "is-title": page.inTitle }, "hit__where"])}" data-v-b2f5a647${_scopeId3}>${ssrInterpolate(page.inTitle ? unref(t)("settings.keywords.in_title") : unref(t)("settings.keywords.in_body"))}</span></li>`);
                               });
                               _push4(`<!--]--></ul>`);
                             }
@@ -8218,6 +8234,15 @@ const _sfc_main$12 = {
                                     class: "term__group"
                                   }, toDisplayString(row.group), 1)) : createCommentVNode("", true),
                                   createVNode("span", { class: "term__state" }, toDisplayString(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap")), 1),
+                                  createVNode(unref(Link), {
+                                    class: "term__analyse",
+                                    href: `/admin/seo/page-keywords?locale=${row.locale}${row.pages.length ? `&page_id=${row.pages[0].id}` : ""}`
+                                  }, {
+                                    default: withCtx(() => [
+                                      createTextVNode(toDisplayString(unref(t)("settings.keywords.analyse_page")), 1)
+                                    ]),
+                                    _: 1
+                                  }, 8, ["href"]),
                                   createVNode("button", {
                                     class: "term__del",
                                     type: "button",
@@ -8357,6 +8382,15 @@ const _sfc_main$12 = {
                                   class: "term__group"
                                 }, toDisplayString(row.group), 1)) : createCommentVNode("", true),
                                 createVNode("span", { class: "term__state" }, toDisplayString(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap")), 1),
+                                createVNode(unref(Link), {
+                                  class: "term__analyse",
+                                  href: `/admin/seo/page-keywords?locale=${row.locale}${row.pages.length ? `&page_id=${row.pages[0].id}` : ""}`
+                                }, {
+                                  default: withCtx(() => [
+                                    createTextVNode(toDisplayString(unref(t)("settings.keywords.analyse_page")), 1)
+                                  ]),
+                                  _: 1
+                                }, 8, ["href"]),
                                 createVNode("button", {
                                   class: "term__del",
                                   type: "button",
@@ -8501,6 +8535,15 @@ const _sfc_main$12 = {
                                 class: "term__group"
                               }, toDisplayString(row.group), 1)) : createCommentVNode("", true),
                               createVNode("span", { class: "term__state" }, toDisplayString(row.strong ? unref(t)("settings.keywords.state_strong") : row.covered ? unref(t)("settings.keywords.state_weak") : unref(t)("settings.keywords.state_gap")), 1),
+                              createVNode(unref(Link), {
+                                class: "term__analyse",
+                                href: `/admin/seo/page-keywords?locale=${row.locale}${row.pages.length ? `&page_id=${row.pages[0].id}` : ""}`
+                              }, {
+                                default: withCtx(() => [
+                                  createTextVNode(toDisplayString(unref(t)("settings.keywords.analyse_page")), 1)
+                                ]),
+                                _: 1
+                              }, 8, ["href"]),
                               createVNode("button", {
                                 class: "term__del",
                                 type: "button",
@@ -8557,7 +8600,7 @@ _sfc_main$12.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Seo/Keywords.vue");
   return _sfc_setup$12 ? _sfc_setup$12(props, ctx) : void 0;
 };
-const Keywords = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-6f7b571d"]]);
+const Keywords = /* @__PURE__ */ _export_sfc(_sfc_main$12, [["__scopeId", "data-v-b2f5a647"]]);
 const __vite_glob_0_18 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Keywords
@@ -8582,6 +8625,14 @@ const _sfc_main$11 = {
     const terms = ref("");
     const processing = ref(false);
     const open = ref(null);
+    const search = ref("");
+    const shownPages = computed(() => {
+      const needle = search.value.trim().toLowerCase();
+      if (!needle) return props.pages;
+      return props.pages.filter(
+        (p) => p.id === props.pageId || `${p.title} ${p.slug}`.toLowerCase().includes(needle)
+      );
+    });
     const CHECKS = [
       "meta_title",
       "heading",
@@ -8651,23 +8702,35 @@ const _sfc_main$11 = {
                   }, {
                     default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
-                        _push4(`<p class="intro" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.intro"))}</p>`);
+                        _push4(`<p class="intro" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.intro"))}</p>`);
                         if (!__props.pages.length) {
-                          _push4(`<p class="empty" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.no_pages"))}</p>`);
+                          _push4(`<p class="empty" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.no_pages"))}</p>`);
                         } else {
-                          _push4(`<!--[--><div class="steps" data-v-e71f594c${_scopeId3}><div class="step" data-v-e71f594c${_scopeId3}><span class="step__label" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_page"))}</span>`);
+                          _push4(`<!--[--><div class="steps" data-v-2737d948${_scopeId3}><div class="step" data-v-2737d948${_scopeId3}><span class="step__label" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_page"))}</span>`);
+                          _push4(ssrRenderComponent(Field, {
+                            modelValue: search.value,
+                            "onUpdate:modelValue": ($event) => search.value = $event,
+                            label: unref(t)("settings.page_keywords.search"),
+                            hint: unref(t)("settings.page_keywords.search_hint"),
+                            type: "text"
+                          }, null, _parent4, _scopeId3));
                           _push4(ssrRenderComponent(Field, {
                             "model-value": __props.pageId,
                             label: unref(t)("settings.page_keywords.page"),
                             type: "select",
-                            options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
+                            options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
                             "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
                           }, null, _parent4, _scopeId3));
-                          _push4(`</div><div class="step" data-v-e71f594c${_scopeId3}><span class="step__label" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_locale"))}</span><div class="langs" role="group" data-v-e71f594c${_scopeId3}><!--[-->`);
+                          if (!shownPages.value.length) {
+                            _push4(`<p class="hint-none" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.no_page_match"))}</p>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`</div><div class="step" data-v-2737d948${_scopeId3}><span class="step__label" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_locale"))}</span><div class="langs" role="group" data-v-2737d948${_scopeId3}><!--[-->`);
                           ssrRenderList(__props.locales, (code) => {
-                            _push4(`<button class="${ssrRenderClass([{ "is-active": code === __props.locale }, "lang"])}" type="button" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.locale_${code}`))}</button>`);
+                            _push4(`<button class="${ssrRenderClass([{ "is-active": code === __props.locale }, "lang"])}" type="button" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.locale_${code}`))}</button>`);
                           });
-                          _push4(`<!--]--></div></div></div><div class="step step--terms" data-v-e71f594c${_scopeId3}><span class="step__label" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_terms"))}</span>`);
+                          _push4(`<!--]--></div></div></div><div class="step step--terms" data-v-2737d948${_scopeId3}><span class="step__label" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_terms"))}</span>`);
                           _push4(ssrRenderComponent(Field, {
                             modelValue: terms.value,
                             "onUpdate:modelValue": ($event) => terms.value = $event,
@@ -8677,9 +8740,9 @@ const _sfc_main$11 = {
                             rows: 5,
                             dir: __props.locale === "en" ? "ltr" : null
                           }, null, _parent4, _scopeId3));
-                          _push4(`</div><div class="actions" data-v-e71f594c${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-e71f594c${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("settings.page_keywords.analysing") : unref(t)("settings.page_keywords.analyse"))}</button>`);
+                          _push4(`</div><div class="actions" data-v-2737d948${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-2737d948${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("settings.page_keywords.analysing") : unref(t)("settings.page_keywords.analyse"))}</button>`);
                           if (__props.keywords.length) {
-                            _push4(`<button class="btn btn--ghost" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.reanalyse"))}</button>`);
+                            _push4(`<button class="btn btn--ghost" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.reanalyse"))}</button>`);
                           } else {
                             _push4(`<!---->`);
                           }
@@ -8702,17 +8765,44 @@ const _sfc_main$11 = {
                           } else {
                             _push4(`<!---->`);
                           }
-                          _push4(`</div><div class="tally" role="group" data-v-e71f594c${_scopeId3}><span class="tally__cell tally__cell--weak" data-v-e71f594c${_scopeId3}><span class="tally__n" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.weak))}</span><span class="tally__l" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.weak"))}</span></span><span class="tally__cell tally__cell--medium" data-v-e71f594c${_scopeId3}><span class="tally__n" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.medium))}</span><span class="tally__l" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.medium"))}</span></span><span class="tally__cell tally__cell--strong" data-v-e71f594c${_scopeId3}><span class="tally__n" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.strong))}</span><span class="tally__l" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.strong"))}</span></span></div>`);
+                          _push4(`</div><div class="tally" role="group" data-v-2737d948${_scopeId3}><span class="tally__cell tally__cell--weak" data-v-2737d948${_scopeId3}><span class="tally__n" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.weak))}</span><span class="tally__l" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.weak"))}</span></span><span class="tally__cell tally__cell--medium" data-v-2737d948${_scopeId3}><span class="tally__n" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.medium))}</span><span class="tally__l" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.medium"))}</span></span><span class="tally__cell tally__cell--strong" data-v-2737d948${_scopeId3}><span class="tally__n" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.strong))}</span><span class="tally__l" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.strong"))}</span></span></div>`);
                           if (!__props.keywords.length) {
-                            _push4(`<p class="empty" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.none"))} <span class="empty__help" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.empty_help"))}</span></p>`);
+                            _push4(`<p class="empty" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.none"))} <span class="empty__help" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.empty_help"))}</span></p>`);
                           } else {
-                            _push4(`<ul class="rows" data-v-e71f594c${_scopeId3}><!--[-->`);
+                            _push4(`<ul class="rows" data-v-2737d948${_scopeId3}><!--[-->`);
                             ssrRenderList(__props.keywords, (row) => {
-                              _push4(`<li class="${ssrRenderClass([`is-${row.band}`, "row"])}" data-v-e71f594c${_scopeId3}><div class="row__head" data-v-e71f594c${_scopeId3}><span class="row__word" data-v-e71f594c${_scopeId3}>${ssrInterpolate(row.keyword)}</span><span class="bar"${ssrRenderAttr("title", `${row.score}/100`)} data-v-e71f594c${_scopeId3}><span class="bar__fill" style="${ssrRenderStyle({ inlineSize: `${row.score}%` })}" data-v-e71f594c${_scopeId3}></span></span><span class="row__score" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(number)(row.score))}%</span><span class="row__band" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.${row.band}`))}</span><button class="row__btn" type="button" data-v-e71f594c${_scopeId3}>${ssrInterpolate(open.value === row.id ? unref(t)("settings.page_keywords.hide_details") : unref(t)("settings.page_keywords.details"))}</button><button class="row__btn row__btn--del" type="button" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.delete"))}</button></div>`);
+                              _push4(`<li class="${ssrRenderClass([`is-${row.band}`, "row"])}" data-v-2737d948${_scopeId3}><div class="row__head" data-v-2737d948${_scopeId3}><span class="row__word" data-v-2737d948${_scopeId3}>${ssrInterpolate(row.keyword)}</span><span class="bar"${ssrRenderAttr("title", `${row.score}/100`)} data-v-2737d948${_scopeId3}><span class="bar__fill" style="${ssrRenderStyle({ inlineSize: `${row.score}%` })}" data-v-2737d948${_scopeId3}></span></span><span class="row__score" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(row.score))}%</span><span class="row__band" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.${row.band}`))}</span>`);
+                              if (row.stuffed) {
+                                _push4(`<span class="flag flag--stuffed" data-v-2737d948${_scopeId3}> ⚠ ${ssrInterpolate(unref(t)("settings.page_keywords.stuffing_short"))}</span>`);
+                              } else {
+                                _push4(`<!---->`);
+                              }
+                              if (row.stale) {
+                                _push4(`<span class="flag flag--stale" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.stale_short"))}</span>`);
+                              } else {
+                                _push4(`<!---->`);
+                              }
+                              _push4(`<button class="row__btn" type="button" data-v-2737d948${_scopeId3}>${ssrInterpolate(open.value === row.id ? unref(t)("settings.page_keywords.hide_details") : unref(t)("settings.page_keywords.details"))}</button><button class="row__btn row__btn--del" type="button" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.delete"))}</button></div>`);
                               if (open.value === row.id) {
-                                _push4(`<ul class="checks" data-v-e71f594c${_scopeId3}><!--[-->`);
+                                _push4(`<!--[-->`);
+                                if (row.stale) {
+                                  _push4(`<p class="note note--stale" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.stale"))}</p>`);
+                                } else {
+                                  _push4(`<!---->`);
+                                }
+                                if (row.stuffed) {
+                                  _push4(`<p class="note note--stuffed" data-v-2737d948${_scopeId3}> ⚠ ${ssrInterpolate(unref(t)("settings.page_keywords.stuffing"))}</p>`);
+                                } else {
+                                  _push4(`<!---->`);
+                                }
+                                _push4(`<!--]-->`);
+                              } else {
+                                _push4(`<!---->`);
+                              }
+                              if (open.value === row.id) {
+                                _push4(`<ul class="checks" data-v-2737d948${_scopeId3}><!--[-->`);
                                 ssrRenderList(CHECKS, (name) => {
-                                  _push4(`<li class="${ssrRenderClass([{ "is-passed": passed(row, name) }, "check"])}" data-v-e71f594c${_scopeId3}><span class="check__mark" aria-hidden="true" data-v-e71f594c${_scopeId3}>${ssrInterpolate(passed(row, name) ? "✓" : "✗")}</span><span class="check__text" data-v-e71f594c${_scopeId3}>${ssrInterpolate(advice(name, passed(row, name)))}</span><span class="check__weight" data-v-e71f594c${_scopeId3}>${ssrInterpolate(unref(number)(__props.weights[name] ?? 0))}</span></li>`);
+                                  _push4(`<li class="${ssrRenderClass([{ "is-passed": passed(row, name) }, "check"])}" data-v-2737d948${_scopeId3}><span class="check__mark" aria-hidden="true" data-v-2737d948${_scopeId3}>${ssrInterpolate(passed(row, name) ? "✓" : "✗")}</span><span class="check__text" data-v-2737d948${_scopeId3}>${ssrInterpolate(advice(name, passed(row, name)))}</span><span class="check__weight" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(__props.weights[name] ?? 0))}</span></li>`);
                                 });
                                 _push4(`<!--]--></ul>`);
                               } else {
@@ -8735,12 +8825,23 @@ const _sfc_main$11 = {
                               createVNode("div", { class: "step" }, [
                                 createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_page")), 1),
                                 createVNode(Field, {
+                                  modelValue: search.value,
+                                  "onUpdate:modelValue": ($event) => search.value = $event,
+                                  label: unref(t)("settings.page_keywords.search"),
+                                  hint: unref(t)("settings.page_keywords.search_hint"),
+                                  type: "text"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint"]),
+                                createVNode(Field, {
                                   "model-value": __props.pageId,
                                   label: unref(t)("settings.page_keywords.page"),
                                   type: "select",
-                                  options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
+                                  options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
                                   "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
-                                }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"])
+                                }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"]),
+                                !shownPages.value.length ? (openBlock(), createBlock("p", {
+                                  key: 0,
+                                  class: "hint-none"
+                                }, toDisplayString(unref(t)("settings.page_keywords.no_page_match")), 1)) : createCommentVNode("", true)
                               ]),
                               createVNode("div", { class: "step" }, [
                                 createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_locale")), 1),
@@ -8841,6 +8942,14 @@ const _sfc_main$11 = {
                                     ], 8, ["title"]),
                                     createVNode("span", { class: "row__score" }, toDisplayString(unref(number)(row.score)) + "%", 1),
                                     createVNode("span", { class: "row__band" }, toDisplayString(unref(t)(`settings.page_keywords.${row.band}`)), 1),
+                                    row.stuffed ? (openBlock(), createBlock("span", {
+                                      key: 0,
+                                      class: "flag flag--stuffed"
+                                    }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing_short")), 1)) : createCommentVNode("", true),
+                                    row.stale ? (openBlock(), createBlock("span", {
+                                      key: 1,
+                                      class: "flag flag--stale"
+                                    }, toDisplayString(unref(t)("settings.page_keywords.stale_short")), 1)) : createCommentVNode("", true),
                                     createVNode("button", {
                                       class: "row__btn",
                                       type: "button",
@@ -8852,8 +8961,18 @@ const _sfc_main$11 = {
                                       onClick: ($event) => remove(row)
                                     }, toDisplayString(unref(t)("settings.page_keywords.delete")), 9, ["onClick"])
                                   ]),
+                                  open.value === row.id ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                                    row.stale ? (openBlock(), createBlock("p", {
+                                      key: 0,
+                                      class: "note note--stale"
+                                    }, toDisplayString(unref(t)("settings.page_keywords.stale")), 1)) : createCommentVNode("", true),
+                                    row.stuffed ? (openBlock(), createBlock("p", {
+                                      key: 1,
+                                      class: "note note--stuffed"
+                                    }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing")), 1)) : createCommentVNode("", true)
+                                  ], 64)) : createCommentVNode("", true),
                                   open.value === row.id ? (openBlock(), createBlock("ul", {
-                                    key: 0,
+                                    key: 1,
                                     class: "checks"
                                   }, [
                                     (openBlock(), createBlock(Fragment, null, renderList(CHECKS, (name) => {
@@ -8894,12 +9013,23 @@ const _sfc_main$11 = {
                             createVNode("div", { class: "step" }, [
                               createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_page")), 1),
                               createVNode(Field, {
+                                modelValue: search.value,
+                                "onUpdate:modelValue": ($event) => search.value = $event,
+                                label: unref(t)("settings.page_keywords.search"),
+                                hint: unref(t)("settings.page_keywords.search_hint"),
+                                type: "text"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint"]),
+                              createVNode(Field, {
                                 "model-value": __props.pageId,
                                 label: unref(t)("settings.page_keywords.page"),
                                 type: "select",
-                                options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
+                                options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
                                 "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
-                              }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"])
+                              }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"]),
+                              !shownPages.value.length ? (openBlock(), createBlock("p", {
+                                key: 0,
+                                class: "hint-none"
+                              }, toDisplayString(unref(t)("settings.page_keywords.no_page_match")), 1)) : createCommentVNode("", true)
                             ]),
                             createVNode("div", { class: "step" }, [
                               createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_locale")), 1),
@@ -9000,6 +9130,14 @@ const _sfc_main$11 = {
                                   ], 8, ["title"]),
                                   createVNode("span", { class: "row__score" }, toDisplayString(unref(number)(row.score)) + "%", 1),
                                   createVNode("span", { class: "row__band" }, toDisplayString(unref(t)(`settings.page_keywords.${row.band}`)), 1),
+                                  row.stuffed ? (openBlock(), createBlock("span", {
+                                    key: 0,
+                                    class: "flag flag--stuffed"
+                                  }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing_short")), 1)) : createCommentVNode("", true),
+                                  row.stale ? (openBlock(), createBlock("span", {
+                                    key: 1,
+                                    class: "flag flag--stale"
+                                  }, toDisplayString(unref(t)("settings.page_keywords.stale_short")), 1)) : createCommentVNode("", true),
                                   createVNode("button", {
                                     class: "row__btn",
                                     type: "button",
@@ -9011,8 +9149,18 @@ const _sfc_main$11 = {
                                     onClick: ($event) => remove(row)
                                   }, toDisplayString(unref(t)("settings.page_keywords.delete")), 9, ["onClick"])
                                 ]),
+                                open.value === row.id ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                                  row.stale ? (openBlock(), createBlock("p", {
+                                    key: 0,
+                                    class: "note note--stale"
+                                  }, toDisplayString(unref(t)("settings.page_keywords.stale")), 1)) : createCommentVNode("", true),
+                                  row.stuffed ? (openBlock(), createBlock("p", {
+                                    key: 1,
+                                    class: "note note--stuffed"
+                                  }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing")), 1)) : createCommentVNode("", true)
+                                ], 64)) : createCommentVNode("", true),
                                 open.value === row.id ? (openBlock(), createBlock("ul", {
-                                  key: 0,
+                                  key: 1,
                                   class: "checks"
                                 }, [
                                   (openBlock(), createBlock(Fragment, null, renderList(CHECKS, (name) => {
@@ -9058,12 +9206,23 @@ const _sfc_main$11 = {
                           createVNode("div", { class: "step" }, [
                             createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_page")), 1),
                             createVNode(Field, {
+                              modelValue: search.value,
+                              "onUpdate:modelValue": ($event) => search.value = $event,
+                              label: unref(t)("settings.page_keywords.search"),
+                              hint: unref(t)("settings.page_keywords.search_hint"),
+                              type: "text"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint"]),
+                            createVNode(Field, {
                               "model-value": __props.pageId,
                               label: unref(t)("settings.page_keywords.page"),
                               type: "select",
-                              options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
+                              options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
                               "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
-                            }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"])
+                            }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"]),
+                            !shownPages.value.length ? (openBlock(), createBlock("p", {
+                              key: 0,
+                              class: "hint-none"
+                            }, toDisplayString(unref(t)("settings.page_keywords.no_page_match")), 1)) : createCommentVNode("", true)
                           ]),
                           createVNode("div", { class: "step" }, [
                             createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_locale")), 1),
@@ -9164,6 +9323,14 @@ const _sfc_main$11 = {
                                 ], 8, ["title"]),
                                 createVNode("span", { class: "row__score" }, toDisplayString(unref(number)(row.score)) + "%", 1),
                                 createVNode("span", { class: "row__band" }, toDisplayString(unref(t)(`settings.page_keywords.${row.band}`)), 1),
+                                row.stuffed ? (openBlock(), createBlock("span", {
+                                  key: 0,
+                                  class: "flag flag--stuffed"
+                                }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing_short")), 1)) : createCommentVNode("", true),
+                                row.stale ? (openBlock(), createBlock("span", {
+                                  key: 1,
+                                  class: "flag flag--stale"
+                                }, toDisplayString(unref(t)("settings.page_keywords.stale_short")), 1)) : createCommentVNode("", true),
                                 createVNode("button", {
                                   class: "row__btn",
                                   type: "button",
@@ -9175,8 +9342,18 @@ const _sfc_main$11 = {
                                   onClick: ($event) => remove(row)
                                 }, toDisplayString(unref(t)("settings.page_keywords.delete")), 9, ["onClick"])
                               ]),
+                              open.value === row.id ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                                row.stale ? (openBlock(), createBlock("p", {
+                                  key: 0,
+                                  class: "note note--stale"
+                                }, toDisplayString(unref(t)("settings.page_keywords.stale")), 1)) : createCommentVNode("", true),
+                                row.stuffed ? (openBlock(), createBlock("p", {
+                                  key: 1,
+                                  class: "note note--stuffed"
+                                }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing")), 1)) : createCommentVNode("", true)
+                              ], 64)) : createCommentVNode("", true),
                               open.value === row.id ? (openBlock(), createBlock("ul", {
-                                key: 0,
+                                key: 1,
                                 class: "checks"
                               }, [
                                 (openBlock(), createBlock(Fragment, null, renderList(CHECKS, (name) => {
@@ -9217,7 +9394,7 @@ _sfc_main$11.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Seo/PageKeywords.vue");
   return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
 };
-const PageKeywords = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-e71f594c"]]);
+const PageKeywords = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-2737d948"]]);
 const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: PageKeywords

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Listeners\RecordMediaDimensions;
+use App\Models\MediaAttachment;
 use App\Models\Page;
 use App\Models\PageTranslation;
 use App\Models\Section;
+use App\Models\SectionItem;
+use App\Models\SectionItemTranslation;
 use App\Models\SectionTranslation;
 use App\Models\User;
 use App\Observers\PageContentObserver;
@@ -71,13 +74,21 @@ class AppServiceProvider extends ServiceProvider
         /*
          * A page's keyword scores follow the page.
          *
-         * Registered on all four models that can change what a page says, so
-         * an editor who adds their target phrase to a headline sees the bar
-         * turn green without running anything. The observer decides what is
-         * worth dispatching; see it for why a section owned by a sector is
-         * skipped.
+         * Registered on every model that can change what a page says — its
+         * copy, its cards, and which images it shows — so an editor who adds
+         * their target phrase to a headline sees the bar turn green without
+         * running anything. The observer decides what is worth dispatching;
+         * see it for why a section owned by a sector is skipped.
          */
-        foreach ([Page::class, PageTranslation::class, Section::class, SectionTranslation::class] as $model) {
+        foreach ([
+            Page::class,
+            PageTranslation::class,
+            Section::class,
+            SectionTranslation::class,
+            SectionItem::class,
+            SectionItemTranslation::class,
+            MediaAttachment::class,
+        ] as $model) {
             $model::observe(PageContentObserver::class);
         }
 

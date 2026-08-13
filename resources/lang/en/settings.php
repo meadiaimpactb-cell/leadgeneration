@@ -170,6 +170,7 @@ return [
     'keywords.state_weak' => 'In body copy',
     'keywords.state_strong' => 'In a page title',
     'keywords.gap_advice' => 'This phrase appears on no published page. Write content for it, or work it into an existing page’s title and description, before you can rank for it.',
+    'keywords.analyse_page' => 'Analyse a page',
     'keywords.in_title' => 'In the title',
     'keywords.in_body' => 'In body copy',
     'keywords.none' => 'No keywords yet. Paste your list into the box above to start.',
@@ -220,6 +221,13 @@ return [
     'page_keywords.check.slug.yes' => 'The phrase is in the page address.',
     'page_keywords.check.slug.no' => 'The phrase is missing from the page address — you can change it in the page editor.',
     'page_keywords.check.slug.ar' => 'Page addresses are written in English, so an Arabic phrase can never appear in one — this item is credited in full.',
+    'page_keywords.search' => 'Find a page',
+    'page_keywords.search_hint' => 'Type part of a page name to filter the list.',
+    'page_keywords.no_page_match' => 'No page by that name.',
+    'page_keywords.stuffing' => 'Warning: the phrase is repeated more than it needs to be — Google may read that as stuffing. Ease off the repetition; this does not cost you any points.',
+    'page_keywords.stuffing_short' => 'Over-repeated',
+    'page_keywords.stale' => 'The page changed after this was last checked, and the number is being recalculated. Refresh in a moment, or press “Re-check everything”.',
+    'page_keywords.stale_short' => 'Updating',
 
     // ---- robots screen ---------------------------------------------------
     'robots.preview' => 'The file as a search engine sees it right now',

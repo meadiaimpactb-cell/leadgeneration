@@ -17,6 +17,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $keyword_normalized
  * @property int $score
  * @property array<string, mixed>|null $checks
+ * @property string|null $content_hash  fingerprint of the content this score
+ *                                      was calculated from; a mismatch with
+ *                                      the page as it stands now means the
+ *                                      queued re-analysis has not landed yet
  */
 class PageKeyword extends Model
 {
