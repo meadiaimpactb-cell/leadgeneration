@@ -34,7 +34,6 @@ class UpcomingScreenController extends Controller
         'notifications' => 2,
         'confirmations' => 3,
         'spam' => 2,
-        'sitemap' => 4,
         'activity' => 4,
         'backups' => 4,
     ];

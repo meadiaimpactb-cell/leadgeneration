@@ -87,6 +87,26 @@ class SitemapGenerator
         return $this->build($locale);
     }
 
+    /**
+     * The same URL set the XML lists, as data.
+     *
+     * For the panel, so what an operator is shown and what a crawler is served
+     * are produced by one method rather than two that can drift. A screen that
+     * reported a different list from the file would be worse than no screen.
+     *
+     * @return list<array{loc: string, lastmod: string|null, changefreq: string, priority: string, alternates: array<string, string>}>
+     */
+    public function urlsFor(string $locale): array
+    {
+        return $this->entries($locale);
+    }
+
+    /** The newest change across everything listed, for the panel to show. */
+    public function lastModifiedAt(): Carbon
+    {
+        return $this->lastModified();
+    }
+
     private function build(string $locale): string
     {
         $xml = ['<?xml version="1.0" encoding="UTF-8"?>'];

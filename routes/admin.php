@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\Admin\SectionMediaController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\UpcomingScreenController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -196,7 +197,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         Route::get('backups', [UpcomingScreenController::class, 'show'])->defaults('screen', 'backups')->name('upcoming.backups');
         Route::get('activity', [UpcomingScreenController::class, 'show'])->defaults('screen', 'activity')->name('upcoming.activity');
-        Route::get('seo/sitemap', [UpcomingScreenController::class, 'show'])->defaults('screen', 'sitemap')->name('upcoming.sitemap');
+        // What the crawler is currently offered, read from the generator that
+        // serves it (§13).
+        Route::get('seo/sitemap', [SitemapController::class, 'index'])->name('seo.sitemap');
 
         Route::get('integrations/{screen}', [UpcomingScreenController::class, 'show'])
             ->whereIn('screen', ['notifications', 'confirmations', 'spam'])
