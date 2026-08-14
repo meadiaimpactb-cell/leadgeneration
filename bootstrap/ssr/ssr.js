@@ -8625,14 +8625,10 @@ const _sfc_main$11 = {
     const terms = ref("");
     const processing = ref(false);
     const open = ref(null);
-    const search = ref("");
-    const shownPages = computed(() => {
-      const needle = search.value.trim().toLowerCase();
-      if (!needle) return props.pages;
-      return props.pages.filter(
-        (p) => p.id === props.pageId || `${p.title} ${p.slug}`.toLowerCase().includes(needle)
-      );
-    });
+    const currentPage = computed(
+      () => props.pages.find((p) => p.id === props.pageId)?.title ?? null
+    );
+    const primary = computed(() => props.keywords.find((k) => k.isPrimary) ?? null);
     const CHECKS = [
       "meta_title",
       "heading",
@@ -8679,6 +8675,9 @@ const _sfc_main$11 = {
     function remove(row) {
       router.delete(`/admin/seo/page-keywords/${row.id}`, { preserveScroll: true });
     }
+    function makePrimary(row) {
+      router.put(`/admin/seo/page-keywords/${row.id}/primary`, {}, { preserveScroll: true });
+    }
     function advice(name, passed2) {
       if (name === "slug" && props.locale !== "en") {
         return t("settings.page_keywords.check.slug.ar");
@@ -8702,35 +8701,23 @@ const _sfc_main$11 = {
                   }, {
                     default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
-                        _push4(`<p class="intro" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.intro"))}</p>`);
+                        _push4(`<p class="intro" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.intro"))}</p>`);
                         if (!__props.pages.length) {
-                          _push4(`<p class="empty" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.no_pages"))}</p>`);
+                          _push4(`<p class="empty" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.no_pages"))}</p>`);
                         } else {
-                          _push4(`<!--[--><div class="steps" data-v-2737d948${_scopeId3}><div class="step" data-v-2737d948${_scopeId3}><span class="step__label" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_page"))}</span>`);
-                          _push4(ssrRenderComponent(Field, {
-                            modelValue: search.value,
-                            "onUpdate:modelValue": ($event) => search.value = $event,
-                            label: unref(t)("settings.page_keywords.search"),
-                            hint: unref(t)("settings.page_keywords.search_hint"),
-                            type: "text"
-                          }, null, _parent4, _scopeId3));
+                          _push4(`<!--[--><div class="steps" data-v-b7cb2d3a${_scopeId3}><div class="step" data-v-b7cb2d3a${_scopeId3}><span class="step__label" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_page"))}</span>`);
                           _push4(ssrRenderComponent(Field, {
                             "model-value": __props.pageId,
                             label: unref(t)("settings.page_keywords.page"),
                             type: "select",
-                            options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
+                            options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
                             "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
                           }, null, _parent4, _scopeId3));
-                          if (!shownPages.value.length) {
-                            _push4(`<p class="hint-none" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.no_page_match"))}</p>`);
-                          } else {
-                            _push4(`<!---->`);
-                          }
-                          _push4(`</div><div class="step" data-v-2737d948${_scopeId3}><span class="step__label" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_locale"))}</span><div class="langs" role="group" data-v-2737d948${_scopeId3}><!--[-->`);
+                          _push4(`</div><div class="step" data-v-b7cb2d3a${_scopeId3}><span class="step__label" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_locale"))}</span><span class="pick__label" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.language"))}</span><div class="langs" role="group" data-v-b7cb2d3a${_scopeId3}><!--[-->`);
                           ssrRenderList(__props.locales, (code) => {
-                            _push4(`<button class="${ssrRenderClass([{ "is-active": code === __props.locale }, "lang"])}" type="button" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.locale_${code}`))}</button>`);
+                            _push4(`<button class="${ssrRenderClass([{ "is-active": code === __props.locale }, "lang"])}" type="button" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.locale_${code}`))}</button>`);
                           });
-                          _push4(`<!--]--></div></div></div><div class="step step--terms" data-v-2737d948${_scopeId3}><span class="step__label" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_terms"))}</span>`);
+                          _push4(`<!--]--></div></div></div><div class="step step--terms" data-v-b7cb2d3a${_scopeId3}><span class="step__label" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.step_terms"))}</span>`);
                           _push4(ssrRenderComponent(Field, {
                             modelValue: terms.value,
                             "onUpdate:modelValue": ($event) => terms.value = $event,
@@ -8740,9 +8727,9 @@ const _sfc_main$11 = {
                             rows: 5,
                             dir: __props.locale === "en" ? "ltr" : null
                           }, null, _parent4, _scopeId3));
-                          _push4(`</div><div class="actions" data-v-2737d948${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-2737d948${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("settings.page_keywords.analysing") : unref(t)("settings.page_keywords.analyse"))}</button>`);
+                          _push4(`</div><div class="actions" data-v-b7cb2d3a${_scopeId3}><button class="btn btn--cta" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(processing.value ? unref(t)("settings.page_keywords.analysing") : unref(t)("settings.page_keywords.analyse"))}</button>`);
                           if (__props.keywords.length) {
-                            _push4(`<button class="btn btn--ghost" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.reanalyse"))}</button>`);
+                            _push4(`<button class="btn btn--ghost" type="button"${ssrIncludeBooleanAttr(processing.value) ? " disabled" : ""} data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.reanalyse"))}</button>`);
                           } else {
                             _push4(`<!---->`);
                           }
@@ -8765,33 +8752,59 @@ const _sfc_main$11 = {
                           } else {
                             _push4(`<!---->`);
                           }
-                          _push4(`</div><div class="tally" role="group" data-v-2737d948${_scopeId3}><span class="tally__cell tally__cell--weak" data-v-2737d948${_scopeId3}><span class="tally__n" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.weak))}</span><span class="tally__l" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.weak"))}</span></span><span class="tally__cell tally__cell--medium" data-v-2737d948${_scopeId3}><span class="tally__n" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.medium))}</span><span class="tally__l" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.medium"))}</span></span><span class="tally__cell tally__cell--strong" data-v-2737d948${_scopeId3}><span class="tally__n" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.strong))}</span><span class="tally__l" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.strong"))}</span></span></div>`);
-                          if (!__props.keywords.length) {
-                            _push4(`<p class="empty" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.none"))} <span class="empty__help" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.empty_help"))}</span></p>`);
+                          _push4(`</div><p class="${ssrRenderClass([{ "is-unset": !primary.value }, "subject"])}" data-v-b7cb2d3a${_scopeId3}>`);
+                          if (primary.value) {
+                            _push4(`<!--[-->${ssrInterpolate(unref(t)("settings.page_keywords.subject_is", {
+                              page: currentPage.value,
+                              keyword: primary.value.keyword
+                            }))}<!--]-->`);
                           } else {
-                            _push4(`<ul class="rows" data-v-2737d948${_scopeId3}><!--[-->`);
+                            _push4(`<!--[-->${ssrInterpolate(unref(t)("settings.page_keywords.subject_unset"))}<!--]-->`);
+                          }
+                          _push4(`</p><div class="tally" role="group" data-v-b7cb2d3a${_scopeId3}><span class="tally__cell tally__cell--strong" data-v-b7cb2d3a${_scopeId3}><span class="tally__n" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.strong))}</span><span class="tally__l" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.strong"))}</span></span><span class="tally__cell tally__cell--medium" data-v-b7cb2d3a${_scopeId3}><span class="tally__n" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.medium))}</span><span class="tally__l" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.medium"))}</span></span><span class="tally__cell tally__cell--weak" data-v-b7cb2d3a${_scopeId3}><span class="tally__n" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(number)(counts.value.weak))}</span><span class="tally__l" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.weak"))}</span></span></div>`);
+                          if (!__props.keywords.length) {
+                            _push4(`<p class="empty" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.none"))} <span class="empty__help" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.empty_help"))}</span></p>`);
+                          } else {
+                            _push4(`<ul class="rows" data-v-b7cb2d3a${_scopeId3}><!--[-->`);
                             ssrRenderList(__props.keywords, (row) => {
-                              _push4(`<li class="${ssrRenderClass([`is-${row.band}`, "row"])}" data-v-2737d948${_scopeId3}><div class="row__head" data-v-2737d948${_scopeId3}><span class="row__word" data-v-2737d948${_scopeId3}>${ssrInterpolate(row.keyword)}</span><span class="bar"${ssrRenderAttr("title", `${row.score}/100`)} data-v-2737d948${_scopeId3}><span class="bar__fill" style="${ssrRenderStyle({ inlineSize: `${row.score}%` })}" data-v-2737d948${_scopeId3}></span></span><span class="row__score" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(row.score))}%</span><span class="row__band" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.${row.band}`))}</span>`);
+                              _push4(`<li class="${ssrRenderClass([[`is-${row.band}`, { "is-primary": row.isPrimary }], "row"])}" data-v-b7cb2d3a${_scopeId3}><div class="row__head" data-v-b7cb2d3a${_scopeId3}><span class="row__word" data-v-b7cb2d3a${_scopeId3}>`);
+                              if (row.isPrimary) {
+                                _push4(`<span class="star" aria-hidden="true" data-v-b7cb2d3a${_scopeId3}>★</span>`);
+                              } else {
+                                _push4(`<!---->`);
+                              }
+                              _push4(` ${ssrInterpolate(row.keyword)}</span>`);
+                              if (row.isPrimary) {
+                                _push4(`<span class="flag flag--primary" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.primary"))}</span>`);
+                              } else {
+                                _push4(`<!---->`);
+                              }
+                              _push4(`<span class="bar"${ssrRenderAttr("title", `${row.score}/100`)} data-v-b7cb2d3a${_scopeId3}><span class="bar__fill" style="${ssrRenderStyle({ inlineSize: `${row.score}%` })}" data-v-b7cb2d3a${_scopeId3}></span></span><span class="row__score" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(number)(row.score))}%</span><span class="row__band" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)(`settings.page_keywords.${row.band}`))}</span>`);
                               if (row.stuffed) {
-                                _push4(`<span class="flag flag--stuffed" data-v-2737d948${_scopeId3}> ⚠ ${ssrInterpolate(unref(t)("settings.page_keywords.stuffing_short"))}</span>`);
+                                _push4(`<span class="flag flag--stuffed" data-v-b7cb2d3a${_scopeId3}> ⚠ ${ssrInterpolate(unref(t)("settings.page_keywords.stuffing_short"))}</span>`);
                               } else {
                                 _push4(`<!---->`);
                               }
                               if (row.stale) {
-                                _push4(`<span class="flag flag--stale" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.stale_short"))}</span>`);
+                                _push4(`<span class="flag flag--stale" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.stale_short"))}</span>`);
                               } else {
                                 _push4(`<!---->`);
                               }
-                              _push4(`<button class="row__btn" type="button" data-v-2737d948${_scopeId3}>${ssrInterpolate(open.value === row.id ? unref(t)("settings.page_keywords.hide_details") : unref(t)("settings.page_keywords.details"))}</button><button class="row__btn row__btn--del" type="button" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.delete"))}</button></div>`);
+                              if (!row.isPrimary) {
+                                _push4(`<button class="row__btn" type="button" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.make_primary"))}</button>`);
+                              } else {
+                                _push4(`<!---->`);
+                              }
+                              _push4(`<button class="row__btn" type="button" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(open.value === row.id ? unref(t)("settings.page_keywords.hide_details") : unref(t)("settings.page_keywords.details"))}</button><button class="row__btn row__btn--del" type="button" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.delete"))}</button></div>`);
                               if (open.value === row.id) {
                                 _push4(`<!--[-->`);
                                 if (row.stale) {
-                                  _push4(`<p class="note note--stale" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.stale"))}</p>`);
+                                  _push4(`<p class="note note--stale" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(t)("settings.page_keywords.stale"))}</p>`);
                                 } else {
                                   _push4(`<!---->`);
                                 }
                                 if (row.stuffed) {
-                                  _push4(`<p class="note note--stuffed" data-v-2737d948${_scopeId3}> ⚠ ${ssrInterpolate(unref(t)("settings.page_keywords.stuffing"))}</p>`);
+                                  _push4(`<p class="note note--stuffed" data-v-b7cb2d3a${_scopeId3}> ⚠ ${ssrInterpolate(unref(t)("settings.page_keywords.stuffing"))}</p>`);
                                 } else {
                                   _push4(`<!---->`);
                                 }
@@ -8800,9 +8813,9 @@ const _sfc_main$11 = {
                                 _push4(`<!---->`);
                               }
                               if (open.value === row.id) {
-                                _push4(`<ul class="checks" data-v-2737d948${_scopeId3}><!--[-->`);
+                                _push4(`<ul class="checks" data-v-b7cb2d3a${_scopeId3}><!--[-->`);
                                 ssrRenderList(CHECKS, (name) => {
-                                  _push4(`<li class="${ssrRenderClass([{ "is-passed": passed(row, name) }, "check"])}" data-v-2737d948${_scopeId3}><span class="check__mark" aria-hidden="true" data-v-2737d948${_scopeId3}>${ssrInterpolate(passed(row, name) ? "✓" : "✗")}</span><span class="check__text" data-v-2737d948${_scopeId3}>${ssrInterpolate(advice(name, passed(row, name)))}</span><span class="check__weight" data-v-2737d948${_scopeId3}>${ssrInterpolate(unref(number)(__props.weights[name] ?? 0))}</span></li>`);
+                                  _push4(`<li class="${ssrRenderClass([{ "is-passed": passed(row, name) }, "check"])}" data-v-b7cb2d3a${_scopeId3}><span class="check__mark" aria-hidden="true" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(passed(row, name) ? "✓" : "✗")}</span><span class="check__text" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(advice(name, passed(row, name)))}</span><span class="check__weight" data-v-b7cb2d3a${_scopeId3}>${ssrInterpolate(unref(number)(__props.weights[name] ?? 0))}</span></li>`);
                                 });
                                 _push4(`<!--]--></ul>`);
                               } else {
@@ -8825,26 +8838,16 @@ const _sfc_main$11 = {
                               createVNode("div", { class: "step" }, [
                                 createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_page")), 1),
                                 createVNode(Field, {
-                                  modelValue: search.value,
-                                  "onUpdate:modelValue": ($event) => search.value = $event,
-                                  label: unref(t)("settings.page_keywords.search"),
-                                  hint: unref(t)("settings.page_keywords.search_hint"),
-                                  type: "text"
-                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint"]),
-                                createVNode(Field, {
                                   "model-value": __props.pageId,
                                   label: unref(t)("settings.page_keywords.page"),
                                   type: "select",
-                                  options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
+                                  options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
                                   "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
-                                }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"]),
-                                !shownPages.value.length ? (openBlock(), createBlock("p", {
-                                  key: 0,
-                                  class: "hint-none"
-                                }, toDisplayString(unref(t)("settings.page_keywords.no_page_match")), 1)) : createCommentVNode("", true)
+                                }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"])
                               ]),
                               createVNode("div", { class: "step" }, [
                                 createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_locale")), 1),
+                                createVNode("span", { class: "pick__label" }, toDisplayString(unref(t)("settings.page_keywords.language")), 1),
                                 createVNode("div", {
                                   class: "langs",
                                   role: "group"
@@ -8897,21 +8900,33 @@ const _sfc_main$11 = {
                                 _: 1
                               }, 8, ["href"])) : createCommentVNode("", true)
                             ]),
+                            createVNode("p", {
+                              class: ["subject", { "is-unset": !primary.value }]
+                            }, [
+                              primary.value ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                                createTextVNode(toDisplayString(unref(t)("settings.page_keywords.subject_is", {
+                                  page: currentPage.value,
+                                  keyword: primary.value.keyword
+                                })), 1)
+                              ], 64)) : (openBlock(), createBlock(Fragment, { key: 1 }, [
+                                createTextVNode(toDisplayString(unref(t)("settings.page_keywords.subject_unset")), 1)
+                              ], 64))
+                            ], 2),
                             createVNode("div", {
                               class: "tally",
                               role: "group"
                             }, [
-                              createVNode("span", { class: "tally__cell tally__cell--weak" }, [
-                                createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.weak)), 1),
-                                createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.weak")), 1)
+                              createVNode("span", { class: "tally__cell tally__cell--strong" }, [
+                                createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.strong)), 1),
+                                createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.strong")), 1)
                               ]),
                               createVNode("span", { class: "tally__cell tally__cell--medium" }, [
                                 createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.medium)), 1),
                                 createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.medium")), 1)
                               ]),
-                              createVNode("span", { class: "tally__cell tally__cell--strong" }, [
-                                createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.strong)), 1),
-                                createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.strong")), 1)
+                              createVNode("span", { class: "tally__cell tally__cell--weak" }, [
+                                createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.weak)), 1),
+                                createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.weak")), 1)
                               ])
                             ]),
                             !__props.keywords.length ? (openBlock(), createBlock("p", {
@@ -8927,10 +8942,21 @@ const _sfc_main$11 = {
                               (openBlock(true), createBlock(Fragment, null, renderList(__props.keywords, (row) => {
                                 return openBlock(), createBlock("li", {
                                   key: row.id,
-                                  class: ["row", `is-${row.band}`]
+                                  class: ["row", [`is-${row.band}`, { "is-primary": row.isPrimary }]]
                                 }, [
                                   createVNode("div", { class: "row__head" }, [
-                                    createVNode("span", { class: "row__word" }, toDisplayString(row.keyword), 1),
+                                    createVNode("span", { class: "row__word" }, [
+                                      row.isPrimary ? (openBlock(), createBlock("span", {
+                                        key: 0,
+                                        class: "star",
+                                        "aria-hidden": "true"
+                                      }, "★")) : createCommentVNode("", true),
+                                      createTextVNode(" " + toDisplayString(row.keyword), 1)
+                                    ]),
+                                    row.isPrimary ? (openBlock(), createBlock("span", {
+                                      key: 0,
+                                      class: "flag flag--primary"
+                                    }, toDisplayString(unref(t)("settings.page_keywords.primary")), 1)) : createCommentVNode("", true),
                                     createVNode("span", {
                                       class: "bar",
                                       title: `${row.score}/100`
@@ -8943,13 +8969,19 @@ const _sfc_main$11 = {
                                     createVNode("span", { class: "row__score" }, toDisplayString(unref(number)(row.score)) + "%", 1),
                                     createVNode("span", { class: "row__band" }, toDisplayString(unref(t)(`settings.page_keywords.${row.band}`)), 1),
                                     row.stuffed ? (openBlock(), createBlock("span", {
-                                      key: 0,
+                                      key: 1,
                                       class: "flag flag--stuffed"
                                     }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing_short")), 1)) : createCommentVNode("", true),
                                     row.stale ? (openBlock(), createBlock("span", {
-                                      key: 1,
+                                      key: 2,
                                       class: "flag flag--stale"
                                     }, toDisplayString(unref(t)("settings.page_keywords.stale_short")), 1)) : createCommentVNode("", true),
+                                    !row.isPrimary ? (openBlock(), createBlock("button", {
+                                      key: 3,
+                                      class: "row__btn",
+                                      type: "button",
+                                      onClick: ($event) => makePrimary(row)
+                                    }, toDisplayString(unref(t)("settings.page_keywords.make_primary")), 9, ["onClick"])) : createCommentVNode("", true),
                                     createVNode("button", {
                                       class: "row__btn",
                                       type: "button",
@@ -9013,26 +9045,16 @@ const _sfc_main$11 = {
                             createVNode("div", { class: "step" }, [
                               createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_page")), 1),
                               createVNode(Field, {
-                                modelValue: search.value,
-                                "onUpdate:modelValue": ($event) => search.value = $event,
-                                label: unref(t)("settings.page_keywords.search"),
-                                hint: unref(t)("settings.page_keywords.search_hint"),
-                                type: "text"
-                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint"]),
-                              createVNode(Field, {
                                 "model-value": __props.pageId,
                                 label: unref(t)("settings.page_keywords.page"),
                                 type: "select",
-                                options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
+                                options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
                                 "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
-                              }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"]),
-                              !shownPages.value.length ? (openBlock(), createBlock("p", {
-                                key: 0,
-                                class: "hint-none"
-                              }, toDisplayString(unref(t)("settings.page_keywords.no_page_match")), 1)) : createCommentVNode("", true)
+                              }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"])
                             ]),
                             createVNode("div", { class: "step" }, [
                               createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_locale")), 1),
+                              createVNode("span", { class: "pick__label" }, toDisplayString(unref(t)("settings.page_keywords.language")), 1),
                               createVNode("div", {
                                 class: "langs",
                                 role: "group"
@@ -9085,21 +9107,33 @@ const _sfc_main$11 = {
                               _: 1
                             }, 8, ["href"])) : createCommentVNode("", true)
                           ]),
+                          createVNode("p", {
+                            class: ["subject", { "is-unset": !primary.value }]
+                          }, [
+                            primary.value ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                              createTextVNode(toDisplayString(unref(t)("settings.page_keywords.subject_is", {
+                                page: currentPage.value,
+                                keyword: primary.value.keyword
+                              })), 1)
+                            ], 64)) : (openBlock(), createBlock(Fragment, { key: 1 }, [
+                              createTextVNode(toDisplayString(unref(t)("settings.page_keywords.subject_unset")), 1)
+                            ], 64))
+                          ], 2),
                           createVNode("div", {
                             class: "tally",
                             role: "group"
                           }, [
-                            createVNode("span", { class: "tally__cell tally__cell--weak" }, [
-                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.weak)), 1),
-                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.weak")), 1)
+                            createVNode("span", { class: "tally__cell tally__cell--strong" }, [
+                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.strong)), 1),
+                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.strong")), 1)
                             ]),
                             createVNode("span", { class: "tally__cell tally__cell--medium" }, [
                               createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.medium)), 1),
                               createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.medium")), 1)
                             ]),
-                            createVNode("span", { class: "tally__cell tally__cell--strong" }, [
-                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.strong)), 1),
-                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.strong")), 1)
+                            createVNode("span", { class: "tally__cell tally__cell--weak" }, [
+                              createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.weak)), 1),
+                              createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.weak")), 1)
                             ])
                           ]),
                           !__props.keywords.length ? (openBlock(), createBlock("p", {
@@ -9115,10 +9149,21 @@ const _sfc_main$11 = {
                             (openBlock(true), createBlock(Fragment, null, renderList(__props.keywords, (row) => {
                               return openBlock(), createBlock("li", {
                                 key: row.id,
-                                class: ["row", `is-${row.band}`]
+                                class: ["row", [`is-${row.band}`, { "is-primary": row.isPrimary }]]
                               }, [
                                 createVNode("div", { class: "row__head" }, [
-                                  createVNode("span", { class: "row__word" }, toDisplayString(row.keyword), 1),
+                                  createVNode("span", { class: "row__word" }, [
+                                    row.isPrimary ? (openBlock(), createBlock("span", {
+                                      key: 0,
+                                      class: "star",
+                                      "aria-hidden": "true"
+                                    }, "★")) : createCommentVNode("", true),
+                                    createTextVNode(" " + toDisplayString(row.keyword), 1)
+                                  ]),
+                                  row.isPrimary ? (openBlock(), createBlock("span", {
+                                    key: 0,
+                                    class: "flag flag--primary"
+                                  }, toDisplayString(unref(t)("settings.page_keywords.primary")), 1)) : createCommentVNode("", true),
                                   createVNode("span", {
                                     class: "bar",
                                     title: `${row.score}/100`
@@ -9131,13 +9176,19 @@ const _sfc_main$11 = {
                                   createVNode("span", { class: "row__score" }, toDisplayString(unref(number)(row.score)) + "%", 1),
                                   createVNode("span", { class: "row__band" }, toDisplayString(unref(t)(`settings.page_keywords.${row.band}`)), 1),
                                   row.stuffed ? (openBlock(), createBlock("span", {
-                                    key: 0,
+                                    key: 1,
                                     class: "flag flag--stuffed"
                                   }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing_short")), 1)) : createCommentVNode("", true),
                                   row.stale ? (openBlock(), createBlock("span", {
-                                    key: 1,
+                                    key: 2,
                                     class: "flag flag--stale"
                                   }, toDisplayString(unref(t)("settings.page_keywords.stale_short")), 1)) : createCommentVNode("", true),
+                                  !row.isPrimary ? (openBlock(), createBlock("button", {
+                                    key: 3,
+                                    class: "row__btn",
+                                    type: "button",
+                                    onClick: ($event) => makePrimary(row)
+                                  }, toDisplayString(unref(t)("settings.page_keywords.make_primary")), 9, ["onClick"])) : createCommentVNode("", true),
                                   createVNode("button", {
                                     class: "row__btn",
                                     type: "button",
@@ -9206,26 +9257,16 @@ const _sfc_main$11 = {
                           createVNode("div", { class: "step" }, [
                             createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_page")), 1),
                             createVNode(Field, {
-                              modelValue: search.value,
-                              "onUpdate:modelValue": ($event) => search.value = $event,
-                              label: unref(t)("settings.page_keywords.search"),
-                              hint: unref(t)("settings.page_keywords.search_hint"),
-                              type: "text"
-                            }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "hint"]),
-                            createVNode(Field, {
                               "model-value": __props.pageId,
                               label: unref(t)("settings.page_keywords.page"),
                               type: "select",
-                              options: shownPages.value.map((p) => ({ value: p.id, label: p.title })),
+                              options: __props.pages.map((p) => ({ value: p.id, label: p.title })),
                               "onUpdate:modelValue": (v) => reload({ pageId: Number(v) })
-                            }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"]),
-                            !shownPages.value.length ? (openBlock(), createBlock("p", {
-                              key: 0,
-                              class: "hint-none"
-                            }, toDisplayString(unref(t)("settings.page_keywords.no_page_match")), 1)) : createCommentVNode("", true)
+                            }, null, 8, ["model-value", "label", "options", "onUpdate:modelValue"])
                           ]),
                           createVNode("div", { class: "step" }, [
                             createVNode("span", { class: "step__label" }, toDisplayString(unref(t)("settings.page_keywords.step_locale")), 1),
+                            createVNode("span", { class: "pick__label" }, toDisplayString(unref(t)("settings.page_keywords.language")), 1),
                             createVNode("div", {
                               class: "langs",
                               role: "group"
@@ -9278,21 +9319,33 @@ const _sfc_main$11 = {
                             _: 1
                           }, 8, ["href"])) : createCommentVNode("", true)
                         ]),
+                        createVNode("p", {
+                          class: ["subject", { "is-unset": !primary.value }]
+                        }, [
+                          primary.value ? (openBlock(), createBlock(Fragment, { key: 0 }, [
+                            createTextVNode(toDisplayString(unref(t)("settings.page_keywords.subject_is", {
+                              page: currentPage.value,
+                              keyword: primary.value.keyword
+                            })), 1)
+                          ], 64)) : (openBlock(), createBlock(Fragment, { key: 1 }, [
+                            createTextVNode(toDisplayString(unref(t)("settings.page_keywords.subject_unset")), 1)
+                          ], 64))
+                        ], 2),
                         createVNode("div", {
                           class: "tally",
                           role: "group"
                         }, [
-                          createVNode("span", { class: "tally__cell tally__cell--weak" }, [
-                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.weak)), 1),
-                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.weak")), 1)
+                          createVNode("span", { class: "tally__cell tally__cell--strong" }, [
+                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.strong)), 1),
+                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.strong")), 1)
                           ]),
                           createVNode("span", { class: "tally__cell tally__cell--medium" }, [
                             createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.medium)), 1),
                             createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.medium")), 1)
                           ]),
-                          createVNode("span", { class: "tally__cell tally__cell--strong" }, [
-                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.strong)), 1),
-                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.strong")), 1)
+                          createVNode("span", { class: "tally__cell tally__cell--weak" }, [
+                            createVNode("span", { class: "tally__n" }, toDisplayString(unref(number)(counts.value.weak)), 1),
+                            createVNode("span", { class: "tally__l" }, toDisplayString(unref(t)("settings.page_keywords.weak")), 1)
                           ])
                         ]),
                         !__props.keywords.length ? (openBlock(), createBlock("p", {
@@ -9308,10 +9361,21 @@ const _sfc_main$11 = {
                           (openBlock(true), createBlock(Fragment, null, renderList(__props.keywords, (row) => {
                             return openBlock(), createBlock("li", {
                               key: row.id,
-                              class: ["row", `is-${row.band}`]
+                              class: ["row", [`is-${row.band}`, { "is-primary": row.isPrimary }]]
                             }, [
                               createVNode("div", { class: "row__head" }, [
-                                createVNode("span", { class: "row__word" }, toDisplayString(row.keyword), 1),
+                                createVNode("span", { class: "row__word" }, [
+                                  row.isPrimary ? (openBlock(), createBlock("span", {
+                                    key: 0,
+                                    class: "star",
+                                    "aria-hidden": "true"
+                                  }, "★")) : createCommentVNode("", true),
+                                  createTextVNode(" " + toDisplayString(row.keyword), 1)
+                                ]),
+                                row.isPrimary ? (openBlock(), createBlock("span", {
+                                  key: 0,
+                                  class: "flag flag--primary"
+                                }, toDisplayString(unref(t)("settings.page_keywords.primary")), 1)) : createCommentVNode("", true),
                                 createVNode("span", {
                                   class: "bar",
                                   title: `${row.score}/100`
@@ -9324,13 +9388,19 @@ const _sfc_main$11 = {
                                 createVNode("span", { class: "row__score" }, toDisplayString(unref(number)(row.score)) + "%", 1),
                                 createVNode("span", { class: "row__band" }, toDisplayString(unref(t)(`settings.page_keywords.${row.band}`)), 1),
                                 row.stuffed ? (openBlock(), createBlock("span", {
-                                  key: 0,
+                                  key: 1,
                                   class: "flag flag--stuffed"
                                 }, " ⚠ " + toDisplayString(unref(t)("settings.page_keywords.stuffing_short")), 1)) : createCommentVNode("", true),
                                 row.stale ? (openBlock(), createBlock("span", {
-                                  key: 1,
+                                  key: 2,
                                   class: "flag flag--stale"
                                 }, toDisplayString(unref(t)("settings.page_keywords.stale_short")), 1)) : createCommentVNode("", true),
+                                !row.isPrimary ? (openBlock(), createBlock("button", {
+                                  key: 3,
+                                  class: "row__btn",
+                                  type: "button",
+                                  onClick: ($event) => makePrimary(row)
+                                }, toDisplayString(unref(t)("settings.page_keywords.make_primary")), 9, ["onClick"])) : createCommentVNode("", true),
                                 createVNode("button", {
                                   class: "row__btn",
                                   type: "button",
@@ -9394,7 +9464,7 @@ _sfc_main$11.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Seo/PageKeywords.vue");
   return _sfc_setup$11 ? _sfc_setup$11(props, ctx) : void 0;
 };
-const PageKeywords = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-2737d948"]]);
+const PageKeywords = /* @__PURE__ */ _export_sfc(_sfc_main$11, [["__scopeId", "data-v-b7cb2d3a"]]);
 const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: PageKeywords

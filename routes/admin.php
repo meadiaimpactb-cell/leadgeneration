@@ -8,13 +8,13 @@ use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KeywordController;
-use App\Http\Controllers\Admin\PageKeywordController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\LeadFieldController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\NavigationController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PageKeywordController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RedirectController;
 use App\Http\Controllers\Admin\ResourceController;
@@ -155,6 +155,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('seo/page-keywords', [PageKeywordController::class, 'index'])->name('seo.page-keywords');
         Route::post('seo/page-keywords', [PageKeywordController::class, 'store'])->name('seo.page-keywords.store');
         Route::post('seo/page-keywords/reanalyse', [PageKeywordController::class, 'reanalyse'])->name('seo.page-keywords.reanalyse');
+        Route::put('seo/page-keywords/{pageKeyword}/primary', [PageKeywordController::class, 'primary'])->name('seo.page-keywords.primary');
         Route::delete('seo/page-keywords/{pageKeyword}', [PageKeywordController::class, 'destroy'])->name('seo.page-keywords.destroy');
 
         // Everyone manages their own account, whatever their role — the

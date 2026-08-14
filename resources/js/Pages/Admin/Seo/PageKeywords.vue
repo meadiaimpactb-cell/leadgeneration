@@ -41,25 +41,14 @@ const { number } = useFormat();
 const terms = ref('');
 const processing = ref(false);
 const open = ref(null);
-const search = ref('');
 
-/**
- * The page list, filtered by what has been typed.
- *
- * The selected page is always kept in the list even when it does not match:
- * a select whose value is not among its own options renders blank, and a
- * screen that appears to have forgotten which page you were on because you
- * typed in a search box is a screen people stop trusting.
- */
-const shownPages = computed(() => {
-    const needle = search.value.trim().toLowerCase();
+/** The page this list belongs to, named as the editor knows it. */
+const currentPage = computed(
+    () => props.pages.find((p) => p.id === props.pageId)?.title ?? null
+);
 
-    if (!needle) return props.pages;
-
-    return props.pages.filter(
-        (p) => p.id === props.pageId || `${p.title} ${p.slug}`.toLowerCase().includes(needle)
-    );
-});
+/** The one phrase this page is for, if anybody has said which. */
+const primary = computed(() => props.keywords.find((k) => k.isPrimary) ?? null);
 
 /** The order the detail list is read in — effort ascending. */
 const CHECKS = [
@@ -122,6 +111,10 @@ function remove(row) {
     router.delete(`/admin/seo/page-keywords/${row.id}`, { preserveScroll: true });
 }
 
+function makePrimary(row) {
+    router.put(`/admin/seo/page-keywords/${row.id}/primary`, {}, { preserveScroll: true });
+}
+
 /**
  * The sentence for one check.
  *
@@ -158,32 +151,24 @@ function passed(row, name) {
                         <div class="step">
                             <span class="step__label">{{ t('settings.page_keywords.step_page') }}</span>
 
-                            <!-- A search box above the list rather than a
-                                 custom dropdown: ten pages today, and typing
-                                 two letters is faster than scrolling however
-                                 many there are tomorrow. -->
-                            <Field
-                                v-model="search"
-                                :label="t('settings.page_keywords.search')"
-                                :hint="t('settings.page_keywords.search_hint')"
-                                type="text"
-                            />
-
                             <Field
                                 :model-value="pageId"
                                 :label="t('settings.page_keywords.page')"
                                 type="select"
-                                :options="shownPages.map((p) => ({ value: p.id, label: p.title }))"
+                                :options="pages.map((p) => ({ value: p.id, label: p.title }))"
                                 @update:model-value="(v) => reload({ pageId: Number(v) })"
                             />
-
-                            <p v-if="!shownPages.length" class="hint-none">
-                                {{ t('settings.page_keywords.no_page_match') }}
-                            </p>
                         </div>
 
                         <div class="step">
                             <span class="step__label">{{ t('settings.page_keywords.step_locale') }}</span>
+
+                            <!-- Its own label, matching the select's, so the
+                                 two controls sit on one line at one height.
+                                 Without it the buttons ride up against the
+                                 label opposite them. -->
+                            <span class="pick__label">{{ t('settings.page_keywords.language') }}</span>
+
                             <div class="langs" role="group">
                                 <button
                                     v-for="code in locales"
@@ -233,20 +218,37 @@ function passed(row, name) {
                         </Link>
                     </div>
 
-                    <!-- Three counts, in the order a worklist is read: what
-                         needs work first. -->
+                    <!-- The page's subject, stated before its scores.
+                         Somebody opening this screen should learn what the
+                         page is meant to rank for before they read how well
+                         it does — and if nobody has said, that is the first
+                         thing to fix. -->
+                    <p class="subject" :class="{ 'is-unset': !primary }">
+                        <template v-if="primary">
+                            {{ t('settings.page_keywords.subject_is', {
+                                page: currentPage,
+                                keyword: primary.keyword,
+                            }) }}
+                        </template>
+                        <template v-else>
+                            {{ t('settings.page_keywords.subject_unset') }}
+                        </template>
+                    </p>
+
+                    <!-- Three counts, strongest first, in the same order as
+                         the list below them. -->
                     <div class="tally" role="group">
-                        <span class="tally__cell tally__cell--weak">
-                            <span class="tally__n">{{ number(counts.weak) }}</span>
-                            <span class="tally__l">{{ t('settings.page_keywords.weak') }}</span>
+                        <span class="tally__cell tally__cell--strong">
+                            <span class="tally__n">{{ number(counts.strong) }}</span>
+                            <span class="tally__l">{{ t('settings.page_keywords.strong') }}</span>
                         </span>
                         <span class="tally__cell tally__cell--medium">
                             <span class="tally__n">{{ number(counts.medium) }}</span>
                             <span class="tally__l">{{ t('settings.page_keywords.medium') }}</span>
                         </span>
-                        <span class="tally__cell tally__cell--strong">
-                            <span class="tally__n">{{ number(counts.strong) }}</span>
-                            <span class="tally__l">{{ t('settings.page_keywords.strong') }}</span>
+                        <span class="tally__cell tally__cell--weak">
+                            <span class="tally__n">{{ number(counts.weak) }}</span>
+                            <span class="tally__l">{{ t('settings.page_keywords.weak') }}</span>
                         </span>
                     </div>
 
@@ -256,9 +258,21 @@ function passed(row, name) {
                     </p>
 
                     <ul v-else class="rows">
-                        <li v-for="row in keywords" :key="row.id" class="row" :class="`is-${row.band}`">
+                        <li
+                            v-for="row in keywords"
+                            :key="row.id"
+                            class="row"
+                            :class="[`is-${row.band}`, { 'is-primary': row.isPrimary }]"
+                        >
                             <div class="row__head">
-                                <span class="row__word">{{ row.keyword }}</span>
+                                <span class="row__word">
+                                    <span v-if="row.isPrimary" class="star" aria-hidden="true">★</span>
+                                    {{ row.keyword }}
+                                </span>
+
+                                <span v-if="row.isPrimary" class="flag flag--primary">
+                                    {{ t('settings.page_keywords.primary') }}
+                                </span>
 
                                 <!-- The bar is the whole point: a number alone
                                      is read as a grade, a bar is read as a
@@ -282,6 +296,15 @@ function passed(row, name) {
                                 <span v-if="row.stale" class="flag flag--stale">
                                     {{ t('settings.page_keywords.stale_short') }}
                                 </span>
+
+                                <button
+                                    v-if="!row.isPrimary"
+                                    class="row__btn"
+                                    type="button"
+                                    @click="makePrimary(row)"
+                                >
+                                    {{ t('settings.page_keywords.make_primary') }}
+                                </button>
 
                                 <button
                                     class="row__btn"
@@ -540,10 +563,42 @@ function passed(row, name) {
     box-shadow: inset 0 0 0 1px var(--hairline);
 }
 
-.hint-none {
-    margin-block-start: var(--s-2);
-    font-size: var(--fs-caption);
+/* Matches Field's own label, whose styles are scoped to that component and
+   cannot be borrowed. Keeping the two identical is what puts the language
+   buttons and the page select on one line at one height. */
+.pick__label {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--navy-900);
+}
+
+.subject {
+    margin-block-end: var(--s-4);
+    padding: var(--s-3) var(--s-4);
+    background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    border-inline-start: 3px solid var(--navy-900);
+    line-height: var(--lh-body);
     color: var(--ink-600);
+}
+
+/* A page with no declared subject is a question, not a statement. */
+.subject.is-unset {
+    border-inline-start-color: #B8860B;
+}
+
+.star {
+    color: #B8860B;
+}
+
+.flag--primary {
+    background: var(--navy-900);
+    color: #fff;
+}
+
+/* The subject of the page reads as the heading of its own list. */
+.row.is-primary {
+    box-shadow: inset 0 0 0 2px var(--navy-900);
 }
 
 .row__btn {

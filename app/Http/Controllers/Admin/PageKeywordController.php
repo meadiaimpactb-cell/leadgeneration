@@ -164,6 +164,25 @@ class PageKeywordController extends Controller
     }
 
     /**
+     * Name the one phrase this page is actually about.
+     *
+     * A page can carry sixty keywords and have one subject. Marking it changes
+     * no score and touches nothing the visitor sees — it is how the people
+     * editing this page agree on what it is for, and it is the line every
+     * other keyword on the list is judged against.
+     */
+    public function primary(Request $request, PageKeyword $pageKeyword): RedirectResponse
+    {
+        abort_unless($request->user()->can(self::PERMISSION), 403);
+
+        $pageKeyword->makePrimary();
+
+        return back()->with('success', __('settings.page_keywords.primary_set', [
+            'keyword' => $pageKeyword->keyword,
+        ]));
+    }
+
+    /**
      * Re-run every keyword on one page and language, on demand.
      *
      * Run here and now rather than queued, unlike the observer's automatic
@@ -228,8 +247,18 @@ class PageKeywordController extends Controller
         $rows = PageKeyword::query()
             ->where('page_id', $pageId)
             ->forLocale($locale)
-            // Worst first: the list is a worklist, not an inventory.
-            ->orderBy('score')
+            /*
+             * The page's main keyword first, then strongest to weakest.
+             *
+             * This screen is read as "what is this page's standing", not as a
+             * to-do list — so it opens with the phrase the page is for and the
+             * ones it already earns, and the work to do is the tail. The
+             * strongest-first order was asked for directly; the primary is
+             * pinned above it because a subject that sorts into the middle of
+             * its own list is not visibly the subject.
+             */
+            ->orderByDesc('is_primary')
+            ->orderByDesc('score')
             ->orderBy('id')
             ->get();
 
@@ -257,6 +286,7 @@ class PageKeywordController extends Controller
                 'keyword' => $row->keyword,
                 'score' => $row->score,
                 'band' => $row->band(),
+                'isPrimary' => $row->is_primary,
                 'checks' => $row->checks ?? [],
                 'stuffed' => (bool) ($row->checks['stuffed'] ?? false),
                 'stale' => $current !== null && $row->content_hash !== $current,

@@ -799,6 +799,93 @@ class PageKeywordAnalysisTest extends TestCase
     }
 
     // ------------------------------------------------------------------ //
+    // The page's own subject
+    // ------------------------------------------------------------------ //
+
+    #[Test]
+    public function naming_a_main_keyword_unseats_the_previous_one(): void
+    {
+        $this->translate(['title' => 'من نحن']);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar',
+            'terms' => "هدايا مؤسسية\nدروع تكريم",
+        ]);
+
+        [$first, $second] = PageKeyword::query()->orderBy('id')->get()->all();
+
+        $this->actingAs($this->admin)
+            ->put("/admin/seo/page-keywords/{$first->id}/primary")
+            ->assertRedirect();
+
+        $this->assertTrue($first->refresh()->is_primary);
+
+        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$second->id}/primary");
+
+        $this->assertTrue($second->refresh()->is_primary);
+        $this->assertFalse($first->refresh()->is_primary,
+            'Two keywords claimed to be the page subject at once.');
+    }
+
+    /** Each language names its own, because each is a different page to a reader. */
+    #[Test]
+    public function the_two_languages_keep_separate_main_keywords(): void
+    {
+        $this->translate(['title' => 'من نحن'], 'ar');
+        $this->translate(['title' => 'About'], 'en');
+
+        $post = fn (string $locale, string $term) => $this->actingAs($this->admin)
+            ->post('/admin/seo/page-keywords', [
+                'page_id' => $this->page->id, 'locale' => $locale, 'terms' => $term,
+            ]);
+
+        $post('ar', 'هدايا مؤسسية');
+        $post('en', 'corporate gifts');
+
+        $arabic = PageKeyword::query()->forLocale('ar')->sole();
+        $english = PageKeyword::query()->forLocale('en')->sole();
+
+        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$arabic->id}/primary");
+        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$english->id}/primary");
+
+        $this->assertTrue($arabic->refresh()->is_primary);
+        $this->assertTrue($english->refresh()->is_primary,
+            'Naming the English subject cleared the Arabic one.');
+    }
+
+    /** Strongest first, with the page's subject pinned above all of it. */
+    #[Test]
+    public function the_list_reads_strongest_first_under_the_main_keyword(): void
+    {
+        $term = 'هدايا مؤسسية';
+
+        $this->translate(['title' => $term, 'meta_title' => $term, 'excerpt' => "{$term} {$term}"]);
+
+        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+            'page_id' => $this->page->id, 'locale' => 'ar',
+            'terms' => "{$term}\nدروع تكريم\nتذكارات المؤتمرات",
+        ]);
+
+        // The weakest of the three is made the subject, so the pinning is
+        // visible rather than coinciding with the score order.
+        $weakest = PageKeyword::query()->orderBy('score')->first();
+        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$weakest->id}/primary");
+
+        $shown = $this->actingAs($this->admin)
+            ->get('/admin/seo/page-keywords?page_id='.$this->page->id.'&locale=ar')
+            ->viewData('page')['props']['keywords'];
+
+        $this->assertTrue($shown[0]['isPrimary'], 'The page subject is not at the top of its own list.');
+        $this->assertSame($weakest->keyword, $shown[0]['keyword']);
+
+        $rest = array_slice($shown, 1);
+        $scores = array_column($rest, 'score');
+
+        $this->assertSame($scores, array_reverse(collect($scores)->sort()->values()->all()),
+            'The rest of the list is not ordered strongest to weakest.');
+    }
+
+    // ------------------------------------------------------------------ //
     // The screen
     // ------------------------------------------------------------------ //
 
