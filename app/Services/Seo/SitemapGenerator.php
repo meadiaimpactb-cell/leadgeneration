@@ -15,8 +15,10 @@ use App\Models\Story;
 use App\Models\TrainingProgram;
 use App\Support\Locales;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Throwable;
 
 /**
  * Builds the sitemap index and the per-language sitemaps (§13).
@@ -160,6 +162,24 @@ class SitemapGenerator
                 continue;
             }
 
+            /*
+             * Rule 1 again, and the one case that slipped past it.
+             *
+             * Public pages are served by literal routes — /about, /contact,
+             * /legal/{slug} — not by a `/{locale}/{slug}` catch-all. A page
+             * created in the panel with any other slug is published, indexable
+             * and translated, so it passed every check above and was listed
+             * here while its URL answered 404. Verified: a new page appeared in
+             * the sitemap and its address returned 404 on the same request.
+             *
+             * No existing page is affected — all eight resolve — so this is a
+             * guard for the day somebody adds one, not a change to what is
+             * served today.
+             */
+            if (! $this->reachable($page->publicUrl($locale))) {
+                continue;
+            }
+
             $entries[] = $this->entry(
                 $page->publicUrl($locale),
                 $page->updated_at,
@@ -268,6 +288,24 @@ class SitemapGenerator
         }
 
         return $entries;
+    }
+
+    /**
+     * Whether a URL on this site matches a route at all.
+     *
+     * Asked of the router rather than by fetching the page: a sub-request per
+     * entry would be slow and would run middleware for no reason. Matching is
+     * the same test the framework itself applies before deciding on a 404.
+     */
+    private function reachable(string $url): bool
+    {
+        try {
+            app('router')->getRoutes()->match(Request::create($url, 'GET'));
+
+            return true;
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     /**

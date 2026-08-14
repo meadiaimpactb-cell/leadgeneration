@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Support\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +55,10 @@ class PageController extends Controller
         return Inertia::render('Admin/Pages/Edit', [
             'page' => null,
             'locales' => array_keys(config('site.locales')),
+            // What the search-result preview needs to draw the same string the
+            // public page will serve: "Page title — Site name", on the real URL.
+            'siteNames' => $this->siteNames(),
+            'baseUrl' => rtrim(url('/'), '/'),
         ]);
     }
 
@@ -64,7 +69,31 @@ class PageController extends Controller
         return Inertia::render('Admin/Pages/Edit', [
             'page' => $this->payload($page),
             'locales' => array_keys(config('site.locales')),
+            // What the search-result preview needs to draw the same string the
+            // public page will serve: "Page title — Site name", on the real URL.
+            'siteNames' => $this->siteNames(),
+            'baseUrl' => rtrim(url('/'), '/'),
         ]);
+    }
+
+    /**
+     * The site name per language, as the public page appends it.
+     *
+     * Read from `settings` rather than config so the preview shows the name
+     * the client actually set — the whole value of the preview is that it is
+     * the same string the visitor will see, not an approximation of it.
+     *
+     * @return array<string, string|null>
+     */
+    private function siteNames(): array
+    {
+        $settings = app(Settings::class);
+
+        return collect(array_keys(config('site.locales')))
+            ->mapWithKeys(fn (string $locale): array => [
+                $locale => $settings->get("site.name.{$locale}") ?? $settings->get('site.name'),
+            ])
+            ->all();
     }
 
     public function store(Request $request): RedirectResponse

@@ -4,11 +4,14 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
+import SnippetPreview from '@/Components/admin/SnippetPreview.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 const props = defineProps({
     page: { type: Object, default: null },
     locales: { type: Array, default: () => [] },
+    siteNames: { type: Object, default: () => ({}) },
+    baseUrl: { type: String, default: '' },
 });
 
 const { t } = useTranslation();
@@ -93,6 +96,27 @@ function submit() {
                 />
             </Panel>
 
+            <!-- Placed after the fields, not before: it is the consequence of
+                 what was just typed, and it updates as it is typed. -->
+            <Panel :title="t('admin.snippet.panel')">
+                <p class="snippet-intro">{{ t('admin.snippet.intro') }}</p>
+
+                <div class="snippets">
+                    <SnippetPreview
+                        v-for="locale in locales"
+                        :key="locale"
+                        :locale="locale"
+                        :title="form.translations[locale]?.title"
+                        :meta-title="form.translations[locale]?.meta_title"
+                        :meta-description="form.translations[locale]?.meta_description"
+                        :slug="form.slug"
+                        :site-name="siteNames[locale] ?? ''"
+                        :base-url="baseUrl"
+                        :indexable="Boolean(form.is_indexable)"
+                    />
+                </div>
+            </Panel>
+
             <div class="bar">
                 <button class="btn btn--cta" type="submit" :disabled="form.processing">
                     {{ form.processing ? t('admin.saving') : t('admin.save') }}
@@ -108,6 +132,26 @@ function submit() {
     display: grid;
     gap: var(--s-4);
     grid-template-columns: 1fr;
+}
+
+.snippet-intro {
+    margin-block-end: var(--s-4);
+    color: var(--ink-600);
+    line-height: var(--lh-body);
+}
+
+/* Side by side once there is room: the two languages are compared, not read
+   one after the other. */
+.snippets {
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+    .snippets {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .bar {

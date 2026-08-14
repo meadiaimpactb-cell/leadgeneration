@@ -104,6 +104,35 @@ class SitemapAndRobotsTest extends TestCase
         }
     }
 
+    /**
+     * The same rule, for the case the test above cannot reach.
+     *
+     * `every_listed_url_actually_resolves` walks what the seeders produced,
+     * and all of those pages have literal routes — so it stayed green while
+     * this was broken. Public pages are served by named routes, not by a
+     * `/{locale}/{slug}` catch-all, so a page created in the panel with any
+     * other slug was published, indexable, translated, listed in the sitemap,
+     * and answered 404 at the address the sitemap gave.
+     */
+    #[Test]
+    public function a_page_with_no_route_of_its_own_is_not_listed(): void
+    {
+        $page = Page::query()->create([
+            'slug' => 'a-slug-with-no-route',
+            'template' => 'default',
+            'status' => 'published',
+            'published_at' => now(),
+            'is_indexable' => true,
+        ]);
+
+        $page->translations()->create(['locale' => 'ar', 'title' => 'صفحة بلا مسار']);
+
+        $this->get('/ar/a-slug-with-no-route')->assertNotFound();
+
+        $this->assertNotContains(url('ar/a-slug-with-no-route'), $this->locations(),
+            'The sitemap is advertising a URL that answers 404.');
+    }
+
     #[Test]
     public function a_draft_page_is_not_listed(): void
     {
