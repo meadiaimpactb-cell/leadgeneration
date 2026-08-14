@@ -25,6 +25,13 @@ abstract class PublicController extends Controller
     protected ?Page $currentPage = null;
 
     /**
+     * The breadcrumb trail this request built, for the structured data.
+     *
+     * @var list<array{label: string|null, url: string|null}>
+     */
+    protected array $trail = [];
+
+    /**
      * Load a managed page and its active sections for the current locale.
      */
     protected function page(string $slug): ?Page
@@ -135,6 +142,13 @@ abstract class PublicController extends Controller
         // missing its target terms is invisible until someone audits the HTML.
         $overrides['keywords'] ??= $this->currentPage?->t('keywords');
 
+        // Same reasoning as the keywords line above: the record whose sections
+        // are on screen is what the FAQ markup is read from. Pages fill this
+        // in for themselves; a Solution or a Sector passes its own model,
+        // which is where the accordions on this site actually live.
+        $overrides['owner'] ??= $this->currentPage;
+        $overrides['breadcrumbs'] ??= $this->trail;
+
         return app(MetaBuilder::class)->build($overrides, $availableLocales);
     }
 
@@ -142,11 +156,23 @@ abstract class PublicController extends Controller
      * Breadcrumb trail. Rendered as real links and as BreadcrumbList
      * structured data (§13).
      *
+     * The trail is kept so `seo()` can hand it to SchemaBuilder without every
+     * controller passing it twice. Google requires the markup to match the
+     * visible trail, and the surest way to keep two things identical is to
+     * have only one of them.
+     *
+     * Every controller builds its crumbs before its `seo` key — checked, all
+     * eight of them — which is what makes reading it back here safe. One that
+     * did it the other way round would simply publish no BreadcrumbList, never
+     * a wrong one.
+     *
      * @param  list<array{label: string|null, url: string|null}>  $trail
      * @return list<array{label: string|null, url: string|null}>
      */
     protected function breadcrumbs(array $trail): array
     {
-        return array_values(array_filter($trail, fn (array $c): bool => filled($c['label'])));
+        return $this->trail = array_values(
+            array_filter($trail, fn (array $c): bool => filled($c['label']))
+        );
     }
 }

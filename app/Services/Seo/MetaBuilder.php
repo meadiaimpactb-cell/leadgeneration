@@ -24,7 +24,9 @@ class MetaBuilder
     ) {}
 
     /**
-     * @param  array<string, string|null>  $overrides  title, description, image, canonical
+     * @param  array<string, mixed>  $overrides  title, description, image, canonical,
+     *                                           plus optional `breadcrumbs` and `page`
+     *                                           used only to build structured data
      * @param  list<string>|null  $availableLocales  locales this page really exists in
      * @return array<string, mixed>
      */
@@ -66,6 +68,17 @@ class MetaBuilder
             'locale' => $locale,
             'dir' => Locales::dir($locale),
             'alternates' => $this->alternates($availableLocales),
+            /*
+             * Structured data (§13), built here so every page that already
+             * asks for its meta block gets it without a second call site to
+             * remember. What it contains depends on what the caller passed —
+             * a breadcrumb trail and the page itself are optional context, and
+             * the organisation is always present.
+             */
+            'schema' => app(SchemaBuilder::class)->build([
+                'breadcrumbs' => $overrides['breadcrumbs'] ?? [],
+                'owner' => $overrides['owner'] ?? null,
+            ]),
         ];
     }
 

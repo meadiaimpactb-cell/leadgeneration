@@ -55,8 +55,22 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#002546">
 
-    {{-- Head tags rendered by Inertia (title, description, canonical, hreflang, schema). --}}
+    {{-- Head tags rendered by Inertia (title, description, canonical, hreflang). --}}
     @inertiaHead
+
+    {{--
+        Structured data (§13), emitted here rather than from the Vue <Head>.
+
+        Inertia's head manager handles title, meta, link and base — it drops a
+        <script> silently, which is how this shipped as an empty tag once. The
+        JSON is already built server-side by SchemaBuilder and arrives on the
+        page object, so rendering it in Blade is both simpler and immune to
+        that limitation. `<` is escaped inside the JSON itself, so no value
+        from the database can close this tag early.
+    --}}
+    @if ($schema = data_get($page, 'props.seo.schema'))
+        <script type="application/ld+json">{!! $schema !!}</script>
+    @endif
 
     {{--
         Google Search Console ownership verification (§14.1). The client pastes

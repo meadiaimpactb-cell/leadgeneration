@@ -92,6 +92,10 @@ class SectorController extends PublicController
                  */
                 'keywords' => $sector->t('meta_keywords') ?: null,
                 'image' => $sector->getFirstMediaUrl('hero') ?: null,
+                // Passed for the same reason as the keywords above: a segment
+                // page is not a Page record, so its FAQ has to come from the
+                // sector itself (§13).
+                'owner' => $sector,
             ], $sector->translatedLocales()),
         ]);
     }

@@ -126,6 +126,10 @@ class ImpactController extends PublicController
                 'title' => $story->t('title'),
                 // The quote is the story's own summary, in the artisan's words.
                 'description' => $story->t('quote'),
+                // `requirePage('impact')` above set the current page, so the
+                // story has to name itself or it would be marked up as the
+                // impact page rather than as an article (§13).
+                'owner' => $story,
             ]),
         ]);
     }

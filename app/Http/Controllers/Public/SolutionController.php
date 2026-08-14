@@ -84,6 +84,10 @@ class SolutionController extends PublicController
                 'title' => $solution->t('meta_title') ?: $solution->t('name'),
                 'description' => $solution->t('meta_description') ?: $solution->t('summary'),
                 'image' => $solution->getFirstMediaUrl('hero') ?: null,
+                // This page's accordion is its FAQ; `owner` is what
+                // SchemaBuilder reads it from (§13). The breadcrumb trail
+                // comes from `breadcrumbs()` above without being repeated.
+                'owner' => $solution,
             ], $solution->translatedLocales()),
         ]);
     }
