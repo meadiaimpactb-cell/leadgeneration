@@ -194,6 +194,15 @@ class StructureSeeder extends Seeder
             ['leads', 'confirmation.subject.en', null, false],
             ['leads', 'confirmation.body.en', null, false],
 
+            // The thank-you on the page itself, same step of §6.2. Public,
+            // and it has to be: the form renders it in the browser without
+            // another round trip, and it is text every visitor is shown
+            // anyway. Empty means the wording in resources/lang stands.
+            ['leads', 'thanks.title.ar', null, true],
+            ['leads', 'thanks.body.ar', null, true],
+            ['leads', 'thanks.title.en', null, true],
+            ['leads', 'thanks.body.en', null, true],
+
             // Tracking IDs live here, never in code (§14.1, §22.9).
             // Search Console ownership verification (§14.1). Public, because
             // it is emitted as a meta tag in the page head anyway.

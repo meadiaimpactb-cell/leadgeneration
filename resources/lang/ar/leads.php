@@ -30,10 +30,20 @@ return [
     'email_invalid' => 'صيغة البريد غير صحيحة. مثال: name@company.sa',
     'message_too_long' => 'الرسالة أطول من اللازم. اختصرها في سطر واحد.',
 
-    'success' => 'وصلنا طلبك، وسنتواصل معك قريبًا.',
-
-    // The confirmation dialog. Kept apart from `success` above, which is
-    // still the single line a screen reader announces in place.
+    /*
+     * The thank-you after a successful submit — the DEFAULT wording only.
+     *
+     * These two are the one exception to "copy comes from the panel". The
+     * client writes their own in Settings → Confirmation messages, and until
+     * they do, these stand: unlike the confirmation email, this message cannot
+     * simply not appear, because a form that submits and then says nothing
+     * reads as a form that broke.
+     *
+     * A third, separately-worded `success` line for screen readers used to sit
+     * here. It was removed with the move: the announcement now reads out the
+     * same two strings the visitor is shown, so what is heard and what is seen
+     * cannot drift apart once the client edits one of them.
+     */
     'success_title' => 'وصلنا طلبك',
     'success_body' => 'سنتواصل معك قريبًا.',
     'error_title' => 'تعذّر الإرسال',

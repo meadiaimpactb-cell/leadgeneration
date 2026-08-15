@@ -24,10 +24,12 @@ return [
     'email_invalid' => 'That email address is not valid. For example: name@company.sa',
     'message_too_long' => 'That message is too long. Keep it to a single line.',
 
-    'success' => 'We have your request and will be in touch shortly.',
-
-    // The confirmation dialog. Kept apart from `success` above, which is
-    // still the single line a screen reader announces in place.
+    /*
+     * The thank-you after a successful submit — the DEFAULT wording only.
+     * The client's own text lives in Settings → Confirmation messages and
+     * replaces these; see the Arabic file for why this one falls back and the
+     * confirmation email does not.
+     */
     'success_title' => "We've received your request",
     'success_body' => "We'll be in touch shortly.",
     'error_title' => 'It did not send',

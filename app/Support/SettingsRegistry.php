@@ -133,6 +133,23 @@ class SettingsRegistry
             'leads.confirmation.subject.en' => ['screen' => 'confirmations', 'type' => 'text', 'order' => 20],
             'leads.confirmation.body.en' => ['screen' => 'confirmations', 'type' => 'textarea', 'order' => 21],
 
+            /*
+             * The thank-you shown on the page the instant a form is sent —
+             * the other half of §6.2 step 4, and the one the sender always
+             * sees. The email above can be missed, filtered, or never sent at
+             * all when the visitor left a phone number rather than an address.
+             *
+             * Unlike the email, this one FALLS BACK. A form that submits and
+             * then says nothing reads as a form that broke, and the visitor
+             * has already given their contact details by the time they would
+             * find out otherwise. So the shipped wording is the functional
+             * string in resources/lang, and anything written here replaces it.
+             */
+            'leads.thanks.title.ar' => ['screen' => 'confirmations', 'type' => 'text', 'order' => 30],
+            'leads.thanks.body.ar' => ['screen' => 'confirmations', 'type' => 'textarea', 'order' => 31],
+            'leads.thanks.title.en' => ['screen' => 'confirmations', 'type' => 'text', 'order' => 40],
+            'leads.thanks.body.en' => ['screen' => 'confirmations', 'type' => 'textarea', 'order' => 41],
+
             // ---- robots.txt, on a screen of its own ---------------------
             'seo.robots_txt' => ['screen' => 'robots', 'type' => 'code', 'order' => 10],
 

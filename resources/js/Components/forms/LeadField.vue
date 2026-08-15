@@ -116,6 +116,32 @@ const showMessage = ref(true);
  */
 const textDir = computed(() => (page.props.locale === 'en' ? 'ltr' : 'rtl'));
 
+/**
+ * The thank-you, written by the client (§6.2 step 4) with the shipped wording
+ * as its default.
+ *
+ * WHY THIS ONE FALLS BACK AND THE EMAIL DOES NOT
+ *
+ * The confirmation email stays silent until Amad Craft writes it, because an
+ * unwritten email is simply not sent and nobody notices. This message has no
+ * such option: it is the only answer the visitor gets, on screen, one moment
+ * after they handed over their contact details. Empty here is not silence, it
+ * is a form that appears to have broken — so the functional string in
+ * resources/lang stands in until there is something better to say.
+ *
+ * The fallback is to the CURRENT locale's string, never to the other
+ * language's setting: §12 forbids serving Arabic to someone who wrote in
+ * English, and that holds for four words as much as for a page.
+ */
+const thanksSetting = (key) => {
+    const value = page.props.settings?.[`leads.thanks.${key}.${page.props.locale}`];
+
+    return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
+};
+
+const thanksTitle = computed(() => thanksSetting('title') ?? t('leads.success_title'));
+const thanksBody = computed(() => thanksSetting('body') ?? t('leads.success_body'));
+
 // A placeholder handed over at the moment the box is opened — see openMessage.
 const messageHint = ref(null);
 const messageBox = ref(null);
@@ -451,9 +477,13 @@ function submit() {
             errand that had finished. The visible answer is now the dialog at
             the end of this file; this line stays because `aria-live` is how a
             screen reader learns anything happened at all (§10.6).
+
+            It announces the same words the dialog shows rather than a third
+            sentence of its own — once the wording is the client's, a separate
+            line here would be one they never wrote and cannot see.
         -->
         <p v-if="submitted" class="visually-hidden" role="status" aria-live="polite">
-            {{ t('leads.success') }}
+            {{ thanksTitle }} {{ thanksBody }}
         </p>
 
         <form novalidate @submit.prevent="submit">
@@ -691,8 +721,8 @@ function submit() {
         <Toast
             :open="outcome !== null"
             :type="outcome ?? 'success'"
-            :title="outcome === 'error' ? t('leads.error_title') : t('leads.success_title')"
-            :message="outcome === 'error' ? t('leads.error_body') : t('leads.success_body')"
+            :title="outcome === 'error' ? t('leads.error_title') : thanksTitle"
+            :message="outcome === 'error' ? t('leads.error_body') : thanksBody"
             :duration="outcome === 'error' ? 0 : 5000"
             @close="dismiss"
         />

@@ -27,8 +27,8 @@ return [
     'screen.keywords' => 'Keywords',
     'screen.keywords_hint' => 'The words you want buyers to find you by, per page and per language.',
 
-    'screen.confirmations' => 'Confirmation emails',
-    'screen.confirmations_hint' => 'The message sent to whoever submits an enquiry. Leave it empty and no message is sent at all.',
+    'screen.confirmations' => 'Confirmation messages',
+    'screen.confirmations_hint' => 'What reaches someone who sends an enquiry: the email first, then the thank-you they see on the page the moment they submit.',
     'leads.confirmation.subject.ar' => 'Subject line (Arabic)',
     'leads.confirmation.subject.ar_hint' => 'The line shown in the inbox of whoever wrote to you. E.g. “We have your enquiry”.',
     'leads.confirmation.body.ar' => 'Message body (Arabic)',
@@ -37,6 +37,15 @@ return [
     'leads.confirmation.subject.en_hint' => 'Used for anyone who wrote from the English site. Left empty, they receive no confirmation.',
     'leads.confirmation.body.en' => 'Message body (English)',
     'leads.confirmation.body.en_hint' => 'The same, for English. Arabic is never auto-translated — someone who wrote in English is not sent Arabic.',
+
+    'leads.thanks.title.ar' => 'On-page thank-you heading (Arabic)',
+    'leads.thanks.title.ar_hint' => 'Shown on the page itself the moment the form is sent, not in the email. Leave it empty and the current wording stands — a page that goes silent after a submit reads as a form that broke.',
+    'leads.thanks.body.ar' => 'On-page thank-you text (Arabic)',
+    'leads.thanks.body.ar_hint' => 'The line under the heading. Everyone who submits sees this, and someone who left a mobile number rather than an email gets nothing else.',
+    'leads.thanks.title.en' => 'On-page thank-you heading (English)',
+    'leads.thanks.title.en_hint' => 'For anyone submitting from the English site. Left empty, the current English wording is shown — never the Arabic.',
+    'leads.thanks.body.en' => 'On-page thank-you text (English)',
+    'leads.thanks.body.en_hint' => 'The same, for English.',
 
     'screen.tracking' => 'Measurement & tracking',
     'screen.tracking_hint' => 'Google, Meta and Clarity IDs. Pasted as-is from your own accounts.',

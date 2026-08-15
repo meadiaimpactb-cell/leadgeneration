@@ -13417,6 +13417,12 @@ const _sfc_main$C = {
     });
     const showMessage = ref(true);
     const textDir = computed(() => page.props.locale === "en" ? "ltr" : "rtl");
+    const thanksSetting = (key) => {
+      const value = page.props.settings?.[`leads.thanks.${key}.${page.props.locale}`];
+      return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
+    };
+    const thanksTitle = computed(() => thanksSetting("title") ?? t("leads.success_title"));
+    const thanksBody = computed(() => thanksSetting("body") ?? t("leads.success_body"));
     const messageHint = ref(null);
     const messageBox = ref(null);
     const liveErrors = reactive({});
@@ -13477,41 +13483,41 @@ const _sfc_main$C = {
         ref_key: "root",
         ref: root,
         class: ["lead", `lead--${__props.layout}`]
-      }, _attrs))} data-v-f676be4c>`);
+      }, _attrs))} data-v-d0b7c6c3>`);
       if (submitted.value) {
-        _push(`<p class="visually-hidden" role="status" aria-live="polite" data-v-f676be4c>${ssrInterpolate(unref(t)("leads.success"))}</p>`);
+        _push(`<p class="visually-hidden" role="status" aria-live="polite" data-v-d0b7c6c3>${ssrInterpolate(thanksTitle.value)} ${ssrInterpolate(thanksBody.value)}</p>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`<form novalidate data-v-f676be4c>`);
+      _push(`<form novalidate data-v-d0b7c6c3>`);
       if (__props.heading) {
-        _push(`<p class="lead__heading" data-v-f676be4c>${ssrInterpolate(__props.heading)}</p>`);
+        _push(`<p class="lead__heading" data-v-d0b7c6c3>${ssrInterpolate(__props.heading)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.reassurance) {
-        _push(`<p class="lead__reassurance" data-v-f676be4c>${ssrInterpolate(__props.reassurance)}</p>`);
+        _push(`<p class="lead__reassurance" data-v-d0b7c6c3>${ssrInterpolate(__props.reassurance)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (extraFields.value.length) {
-        _push(`<div class="lead__extras" data-v-f676be4c><!--[-->`);
+        _push(`<div class="lead__extras" data-v-d0b7c6c3><!--[-->`);
         ssrRenderList(extraFields.value, (field, i) => {
-          _push(`<div class="lead__extra" data-v-f676be4c><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-f676be4c>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
+          _push(`<div class="lead__extra" data-v-d0b7c6c3><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-d0b7c6c3>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
           if (field.required) {
-            _push(`<span class="lead__required" aria-hidden="true" data-v-f676be4c>*</span>`);
+            _push(`<span class="lead__required" aria-hidden="true" data-v-d0b7c6c3>*</span>`);
           } else {
-            _push(`<span class="lead__optional" data-v-f676be4c>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
+            _push(`<span class="lead__optional" data-v-d0b7c6c3>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
           }
           _push(`</label>`);
           if (field.type === "select") {
-            _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-f676be4c><option value="" data-v-f676be4c${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
+            _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-d0b7c6c3><option value="" data-v-d0b7c6c3${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
             ssrRenderList(field.options, (opt) => {
-              _push(`<option${ssrRenderAttr("value", opt.value)} data-v-f676be4c${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
+              _push(`<option${ssrRenderAttr("value", opt.value)} data-v-d0b7c6c3${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
             });
             _push(`<!--]--></select>`);
           } else if (field.type === "checkbox") {
-            _push(`<label class="lead__check" data-v-f676be4c><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-f676be4c><span data-v-f676be4c>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
+            _push(`<label class="lead__check" data-v-d0b7c6c3><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-d0b7c6c3><span data-v-d0b7c6c3>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
           } else if (field.type === "tel") {
             _push(ssrRenderComponent(_sfc_main$E, {
               id: fieldId(field.key),
@@ -13524,12 +13530,12 @@ const _sfc_main$C = {
               onValidity: (state) => onPhoneValidity(field.key, state)
             }, null, _parent));
           } else if (field.type === "textarea") {
-            _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-f676be4c>${ssrInterpolate(values[field.key])}</textarea>`);
+            _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-d0b7c6c3>${ssrInterpolate(values[field.key])}</textarea>`);
           } else {
-            _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : textDir.value)} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] || liveErrors[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] || liveErrors[field.key] ? errorId(field.key) : void 0)} data-v-f676be4c>`);
+            _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : textDir.value)} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] || liveErrors[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] || liveErrors[field.key] ? errorId(field.key) : void 0)} data-v-d0b7c6c3>`);
           }
           if (errors.value[field.key] || liveErrors[field.key]) {
-            _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-f676be4c>${ssrInterpolate(errors.value[field.key] ?? liveErrors[field.key])}</p>`);
+            _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-d0b7c6c3>${ssrInterpolate(errors.value[field.key] ?? liveErrors[field.key])}</p>`);
           } else {
             _push(`<!---->`);
           }
@@ -13540,13 +13546,13 @@ const _sfc_main$C = {
         _push(`<!---->`);
       }
       if (contactField.value) {
-        _push(`<div class="lead__row" data-v-f676be4c><div class="lead__field" data-v-f676be4c><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-f676be4c>${ssrInterpolate(contactField.value.label)} `);
+        _push(`<div class="lead__row" data-v-d0b7c6c3><div class="lead__field" data-v-d0b7c6c3><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-d0b7c6c3>${ssrInterpolate(contactField.value.label)} `);
         if (__props.layout === "inline") {
-          _push(`<span class="lead__required" aria-hidden="true" data-v-f676be4c> * </span>`);
+          _push(`<span class="lead__required" aria-hidden="true" data-v-d0b7c6c3> * </span>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-f676be4c></div>`);
+        _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-d0b7c6c3></div>`);
         if (!messageField.value) {
           _push(ssrRenderComponent(_sfc_main$1c, {
             type: "submit",
@@ -13573,14 +13579,14 @@ const _sfc_main$C = {
         _push(`<!---->`);
       }
       if (errors.value[CONTACT]) {
-        _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-f676be4c>${ssrInterpolate(errors.value[CONTACT])}</p>`);
+        _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-d0b7c6c3>${ssrInterpolate(errors.value[CONTACT])}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (messageField.value) {
-        _push(`<div class="lead__message" data-v-f676be4c><label class="lead__label"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-f676be4c>${ssrInterpolate(messageField.value.label)} <span class="lead__optional" data-v-f676be4c>${ssrInterpolate(unref(t)("leads.optional"))}</span></label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="3"${ssrRenderAttr("dir", textDir.value)}${ssrRenderAttr("placeholder", messageHint.value ?? __props.messagePlaceholder ?? messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-f676be4c>${ssrInterpolate(values[MESSAGE])}</textarea>`);
+        _push(`<div class="lead__message" data-v-d0b7c6c3><label class="lead__label"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-d0b7c6c3>${ssrInterpolate(messageField.value.label)} <span class="lead__optional" data-v-d0b7c6c3>${ssrInterpolate(unref(t)("leads.optional"))}</span></label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="3"${ssrRenderAttr("dir", textDir.value)}${ssrRenderAttr("placeholder", messageHint.value ?? __props.messagePlaceholder ?? messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-d0b7c6c3>${ssrInterpolate(values[MESSAGE])}</textarea>`);
         if (errors.value[MESSAGE]) {
-          _push(`<p class="lead-error" data-v-f676be4c>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
+          _push(`<p class="lead-error" data-v-d0b7c6c3>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
         } else {
           _push(`<!---->`);
         }
@@ -13589,7 +13595,7 @@ const _sfc_main$C = {
         _push(`<!---->`);
       }
       if (messageField.value) {
-        _push(`<div class="lead__actions" data-v-f676be4c>`);
+        _push(`<div class="lead__actions" data-v-d0b7c6c3>`);
         _push(ssrRenderComponent(_sfc_main$1c, {
           type: "submit",
           variant: __props.layout === "inline" ? "cta-lg" : "cta",
@@ -13611,12 +13617,12 @@ const _sfc_main$C = {
       } else {
         _push(`<!---->`);
       }
-      _push(`<div class="lead__trap" aria-hidden="true" data-v-f676be4c><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-f676be4c>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-f676be4c></div></form>`);
+      _push(`<div class="lead__trap" aria-hidden="true" data-v-d0b7c6c3><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-d0b7c6c3>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-d0b7c6c3></div></form>`);
       _push(ssrRenderComponent(Toast, {
         open: outcome.value !== null,
         type: outcome.value ?? "success",
-        title: outcome.value === "error" ? unref(t)("leads.error_title") : unref(t)("leads.success_title"),
-        message: outcome.value === "error" ? unref(t)("leads.error_body") : unref(t)("leads.success_body"),
+        title: outcome.value === "error" ? unref(t)("leads.error_title") : thanksTitle.value,
+        message: outcome.value === "error" ? unref(t)("leads.error_body") : thanksBody.value,
         duration: outcome.value === "error" ? 0 : 5e3,
         onClose: dismiss
       }, null, _parent));
@@ -13630,7 +13636,7 @@ _sfc_main$C.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/forms/LeadField.vue");
   return _sfc_setup$C ? _sfc_setup$C(props, ctx) : void 0;
 };
-const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["__scopeId", "data-v-f676be4c"]]);
+const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["__scopeId", "data-v-d0b7c6c3"]]);
 const _sfc_main$B = {
   __name: "CtaBand",
   __ssrInlineRender: true,
