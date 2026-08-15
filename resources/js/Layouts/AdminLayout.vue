@@ -222,18 +222,31 @@ function logout() {
     transition: transform var(--dur-el) var(--ease);
 }
 
-/* Off-canvas on small screens. translate is direction-aware via the logical
-   `inset-inline-start` above, so this works in RTL and LTR alike. */
+/*
+ * Off-canvas on small screens.
+ *
+ * `inset-inline-start: 0` pins the panel to the LEFT edge in English and the
+ * RIGHT edge in Arabic. `translateX` has no such awareness — it is physical —
+ * so the direction that hides it has to be stated for each, and the two are
+ * opposite: leftwards in LTR, rightwards in RTL.
+ *
+ * Both signs used to be inverted. On a phone the Arabic panel slid LEFT from
+ * the right edge, which walked it across the viewport and parked 117px of navy
+ * on top of the content — measured, on every admin screen, at 390px wide.
+ */
 @media (max-width: 1023px) {
     .side {
-        transform: translateX(var(--side-hidden, 105%));
+        transform: translateX(-105%);
     }
 
     html[dir='rtl'] .side {
-        --side-hidden: -105%;
+        transform: translateX(105%);
     }
 
-    .side--open {
+    /* Matched on both selectors: `html[dir='rtl'] .side` outranks a lone
+       `.side--open`, so the opened panel would otherwise stay hidden in RTL. */
+    .side--open,
+    html[dir='rtl'] .side--open {
         transform: translateX(0);
     }
 }

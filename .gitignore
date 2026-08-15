@@ -18,6 +18,9 @@
 /public/storage
 /storage/*.key
 /storage/pail
+# Media Library's scratch space for a conversion in flight. Whatever is left
+# here is the debris of a run that was interrupted, never a source file.
+/storage/media-library
 /vendor
 Homestead.json
 Homestead.yaml

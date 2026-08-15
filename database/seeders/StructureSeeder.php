@@ -187,6 +187,13 @@ class StructureSeeder extends Seeder
             ['seo', 'default_og_image', null, true],
             ['seo', 'organization_schema', null, false],
 
+            // The sender's confirmation, written by the client (§6.2, §22.1).
+            // Private: it is read on the server when the email is built.
+            ['leads', 'confirmation.subject.ar', null, false],
+            ['leads', 'confirmation.body.ar', null, false],
+            ['leads', 'confirmation.subject.en', null, false],
+            ['leads', 'confirmation.body.en', null, false],
+
             // Tracking IDs live here, never in code (§14.1, §22.9).
             // Search Console ownership verification (§14.1). Public, because
             // it is emitted as a meta tag in the page head anyway.

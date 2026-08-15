@@ -74,6 +74,8 @@ const rank = (i) => number(i + 1).padStart(2, '0');
                             <img
                                 class="gallery__img"
                                 :src="item.webp ?? item.url"
+                                :srcset="item.srcset ?? undefined"
+                                sizes="(min-width: 900px) 33vw, 100vw"
                                 :alt="item.alt ?? ''"
                                 :width="item.width ?? undefined"
                                 :height="item.height ?? undefined"

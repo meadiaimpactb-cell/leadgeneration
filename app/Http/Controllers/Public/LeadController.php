@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeadRequest;
 use App\Jobs\PushLeadToCrm;
 use App\Models\LeadField;
+use App\Notifications\LeadConfirmation;
 use App\Notifications\NewLeadReceived;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Notification;
@@ -57,6 +58,19 @@ class LeadController extends Controller
         if ($recipients !== []) {
             Notification::route('mail', $recipients)
                 ->notify(new NewLeadReceived($lead));
+        }
+
+        /*
+         * And the sender's own confirmation (§6.2 step 4).
+         *
+         * Only to an email address — a mobile number would need an SMS gateway
+         * that is not contracted. The notification decides for itself whether
+         * to send at all: with no wording written in the panel it sends
+         * nothing rather than an empty message in the company's name.
+         */
+        if ($lead->contact_type === 'email') {
+            Notification::route('mail', $lead->contact_value)
+                ->notify(new LeadConfirmation($lead));
         }
 
         return back()->with([

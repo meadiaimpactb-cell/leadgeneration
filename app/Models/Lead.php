@@ -97,10 +97,22 @@ class Lead extends Model
         ])->save();
     }
 
-    /** Leads that never reached the CRM — these need a human (§6.3). */
+    /**
+     * Leads that never reached the CRM — these need a human (§6.3).
+     *
+     * "Synced by the `null` provider" belongs here too. That driver reports
+     * success without sending anything, which is right for local work and
+     * wrong to forget about: without this clause the enquiries taken before a
+     * real CRM was connected are stamped green forever and «resync all» steps
+     * straight over them.
+     */
     public function scopeNotSynced(Builder $query): Builder
     {
-        return $query->whereIn('crm_status', [self::CRM_PENDING, self::CRM_FAILED]);
+        return $query->where(fn (Builder $q) => $q
+            ->whereIn('crm_status', [self::CRM_PENDING, self::CRM_FAILED])
+            ->orWhere(fn (Builder $stub) => $stub
+                ->where('crm_status', self::CRM_SYNCED)
+                ->where('crm_provider', 'null')));
     }
 
     public function scopeFromCampaign(Builder $query, int $campaignId): Builder

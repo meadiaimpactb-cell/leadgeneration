@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Workspace from '@/Components/admin/Workspace.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
+import MediaSlot from '@/Components/admin/MediaSlot.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -44,6 +45,22 @@ function serialise(field) {
     }
 
     return field.value ?? '';
+}
+
+/**
+ * An image setting is stored as the URL of the chosen file, and edited as the
+ * one-item list MediaSlot speaks.
+ *
+ * Storing the URL rather than a media id keeps every reader unchanged —
+ * MetaBuilder already expects a path here, and a setting that meant one thing
+ * to the panel and another to the renderer is how these values go stale.
+ */
+function asSlot(value) {
+    return value ? [{ id: null, url: value, thumb: value, name: value }] : [];
+}
+
+function fromSlot(items) {
+    return items.length ? (items[0].url ?? null) : null;
 }
 
 function deserialise(field, raw) {
@@ -150,9 +167,22 @@ function save() {
                     <div
                         v-for="field in fields"
                         :key="field.id"
-                        :class="{ 'grid__wide': ['textarea', 'code', 'list'].includes(field.type) }"
+                        :class="{ 'grid__wide': ['textarea', 'code', 'list', 'image'].includes(field.type) }"
                     >
+                        <!-- Picked from the library, with the choice shown
+                             back as a picture. Typing a path was the reason
+                             this setting sat empty. -->
+                        <MediaSlot
+                            v-if="field.type === 'image'"
+                            :model-value="asSlot(values[field.id])"
+                            :limit="1"
+                            :label="t(`settings.${field.key}`)"
+                            :hint="t(`settings.${field.key}_hint`)"
+                            @update:model-value="(items) => (values[field.id] = fromSlot(items))"
+                        />
+
                         <Field
+                            v-else
                             v-model="values[field.id]"
                             :label="t(`settings.${field.key}`)"
                             :hint="t(`settings.${field.key}_hint`)"

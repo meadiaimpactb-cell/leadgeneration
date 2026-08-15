@@ -105,6 +105,30 @@ class SitemapAndRobotsTest extends TestCase
     }
 
     /**
+     * Every public page a visitor can open must be advertised.
+     *
+     * The defect this caught: /impact/stories answers 200, is linked from the
+     * site, and was absent from every sitemap — it is served by a literal
+     * route rather than a `pages` row, and everything the generator lists is
+     * driven by records. Comparing the route table against the sitemap is the
+     * only check that would have found it; walking the sitemap never could,
+     * because the URL was not in it to walk.
+     */
+    #[Test]
+    public function the_stories_index_is_listed_in_every_language(): void
+    {
+        foreach (['ar', 'en'] as $locale) {
+            $this->get("/{$locale}/impact/stories")->assertOk();
+
+            $this->assertContains(
+                url("{$locale}/impact/stories"),
+                $this->locations($locale),
+                "The stories index answers 200 in {$locale} and no sitemap mentions it.",
+            );
+        }
+    }
+
+    /**
      * The same rule, for the case the test above cannot reach.
      *
      * `every_listed_url_actually_resolves` walks what the seeders produced,

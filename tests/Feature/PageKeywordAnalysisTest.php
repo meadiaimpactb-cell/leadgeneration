@@ -152,22 +152,6 @@ class PageKeywordAnalysisTest extends TestCase
         $this->assertSame(3, $this->normalizer()->wordCount('هدايا مؤسسية حكومية'));
     }
 
-    /**
-     * The site-wide screen is deliberately left on its old matching.
-     *
-     * Pointing KeywordCoverage at the normalizer would change numbers an
-     * editor has already read and acted on, in a screen this work was told not
-     * to touch. If that becomes desirable it is its own decision — this test
-     * exists so it cannot happen by accident.
-     */
-    #[Test]
-    public function the_site_wide_coverage_service_does_not_fold_arabic(): void
-    {
-        $source = file_get_contents(app_path('Services/Seo/KeywordCoverage.php'));
-
-        $this->assertStringNotContainsString('TextNormalizer', (string) $source);
-    }
-
     /** The point of all of the above, end to end. */
     #[Test]
     public function a_differently_spelled_phrase_still_matches_the_page(): void
@@ -519,7 +503,7 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
         ]);
 
@@ -542,7 +526,7 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
         ]);
 
@@ -550,7 +534,7 @@ class PageKeywordAnalysisTest extends TestCase
 
         $this->travel(2)->seconds();
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords/reanalyse', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords/reanalyse', [
             'page_id' => $this->page->id, 'locale' => 'ar',
         ])->assertRedirect();
 
@@ -570,12 +554,12 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
         ]);
 
         $fresh = $this->actingAs($this->admin)
-            ->get('/admin/seo/page-keywords?page_id='.$this->page->id.'&locale=ar')
+            ->get('/admin/seo/keywords?page_id='.$this->page->id.'&locale=ar')
             ->viewData('page')['props']['keywords'];
 
         $this->assertFalse($fresh[0]['stale']);
@@ -584,7 +568,7 @@ class PageKeywordAnalysisTest extends TestCase
         PageKeyword::query()->sole()->forceFill(['content_hash' => 'stale-by-hand'])->save();
 
         $stale = $this->actingAs($this->admin)
-            ->get('/admin/seo/page-keywords?page_id='.$this->page->id.'&locale=ar')
+            ->get('/admin/seo/keywords?page_id='.$this->page->id.'&locale=ar')
             ->viewData('page')['props']['keywords'];
 
         $this->assertTrue($stale[0]['stale'],
@@ -600,7 +584,7 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id,
             'locale' => 'ar',
             'terms' => "هدايا مؤسسية\nدروع تكريم، تذكارات المؤتمرات",
@@ -615,7 +599,7 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $post = fn (string $terms) => $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $post = fn (string $terms) => $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $terms,
         ]);
 
@@ -633,7 +617,7 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id,
             'locale' => 'ar',
             'terms' => "الحرفة السعودية\nالحرفه السعوديه\nالحِرفة السعوديّة",
@@ -666,7 +650,7 @@ class PageKeywordAnalysisTest extends TestCase
 
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $term,
         ]);
 
@@ -690,7 +674,7 @@ class PageKeywordAnalysisTest extends TestCase
 
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $term,
         ]);
 
@@ -712,7 +696,7 @@ class PageKeywordAnalysisTest extends TestCase
 
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $term,
         ]);
 
@@ -746,7 +730,7 @@ class PageKeywordAnalysisTest extends TestCase
             'type' => 'gallery', 'sort_order' => 0, 'is_active' => true,
         ]);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => $term,
         ]);
 
@@ -784,7 +768,7 @@ class PageKeywordAnalysisTest extends TestCase
         $this->translate(['title' => 'من نحن'], 'ar');
         $this->translate(['title' => 'About us'], 'en');
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar', 'terms' => 'هدايا مؤسسية',
         ]);
 
@@ -807,7 +791,7 @@ class PageKeywordAnalysisTest extends TestCase
     {
         $this->translate(['title' => 'من نحن']);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar',
             'terms' => "هدايا مؤسسية\nدروع تكريم",
         ]);
@@ -815,12 +799,12 @@ class PageKeywordAnalysisTest extends TestCase
         [$first, $second] = PageKeyword::query()->orderBy('id')->get()->all();
 
         $this->actingAs($this->admin)
-            ->put("/admin/seo/page-keywords/{$first->id}/primary")
+            ->put("/admin/seo/keywords/{$first->id}/primary")
             ->assertRedirect();
 
         $this->assertTrue($first->refresh()->is_primary);
 
-        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$second->id}/primary");
+        $this->actingAs($this->admin)->put("/admin/seo/keywords/{$second->id}/primary");
 
         $this->assertTrue($second->refresh()->is_primary);
         $this->assertFalse($first->refresh()->is_primary,
@@ -835,7 +819,7 @@ class PageKeywordAnalysisTest extends TestCase
         $this->translate(['title' => 'About'], 'en');
 
         $post = fn (string $locale, string $term) => $this->actingAs($this->admin)
-            ->post('/admin/seo/page-keywords', [
+            ->post('/admin/seo/keywords', [
                 'page_id' => $this->page->id, 'locale' => $locale, 'terms' => $term,
             ]);
 
@@ -845,8 +829,8 @@ class PageKeywordAnalysisTest extends TestCase
         $arabic = PageKeyword::query()->forLocale('ar')->sole();
         $english = PageKeyword::query()->forLocale('en')->sole();
 
-        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$arabic->id}/primary");
-        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$english->id}/primary");
+        $this->actingAs($this->admin)->put("/admin/seo/keywords/{$arabic->id}/primary");
+        $this->actingAs($this->admin)->put("/admin/seo/keywords/{$english->id}/primary");
 
         $this->assertTrue($arabic->refresh()->is_primary);
         $this->assertTrue($english->refresh()->is_primary,
@@ -861,7 +845,7 @@ class PageKeywordAnalysisTest extends TestCase
 
         $this->translate(['title' => $term, 'meta_title' => $term, 'excerpt' => "{$term} {$term}"]);
 
-        $this->actingAs($this->admin)->post('/admin/seo/page-keywords', [
+        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
             'page_id' => $this->page->id, 'locale' => 'ar',
             'terms' => "{$term}\nدروع تكريم\nتذكارات المؤتمرات",
         ]);
@@ -869,10 +853,10 @@ class PageKeywordAnalysisTest extends TestCase
         // The weakest of the three is made the subject, so the pinning is
         // visible rather than coinciding with the score order.
         $weakest = PageKeyword::query()->orderBy('score')->first();
-        $this->actingAs($this->admin)->put("/admin/seo/page-keywords/{$weakest->id}/primary");
+        $this->actingAs($this->admin)->put("/admin/seo/keywords/{$weakest->id}/primary");
 
         $shown = $this->actingAs($this->admin)
-            ->get('/admin/seo/page-keywords?page_id='.$this->page->id.'&locale=ar')
+            ->get('/admin/seo/keywords?page_id='.$this->page->id.'&locale=ar')
             ->viewData('page')['props']['keywords'];
 
         $this->assertTrue($shown[0]['isPrimary'], 'The page subject is not at the top of its own list.');
@@ -895,7 +879,7 @@ class PageKeywordAnalysisTest extends TestCase
         $this->translate(['title' => 'من نحن']);
 
         $props = $this->actingAs($this->admin)
-            ->get('/admin/seo/page-keywords')->assertOk()
+            ->get('/admin/seo/keywords')->assertOk()
             ->viewData('page')['props'];
 
         $this->assertNotEmpty($props['pages']);
@@ -904,14 +888,8 @@ class PageKeywordAnalysisTest extends TestCase
     }
 
     #[Test]
-    public function the_site_wide_keyword_screen_still_works(): void
-    {
-        $this->actingAs($this->admin)->get('/admin/seo/keywords')->assertOk();
-    }
-
-    #[Test]
     public function a_visitor_cannot_reach_the_screen(): void
     {
-        $this->get('/admin/seo/page-keywords')->assertRedirect('/admin/login');
+        $this->get('/admin/seo/keywords')->assertRedirect('/admin/login');
     }
 }

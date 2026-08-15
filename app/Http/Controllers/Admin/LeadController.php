@@ -258,8 +258,33 @@ class LeadController extends Controller
             'message' => $lead->message,
             'status' => $lead->status,
             'crmStatus' => $lead->crm_status,
+            /*
+             * Which provider "synced" it.
+             *
+             * `null` is the stub driver: it accepts the lead, records a
+             * success and sends it nowhere. Without this the column reads
+             * "Synced" for five enquiries that never left the building, which
+             * is the most dangerous kind of green on this screen.
+             */
+            'crmProvider' => $lead->crm_provider,
             'campaign' => $lead->campaign?->slug,
+            /*
+             * The phone and the organisation, in the list and not only in the
+             * side panel.
+             *
+             * The form asks for one contact method and offers a phone box
+             * beside it; both were stored in `extra` and neither was ever
+             * shown. Somebody reading this screen saw an email address and
+             * had no way to know a number had been left — which on a B2B
+             * enquiry is the difference between replying today and not.
+             */
+            'phone' => $lead->extra['phone'] ?? null,
+            'organisation' => $lead->extra['organisation'] ?? null,
+            // Where the visit came from. `utm_source` alone is empty for
+            // anyone who typed the address or followed a plain link, which is
+            // most enquiries — the referrer is what names those.
             'source' => $lead->utm_source,
+            'referrer' => $lead->referrer,
             // In the row, not only in the side panel: on a page with two
             // audiences this is what decides who picks the enquiry up, and a
             // fact you must open a drawer to learn is one nobody sorts by.

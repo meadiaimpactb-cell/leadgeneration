@@ -135,13 +135,39 @@ class CrmController extends Controller
     private function status(): array
     {
         return [
-            'synced' => Lead::query()->where('crm_status', Lead::CRM_SYNCED)->count(),
-            'pending' => Lead::query()->where('crm_status', Lead::CRM_PENDING)->count(),
+            /*
+             * A lead the `null` stub "sent" is not a lead that arrived.
+             *
+             * That driver reports success without leaving the machine, so
+             * counting its rows as delivered would put a green figure on the
+             * one screen whose whole job is to say whether the connection
+             * works. They are counted as waiting instead — which is what they
+             * are, and what `Lead::notSynced()` and the resend button below
+             * already treat them as.
+             */
+            'synced' => Lead::query()
+                ->where('crm_status', Lead::CRM_SYNCED)
+                /*
+                 * `!= 'null'` alone is not enough: in SQL, `NULL != 'null'`
+                 * is NULL, so a synced lead that never recorded which
+                 * provider took it would silently drop out of the count. An
+                 * unrecorded provider is not proof of the stub — only the
+                 * literal string is — so it counts as delivered.
+                 */
+                ->where(fn ($q) => $q
+                    ->whereNull('crm_provider')
+                    ->orWhere('crm_provider', '!=', 'null'))
+                ->count(),
+            'pending' => Lead::query()->notSynced()->count()
+                - Lead::query()->where('crm_status', Lead::CRM_FAILED)->count(),
             'failed' => Lead::query()->where('crm_status', Lead::CRM_FAILED)->count(),
             // There is no `successful` column: a row records an attempt, and
             // success is the absence of an error on it.
             'lastSuccessAt' => CrmSyncLog::query()
                 ->whereNull('error')
+                ->where(fn ($q) => $q
+                    ->whereNull('provider')
+                    ->orWhere('provider', '!=', 'null'))
                 ->latest('created_at')
                 ->value('created_at')?->toIso8601String(),
         ];

@@ -42,6 +42,69 @@ function interestLabel(value) {
     return (page.props.translations ?? {})[`admin.interest_${value}`] ?? value;
 }
 
+/** One tap to reply, whichever way the visitor chose to be reached. */
+function contactHref(lead) {
+    return lead.type === 'phone'
+        ? `tel:${String(lead.contact).replace(/\s/g, '')}`
+        : `mailto:${lead.contact}`;
+}
+
+/**
+ * The provider's name, or what "null" actually means.
+ *
+ * `null` is the stub driver that accepts a lead and sends it nowhere — the
+ * setting a site runs on before a CRM is connected. Printed raw it read as
+ * the word "null" beside every synced lead, which looks like a fault and is
+ * really a configuration state worth naming.
+ */
+function providerLabel(provider) {
+    return provider === 'null' || !provider
+        ? t('admin.crm_provider_none')
+        : provider;
+}
+
+/**
+ * What actually happened to this lead, not what the column was told.
+ *
+ * The stub provider marks a lead "synced" after sending it nowhere, so a site
+ * with no CRM connected showed a full column of green. Until a real provider
+ * is configured that state is reported as what it is: nothing was sent.
+ */
+function crmState(lead) {
+    return lead.crmProvider === 'null' ? 'not_connected' : lead.crmStatus;
+}
+
+/** Whether anything actually tagged this visit as coming from a campaign. */
+function hasCampaignTags(lead) {
+    return Object.values(lead.utm ?? {}).some(Boolean);
+}
+
+/**
+ * Where the enquiry came from, in the order the answer is worth having.
+ *
+ * A campaign beats a source tag, a source tag beats a referring site, and a
+ * visitor with none of those came directly — which is a fact, not a blank.
+ * The column used to print "—" for all four cases at once.
+ */
+function originOf(lead) {
+    if (lead.campaign) return lead.campaign;
+    if (lead.source) return lead.source;
+
+    if (lead.referrer) {
+        try {
+            const host = new URL(lead.referrer).hostname.replace(/^www\./, '');
+
+            // A referrer on our own domain is the visitor moving around the
+            // site, not a source — the page they came from is in the panel.
+            if (host !== window.location.hostname) return host;
+        } catch {
+            return lead.referrer;
+        }
+    }
+
+    return t('admin.lead_source_direct');
+}
+
 const filters = reactive({
     q: props.filters.q ?? '',
     from: props.filters.from ?? '',
@@ -172,10 +235,25 @@ function closePanel() {
                     <tbody>
                         <tr v-for="lead in leads.data" :key="lead.id">
                             <td class="nowrap">{{ dateTime(lead.createdAt) }}</td>
+                            <!--
+                                Both ways of reaching them, in the column that
+                                claims to hold the contact. The phone lived in
+                                `extra` and never left the database, so a
+                                salesperson scanning this list saw an email and
+                                assumed that was all there was.
+                            -->
                             <td>
                                 <Link :href="`/admin/leads/${lead.id}`" class="table__link latin">
                                     {{ lead.contact }}
                                 </Link>
+                                <a
+                                    v-if="lead.phone"
+                                    class="table__phone latin"
+                                    :href="`tel:${lead.phone.replace(/\s/g, '')}`"
+                                >
+                                    {{ lead.phone }}
+                                </a>
+                                <span v-if="lead.organisation" class="table__org">{{ lead.organisation }}</span>
                             </td>
                             <!--
                                 Clamped, with the whole thing one click away
@@ -186,7 +264,12 @@ function closePanel() {
                             <td class="table__msg" :title="lead.message ?? undefined">
                                 {{ lead.message ?? '—' }}
                             </td>
-                            <td>{{ lead.campaign ?? lead.source ?? '—' }}</td>
+                            <!-- Never a bare dash: a campaign if it was tagged,
+                                 otherwise the site that sent them, otherwise
+                                 the plain fact that they came directly. -->
+                            <td class="table__src" :title="lead.referrer ?? undefined">
+                                {{ originOf(lead) }}
+                            </td>
                             <td class="nowrap">
                                 {{ lead.interest ? interestLabel(lead.interest) : '—' }}
                             </td>
@@ -205,8 +288,8 @@ function closePanel() {
                                 <span v-else>{{ t(`admin.status_${lead.status}`) }}</span>
                             </td>
                             <td>
-                                <span class="chip" :class="`chip--${lead.crmStatus}`">
-                                    {{ t(`admin.crm_${lead.crmStatus}`) }}
+                                <span class="chip" :class="`chip--${crmState(lead)}`">
+                                    {{ t(`admin.crm_${crmState(lead)}`) }}
                                 </span>
                             </td>
                         </tr>
@@ -240,6 +323,28 @@ function closePanel() {
                     <dt>{{ t('admin.lead_date') }}</dt>
                     <dd>{{ dateTime(selected.createdAt) }}</dd>
 
+                    <!-- The contact the visitor typed, and everything else the
+                         form collected. `extra` holds the phone number and the
+                         organisation: both were captured, stored and sent to
+                         this screen, and until now neither was ever drawn —
+                         the one fact a salesperson needs before calling. -->
+                    <dt>{{ t('admin.lead_contact') }}</dt>
+                    <dd class="ltr">
+                        <a :href="contactHref(selected)" class="link-weave">{{ selected.contact }}</a>
+                    </dd>
+
+                    <template v-for="(value, key) in selected.extra ?? {}" :key="key">
+                        <dt>{{ t(`admin.lead_extra_${key}`) }}</dt>
+                        <dd :class="{ ltr: key === 'phone' }">
+                            <!-- A phone is a link: one tap to call from a
+                                 phone, one click to dial from a desktop app. -->
+                            <a v-if="key === 'phone'" class="link-weave" :href="`tel:${String(value).replace(/\s/g, '')}`">
+                                {{ value }}
+                            </a>
+                            <template v-else>{{ value }}</template>
+                        </dd>
+                    </template>
+
                     <dt>{{ t('admin.lead_message') }}</dt>
                     <dd>{{ selected.message ?? '—' }}</dd>
 
@@ -258,24 +363,48 @@ function closePanel() {
 
                 <h3 class="drawer__sub">{{ t('admin.attribution') }}</h3>
                 <dl class="pairs">
-                    <dt>Page</dt>
+                    <dt>{{ t('admin.lead_page_url') }}</dt>
                     <dd class="ltr">{{ selected.pageUrl ?? '—' }}</dd>
-                    <dt>Referrer</dt>
+                    <dt>{{ t('admin.lead_referrer') }}</dt>
                     <dd class="ltr">{{ selected.referrer ?? '—' }}</dd>
-                    <dt v-for="(value, key) in selected.utm" :key="key">{{ key }}</dt>
-                    <dd v-for="(value, key) in selected.utm" :key="`v-${key}`" class="ltr">
-                        {{ value ?? '—' }}
-                    </dd>
+                    <!--
+                        One loop, not two.
+
+                        These were two sibling `v-for`s — every label first,
+                        then every value — which in this two-column grid put
+                        `source` beside `medium` and left the values orphaned
+                        in a block of dashes underneath. A definition list has
+                        to alternate dt,dd,dt,dd to mean anything.
+
+                        Rows only for the tags this visit actually carried. An
+                        enquiry that arrived without a campaign printed nine
+                        rows of `gclid —` in English, which reads as nine
+                        missing facts rather than as one answered question; the
+                        note underneath is that answer.
+                    -->
+                    <template v-for="(value, key) in selected.utm" :key="key">
+                        <template v-if="value">
+                            <dt>{{ t(`admin.utm_${key}`) }}</dt>
+                            <dd class="ltr">{{ value }}</dd>
+                        </template>
+                    </template>
                 </dl>
+
+                <!-- Said plainly rather than left as a row of dashes: a visitor
+                     who typed the address or followed a plain link carries no
+                     campaign tags, and that is an answer, not a gap. -->
+                <p v-if="!hasCampaignTags(selected)" class="drawer__note">
+                    {{ t('admin.attribution_direct') }}
+                </p>
 
                 <h3 class="drawer__sub">{{ t('admin.crm_log') }}</h3>
                 <p class="drawer__crm">
-                    {{ t(`admin.crm_${selected.crmStatus}`) }}
-                    <span v-if="selected.crmProvider" class="latin">· {{ selected.crmProvider }}</span>
+                    {{ t(`admin.crm_${crmState(selected)}`) }}
+                    <span v-if="selected.crmProvider && selected.crmProvider !== 'null'" class="latin">· {{ providerLabel(selected.crmProvider) }}</span>
                 </p>
 
                 <button
-                    v-if="can.updateStatus && selected.crmStatus !== 'synced'"
+                    v-if="can.updateStatus && crmState(selected) !== 'synced'"
                     class="btn btn--secondary"
                     type="button"
                     @click="resync(selected)"
@@ -286,7 +415,7 @@ function closePanel() {
                 <ul v-if="selected.syncLogs?.length" class="logs">
                     <li v-for="log in selected.syncLogs" :key="log.id" class="logs__row">
                         <span class="tabular">#{{ log.attempt }}</span>
-                        <span class="latin">{{ log.provider }}</span>
+                        <span class="latin">{{ providerLabel(log.provider) }}</span>
                         <span class="tabular">{{ log.httpStatus ?? '—' }}</span>
                         <span class="logs__error">{{ log.error ?? '' }}</span>
                     </li>
@@ -340,6 +469,34 @@ function closePanel() {
  * fifteen-line row and pushed every other lead off the screen. The full text
  * is on the lead's own page, which the contact link opens.
  */
+/* Under the email, quieter than it: the address is the link that opens the
+   lead, the number is a shortcut to dial. */
+.table__phone {
+    display: block;
+    direction: ltr;
+    text-align: start;
+    font-size: var(--fs-caption);
+    color: var(--action-600);
+}
+
+.table__org {
+    display: block;
+    font-size: var(--fs-caption);
+    color: var(--ink-600);
+    overflow-wrap: anywhere;
+}
+
+.table__src {
+    overflow-wrap: anywhere;
+}
+
+.drawer__note {
+    margin-block-start: var(--s-2);
+    font-size: var(--fs-caption);
+    line-height: var(--lh-body);
+    color: var(--ink-600);
+}
+
 .table__msg {
     max-inline-size: 24rem;
     display: -webkit-box;

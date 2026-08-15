@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasImageConversions;
 use App\Support\Settings;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -27,7 +27,11 @@ class Setting extends Model implements HasMedia
     // The brand assets (logo, favicon, share image) hang off a single
     // settings row. See App\Support\Brand — they are site-wide singletons,
     // and this is already where the panel looks for those.
-    use InteractsWithMedia;
+    use HasImageConversions, InteractsWithMedia {
+        // Media Library ships an empty stub of this method; the trait's
+        // version is the one that defines the four sizes.
+        HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
+    }
 
     protected $guarded = ['id'];
 
@@ -52,30 +56,6 @@ class Setting extends Model implements HasMedia
      * WebP is produced for every image because §13 asks for it and the format
      * saves more on photographs of craftwork than any other single change.
      */
-    public function registerMediaConversions(?Media $media = null): void
-    {
-        // Nothing to resize on a video. Spatie's video generator needs ffmpeg,
-        // which is not installed here, so without this guard every hero clip
-        // would queue four conversions that can only fail.
-        if ($media !== null && ! str_starts_with((string) $media->mime_type, 'image/')) {
-            return;
-        }
-
-        $this->addMediaConversion('thumb')
-            ->fit(Fit::Crop, 400, 400)
-            ->nonQueued();
-
-        $this->addMediaConversion('medium')
-            ->fit(Fit::Max, 800, 800);
-
-        $this->addMediaConversion('large')
-            ->fit(Fit::Max, 1600, 1600);
-
-        $this->addMediaConversion('webp')
-            ->fit(Fit::Max, 1600, 1600)
-            ->format('webp');
-    }
-
     protected static function booted(): void
     {
         // The Settings repository caches forever, so every write must bust it.

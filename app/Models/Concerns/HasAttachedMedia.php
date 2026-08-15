@@ -118,6 +118,27 @@ trait HasAttachedMedia
     }
 
     /**
+     * The `srcset` for one image, or null when there is nothing to choose from.
+     *
+     * Null rather than a one-entry srcset on purpose: an image with only one
+     * width available gains nothing from the attribute, and a srcset with a
+     * single candidate is noise in the markup. Older records with no generated
+     * conversions therefore render exactly as they did before.
+     */
+    protected function srcset(Media $media): ?string
+    {
+        $candidates = [];
+
+        foreach (['webp_small' => 800, 'webp' => 1600] as $conversion => $width) {
+            if ($media->hasGeneratedConversion($conversion)) {
+                $candidates[] = $media->getUrl($conversion)." {$width}w";
+            }
+        }
+
+        return count($candidates) > 1 ? implode(', ', $candidates) : null;
+    }
+
+    /**
      * The render-ready shape for one referenced image, matching what
      * `imagePayload()` has always returned so nothing downstream changes.
      *
@@ -131,6 +152,9 @@ trait HasAttachedMedia
             'id' => $media->id,
             'url' => $media->getUrl(),
             'webp' => $media->hasGeneratedConversion('webp') ? $media->getUrl('webp') : null,
+            // Two widths of the same format, so a phone stops downloading a
+            // 1600px file to paint it 400px wide (§13, §14).
+            'srcset' => $this->srcset($media),
             'thumb' => $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : $media->getUrl(),
             // Hero decides between <video> and <img> by extension, but the
             // panel cannot guess from a URL alone which tile to draw.

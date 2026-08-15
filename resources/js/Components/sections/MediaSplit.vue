@@ -36,6 +36,8 @@ const { root } = useReveal();
                 <div v-if="image" class="split__media reveal">
                     <img
                         :src="image.webp ?? image.url"
+                                :srcset="image.srcset ?? undefined"
+                                sizes="(min-width: 900px) 50vw, 100vw"
                         :alt="image.alt ?? ''"
                         :width="image.width ?? undefined"
                         :height="image.height ?? undefined"

@@ -180,6 +180,8 @@ const paneGround = computed(() =>
                     v-else
                     class="hero__asset"
                     :src="mediaUrl"
+                    :srcset="image?.srcset ?? undefined"
+                    sizes="100vw"
                     :alt="image?.alt ?? ''"
                     :width="image?.width ?? undefined"
                     :height="image?.height ?? undefined"

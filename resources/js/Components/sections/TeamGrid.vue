@@ -52,6 +52,8 @@ const initial = (member) => (text(member, 'name') ?? '').trim().charAt(0);
                             v-if="member.image"
                             class="team__img"
                             :src="member.image.webp ?? member.image.url"
+                                :srcset="member.image.srcset ?? undefined"
+                                sizes="(min-width: 900px) 25vw, 50vw"
                             :alt="member.image.alt ?? text(member, 'name') ?? ''"
                             loading="lazy"
                             decoding="async"

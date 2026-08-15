@@ -31,20 +31,74 @@ const copied = ref(false);
 /**
  * Copies the index URL, which is the one Search Console asks for.
  *
- * `navigator.clipboard` is unavailable over plain HTTP, which is exactly how
- * this panel is reached in development — so the failure path selects the text
- * instead of silently doing nothing.
+ * WHY THIS IS NOT ONE LINE
+ *
+ * `navigator.clipboard` exists only in a secure context. This panel is reached
+ * over plain http:// on any host that is not localhost — which is every
+ * developer machine on a `.test` domain and every staging box without a
+ * certificate — and there the API is not merely blocked, it is `undefined`.
+ * The first version called it anyway and the button did nothing at all.
+ *
+ * So: the modern API where it exists, and a textarea plus `execCommand` where
+ * it does not. `execCommand` is deprecated and still the only thing that
+ * copies outside a secure context, which is exactly the case being handled.
  */
-async function copyIndex(event) {
-    try {
-        await navigator.clipboard.writeText(props.indexUrl);
+async function copyIndex() {
+    const copied_ = (await modernCopy(props.indexUrl)) || legacyCopy(props.indexUrl);
+
+    // Never claim success that did not happen: if both paths failed, the URL
+    // is selected instead so it can be copied by hand, and the label does not
+    // flip to "copied".
+    if (copied_) {
         copied.value = true;
         setTimeout(() => (copied.value = false), 2000);
-    } catch {
-        const field = event.target.closest('.handover')?.querySelector('.handover__url');
-
-        if (field) window.getSelection()?.selectAllChildren(field);
+    } else {
+        selectUrl();
     }
+}
+
+async function modernCopy(text) {
+    if (!window.isSecureContext || !navigator.clipboard) return false;
+
+    try {
+        await navigator.clipboard.writeText(text);
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function legacyCopy(text) {
+    const field = document.createElement('textarea');
+
+    field.value = text;
+    field.setAttribute('readonly', '');
+    // Off-screen rather than hidden: a `display: none` textarea cannot be
+    // selected, and selection is what `execCommand` copies from.
+    field.style.position = 'fixed';
+    field.style.insetInlineStart = '-9999px';
+
+    document.body.appendChild(field);
+    field.select();
+
+    let ok = false;
+
+    try {
+        ok = document.execCommand('copy');
+    } catch {
+        ok = false;
+    }
+
+    document.body.removeChild(field);
+
+    return ok;
+}
+
+function selectUrl() {
+    const field = document.querySelector('.handover__url');
+
+    if (field) window.getSelection()?.selectAllChildren(field);
 }
 </script>
 

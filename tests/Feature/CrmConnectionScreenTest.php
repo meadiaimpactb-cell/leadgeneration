@@ -43,7 +43,7 @@ class CrmConnectionScreenTest extends TestCase
      * table actually requires rather than inventing a factory that would then
      * have to be kept in step with the real write path.
      */
-    private function leads(int $count, string $crmStatus): void
+    private function leads(int $count, string $crmStatus, ?string $provider = null): void
     {
         for ($i = 0; $i < $count; $i++) {
             Lead::query()->create([
@@ -53,6 +53,7 @@ class CrmConnectionScreenTest extends TestCase
                 'locale' => 'ar',
                 'status' => 'new',
                 'crm_status' => $crmStatus,
+                'crm_provider' => $provider,
             ]);
         }
     }
@@ -216,5 +217,59 @@ class CrmConnectionScreenTest extends TestCase
 
         $this->actingAs($editor)->get('/admin/integrations/crm')->assertForbidden();
         $this->actingAs($editor)->put('/admin/integrations/crm', ['driver' => 'zid'])->assertForbidden();
+    }
+
+    /**
+     * The `null` driver reports success without sending anything anywhere.
+     *
+     * Counting its rows as delivered put a green figure on the one screen
+     * whose entire job is to say whether the connection works — five
+     * enquiries read as "sent" on a site with no CRM attached. They are
+     * waiting, not delivered, and the screen must say so.
+     */
+    #[Test]
+    public function a_lead_the_null_stub_swallowed_is_not_counted_as_delivered(): void
+    {
+        $this->leads(5, Lead::CRM_SYNCED, 'null');
+        $this->leads(2, Lead::CRM_SYNCED, 'odoo');
+        $this->leads(1, Lead::CRM_FAILED, 'odoo');
+
+        $status = $this->props($this->admin())['status'];
+
+        $this->assertSame(2, $status['synced'], 'Only the two Odoo actually left the building.');
+        $this->assertSame(5, $status['pending'], 'The five the stub swallowed are still waiting.');
+        $this->assertSame(1, $status['failed']);
+    }
+
+    /**
+     * …and the day a real provider is connected, the resend button must pick
+     * those five up. Before this they were stamped `synced` forever and every
+     * resend stepped straight over them.
+     */
+    #[Test]
+    public function the_backlog_includes_what_the_stub_swallowed(): void
+    {
+        $this->leads(5, Lead::CRM_SYNCED, 'null');
+        $this->leads(3, Lead::CRM_SYNCED, 'zid');
+
+        $this->assertSame(5, Lead::query()->notSynced()->count());
+    }
+
+    /**
+     * The list screen cannot tell the truth about a lead without knowing which
+     * provider "synced" it, so the row carries the provider.
+     */
+    #[Test]
+    public function the_leads_row_carries_the_provider_that_synced_it(): void
+    {
+        $this->leads(1, Lead::CRM_SYNCED, 'null');
+
+        $row = $this->actingAs($this->admin())
+            ->get('/admin/leads')
+            ->assertOk()
+            ->viewData('page')['props']['leads']['data'][0];
+
+        $this->assertSame('null', $row['crmProvider']);
+        $this->assertSame(Lead::CRM_SYNCED, $row['crmStatus']);
     }
 }

@@ -79,6 +79,8 @@ const { onHashCta } = useHashCta();
                     <img
                         class="shero__image cut"
                         :src="image.webp ?? image.url"
+                                :srcset="image.srcset ?? undefined"
+                                sizes="(min-width: 900px) 50vw, 100vw"
                         :alt="image.alt ?? ''"
                         :width="image.width ?? undefined"
                         :height="image.height ?? undefined"

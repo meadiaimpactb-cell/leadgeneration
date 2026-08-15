@@ -53,6 +53,13 @@ const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[pro
 <template>
     <AdminLayout :title="t('admin.crm_link')">
         <Panel :title="t('admin.crm_provider')" :hint="t('admin.crm_provider_hint')">
+            <!-- Said out loud rather than left to be inferred from two unticked
+                 radios: until a provider is chosen the enquiries are kept here
+                 and emailed, and nothing leaves for any external system. -->
+            <p v-if="!providers.includes(driver)" class="notlinked">
+                {{ t('admin.crm_not_linked') }}
+            </p>
+
             <ul class="providers">
                 <li v-for="provider in providers" :key="provider">
                     <label class="providers__row">
@@ -135,6 +142,17 @@ const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[pro
 </template>
 
 <style scoped>
+.notlinked {
+    margin-block-end: var(--s-4);
+    padding: var(--s-3);
+    border-inline-start: 3px solid var(--action-600);
+    background: var(--gold-100);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--navy-900);
+}
+
 .providers {
     display: flex;
     flex-wrap: wrap;

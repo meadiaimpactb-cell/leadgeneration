@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CrmController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\KeywordController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\LeadFieldController;
@@ -144,20 +143,29 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::get('settings/{screen}', [SettingController::class, 'index'])->name('settings.screen');
 
-        // Target keywords — one open list, no page to pick first (§13).
-        Route::get('seo/keywords', [KeywordController::class, 'index'])->name('seo.keywords');
-        Route::post('seo/keywords', [KeywordController::class, 'store'])->name('seo.keywords.store');
-        Route::put('seo/keywords/{keyword}', [KeywordController::class, 'update'])->name('seo.keywords.update');
-        Route::delete('seo/keywords/{keyword}', [KeywordController::class, 'destroy'])->name('seo.keywords.destroy');
+        /*
+         * Keywords — one screen, at the obvious address.
+         *
+         * There were two: an open site-wide list, and this per-page analysis
+         * beside it. In practice that meant entering the same phrases twice
+         * and learning which screen answered which question, and the people
+         * who will be trained on this panel are not SEO staff. The per-page
+         * screen is the one kept, because its answer is a list of edits rather
+         * than a list of words.
+         *
+         * The old `seo/page-keywords` path redirects rather than 404s: it is
+         * in browser histories and in the link on the site-wide screen that
+         * used to point here.
+         */
+        Route::get('seo/keywords', [PageKeywordController::class, 'index'])->name('seo.keywords');
+        Route::post('seo/keywords', [PageKeywordController::class, 'store'])->name('seo.keywords.store');
+        Route::post('seo/keywords/reanalyse', [PageKeywordController::class, 'reanalyse'])->name('seo.keywords.reanalyse');
+        Route::put('seo/keywords/{pageKeyword}/primary', [PageKeywordController::class, 'primary'])->name('seo.keywords.primary');
+        Route::delete('seo/keywords/{pageKeyword}', [PageKeywordController::class, 'destroy'])->name('seo.keywords.destroy');
 
-        // The same words, aimed at one page — how well that page serves each.
-        // Beside the screen above, not instead of it: one is where a list
-        // starts, the other is where it turns into edits.
-        Route::get('seo/page-keywords', [PageKeywordController::class, 'index'])->name('seo.page-keywords');
-        Route::post('seo/page-keywords', [PageKeywordController::class, 'store'])->name('seo.page-keywords.store');
-        Route::post('seo/page-keywords/reanalyse', [PageKeywordController::class, 'reanalyse'])->name('seo.page-keywords.reanalyse');
-        Route::put('seo/page-keywords/{pageKeyword}/primary', [PageKeywordController::class, 'primary'])->name('seo.page-keywords.primary');
-        Route::delete('seo/page-keywords/{pageKeyword}', [PageKeywordController::class, 'destroy'])->name('seo.page-keywords.destroy');
+        // Absolute: the group already prefixes `admin`, and a relative target
+        // here produced /admin/seo/admin/seo/keywords.
+        Route::redirect('seo/page-keywords', '/admin/seo/keywords');
 
         // Everyone manages their own account, whatever their role — the
         // credentials handed over at launch (§19.3) are meant to be replaced
@@ -201,8 +209,13 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         // serves it (§13).
         Route::get('seo/sitemap', [SitemapController::class, 'index'])->name('seo.sitemap');
 
+        // The sender's confirmation is a real settings screen now: its wording
+        // is the client's to write, and until they do nothing is sent (§6.2).
+        Route::get('integrations/confirmations', [SettingController::class, 'index'])
+            ->defaults('screen', 'confirmations')->name('integrations.confirmations');
+
         Route::get('integrations/{screen}', [UpcomingScreenController::class, 'show'])
-            ->whereIn('screen', ['notifications', 'confirmations', 'spam'])
+            ->whereIn('screen', ['notifications', 'spam'])
             ->name('upcoming.integrations');
     });
 });

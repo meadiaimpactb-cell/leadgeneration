@@ -67,7 +67,7 @@ export const NAV_GROUPS = [
             { icon: 'crm', label: 'admin.crm_link', href: '/admin/integrations/crm', can: 'settings.manage' },
             { icon: 'bell', label: 'admin.notifications', href: '/admin/integrations/notifications', can: 'settings.manage', soon: true },
             { icon: 'fields', label: 'admin.lead_fields', href: '/admin/lead-fields', can: 'settings.manage' },
-            { icon: 'message', label: 'admin.confirmations', href: '/admin/integrations/confirmations', can: 'settings.manage', soon: true },
+            { icon: 'message', label: 'settings.screen.confirmations', href: '/admin/integrations/confirmations', can: 'settings.manage' },
             { icon: 'shield', label: 'admin.spam_guard', href: '/admin/integrations/spam', can: 'settings.manage', soon: true },
         ],
     },
@@ -77,7 +77,6 @@ export const NAV_GROUPS = [
         items: [
             { icon: 'seo', label: 'settings.screen.seo', href: '/admin/settings/seo', can: 'settings.manage' },
             { icon: 'keywords', label: 'settings.screen.keywords', href: '/admin/seo/keywords', can: 'pages.view' },
-            { icon: 'keywords', label: 'settings.screen.page_keywords', href: '/admin/seo/page-keywords', can: 'pages.view' },
             { icon: 'robots', label: 'settings.screen.robots', href: '/admin/settings/robots', can: 'settings.manage' },
             { icon: 'sitemap', label: 'admin.sitemap', href: '/admin/seo/sitemap', can: 'pages.view' },
             { icon: 'tracking', label: 'settings.screen.tracking', href: '/admin/settings/tracking', can: 'settings.manage' },

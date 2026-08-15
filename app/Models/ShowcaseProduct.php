@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasAttachedMedia;
+use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,8 +22,12 @@ class ShowcaseProduct extends Model implements HasMedia
 {
     use HasAttachedMedia;
     use HasFactory;
+    use HasImageConversions, InteractsWithMedia {
+        // Media Library ships an empty stub of this method; the one in
+        // HasImageConversions is the version that defines the sizes.
+        HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
+    }
     use HasTranslations;
-    use InteractsWithMedia;
     use SoftDeletes;
 
     protected $guarded = ['id'];

@@ -9,7 +9,6 @@ use App\Models\Keyword;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
-use App\Services\Seo\KeywordCoverage;
 use App\Support\Brand;
 use Database\Seeders\DemoContentSeeder;
 use Database\Seeders\NavigationSeeder;
@@ -132,122 +131,6 @@ class AdminWorkspaceTest extends TestCase
             'collection' => 'logo_light',
             'file' => UploadedFile::fake()->create('payload.php', 10, 'application/x-php'),
         ])->assertSessionHasErrors('file');
-    }
-
-    // ---- Keywords --------------------------------------------------------
-
-    #[Test]
-    public function a_pasted_list_is_split_on_lines_and_on_both_commas(): void
-    {
-        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
-            'locale' => 'ar',
-            'terms' => "هدايا مؤسسية\nتذكارات، حرف سعودية,corporate gifts",
-        ])->assertRedirect();
-
-        $this->assertSame(
-            ['هدايا مؤسسية', 'تذكارات', 'حرف سعودية', 'corporate gifts'],
-            Keyword::query()->orderBy('id')->pluck('term')->all(),
-        );
-    }
-
-    #[Test]
-    public function there_is_no_limit_and_re_pasting_creates_no_duplicates(): void
-    {
-        $first = collect(range(1, 60))->map(fn (int $i): string => "term-{$i}")->implode("\n");
-
-        $this->actingAs($this->admin)->post('/admin/seo/keywords', ['locale' => 'ar', 'terms' => $first]);
-        $this->assertSame(60, Keyword::query()->count());
-
-        // Pasting an overlapping list is the normal case — an editor should
-        // never have to de-duplicate by hand before saving.
-        $this->actingAs($this->admin)->post('/admin/seo/keywords', [
-            'locale' => 'ar', 'terms' => "term-1\nterm-2\nterm-61",
-        ]);
-
-        $this->assertSame(61, Keyword::query()->count());
-    }
-
-    #[Test]
-    public function the_same_term_can_exist_in_both_languages(): void
-    {
-        $this->actingAs($this->admin)->post('/admin/seo/keywords', ['locale' => 'ar', 'terms' => 'gifts']);
-        $this->actingAs($this->admin)->post('/admin/seo/keywords', ['locale' => 'en', 'terms' => 'gifts']);
-
-        $this->assertSame(2, Keyword::query()->where('term', 'gifts')->count());
-    }
-
-    #[Test]
-    public function a_term_in_a_page_title_is_reported_as_strong(): void
-    {
-        $page = Page::query()->where('slug', 'products')->sole();
-        $title = $page->translationFor('ar')->title;
-
-        Keyword::query()->create(['locale' => 'ar', 'term' => $title, 'is_active' => true]);
-
-        $row = collect(app(KeywordCoverage::class)->report('ar'))->firstWhere('term', $title);
-
-        $this->assertTrue($row['covered']);
-        $this->assertTrue($row['strong']);
-        $this->assertContains('products', array_column($row['pages'], 'slug'));
-    }
-
-    #[Test]
-    public function a_term_nobody_wrote_is_reported_as_a_gap(): void
-    {
-        Keyword::query()->create([
-            'locale' => 'ar', 'term' => 'عبارة لا يذكرها الموقع مطلقا', 'is_active' => true,
-        ]);
-
-        $row = collect(app(KeywordCoverage::class)->report('ar'))
-            ->firstWhere('term', 'عبارة لا يذكرها الموقع مطلقا');
-
-        $this->assertFalse($row['covered']);
-        $this->assertSame([], $row['pages']);
-    }
-
-    #[Test]
-    public function an_unpublished_page_never_counts_as_coverage(): void
-    {
-        // The whole report would be a lie otherwise: a draft cannot rank, so
-        // reporting a term as covered by one tells the editor to stop working
-        // on the exact thing they still need.
-        $page = Page::query()->where('slug', 'about')->sole();
-        $title = $page->translationFor('ar')->title;
-
-        Keyword::query()->create(['locale' => 'ar', 'term' => $title, 'is_active' => true]);
-
-        $covered = fn (): bool => collect(app(KeywordCoverage::class)->report('ar'))
-            ->firstWhere('term', $title)['covered'];
-
-        $this->assertTrue($covered());
-
-        $page->forceFill(['status' => 'draft', 'published_at' => null])->save();
-
-        $this->assertFalse($covered());
-    }
-
-    #[Test]
-    public function coverage_is_reported_per_language(): void
-    {
-        // An Arabic term matching Arabic copy must not be reported as covered
-        // on the English site, where that copy does not exist (§12).
-        $title = Page::query()->where('slug', 'products')->sole()->translationFor('ar')->title;
-
-        Keyword::query()->create(['locale' => 'en', 'term' => $title, 'is_active' => true]);
-
-        $row = collect(app(KeywordCoverage::class)->report('en'))->firstWhere('term', $title);
-
-        $this->assertFalse($row['covered']);
-    }
-
-    #[Test]
-    public function a_keyword_can_be_deleted(): void
-    {
-        $keyword = Keyword::query()->create(['locale' => 'ar', 'term' => 'مؤقتة', 'is_active' => true]);
-
-        $this->actingAs($this->admin)->delete("/admin/seo/keywords/{$keyword->id}")->assertRedirect();
-
-        $this->assertSame(0, Keyword::query()->count());
     }
 
     #[Test]

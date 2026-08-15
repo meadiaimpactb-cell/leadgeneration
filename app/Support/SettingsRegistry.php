@@ -26,7 +26,7 @@ namespace App\Support;
 class SettingsRegistry
 {
     /** Screens, in sidebar order. Each is its own page. */
-    public const SCREENS = ['contact', 'site', 'store', 'seo', 'tracking', 'robots', 'advanced'];
+    public const SCREENS = ['contact', 'site', 'store', 'seo', 'tracking', 'robots', 'confirmations', 'advanced'];
 
     /**
      * key => [screen, input type, sort order]
@@ -108,8 +108,30 @@ class SettingsRegistry
             // ---- Appearing in search ------------------------------------
             'seo.default_description.ar' => ['screen' => 'seo', 'type' => 'textarea', 'order' => 10],
             'seo.default_description.en' => ['screen' => 'seo', 'type' => 'textarea', 'order' => 11],
-            'seo.default_og_image' => ['screen' => 'seo', 'type' => 'url', 'order' => 20],
+            /*
+             * Chosen from the media library, not typed.
+             *
+             * It was a text box expecting a path like `/images/share.jpg`,
+             * which is why it was still empty: filling it correctly meant
+             * knowing where files live on disk. An empty value here is not a
+             * cosmetic gap — it is the reason og:image is absent from every
+             * page, so a link shared on WhatsApp shows no picture at all.
+             */
+            'seo.default_og_image' => ['screen' => 'seo', 'type' => 'image', 'order' => 20],
             'seo.organization_schema' => ['screen' => 'advanced', 'type' => 'code', 'order' => 10],
+
+            /*
+             * The reply the sender receives (§6.2 step 4).
+             *
+             * Written by Amad Craft, never by the developer (§22.1). Left
+             * empty, no confirmation is sent at all — an email in the
+             * company's voice that the company did not write is worse than
+             * silence, and this is the one message every enquirer reads.
+             */
+            'leads.confirmation.subject.ar' => ['screen' => 'confirmations', 'type' => 'text', 'order' => 10],
+            'leads.confirmation.body.ar' => ['screen' => 'confirmations', 'type' => 'textarea', 'order' => 11],
+            'leads.confirmation.subject.en' => ['screen' => 'confirmations', 'type' => 'text', 'order' => 20],
+            'leads.confirmation.body.en' => ['screen' => 'confirmations', 'type' => 'textarea', 'order' => 21],
 
             // ---- robots.txt, on a screen of its own ---------------------
             'seo.robots_txt' => ['screen' => 'robots', 'type' => 'code', 'order' => 10],
@@ -188,7 +210,9 @@ class SettingsRegistry
             'contact.whatsapp' => ['placeholder' => '+966500000000'],
             'store.url' => ['placeholder' => 'https://amadcraft.sa'],
             'contact.map_embed_url' => ['placeholder' => 'https://maps.google.com/maps?q=...&output=embed'],
-            'seo.default_og_image' => ['placeholder' => '/images/share.jpg'],
+            // `seo.default_og_image` had a `/images/share.jpg` placeholder for
+            // as long as it was a text box. It is chosen from the library now,
+            // so there is no box left to hint at.
         ];
     }
 

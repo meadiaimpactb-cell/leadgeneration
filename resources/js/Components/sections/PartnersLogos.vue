@@ -50,7 +50,9 @@ const animated = computed(() => props.items.length >= 5);
                             <img
                                 v-if="partner.logo"
                                 class="partners__logo"
-                                :src="partner.logo.url"
+                                :src="partner.logo.webp ?? partner.logo.url"
+                                :srcset="partner.logo.srcset ?? undefined"
+                                sizes="200px"
                                 :alt="partner.name"
                                 :width="partner.logo.width ?? undefined"
                                 :height="partner.logo.height ?? undefined"
@@ -69,7 +71,9 @@ const animated = computed(() => props.items.length >= 5);
                             <img
                                 v-if="partner.logo"
                                 class="partners__logo"
-                                :src="partner.logo.url"
+                                :src="partner.logo.webp ?? partner.logo.url"
+                                :srcset="partner.logo.srcset ?? undefined"
+                                sizes="200px"
                                 alt=""
                                 loading="lazy"
                                 decoding="async"

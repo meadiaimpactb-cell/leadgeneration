@@ -243,6 +243,35 @@ class SitemapGenerator
             );
         }
 
+        /*
+         * ---- The stories index ---------------------------------------------
+         *
+         * A real page at /impact/stories that answers 200 and is linked from
+         * the menu, and the sitemap never mentioned it: it is served by a
+         * literal route rather than by a `pages` row, and everything above
+         * this line is driven by records. An audit of every public route
+         * against the sitemap is what turned it up — it was the only page on
+         * the site a visitor can reach and a crawler was never told about.
+         *
+         * Listed even when no story yet carries a body: the index is the page
+         * that says what the artisan stories are, and it stands on its own
+         * whether or not any single story is long enough to deserve its own
+         * URL.
+         */
+        if ($this->reachable(url("{$locale}/impact/stories"))) {
+            $stories = Story::query()->visible()->translatedIn($locale)->with('translations')->get();
+
+            $entries[] = $this->entry(
+                url("{$locale}/impact/stories"),
+                $stories->max('updated_at'),
+                '0.6',
+                'monthly',
+                // Available in every enabled locale: the index is a listing,
+                // not a translated record, so it exists wherever the site does.
+                $this->staticAlternates(fn (string $l): string => url("{$l}/impact/stories")),
+            );
+        }
+
         // ---- Artisan stories -----------------------------------------------
         // Only those with a body written in this locale.
         //
@@ -288,6 +317,40 @@ class SitemapGenerator
         }
 
         return $entries;
+    }
+
+    /**
+     * Reciprocal hreflang for a page that is not a translated record.
+     *
+     * A listing route exists in every enabled locale by definition, so there
+     * is no `translatedLocales()` to narrow it — the rule the record-based
+     * entries follow does not apply, and pretending it does would drop the
+     * alternates entirely.
+     *
+     * @param  callable(string): string  $url
+     * @return array<string, string>
+     */
+    private function staticAlternates(callable $url): array
+    {
+        $locales = $this->locales();
+
+        if (count($locales) < 2) {
+            return [];
+        }
+
+        $alternates = [];
+
+        foreach ($locales as $locale) {
+            $alternates[Locales::all()[$locale]['hreflang']] = $url($locale);
+        }
+
+        $default = config('site.x_default_locale');
+
+        if (in_array($default, $locales, true)) {
+            $alternates['x-default'] = $url($default);
+        }
+
+        return $alternates;
     }
 
     /**

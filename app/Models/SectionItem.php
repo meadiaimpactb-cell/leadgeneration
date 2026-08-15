@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,8 +29,12 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class SectionItem extends Model implements HasMedia
 {
     use HasFactory;
+    use HasImageConversions, InteractsWithMedia {
+        // Media Library ships an empty stub of this method; the one in
+        // HasImageConversions is the version that defines the sizes.
+        HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
+    }
     use HasTranslations;
-    use InteractsWithMedia;
 
     protected $guarded = ['id'];
 
