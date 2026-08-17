@@ -4433,19 +4433,28 @@ const _sfc_main$1g = {
     daily: { type: Array, default: () => [] },
     bySource: { type: Array, default: () => [] },
     byCampaign: { type: Array, default: () => [] },
-    latest: { type: Array, default: () => [] }
+    latest: { type: Array, default: () => [] },
+    /*
+     * Whether this administrator may see enquiries at all.
+     *
+     * The controller decides and sends nothing it should not; this flag exists
+     * so the screen does not draw empty lead panels to somebody who will never
+     * have any. It is presentation only — the authorisation is enforced
+     * server-side (§9.2), and hiding these blocks is not what protects them.
+     */
+    maySeeLeads: { type: Boolean, default: false }
   },
   setup(__props) {
     const props = __props;
     const { t } = useTranslation();
     const { number, dayMonth } = useFormat();
-    const tiles = computed(() => [
+    const tiles = computed(() => props.maySeeLeads ? [
       { label: t("admin.total_leads"), value: props.stats.total, tone: "navy" },
       { label: t("admin.leads_30d"), value: props.stats.recent, change: props.stats.change, tone: "navy" },
       { label: t("admin.qualified_leads"), value: props.stats.qualified, tone: "navy" },
       { label: t("admin.unanswered"), value: props.stats.unanswered, tone: "accent" },
       { label: t("admin.crm_failures"), value: props.stats.failedCrm, tone: props.stats.failedCrm > 0 ? "danger" : "navy" }
-    ]);
+    ] : []);
     const peak = computed(() => Math.max(1, ...props.daily.map((d) => d.count)));
     const maxSource = computed(() => Math.max(1, ...props.bySource.map((s) => s.count)));
     const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.count)));
@@ -4455,248 +4464,264 @@ const _sfc_main$1g = {
       }, _attrs), {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="dashscreen" data-v-638029f5${_scopeId}><ul class="tiles" data-v-638029f5${_scopeId}><!--[-->`);
+            _push2(`<div class="dashscreen" data-v-e0fe45e6${_scopeId}><ul class="tiles" data-v-e0fe45e6${_scopeId}><!--[-->`);
             ssrRenderList(tiles.value, (tile) => {
-              _push2(`<li class="${ssrRenderClass([`tile--${tile.tone}`, "tile"])}" data-v-638029f5${_scopeId}><p class="tile__label" data-v-638029f5${_scopeId}>${ssrInterpolate(tile.label)}</p><p class="tile__value tabular" data-v-638029f5${_scopeId}>${ssrInterpolate(unref(number)(tile.value))}</p>`);
+              _push2(`<li class="${ssrRenderClass([`tile--${tile.tone}`, "tile"])}" data-v-e0fe45e6${_scopeId}><p class="tile__label" data-v-e0fe45e6${_scopeId}>${ssrInterpolate(tile.label)}</p><p class="tile__value tabular" data-v-e0fe45e6${_scopeId}>${ssrInterpolate(unref(number)(tile.value))}</p>`);
               if (tile.change !== void 0 && tile.change !== null) {
-                _push2(`<p class="${ssrRenderClass([tile.change > 0 ? "is-up" : tile.change < 0 ? "is-down" : "is-flat", "tile__change tabular"])}" data-v-638029f5${_scopeId}><span aria-hidden="true" data-v-638029f5${_scopeId}>${ssrInterpolate(tile.change > 0 ? "↑" : tile.change < 0 ? "↓" : "→")}</span> ${ssrInterpolate(tile.change > 0 ? "+" : "")}${ssrInterpolate(unref(number)(tile.change))}% </p>`);
+                _push2(`<p class="${ssrRenderClass([tile.change > 0 ? "is-up" : tile.change < 0 ? "is-down" : "is-flat", "tile__change tabular"])}" data-v-e0fe45e6${_scopeId}><span aria-hidden="true" data-v-e0fe45e6${_scopeId}>${ssrInterpolate(tile.change > 0 ? "↑" : tile.change < 0 ? "↓" : "→")}</span> ${ssrInterpolate(tile.change > 0 ? "+" : "")}${ssrInterpolate(unref(number)(tile.change))}% </p>`);
               } else {
                 _push2(`<!---->`);
               }
               _push2(`</li>`);
             });
             _push2(`<!--]--></ul>`);
-            _push2(ssrRenderComponent(Panel, {
-              title: unref(t)("admin.leads_by_day"),
-              hint: unref(t)("admin.no_targets_note")
-            }, {
-              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
-                if (_push3) {
-                  _push3(`<div class="chart" role="img"${ssrRenderAttr("aria-label", unref(t)("admin.leads_by_day"))} data-v-638029f5${_scopeId2}><svg${ssrRenderAttr("viewBox", `0 0 ${__props.daily.length * 4} 60`)} preserveAspectRatio="none" class="chart__svg" data-v-638029f5${_scopeId2}><!--[-->`);
-                  ssrRenderList(__props.daily, (day, i) => {
-                    _push3(`<rect${ssrRenderAttr("x", i * 4)}${ssrRenderAttr("y", 60 - day.count / peak.value * 60)} width="3"${ssrRenderAttr("height", Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0))} class="chart__bar" data-v-638029f5${_scopeId2}></rect>`);
-                  });
-                  _push3(`<!--]--></svg><div class="chart__axis" data-v-638029f5${_scopeId2}><span data-v-638029f5${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : "")}</span><span data-v-638029f5${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : "")}</span></div></div>`);
-                } else {
-                  return [
-                    createVNode("div", {
-                      class: "chart",
-                      role: "img",
-                      "aria-label": unref(t)("admin.leads_by_day")
-                    }, [
-                      (openBlock(), createBlock("svg", {
-                        viewBox: `0 0 ${__props.daily.length * 4} 60`,
-                        preserveAspectRatio: "none",
-                        class: "chart__svg"
+            if (__props.maySeeLeads) {
+              _push2(ssrRenderComponent(Panel, {
+                title: unref(t)("admin.leads_by_day"),
+                hint: unref(t)("admin.no_targets_note")
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(`<div class="chart" role="img"${ssrRenderAttr("aria-label", unref(t)("admin.leads_by_day"))} data-v-e0fe45e6${_scopeId2}><svg${ssrRenderAttr("viewBox", `0 0 ${__props.daily.length * 4} 60`)} preserveAspectRatio="none" class="chart__svg" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                    ssrRenderList(__props.daily, (day, i) => {
+                      _push3(`<rect${ssrRenderAttr("x", i * 4)}${ssrRenderAttr("y", 60 - day.count / peak.value * 60)} width="3"${ssrRenderAttr("height", Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0))} class="chart__bar" data-v-e0fe45e6${_scopeId2}></rect>`);
+                    });
+                    _push3(`<!--]--></svg><div class="chart__axis" data-v-e0fe45e6${_scopeId2}><span data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : "")}</span><span data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : "")}</span></div></div>`);
+                  } else {
+                    return [
+                      createVNode("div", {
+                        class: "chart",
+                        role: "img",
+                        "aria-label": unref(t)("admin.leads_by_day")
                       }, [
-                        (openBlock(true), createBlock(Fragment, null, renderList(__props.daily, (day, i) => {
-                          return openBlock(), createBlock("rect", {
-                            key: day.date,
-                            x: i * 4,
-                            y: 60 - day.count / peak.value * 60,
-                            width: "3",
-                            height: Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0),
-                            class: "chart__bar"
-                          }, null, 8, ["x", "y", "height"]);
+                        (openBlock(), createBlock("svg", {
+                          viewBox: `0 0 ${__props.daily.length * 4} 60`,
+                          preserveAspectRatio: "none",
+                          class: "chart__svg"
+                        }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.daily, (day, i) => {
+                            return openBlock(), createBlock("rect", {
+                              key: day.date,
+                              x: i * 4,
+                              y: 60 - day.count / peak.value * 60,
+                              width: "3",
+                              height: Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0),
+                              class: "chart__bar"
+                            }, null, 8, ["x", "y", "height"]);
+                          }), 128))
+                        ], 8, ["viewBox"])),
+                        createVNode("div", { class: "chart__axis" }, [
+                          createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : ""), 1),
+                          createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : ""), 1)
+                        ])
+                      ], 8, ["aria-label"])
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<div class="split" data-v-e0fe45e6${_scopeId}>`);
+            if (__props.maySeeLeads) {
+              _push2(ssrRenderComponent(Panel, {
+                title: unref(t)("admin.leads_by_source")
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    if (!__props.bySource.length) {
+                      _push3(`<p class="empty" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    } else {
+                      _push3(`<ul class="bars" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                      ssrRenderList(__props.bySource, (row) => {
+                        _push3(`<li class="bars__row" data-v-e0fe45e6${_scopeId2}><span class="bars__label" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-e0fe45e6${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxSource.value * 100}%` })}" data-v-e0fe45e6${_scopeId2}></span></span><span class="bars__value tabular" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
+                      });
+                      _push3(`<!--]--></ul>`);
+                    }
+                  } else {
+                    return [
+                      !__props.bySource.length ? (openBlock(), createBlock("p", {
+                        key: 0,
+                        class: "empty"
+                      }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                        key: 1,
+                        class: "bars"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.bySource, (row) => {
+                          return openBlock(), createBlock("li", {
+                            key: row.label,
+                            class: "bars__row"
+                          }, [
+                            createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
+                            createVNode("span", { class: "bars__track" }, [
+                              createVNode("span", {
+                                class: "bars__fill",
+                                style: { inlineSize: `${row.count / maxSource.value * 100}%` }
+                              }, null, 4)
+                            ]),
+                            createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
+                          ]);
                         }), 128))
-                      ], 8, ["viewBox"])),
-                      createVNode("div", { class: "chart__axis" }, [
-                        createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : ""), 1),
-                        createVNode("span", null, toDisplayString(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : ""), 1)
-                      ])
-                    ], 8, ["aria-label"])
-                  ];
-                }
-              }),
-              _: 1
-            }, _parent2, _scopeId));
-            _push2(`<div class="split" data-v-638029f5${_scopeId}>`);
-            _push2(ssrRenderComponent(Panel, {
-              title: unref(t)("admin.leads_by_source")
-            }, {
-              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
-                if (_push3) {
-                  if (!__props.bySource.length) {
-                    _push3(`<p class="empty" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
-                  } else {
-                    _push3(`<ul class="bars" data-v-638029f5${_scopeId2}><!--[-->`);
-                    ssrRenderList(__props.bySource, (row) => {
-                      _push3(`<li class="bars__row" data-v-638029f5${_scopeId2}><span class="bars__label" data-v-638029f5${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-638029f5${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxSource.value * 100}%` })}" data-v-638029f5${_scopeId2}></span></span><span class="bars__value tabular" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
-                    });
-                    _push3(`<!--]--></ul>`);
+                      ]))
+                    ];
                   }
-                } else {
-                  return [
-                    !__props.bySource.length ? (openBlock(), createBlock("p", {
-                      key: 0,
-                      class: "empty"
-                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
-                      key: 1,
-                      class: "bars"
-                    }, [
-                      (openBlock(true), createBlock(Fragment, null, renderList(__props.bySource, (row) => {
-                        return openBlock(), createBlock("li", {
-                          key: row.label,
-                          class: "bars__row"
-                        }, [
-                          createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
-                          createVNode("span", { class: "bars__track" }, [
-                            createVNode("span", {
-                              class: "bars__fill",
-                              style: { inlineSize: `${row.count / maxSource.value * 100}%` }
-                            }, null, 4)
-                          ]),
-                          createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
-                        ]);
-                      }), 128))
-                    ]))
-                  ];
-                }
-              }),
-              _: 1
-            }, _parent2, _scopeId));
-            _push2(ssrRenderComponent(Panel, {
-              title: unref(t)("admin.leads_by_campaign")
-            }, {
-              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
-                if (_push3) {
-                  if (!__props.byCampaign.length) {
-                    _push3(`<p class="empty" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+            if (__props.maySeeLeads) {
+              _push2(ssrRenderComponent(Panel, {
+                title: unref(t)("admin.leads_by_campaign")
+              }, {
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    if (!__props.byCampaign.length) {
+                      _push3(`<p class="empty" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    } else {
+                      _push3(`<ul class="bars" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                      ssrRenderList(__props.byCampaign, (row) => {
+                        _push3(`<li class="bars__row" data-v-e0fe45e6${_scopeId2}><span class="bars__label" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-e0fe45e6${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxCampaign.value * 100}%` })}" data-v-e0fe45e6${_scopeId2}></span></span><span class="bars__value tabular" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
+                      });
+                      _push3(`<!--]--></ul>`);
+                    }
                   } else {
-                    _push3(`<ul class="bars" data-v-638029f5${_scopeId2}><!--[-->`);
-                    ssrRenderList(__props.byCampaign, (row) => {
-                      _push3(`<li class="bars__row" data-v-638029f5${_scopeId2}><span class="bars__label" data-v-638029f5${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-638029f5${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxCampaign.value * 100}%` })}" data-v-638029f5${_scopeId2}></span></span><span class="bars__value tabular" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
-                    });
-                    _push3(`<!--]--></ul>`);
+                    return [
+                      !__props.byCampaign.length ? (openBlock(), createBlock("p", {
+                        key: 0,
+                        class: "empty"
+                      }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                        key: 1,
+                        class: "bars"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.byCampaign, (row) => {
+                          return openBlock(), createBlock("li", {
+                            key: row.label,
+                            class: "bars__row"
+                          }, [
+                            createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
+                            createVNode("span", { class: "bars__track" }, [
+                              createVNode("span", {
+                                class: "bars__fill",
+                                style: { inlineSize: `${row.count / maxCampaign.value * 100}%` }
+                              }, null, 4)
+                            ]),
+                            createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
+                          ]);
+                        }), 128))
+                      ]))
+                    ];
                   }
-                } else {
-                  return [
-                    !__props.byCampaign.length ? (openBlock(), createBlock("p", {
-                      key: 0,
-                      class: "empty"
-                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
-                      key: 1,
-                      class: "bars"
-                    }, [
-                      (openBlock(true), createBlock(Fragment, null, renderList(__props.byCampaign, (row) => {
-                        return openBlock(), createBlock("li", {
-                          key: row.label,
-                          class: "bars__row"
-                        }, [
-                          createVNode("span", { class: "bars__label" }, toDisplayString(row.label), 1),
-                          createVNode("span", { class: "bars__track" }, [
-                            createVNode("span", {
-                              class: "bars__fill",
-                              style: { inlineSize: `${row.count / maxCampaign.value * 100}%` }
-                            }, null, 4)
-                          ]),
-                          createVNode("span", { class: "bars__value tabular" }, toDisplayString(unref(number)(row.count)), 1)
-                        ]);
-                      }), 128))
-                    ]))
-                  ];
-                }
-              }),
-              _: 1
-            }, _parent2, _scopeId));
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
             _push2(`</div>`);
-            _push2(ssrRenderComponent(Panel, {
-              title: unref(t)("admin.latest_leads")
-            }, {
-              actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
-                if (_push3) {
-                  _push3(ssrRenderComponent(unref(Link), {
-                    href: "/admin/leads",
-                    class: "btn btn--secondary"
-                  }, {
-                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
-                      if (_push4) {
-                        _push4(`${ssrInterpolate(unref(t)("admin.leads"))}`);
-                      } else {
-                        return [
-                          createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
-                        ];
-                      }
-                    }),
-                    _: 1
-                  }, _parent3, _scopeId2));
-                } else {
-                  return [
-                    createVNode(unref(Link), {
+            if (__props.maySeeLeads) {
+              _push2(ssrRenderComponent(Panel, {
+                title: unref(t)("admin.latest_leads")
+              }, {
+                actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    _push3(ssrRenderComponent(unref(Link), {
                       href: "/admin/leads",
                       class: "btn btn--secondary"
                     }, {
-                      default: withCtx(() => [
-                        createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
-                      ]),
+                      default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                        if (_push4) {
+                          _push4(`${ssrInterpolate(unref(t)("admin.leads"))}`);
+                        } else {
+                          return [
+                            createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
+                          ];
+                        }
+                      }),
                       _: 1
-                    })
-                  ];
-                }
-              }),
-              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
-                if (_push3) {
-                  if (!__props.latest.length) {
-                    _push3(`<p class="empty" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    }, _parent3, _scopeId2));
                   } else {
-                    _push3(`<ul class="latest" data-v-638029f5${_scopeId2}><!--[-->`);
-                    ssrRenderList(__props.latest, (lead) => {
-                      _push3(`<li class="latest__row" data-v-638029f5${_scopeId2}>`);
-                      _push3(ssrRenderComponent(unref(Link), {
-                        href: `/admin/leads/${lead.id}`,
-                        class: "latest__contact latin"
+                    return [
+                      createVNode(unref(Link), {
+                        href: "/admin/leads",
+                        class: "btn btn--secondary"
                       }, {
-                        default: withCtx((_3, _push4, _parent4, _scopeId3) => {
-                          if (_push4) {
-                            _push4(`${ssrInterpolate(lead.contact)}`);
-                          } else {
-                            return [
-                              createTextVNode(toDisplayString(lead.contact), 1)
-                            ];
-                          }
-                        }),
-                        _: 2
-                      }, _parent3, _scopeId2));
-                      _push3(`<span class="latest__msg" data-v-638029f5${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</span><span class="latest__status" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span><span class="${ssrRenderClass([`is-${lead.crmStatus}`, "latest__crm"])}" data-v-638029f5${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></li>`);
-                    });
-                    _push3(`<!--]--></ul>`);
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(unref(t)("admin.leads")), 1)
+                        ]),
+                        _: 1
+                      })
+                    ];
                   }
-                } else {
-                  return [
-                    !__props.latest.length ? (openBlock(), createBlock("p", {
-                      key: 0,
-                      class: "empty"
-                    }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
-                      key: 1,
-                      class: "latest"
-                    }, [
-                      (openBlock(true), createBlock(Fragment, null, renderList(__props.latest, (lead) => {
-                        return openBlock(), createBlock("li", {
-                          key: lead.id,
-                          class: "latest__row"
-                        }, [
-                          createVNode(unref(Link), {
-                            href: `/admin/leads/${lead.id}`,
-                            class: "latest__contact latin"
-                          }, {
-                            default: withCtx(() => [
-                              createTextVNode(toDisplayString(lead.contact), 1)
-                            ]),
-                            _: 2
-                          }, 1032, ["href"]),
-                          createVNode("span", { class: "latest__msg" }, toDisplayString(lead.message ?? "—"), 1),
-                          createVNode("span", { class: "latest__status" }, toDisplayString(unref(t)(`admin.status_${lead.status}`)), 1),
-                          createVNode("span", {
-                            class: ["latest__crm", `is-${lead.crmStatus}`]
-                          }, toDisplayString(unref(t)(`admin.crm_${lead.crmStatus}`)), 3)
-                        ]);
-                      }), 128))
-                    ]))
-                  ];
-                }
-              }),
-              _: 1
-            }, _parent2, _scopeId));
+                }),
+                default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                  if (_push3) {
+                    if (!__props.latest.length) {
+                      _push3(`<p class="empty" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    } else {
+                      _push3(`<ul class="latest" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                      ssrRenderList(__props.latest, (lead) => {
+                        _push3(`<li class="latest__row" data-v-e0fe45e6${_scopeId2}>`);
+                        _push3(ssrRenderComponent(unref(Link), {
+                          href: `/admin/leads/${lead.id}`,
+                          class: "latest__contact latin"
+                        }, {
+                          default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                            if (_push4) {
+                              _push4(`${ssrInterpolate(lead.contact)}`);
+                            } else {
+                              return [
+                                createTextVNode(toDisplayString(lead.contact), 1)
+                              ];
+                            }
+                          }),
+                          _: 2
+                        }, _parent3, _scopeId2));
+                        _push3(`<span class="latest__msg" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</span><span class="latest__status" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span><span class="${ssrRenderClass([`is-${lead.crmStatus}`, "latest__crm"])}" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></li>`);
+                      });
+                      _push3(`<!--]--></ul>`);
+                    }
+                  } else {
+                    return [
+                      !__props.latest.length ? (openBlock(), createBlock("p", {
+                        key: 0,
+                        class: "empty"
+                      }, toDisplayString(unref(t)("admin.no_records")), 1)) : (openBlock(), createBlock("ul", {
+                        key: 1,
+                        class: "latest"
+                      }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.latest, (lead) => {
+                          return openBlock(), createBlock("li", {
+                            key: lead.id,
+                            class: "latest__row"
+                          }, [
+                            createVNode(unref(Link), {
+                              href: `/admin/leads/${lead.id}`,
+                              class: "latest__contact latin"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(toDisplayString(lead.contact), 1)
+                              ]),
+                              _: 2
+                            }, 1032, ["href"]),
+                            createVNode("span", { class: "latest__msg" }, toDisplayString(lead.message ?? "—"), 1),
+                            createVNode("span", { class: "latest__status" }, toDisplayString(unref(t)(`admin.status_${lead.status}`)), 1),
+                            createVNode("span", {
+                              class: ["latest__crm", `is-${lead.crmStatus}`]
+                            }, toDisplayString(unref(t)(`admin.crm_${lead.crmStatus}`)), 3)
+                          ]);
+                        }), 128))
+                      ]))
+                    ];
+                  }
+                }),
+                _: 1
+              }, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
             _push2(`</div>`);
           } else {
             return [
@@ -4719,7 +4744,8 @@ const _sfc_main$1g = {
                     ], 2);
                   }), 128))
                 ]),
-                createVNode(Panel, {
+                __props.maySeeLeads ? (openBlock(), createBlock(Panel, {
+                  key: 0,
                   title: unref(t)("admin.leads_by_day"),
                   hint: unref(t)("admin.no_targets_note")
                 }, {
@@ -4752,9 +4778,10 @@ const _sfc_main$1g = {
                     ], 8, ["aria-label"])
                   ]),
                   _: 1
-                }, 8, ["title", "hint"]),
+                }, 8, ["title", "hint"])) : createCommentVNode("", true),
                 createVNode("div", { class: "split" }, [
-                  createVNode(Panel, {
+                  __props.maySeeLeads ? (openBlock(), createBlock(Panel, {
+                    key: 0,
                     title: unref(t)("admin.leads_by_source")
                   }, {
                     default: withCtx(() => [
@@ -4783,8 +4810,9 @@ const _sfc_main$1g = {
                       ]))
                     ]),
                     _: 1
-                  }, 8, ["title"]),
-                  createVNode(Panel, {
+                  }, 8, ["title"])) : createCommentVNode("", true),
+                  __props.maySeeLeads ? (openBlock(), createBlock(Panel, {
+                    key: 1,
                     title: unref(t)("admin.leads_by_campaign")
                   }, {
                     default: withCtx(() => [
@@ -4813,9 +4841,10 @@ const _sfc_main$1g = {
                       ]))
                     ]),
                     _: 1
-                  }, 8, ["title"])
+                  }, 8, ["title"])) : createCommentVNode("", true)
                 ]),
-                createVNode(Panel, {
+                __props.maySeeLeads ? (openBlock(), createBlock(Panel, {
+                  key: 1,
                   title: unref(t)("admin.latest_leads")
                 }, {
                   actions: withCtx(() => [
@@ -4861,7 +4890,7 @@ const _sfc_main$1g = {
                     ]))
                   ]),
                   _: 1
-                }, 8, ["title"])
+                }, 8, ["title"])) : createCommentVNode("", true)
               ])
             ];
           }
@@ -4877,7 +4906,7 @@ _sfc_main$1g.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
   return _sfc_setup$1g ? _sfc_setup$1g(props, ctx) : void 0;
 };
-const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-638029f5"]]);
+const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-e0fe45e6"]]);
 const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Dashboard
