@@ -16,32 +16,33 @@ use Throwable;
 /**
  * Zid CRM driver (§6.3 — the likely destination once Odoo is retired).
  *
- * AUTHENTICATION. Zid's Merchant API wants the token under two header names:
+ * AUTHENTICATION. Zid's Merchant API reads two headers, and they answer two
+ * different questions:
  *
- *   Authorization:   Bearer <token>
- *   X-Manager-Token: <token>
+ *   X-Manager-Token: <manager token>   which store
+ *   Authorization:   Bearer <oauth>    who is asking
  *
- * In the OAuth flow those hold two different things — a registered app's bearer
- * token, and the store token the merchant granted that app. A merchant who
- * instead copies the pair off the dashboard's «التكاملات مع واجهات البرمجة
- * (API)» screen has only the second one, and Zid's documented instruction for
- * that route is to send it under both names. This driver previously sent only
- * `Authorization`, which cannot work either way.
+ * The dashboard's «التكاملات مع واجهات البرمجة (API)» screen hands a merchant
+ * the first only. The second comes from installing an application registered on
+ * the Zid partner portal. This driver previously sent the manager token as
+ * `Authorization` and omitted `X-Manager-Token` entirely, which answers neither
+ * question.
  *
- * NOTE FOR HANDOVER — WHAT WAS MEASURED, 17 Aug 2026. With a freshly copied
- * store id and access token from that dashboard screen, `/managers/account/
- * profile` answered 401 `Unauthenticated` under every arrangement tried: both
- * headers, each alone, with and without `Store-Id`/`Role`, bare and `Bearer`-
- * prefixed, and under the alternative header names `Access-Token` and
- * `X-Access-Token`. Zid's reply to the real token was byte-identical to its
- * reply to a deliberately invalid one, so the refusal is about the credential,
- * not this transport.
+ * NOTE FOR HANDOVER — WHAT WAS MEASURED, 17 Aug 2026. With store 1200977's id
+ * and a freshly generated access token from that dashboard screen,
+ * `/managers/account/profile` answered 401 `Unauthenticated` under every
+ * arrangement tried: both headers, each alone, with and without
+ * `Store-Id`/`Role`, bare and `Bearer`-prefixed, and under the alternative
+ * header names `Access-Token` and `X-Access-Token`. `/managers/store/customers`
+ * behaved identically. Zid's reply to the real token was byte-for-byte its
+ * reply to a deliberately invalid string — so it is not a permissions problem
+ * or a wrong endpoint; standalone, that token is not a credential Zid accepts.
  *
- * The dashboard screen states the constraint itself: only an application Zid
- * has authorised may use the pair. Reading that together with the measurement,
- * a store token alone does not authenticate — the call also needs the OAuth
- * token of an app registered with Zid, which Amad Craft does not yet have.
- * Registering it is a Zid-side action, not a code change.
+ * Which is what the screen says in its own first note: only an application Zid
+ * has authorised may use these credentials. The remaining step is Zid-side —
+ * register the site on the partner portal, have store 1200977 install it, and
+ * put the OAuth token Zid returns into the second field. No code change is
+ * waiting on that; `headers()` already sends both the moment it is filled in.
  *
  * ALSO STILL OPEN: `verify()` is exercised against a real endpoint and is
  * trustworthy. `pushLead()` is not. Zid publishes no lead resource, so the path
@@ -171,11 +172,16 @@ class ZidCrmDriver implements CrmDriver
     private function headers(?string $locale = null): array
     {
         $config = config('crm.drivers.zid');
-        $token = (string) $config['access_token'];
+
+        // The manager token names the store; the OAuth token names the
+        // application asking. Zid wants both, and falls back to the documented
+        // single-token shortcut when no application has been registered yet.
+        $manager = (string) $config['access_token'];
+        $asking = filled($config['oauth_token'] ?? null) ? (string) $config['oauth_token'] : $manager;
 
         $headers = [
-            'Authorization' => 'Bearer '.$token,
-            'X-Manager-Token' => $token,
+            'Authorization' => 'Bearer '.$asking,
+            'X-Manager-Token' => $manager,
             'Accept' => 'application/json',
         ];
 

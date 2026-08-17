@@ -329,6 +329,33 @@ class CrmConnectionScreenTest extends TestCase
     }
 
     /**
+     * Once an application is registered with Zid, its OAuth token is what
+     * `Authorization` must carry — the manager token stays where it belongs.
+     * Sending the manager token as both is the fallback, not the destination.
+     */
+    #[Test]
+    public function the_registered_application_token_becomes_the_authorization_header(): void
+    {
+        Http::fake([
+            'api.zid.sa/*' => Http::response(['user' => ['store' => ['id' => 1200977, 'title' => 'Amad Craft']]], 200),
+        ]);
+
+        $this->connectZid('the-manager-token');
+
+        Setting::query()->updateOrCreate(
+            ['group' => 'crm', 'key' => 'zid.oauth_token'],
+            ['value' => 'the-app-token'],
+        );
+
+        $this->actingAs($this->admin())
+            ->post('/admin/integrations/crm/test')
+            ->assertSessionHas('success');
+
+        Http::assertSent(fn ($request) => $request->hasHeader('Authorization', 'Bearer the-app-token')
+            && $request->hasHeader('X-Manager-Token', 'the-manager-token'));
+    }
+
+    /**
      * The test button used to check that four boxes were non-empty and then
      * report "fully configured" — which a client reads as "it works". A dead
      * token passed it.

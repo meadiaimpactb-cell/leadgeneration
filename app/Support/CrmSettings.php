@@ -48,10 +48,28 @@ class CrmSettings
      * @var array<string, array<string, string>>
      */
     public const FIELDS = [
+        /*
+         * Zid needs two tokens, not one, and that is the whole reason a
+         * connection built from the dashboard pair alone answers 401.
+         *
+         *   access_token — «رمز الوصول» from the store dashboard's API screen.
+         *                  Zid calls this the manager token; it names the store.
+         *   oauth_token  — the token Zid returns when a store owner installs an
+         *                  application registered on the Zid partner portal. It
+         *                  names the application making the call.
+         *
+         * That screen says so itself: only an application Zid has authorised
+         * may use these credentials. The manager token says which store; the
+         * OAuth token says who is asking. With only the first, nobody is
+         * asking, and Zid refuses the request exactly as it refuses a random
+         * string. Left empty, the manager token is sent for both — which is
+         * Zid's documented shortcut, and worth keeping for the day it applies.
+         */
         'zid' => [
             'base_url' => 'text',
             'store_id' => 'text',
             'access_token' => 'token',
+            'oauth_token' => 'token',
         ],
         'odoo' => [
             'url' => 'text',

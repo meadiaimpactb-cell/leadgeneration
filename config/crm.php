@@ -72,7 +72,14 @@ return [
 
         'zid' => [
             'base_url' => env('ZID_API_BASE', 'https://api.zid.sa'),
+
+            // The store's manager token, from the Zid dashboard's API screen.
             'access_token' => env('ZID_ACCESS_TOKEN'),
+
+            // The OAuth token of an application registered with Zid. Without
+            // it Zid answers 401 — see App\Support\CrmSettings::FIELDS.
+            'oauth_token' => env('ZID_OAUTH_TOKEN'),
+
             'store_id' => env('ZID_STORE_ID'),
             'timeout' => 15,
         ],
