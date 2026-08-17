@@ -197,6 +197,12 @@ return [
     */
 
     'custom' => [
+        'slug' => [
+            // See the Arabic file: deleting a page now releases its
+            // identifier, so the page holding this one is a live page the
+            // editor can find on the previous screen.
+            'unique' => 'That URL identifier belongs to another page. Open the pages list to see which, or choose a different one.',
+        ],
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
@@ -214,6 +220,7 @@ return [
     */
 
     'attributes' => [
+        'slug' => 'URL identifier',
         'contact' => 'email address',
         'organisation' => 'company name',
         'phone' => 'phone number',

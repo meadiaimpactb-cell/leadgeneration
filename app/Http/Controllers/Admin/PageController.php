@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -150,14 +151,66 @@ class PageController extends Controller
 
     private function persist(Request $request, Page $page): void
     {
+        /*
+         * Normalise BEFORE validating, not after.
+         *
+         * The slug is stored as `Str::slug()` of what was typed, so validating
+         * the raw input asks the wrong question: "Services" is unique against a
+         * table holding "services" and passes, then collides on insert. The
+         * editor gets a 500 for a mistake the form should have caught. Every
+         * rule below therefore sees the value that will actually be written.
+         */
+        $request->merge([
+            'slug' => Str::slug((string) $request->input('slug'), '-', null),
+        ]);
+
         $rules = [
-            'slug' => ['required', 'string', 'max:191'],
+            'slug' => [
+                'required',
+                'string',
+                'max:191',
+                /*
+                 * `pages.slug` is UNIQUE and the model soft-deletes, so a
+                 * deleted page keeps its slug reserved forever — invisibly,
+                 * because nothing in the panel lists the bin. Without this
+                 * rule the collision surfaced as an unhandled
+                 * UniqueConstraintViolationException: a stack trace where a
+                 * field error belonged. `withTrashed()` is the point rather
+                 * than an oversight; the constraint counts those rows, so the
+                 * message must too, and it says where the slug went.
+                 */
+                Rule::unique('pages', 'slug')->ignore($page->id),
+            ],
             'template' => ['nullable', 'string', 'max:64'],
             'is_indexable' => ['boolean'],
         ];
 
         foreach (array_keys(config('site.locales')) as $locale) {
-            $rules["translations.{$locale}.title"] = ['nullable', 'string', 'max:255'];
+            /*
+             * A title is what makes the page exist in this language.
+             *
+             * A wholly blank column still means "not translated" and deletes
+             * the row, per §12 — that is deliberate. What was not deliberate is
+             * what happened one field along: fill in a subtitle, or a meta
+             * description, and leave the title empty, and the save reported
+             * success while `persist()` below deleted the translation and
+             * everything typed into it. No error, no warning, work gone.
+             *
+             * `required_with` draws the line exactly where the deletion branch
+             * does: say nothing and the language is simply absent; say
+             * anything at all and the page needs a name.
+             */
+            $siblings = array_map(
+                fn (string $field): string => "translations.{$locale}.{$field}",
+                ['subtitle', 'excerpt', 'meta_title', 'meta_description', 'keywords'],
+            );
+
+            $rules["translations.{$locale}.title"] = [
+                'nullable',
+                'required_with:'.implode(',', $siblings),
+                'string',
+                'max:255',
+            ];
             $rules["translations.{$locale}.subtitle"] = ['nullable', 'string', 'max:255'];
             $rules["translations.{$locale}.excerpt"] = ['nullable', 'string', 'max:2000'];
             $rules["translations.{$locale}.meta_title"] = ['nullable', 'string', 'max:255'];

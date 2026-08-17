@@ -79,9 +79,17 @@ return [
         'string' => 'يجب أن يكون :attribute بين :min و :max حرفًا.',
     ],
 
-    'custom' => [],
+    'custom' => [
+        'slug' => [
+            // Names a page the editor can actually find. Deleting a page now
+            // releases its identifier, so the only page that can be holding
+            // this one is a live page in the list on the previous screen.
+            'unique' => 'هذا المعرّف مستعمل في صفحة أخرى. افتح قائمة الصفحات لترى أيّها، أو اختر معرّفًا غيره.',
+        ],
+    ],
 
     'attributes' => [
+        'slug' => 'المعرّف في الرابط',
         'contact' => 'البريد الإلكتروني',
         'organisation' => 'اسم الشركة',
         'phone' => 'رقم الهاتف',
