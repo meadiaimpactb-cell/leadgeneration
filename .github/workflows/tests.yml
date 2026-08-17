@@ -1,0 +1,94 @@
+# The suite, on every push.
+#
+# This became possible in the same change that made it worth doing. The suite
+# used to pass an hour without finishing, which is why nobody ran it and why
+# breakages shipped; it now finishes in about two minutes, which is short
+# enough to sit in front of a merge.
+#
+# It runs against MySQL, not SQLite, for the reason phpunit.xml gives: the
+# schema leans on ENUM columns and JSON casts that behave differently between
+# the two, and the leads table is the one thing that must not surprise us in
+# production (§8.3).
+#
+# SSR is started before the tests, not skipped. A large number of them assert
+# on server-rendered markup, and with no SSR server they fail in a way that
+# looks like an application bug — an afternoon was lost to exactly that.
+
+name: tests
+
+on:
+  push:
+    branches: [main, 'seo-**', 'feature/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: amadcraft_b2b_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, gd, exif, fileinfo, zip, intl
+          coverage: none
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare the environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # Both bundles. The SSR one is what the render assertions need.
+      - name: Build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Start the SSR server
+        run: |
+          php artisan inertia:start-ssr &
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:13714/health > /dev/null; then
+              echo "SSR up"; exit 0
+            fi
+            sleep 1
+          done
+          echo "SSR never came up — the render assertions would fail misleadingly." >&2
+          exit 1
+
+      - name: Formatting
+        run: ./vendor/bin/pint --test
+
+      - name: Suite
+        run: php artisan test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: amadcraft_b2b_test
+          DB_USERNAME: root
+          DB_PASSWORD: ''
