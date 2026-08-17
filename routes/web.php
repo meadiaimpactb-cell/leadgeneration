@@ -94,6 +94,24 @@ Route::prefix('{locale}')
         Route::get('/c/{slug}', [CampaignController::class, 'show'])->name('campaigns.show');
 
         Route::get('/legal/{slug}', [PageController::class, 'legal'])->name('legal.show');
+
+        /*
+         * The route that makes "add a page with no technical help" real (§9.1).
+         *
+         * Every public URL above is a literal path bound to a controller that
+         * carries its own datasets. A page created in the panel has no such
+         * path, so it was published, translated and indexable while its
+         * address answered 404 — and `SitemapGenerator::reachable()` had to
+         * grow a guard to stop the sitemap advertising it. This is the other
+         * half of that fix: the URL now resolves, so the guard passes it.
+         *
+         * Registered LAST on purpose. Laravel matches in registration order,
+         * so every literal path above still wins and nothing that resolves
+         * today changes hands. Unknown slugs, drafts and pages untranslated in
+         * this locale all still 404 — from the controller now rather than the
+         * router, at the same status.
+         */
+        Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
     });
 
 /*

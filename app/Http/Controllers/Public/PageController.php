@@ -99,6 +99,37 @@ class PageController extends PublicController
         return $this->render("legal/{$slug}", $locale, isLegal: true);
     }
 
+    /**
+     * Slugs the catch-all must never answer.
+     *
+     * `home` is the one that matters. The home page is a `pages` row like any
+     * other, and its `publicUrl()` is `/{locale}` — so without this, `/ar/home`
+     * would render the same sections at a second address and split the ranking
+     * of the page that matters most (§13). The rest are structural prefixes:
+     * unreachable through this route today, because the `{locale}` group is
+     * constrained to the configured locales, but named here so that stays true
+     * if a locale is ever added.
+     */
+    private const RESERVED = ['home', 'admin', 'api', 'build', 'storage', 'vendor'];
+
+    /**
+     * Any page the client created in the panel (§9.1).
+     *
+     * It renders through the generic `Public/Page` composition — the same one
+     * the legal pages use — whatever `template` the row carries. An unknown
+     * template name is not an error: the template is a label the panel stores,
+     * and a page is its ordered sections either way. A page needing datasets a
+     * composition cannot carry earns a literal route above, as /about did.
+     */
+    public function show(string $locale, string $slug): Response
+    {
+        if (in_array($slug, self::RESERVED, true)) {
+            throw new NotFoundHttpException;
+        }
+
+        return $this->render($slug, $locale);
+    }
+
     private function render(string $slug, string $locale, bool $isLegal = false): Response
     {
         $page = $this->page($slug);
