@@ -1538,6 +1538,40 @@ class DemoContentSeeder extends Seeder
                 ], null],
             ] : []),
 
+            /*
+             * The trust strip and the segment's figures — a ROW each, with no
+             * content of their own.
+             *
+             * `Sector.vue` draws both itself, directly under the hero and
+             * after the timeline, and takes their headings from these rows.
+             * Only the government segment had them, seeded with placeholders
+             * by DemoExtrasSeeder, so on the other three pages the strip and
+             * the band had nowhere to read a heading from and never appeared —
+             * which is why /solutions/companies showed neither, though its
+             * page asks for both.
+             *
+             * Empty on purpose. Which clients may be named, and what this
+             * segment's numbers are, is Amad Craft's to say — and both
+             * components already render nothing while their data is empty, so
+             * the rows sit in the builder waiting rather than showing five
+             * grey marks and four zeroes. Government keeps its placeholders:
+             * DemoExtrasSeeder matches on type and reuses the row created
+             * here rather than adding a second one.
+             *
+             * Headings are lifted verbatim from sections the client already
+             * has — «عملاؤنا» from the partners page, «أثرنا بالأرقام» from
+             * the home page — never written here (§22.1).
+             */
+            ['logos', [
+                'ar' => ['عملاؤنا'],
+                'en' => ['Our clients'],
+            ]],
+
+            ['stats', [
+                'ar' => ['أثرنا بالأرقام'],
+                'en' => ['Our impact in numbers'],
+            ]],
+
             ['accordion', [
                 'ar' => ['أسئلة متكررة'],
                 'en' => ['Frequently asked'],

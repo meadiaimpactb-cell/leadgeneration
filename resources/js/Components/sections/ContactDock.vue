@@ -187,6 +187,15 @@ onBeforeUnmount(() => observer?.disconnect());
     z-index: 60;
     display: flex;
     align-items: center;
+    /*
+     * Wrapping, because `max-inline-size` bounds this box and not what is
+     * inside it. The CTA label is `nowrap` and each channel is a fixed 44px
+     * square, so on a 320px screen with the phone and WhatsApp channels both
+     * configured the row demanded more than the cap allowed and the dismiss
+     * button was pushed off the edge of the screen — reachable by nothing.
+     * Now the channels drop to a second line instead.
+     */
+    flex-wrap: wrap;
     gap: var(--s-2);
     padding: var(--s-2);
     /* --r-md, not --r-pill: §10.4 reserves the pill radius for filters. */

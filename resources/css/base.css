@@ -157,6 +157,20 @@ h3 { font-size: var(--fs-h3); }
 p  { margin: 0; text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 
+/* Every word on this site is typed into the panel by the client, and a URL,
+   an email address or a long Latin product name is a single run with no break
+   opportunity in it. Nothing here clips horizontally — there is no
+   `overflow-x: hidden` on html or body, because it would kill the sticky
+   header — so one such run in a paragraph did not overflow its own column, it
+   gave the whole document a horizontal scrollbar.
+
+   `break-word`, not `anywhere`: it breaks a word only when that word would
+   otherwise overflow, and it leaves min-content sizing alone, so no grid
+   track changes width because of it. */
+h1, h2, h3, h4, p, li, dd, dt, figcaption, blockquote, address, .display {
+  overflow-wrap: break-word;
+}
+
 a {
   color: var(--link);
   text-decoration: none;

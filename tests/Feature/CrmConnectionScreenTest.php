@@ -13,6 +13,7 @@ use App\Support\CrmSettings;
 use Database\Seeders\RolesSeeder;
 use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
@@ -253,6 +254,175 @@ class CrmConnectionScreenTest extends TestCase
         $this->leads(3, Lead::CRM_SYNCED, 'zid');
 
         $this->assertSame(5, Lead::query()->notSynced()->count());
+    }
+
+    /**
+     * Zid's access token is a JWT — the real one runs well past a thousand
+     * characters. A flat max:512 over every credential meant pasting it failed
+     * validation, so the Zid connection could not be saved at all.
+     */
+    #[Test]
+    public function a_zid_access_token_the_length_of_a_real_jwt_saves(): void
+    {
+        $token = 'eyJ'.str_repeat('a', 1400);
+
+        $this->actingAs($this->admin())
+            ->put('/admin/integrations/crm', [
+                'driver' => 'zid',
+                'credentials' => [
+                    'zid' => ['base_url' => 'https://api.zid.sa', 'store_id' => '1200977', 'access_token' => $token],
+                    'odoo' => ['url' => '', 'database' => '', 'username' => '', 'api_key' => ''],
+                ],
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertSame(
+            $token,
+            Setting::query()->where('group', 'crm')->where('key', 'zid.access_token')->value('value'),
+        );
+    }
+
+    /**
+     * A token copied out of a dashboard arrives with a newline on it more often
+     * than not, and Zid answers that with the same 401 as a wrong token.
+     */
+    #[Test]
+    public function whitespace_around_a_pasted_credential_is_stripped(): void
+    {
+        $this->actingAs($this->admin())
+            ->put('/admin/integrations/crm', [
+                'driver' => 'zid',
+                'credentials' => [
+                    'zid' => ['base_url' => " https://api.zid.sa \n", 'store_id' => " 1200977\n", 'access_token' => "  a-token\n"],
+                    'odoo' => ['url' => '', 'database' => '', 'username' => '', 'api_key' => ''],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('1200977', Setting::query()->where('group', 'crm')->where('key', 'zid.store_id')->value('value'));
+        $this->assertSame('a-token', Setting::query()->where('group', 'crm')->where('key', 'zid.access_token')->value('value'));
+    }
+
+    /**
+     * Zid wants the store token under BOTH `Authorization` and
+     * `X-Manager-Token`. Sending only the first — which is what this driver did
+     * — is a 401 whatever the token says, and reads on the screen as a bad
+     * credential rather than a missing header.
+     */
+    #[Test]
+    public function the_zid_call_carries_the_token_under_both_header_names(): void
+    {
+        Http::fake([
+            'api.zid.sa/*' => Http::response(['user' => ['store' => ['id' => 1200977, 'title' => 'Amad Craft']]], 200),
+        ]);
+
+        $this->connectZid('the-token');
+
+        $this->actingAs($this->admin())
+            ->post('/admin/integrations/crm/test')
+            ->assertSessionHas('success');
+
+        Http::assertSent(fn ($request) => $request->hasHeader('Authorization', 'Bearer the-token')
+            && $request->hasHeader('X-Manager-Token', 'the-token')
+            && str_contains($request->url(), '/v1/managers/account/profile'));
+    }
+
+    /**
+     * The test button used to check that four boxes were non-empty and then
+     * report "fully configured" — which a client reads as "it works". A dead
+     * token passed it.
+     */
+    #[Test]
+    public function a_rejected_token_fails_the_connection_test(): void
+    {
+        Http::fake(['api.zid.sa/*' => Http::response(['message' => 'Unauthorized'], 401)]);
+
+        $this->connectZid('a-stale-token');
+
+        $this->actingAs($this->admin())
+            ->post('/admin/integrations/crm/test')
+            ->assertSessionMissing('success')
+            ->assertSessionHas('error');
+    }
+
+    /**
+     * Zid puts `message` back as a string on some endpoints and as a bag of
+     * per-field arrays on others. Reading it as a string threw a TypeError, and
+     * the screen then showed the PHP error instead of what Zid actually said —
+     * hiding the one sentence that explains the refusal.
+     */
+    #[Test]
+    public function a_structured_error_body_reaches_the_screen_as_words(): void
+    {
+        Http::fake([
+            'api.zid.sa/*' => Http::response([
+                'status' => 'error',
+                'message' => ['access_token' => ['The token has expired.']],
+            ], 401),
+        ]);
+
+        $this->connectZid('an-expired-token');
+
+        $this->actingAs($this->admin())
+            ->post('/admin/integrations/crm/test')
+            ->assertSessionHas('error', fn (string $error) => str_contains($error, 'The token has expired.')
+                && ! str_contains($error, 'TypeError'));
+    }
+
+    /** A non-JSON body — an HTML error page — must not crash it either. */
+    #[Test]
+    public function an_html_error_page_does_not_crash_the_connection_test(): void
+    {
+        Http::fake(['api.zid.sa/*' => Http::response('<html><body>Bad gateway</body></html>', 502)]);
+
+        $this->connectZid('the-token');
+
+        $this->actingAs($this->admin())
+            ->post('/admin/integrations/crm/test')
+            ->assertSessionHas('error');
+    }
+
+    /**
+     * And a token that works but belongs to a different Zid store is not a
+     * working connection — that is the mix-up this screen exists to catch.
+     */
+    #[Test]
+    public function a_token_for_another_store_fails_the_connection_test(): void
+    {
+        Http::fake([
+            'api.zid.sa/*' => Http::response(['user' => ['store' => ['id' => 999, 'title' => 'Someone Else']]], 200),
+        ]);
+
+        $this->connectZid('a-valid-token');
+
+        $this->actingAs($this->admin())
+            ->post('/admin/integrations/crm/test')
+            ->assertSessionMissing('success')
+            ->assertSessionHas('error');
+    }
+
+    /** The connection test must never write anything into the client's CRM. */
+    #[Test]
+    public function the_connection_test_only_reads(): void
+    {
+        Http::fake([
+            'api.zid.sa/*' => Http::response(['user' => ['store' => ['id' => 1200977, 'title' => 'Amad Craft']]], 200),
+        ]);
+
+        $this->connectZid('the-token');
+
+        $this->actingAs($this->admin())->post('/admin/integrations/crm/test');
+
+        Http::assertSent(fn ($request) => $request->method() === 'GET');
+    }
+
+    /** Saves a working-looking Zid connection straight into settings. */
+    private function connectZid(string $token): void
+    {
+        foreach (['driver' => 'zid', 'zid.base_url' => 'https://api.zid.sa', 'zid.store_id' => '1200977', 'zid.access_token' => $token] as $key => $value) {
+            Setting::query()->updateOrCreate(['group' => 'crm', 'key' => $key], ['value' => $value]);
+        }
     }
 
     /**

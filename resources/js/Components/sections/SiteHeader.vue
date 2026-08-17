@@ -588,11 +588,28 @@ function start() {
 }
 
 /* ---- Mobile panel ---- */
+/*
+ * The panel scrolls itself, because the bar it hangs from does not.
+ *
+ * The header is `position: sticky`, and a sticky box has no scroll of its
+ * own — the page scrolls past it. So on a phone held sideways (667×375,
+ * 844×390) an open menu with a submenu unfolded ran off the bottom of the
+ * screen and there was no gesture that could reach the last items or the
+ * CTA underneath them: scrolling the page moved the content, not the panel.
+ *
+ * `svh`, not `vh`: the browser chrome on iOS is counted, so the panel is
+ * bounded by the space actually visible rather than by the space that
+ * exists once the address bar has retracted.
+ */
 .header__mobile {
     display: flex;
     flex-direction: column;
     padding-block-end: var(--s-5);
     border-block-start: 1px solid var(--hairline-gold);
+    max-block-size: calc(100svh - var(--header-h));
+    overflow-y: auto;
+    /* The page must not start scrolling when the panel reaches its end. */
+    overscroll-behavior: contain;
 }
 
 .header__mobile-row {

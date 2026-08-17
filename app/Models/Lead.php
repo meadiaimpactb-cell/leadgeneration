@@ -46,6 +46,7 @@ class Lead extends Model
     {
         return [
             'crm_synced_at' => 'datetime',
+            'archived_at' => 'datetime',
             // Answers to admin-enabled fields beyond §6.1's two.
             'extra' => 'array',
         ];
@@ -118,5 +119,28 @@ class Lead extends Model
     public function scopeFromCampaign(Builder $query, int $campaignId): Builder
     {
         return $query->where('campaign_id', $campaignId);
+    }
+
+    /**
+     * Archiving, which is what this panel has instead of deleting.
+     *
+     * Applied by the leads list and by nothing else. It is deliberately not a
+     * global scope: the dashboard counts every enquiry that ever arrived, and
+     * a number that quietly drops when someone tidies a list is a number §1
+     * cannot be measured by.
+     */
+    public function scopeArchived(Builder $query): Builder
+    {
+        return $query->whereNotNull('archived_at');
+    }
+
+    public function scopeNotArchived(Builder $query): Builder
+    {
+        return $query->whereNull('archived_at');
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived_at !== null;
     }
 }

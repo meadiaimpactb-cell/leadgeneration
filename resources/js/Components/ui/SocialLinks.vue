@@ -97,8 +97,8 @@ function mark(url) {
     block-size: 44px;
     border: 1px solid var(--social-line);
     color: var(--social-ink);
-    transition: color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease),
-        background-color var(--dur-2) var(--ease);
+    transition: color var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease),
+        background-color var(--dur-micro) var(--ease);
 }
 
 .social__mark:hover,

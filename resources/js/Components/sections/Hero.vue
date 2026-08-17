@@ -271,13 +271,23 @@ const paneGround = computed(() =>
 }
 
 /*
- * Each line is its own block and never wraps. The client decides where the
- * headline breaks by pressing Enter in the admin panel; the browser is not
- * allowed to decide it at an arbitrary width.
+ * Each line is its own block. The client decides where the headline breaks by
+ * pressing Enter in the admin panel.
+ *
+ * `nowrap` is the wide-screen half of that promise only — see the 900px block
+ * below. The client chooses the break once, looking at a desktop, and a line
+ * tuned for a 720px copy pane does not fit 280px of phone: at that width the
+ * display face is still 36px, and nothing in this codebase clips horizontally
+ * (there is no `overflow-x: hidden` on html or body, deliberately, because it
+ * breaks the sticky header). A line one word too long therefore did not
+ * overflow its box — it gave the whole page a horizontal scrollbar.
+ *
+ * So below the seam the browser is allowed to wrap. The authored break still
+ * shows, because each line is its own block; it simply is no longer the only
+ * break permitted.
  */
 .hero__line {
     display: block;
-    white-space: nowrap;
 }
 
 .hero__line--accent {
@@ -351,6 +361,13 @@ const paneGround = computed(() =>
     .hero {
         min-block-size: 820px;
         block-size: calc(100svh - var(--header-h));
+    }
+
+    /* From here the copy pane is wide enough to honour the authored break
+       literally: the client's Enter is the only place the headline may
+       break, and the browser is forbidden from adding its own. */
+    .hero__line {
+        white-space: nowrap;
     }
 
     .hero__panes {

@@ -29,6 +29,20 @@ class NullCrmDriver implements CrmDriver
         return true;
     }
 
+    /**
+     * There is nothing to verify, and saying otherwise is the failure mode
+     * this driver invites: a green "connected" on a site connected to nothing.
+     * The screen already counts the leads it swallowed as waiting rather than
+     * delivered — this keeps the connection test telling the same story.
+     */
+    public function verify(): CrmResult
+    {
+        return CrmResult::failure(
+            error: 'No CRM is connected. Nothing was contacted, and no enquiry has left this site.',
+            retryable: false,
+        );
+    }
+
     public function pushLead(Lead $lead): CrmResult
     {
         return CrmResult::success(

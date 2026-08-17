@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Models\Concerns\HasAttachedMedia;
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasTranslations;
+use App\Models\Concerns\RecordsActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ class TrainingProgram extends Model implements HasMedia
         HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
     use HasTranslations;
+    use RecordsActivity;
 
     protected $guarded = ['id'];
 

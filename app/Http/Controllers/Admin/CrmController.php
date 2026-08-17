@@ -54,9 +54,19 @@ class CrmController extends Controller
 
         $rules = ['driver' => ['required', 'string', 'in:'.implode(',', CrmSettings::PROVIDERS)]];
 
+        /*
+         * The ceiling is per field kind, not one number for all of them.
+         *
+         * A flat max:512 rejected the only credential that matters here: Zid's
+         * access token is a JWT of well over a thousand characters, so pasting
+         * the real one failed validation and the connection could never be
+         * saved — the error the client was looking at.
+         */
         foreach (CrmSettings::FIELDS as $provider => $fields) {
-            foreach (array_keys($fields) as $field) {
-                $rules["credentials.{$provider}.{$field}"] = ['nullable', 'string', 'max:512'];
+            foreach ($fields as $field => $type) {
+                $max = CrmSettings::MAX_LENGTH[$type] ?? 512;
+
+                $rules["credentials.{$provider}.{$field}"] = ['nullable', 'string', "max:{$max}"];
             }
         }
 
@@ -68,7 +78,7 @@ class CrmController extends Controller
         );
 
         foreach (CrmSettings::FIELDS as $provider => $fields) {
-            foreach ($fields as $field => $isSecret) {
+            foreach ($fields as $field => $type) {
                 $value = $data['credentials'][$provider][$field] ?? null;
 
                 /*
@@ -77,8 +87,19 @@ class CrmController extends Controller
                  * and pressing save would overwrite every secret with dots
                  * and take the integration down.
                  */
-                if ($isSecret && $value === '••••••••') {
+                if (CrmSettings::isSecret($type) && $value === '••••••••') {
                     continue;
+                }
+
+                /*
+                 * A token copied out of a dashboard arrives with whitespace on
+                 * it more often than not — a trailing newline from the copy
+                 * button, a space from a double-click. Sent as-is it produces a
+                 * 401 that looks exactly like a wrong token, and the client
+                 * re-copies a token that was right the first time.
+                 */
+                if (is_string($value)) {
+                    $value = trim($value);
                 }
 
                 Setting::query()->updateOrCreate(
@@ -98,6 +119,12 @@ class CrmController extends Controller
      *
      * Deliberately does not create or send a lead: a connection test that
      * writes a record into the client's live CRM is a test nobody runs twice.
+     *
+     * It used to stop at `isConfigured()` — four non-empty boxes — and report
+     * "fully configured", which a client reasonably reads as "it works". A
+     * mistyped token, an expired one and one belonging to a different store all
+     * passed that test, so the screen said yes on a connection that would drop
+     * every lead. It now calls the provider and reports what came back.
      */
     public function test(Request $request): RedirectResponse
     {
@@ -109,7 +136,20 @@ class CrmController extends Controller
             return back()->with('error', __('admin.crm_test_unconfigured', ['driver' => $driver->name()]));
         }
 
-        return back()->with('success', __('admin.crm_test_ok', ['driver' => $driver->name()]));
+        $result = $driver->verify();
+
+        if (! $result->success) {
+            return back()->with('error', __('admin.crm_verify_failed', [
+                'driver' => $driver->name(),
+                'error' => $result->error ?? '—',
+            ]));
+        }
+
+        // Which account answered, when the provider named one. "Connected" on
+        // its own cannot catch a token pointing at the wrong store.
+        return back()->with('success', $result->externalId !== null
+            ? __('admin.crm_verify_ok_as', ['driver' => $driver->name(), 'account' => $result->externalId])
+            : __('admin.crm_verify_ok', ['driver' => $driver->name()]));
     }
 
     /**

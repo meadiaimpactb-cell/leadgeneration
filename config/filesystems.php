@@ -40,7 +40,28 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            /*
+             * Where uploaded media actually sits.
+             *
+             * Laravel's convention is `storage/app/public` reached through a
+             * symlink from `public/storage`. That is right everywhere the
+             * symlink can be made — and it cannot be made on the current
+             * shared host, where `symlink()` is in `disable_functions`. With
+             * no link and no override, every media URL 404s: the site keeps
+             * working and every image on it disappears.
+             *
+             * So the root is an environment value, not a code constant. The
+             * host sets `MEDIA_DISK_ROOT` in `.env` and writes files straight
+             * into the served directory; everywhere else the default holds and
+             * `storage:link` behaves as normal. Previously the server carried a
+             * hand edit to this file, which meant the next deploy that touched
+             * config/ silently restored the 404s.
+             *
+             * `?:` and not `??`: an empty MEDIA_DISK_ROOT= line yields '', and
+             * an empty root would resolve every media path to the filesystem
+             * root. Same reason as CRM_DRIVER in config/crm.php.
+             */
+            'root' => env('MEDIA_DISK_ROOT') ?: storage_path('app/public'),
             /*
              * Root-relative on purpose. Laravel's default bakes APP_URL into
              * every uploaded-file URL, so the moment the site is reached on a

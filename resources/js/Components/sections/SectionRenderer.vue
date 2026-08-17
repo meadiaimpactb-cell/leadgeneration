@@ -37,6 +37,16 @@ const props = defineProps({
     // Section types the parent page renders itself; skipped here.
     skip: { type: Array, default: () => [] },
     /**
+     * Restrict this pass to these types, in the client's own order.
+     *
+     * A page sometimes needs its composed sections in two places rather than
+     * one — the segment pages put cards before the timeline and questions
+     * after the figures, because a visitor should meet the objections after
+     * the answers, not before them. Empty means no restriction, which is
+     * every existing use.
+     */
+    only: { type: Array, default: () => [] },
+    /**
      * `{ stats: { items, measuredAt }, logos: { items } }` — props a page
      * supplies for a section type, keyed by that type. Props rather than a
      * bare list, because a dataset usually arrives with something derived
@@ -64,7 +74,12 @@ const COMPONENTS = {
 };
 
 const renderable = computed(() =>
-    props.sections.filter((s) => COMPONENTS[s.type] && !props.skip.includes(s.type))
+    props.sections.filter(
+        (s) =>
+            COMPONENTS[s.type] &&
+            !props.skip.includes(s.type) &&
+            (props.only.length === 0 || props.only.includes(s.type))
+    )
 );
 
 /** Map a section row onto the props its component expects. */

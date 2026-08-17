@@ -24,4 +24,22 @@ interface CrmDriver
      * not configured must say so rather than failing at request time.
      */
     public function isConfigured(): bool;
+
+    /**
+     * Prove the saved credentials actually reach the provider.
+     *
+     * `isConfigured()` answers "are the boxes filled in"; this answers "does
+     * the key work", which is the only question the connection screen is
+     * there to settle. A wrong token, an expired token and a token for the
+     * wrong store all pass the first check and fail this one.
+     *
+     * Must be read-only. A verification that creates a record in the client's
+     * live CRM is a verification nobody dares run twice, so it stops being a
+     * check and becomes a thing people avoid.
+     *
+     * `externalId` carries whatever the provider said identifies the account
+     * it just authenticated — a store name, a user — so the panel can show
+     * *which* account answered, not merely that something did.
+     */
+    public function verify(): CrmResult;
 }

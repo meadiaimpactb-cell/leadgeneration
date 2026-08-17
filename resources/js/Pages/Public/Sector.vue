@@ -43,6 +43,16 @@ function section(type) {
     return props.sections.find((s) => s.type === type) ?? {};
 }
 
+/**
+ * The segment's caption above its title — "01 / 04 · GOVERNMENT ENTITIES".
+ *
+ * This page is the only one whose caption is a URL slug rather than a written
+ * label, so it is the only one that has to turn the separators into spaces.
+ * SectionIndex prints what it is given; a caption a person typed must survive
+ * intact, which it cannot if the component rewrites every hyphen it sees.
+ */
+const heroCaption = computed(() => (props.sector.slug ?? '').replace(/[_-]+/g, ' ').trim() || null);
+
 const heroCopy = computed(() => section('hero'));
 
 /**
@@ -76,7 +86,12 @@ const ctaCopy = computed(() => section('cta_band'));
  * the skip list they would appear twice — once here and once in their own
  * dedicated block below.
  */
-const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band'];
+/*
+ * `accordion` is in this list although the page does not draw it in the block
+ * below: it is drawn in a second pass AFTER the figures, so it must be kept
+ * out of the first one or it would appear twice.
+ */
+const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band', 'accordion'];
 </script>
 
 <template>
@@ -86,7 +101,7 @@ const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band'];
         <SegmentHero
             :index="index"
             :total="total"
-            :slug="sector.slug"
+            :slug="heroCaption"
             :title="sector.name"
             :subtitle="sector.summary"
             :image="sector.image"
@@ -100,7 +115,7 @@ const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band'];
              buyer, who else has bought is the first question after what. -->
         <PartnersLogos :heading="clientsCopy.heading" :items="clients" />
 
-        <!-- Whatever the client composed: cards, media split, FAQ, quote… -->
+        <!-- Whatever the client composed: cards, media split, quote… -->
         <SectionRenderer :sections="sections" :skip="RENDERED_HERE" />
 
         <ProcessSteps
@@ -115,6 +130,19 @@ const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band'];
             :eyebrow="impactCopy.settings?.eyebrow"
             :items="impact"
         />
+
+        <!--
+            The questions come after the evidence, not before it.
+
+            The accordion used to render inside the block above, which put
+            "أسئلة متكررة" ahead of both how-we-work and the segment's own
+            figures. A visitor met the objections before being given the
+            answers that disarm them, and the page argued with itself.
+            Deliberately not merged into that pass: cards belong before the
+            timeline, questions after the numbers, and one renderer cannot
+            sit in two places.
+        -->
+        <SectionRenderer :sections="sections" :only="['accordion']" />
 
         <!-- The other three segments. Small, horizontal, and last before the
              form: a visitor who has read this far and is on the wrong page
@@ -200,7 +228,11 @@ html[dir='rtl'] .sibling:hover .arrow {
     transform: scaleX(-1) translateX(4px);
 }
 
-@media (min-width: 768px) {
+/* 900, not 768: three cards across an upright iPad leave about 145px for the
+   label once the padding and the arrow are taken out, and «شركات القطاع
+   الخاص» does not fit that — the longest sibling name is what has to fit,
+   not the shortest. */
+@media (min-width: 900px) {
     .siblings__list {
         grid-template-columns: repeat(3, 1fr);
     }

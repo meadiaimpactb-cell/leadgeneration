@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasSections;
 use App\Models\Concerns\HasTranslations;
+use App\Models\Concerns\RecordsActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,7 @@ class Campaign extends Model
     use HasFactory;
     use HasSections;
     use HasTranslations;
+    use RecordsActivity;
     use SoftDeletes;
 
     protected $guarded = ['id'];

@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Models\Concerns\HasAttachedMedia;
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasTranslations;
+use App\Models\Concerns\RecordsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,6 +35,7 @@ class Section extends Model implements HasMedia
         HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
     use HasTranslations;
+    use RecordsActivity;
 
     /** Section types, matching the sections/ component inventory (§10.5). */
     public const TYPES = [
@@ -65,6 +67,21 @@ class Section extends Model implements HasMedia
         'product_showcase',
         'reports_list',
         'training_tracks',
+        /*
+         * Both of these were already rendering on /about and already had
+         * components in SectionRenderer — they were simply missing from this
+         * list, which is the list the panel validates against and builds its
+         * "add section" picker from.
+         *
+         * The effect was invisible until someone tried to use the panel for
+         * what it is for: the two blocks were on the live page, the client
+         * could see them, and there was no way to add another or to recreate
+         * one after deleting it. SectionRendererCoversEveryTypeTest now holds
+         * this list and the renderer's map to each other so the gap cannot
+         * reopen.
+         */
+        'bridge_model',
+        'team',
     ];
 
     protected $guarded = ['id'];

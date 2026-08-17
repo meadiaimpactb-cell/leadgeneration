@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CampaignController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\LeadFieldController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\NavigationController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PageKeywordController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -63,6 +65,16 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
         Route::patch('leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
         Route::post('leads/{lead}/resync', [LeadController::class, 'resync'])->name('leads.resync');
+        /*
+         * Archive, and POST rather than DELETE — the verb is the point.
+         *
+         * `AdminAccessTest::a_lead_can_never_be_deleted_through_the_panel`
+         * asserts that no route under `admin/leads` answers DELETE, and that
+         * assertion must keep passing. Nothing here deletes: the row is
+         * stamped and hidden from one list. Using DELETE would have been both
+         * a lie about what happens and a broken guard.
+         */
+        Route::post('leads/{lead}/archive', [LeadController::class, 'archive'])->name('leads.archive');
 
         // ---- Pages + the section builder (§9.1) --------------------------
         Route::resource('pages', PageController::class)->except(['show']);
@@ -204,7 +216,10 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::put('languages', [LanguageController::class, 'update'])->name('languages.update');
 
         Route::get('backups', [UpcomingScreenController::class, 'show'])->defaults('screen', 'backups')->name('upcoming.backups');
-        Route::get('activity', [UpcomingScreenController::class, 'show'])->defaults('screen', 'activity')->name('upcoming.activity');
+
+        // The audit trail (§9.1). Read only — there is deliberately no route
+        // here that can alter or remove a row; see the controller.
+        Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
         // What the crawler is currently offered, read from the generator that
         // serves it (§13).
         Route::get('seo/sitemap', [SitemapController::class, 'index'])->name('seo.sitemap');
@@ -214,8 +229,22 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('integrations/confirmations', [SettingController::class, 'index'])
             ->defaults('screen', 'confirmations')->name('integrations.confirmations');
 
+        /*
+         * Who is told when an enquiry arrives — the panel's answer to §20
+         * decision 4, which until now could only be changed by editing the
+         * server's .env.
+         */
+        Route::get('integrations/notifications', [NotificationController::class, 'index'])
+            ->name('integrations.notifications');
+        Route::post('integrations/notifications', [NotificationController::class, 'store'])
+            ->name('integrations.notifications.store');
+        Route::put('integrations/notifications', [NotificationController::class, 'update'])
+            ->name('integrations.notifications.update');
+        Route::delete('integrations/notifications/{recipient}', [NotificationController::class, 'destroy'])
+            ->name('integrations.notifications.destroy');
+
         Route::get('integrations/{screen}', [UpcomingScreenController::class, 'show'])
-            ->whereIn('screen', ['notifications', 'spam'])
+            ->whereIn('screen', ['spam'])
             ->name('upcoming.integrations');
     });
 });

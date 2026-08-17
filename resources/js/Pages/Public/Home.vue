@@ -11,6 +11,7 @@ import ImpactStats from '@/Components/sections/ImpactStats.vue';
 import StoryCarousel from '@/Components/sections/StoryCarousel.vue';
 import PartnersLogos from '@/Components/sections/PartnersLogos.vue';
 import CtaBand from '@/Components/sections/CtaBand.vue';
+import { useTranslation } from '@/Composables/useTranslation';
 
 /**
  * The home page (§11.1).
@@ -20,6 +21,8 @@ import CtaBand from '@/Components/sections/CtaBand.vue';
  * without a developer. This component only decides WHICH Vue component
  * renders a given section type, and how the running index is counted.
  */
+const { t } = useTranslation();
+
 const props = defineProps({
     page: { type: Object, default: null },
     sections: { type: Array, default: () => [] },
@@ -57,6 +60,38 @@ function counter(type) {
 }
 
 const total = computed(() => numbered.value.length);
+
+/**
+ * The caption beside the running number — "01 / 05 · MANIFESTO".
+ *
+ * These five words used to be typed into the template below, which made them
+ * the only thing on the home page that did not follow its section: reorder
+ * the blocks in the panel and the numbers renumbered while the captions
+ * stayed where they were. SectionIndex's own docblock already claimed they
+ * came from the section; they did not.
+ *
+ * Two sources now, in order:
+ *   1. the section's own `index_label` setting, if the client has written one
+ *      — the same JSON settings block that already carries `eyebrow`;
+ *   2. otherwise the shipped label for that section TYPE, so a section added
+ *      tomorrow is captioned without anyone editing this file.
+ *
+ * Neither is written here, and an unknown type returns null rather than
+ * printing its own key at a visitor (§22.1). The words themselves are
+ * unchanged — the design is approved; only where they come from has moved.
+ */
+function caption(type) {
+    const written = section(type)?.settings?.index_label;
+
+    if (typeof written === 'string' && written.trim() !== '') {
+        return written.trim();
+    }
+
+    const key = `common.section_label_${type}`;
+    const label = t(key);
+
+    return label === key ? null : label;
+}
 
 const ticker = computed(() => section('news_ticker'));
 const hero = computed(() => section('hero'));
@@ -103,7 +138,7 @@ const ctaCopy = computed(() => section('cta_band'));
             :body="intro.body"
             :index="counter('intro_statement')"
             :total="total"
-            slug="manifesto"
+            :slug="caption('intro_statement')"
         />
 
         <SolutionsGrid
@@ -113,7 +148,7 @@ const ctaCopy = computed(() => section('cta_band'));
             :items="solutions"
             :index="counter('solutions_grid')"
             :total="total"
-            slug="solutions"
+            :slug="caption('solutions_grid')"
         />
 
         <Gallery
@@ -124,7 +159,7 @@ const ctaCopy = computed(() => section('cta_band'));
             :cta-url="galleryCopy.ctaUrl"
             :index="counter('gallery')"
             :total="total"
-            slug="showroom"
+            :slug="caption('gallery')"
         />
 
         <SectorSpotlight
@@ -133,7 +168,7 @@ const ctaCopy = computed(() => section('cta_band'));
             :items="sectors"
             :index="counter('sector_spotlight')"
             :total="total"
-            slug="sectors"
+            :slug="caption('sector_spotlight')"
         />
 
         <StoryCarousel
@@ -142,7 +177,7 @@ const ctaCopy = computed(() => section('cta_band'));
             :items="stories"
             :index="counter('story_carousel')"
             :total="total"
-            slug="voices"
+            :slug="caption('story_carousel')"
         />
 
         <PartnersLogos :heading="partnersCopy.heading" :items="partners" />

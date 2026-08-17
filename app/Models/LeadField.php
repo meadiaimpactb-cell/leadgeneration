@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslations;
+use App\Models\Concerns\RecordsActivity;
 use App\Rules\InternationalPhone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 class LeadField extends Model
 {
     use HasTranslations;
+    use RecordsActivity;
 
     /** Maps onto leads.contact_value — the one field that must always exist. */
     public const KEY_CONTACT = 'contact';

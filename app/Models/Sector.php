@@ -8,6 +8,7 @@ use App\Models\Concerns\HasAttachedMedia;
 use App\Models\Concerns\HasImageConversions;
 use App\Models\Concerns\HasSections;
 use App\Models\Concerns\HasTranslations;
+use App\Models\Concerns\RecordsActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,7 @@ class Sector extends Model implements HasMedia
     }
     use HasSections;
     use HasTranslations;
+    use RecordsActivity;
 
     public const KEY_GOVERNMENT = 'government';
 

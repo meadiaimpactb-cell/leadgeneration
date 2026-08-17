@@ -430,12 +430,18 @@ function requestVisit() {
     color: rgba(255, 255, 255, 0.55);
 }
 
+/* The link is this element, not the 62px row around it — the icon and the
+   label are not part of the anchor. On its line box alone it was about 26px
+   of target for the two numbers a buyer is most likely to tap. */
 .channel__value {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
     color: #fff;
     font-size: 1.0625rem;
     font-weight: 600;
     overflow-wrap: anywhere;
-    transition: color var(--dur-2) var(--ease);
+    transition: color var(--dur-micro) var(--ease);
 }
 
 .channel__value:hover,

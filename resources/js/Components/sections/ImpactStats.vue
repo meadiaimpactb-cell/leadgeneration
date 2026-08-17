@@ -164,6 +164,21 @@ const columns = computed(() => Math.max(1, shown.value.length));
 @media (max-width: 639px) {
     .impact--overlap {
         margin-block-start: -20px;
+
+        /*
+         * The figure has to fit the half-cell it is now in.
+         *
+         * `--stat-size` is the hook ImpactStat already exposes, and nothing
+         * had ever set it — so the figure sat on its 2.375rem fallback at
+         * every width. Two columns of a 320px screen leave about 90px inside
+         * the padding, and `14,401` sets at roughly 120px there. A number is
+         * one unbreakable run, so it did not wrap: it ran under its
+         * neighbour and was then sliced by the card's octagon clip.
+         *
+         * The clamp only bites where the cell is genuinely narrow; by 640px
+         * it has returned to the design's size.
+         */
+        --stat-size: clamp(1.25rem, 7vw, 2.375rem);
     }
 
     .impact--overlap .impact__grid {
@@ -238,6 +253,23 @@ const columns = computed(() => Math.max(1, shown.value.length));
 
 .impact--overlap .impact__grid > :first-child {
     padding-inline-start: var(--s-5);
+}
+
+/*
+ * The cell gives the figure back the width its padding was taking.
+ *
+ * Placed here rather than beside the two-column rule above, because it has
+ * to override the first-child rule immediately preceding it — that one is a
+ * three-class selector and a media query adds no specificity, so written
+ * earlier it would have lost on source order and only three of the four
+ * cells would have narrowed. 24px a side is a desktop gutter inside a 140px
+ * box; 16px is the same rhythm at the size the box actually is.
+ */
+@media (max-width: 639px) {
+    .impact--overlap .impact__grid > *,
+    .impact--overlap .impact__grid > :first-child {
+        padding-inline: var(--s-4);
+    }
 }
 
 @media (min-width: 640px) {

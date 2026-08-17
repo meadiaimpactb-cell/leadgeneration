@@ -85,6 +85,34 @@ const PATHS = {
     production: 'M4 20l7-7M9 12l3-3M12 9l4-4 3 3-4 4zM16 5l-2-2',
     sourcing: 'M12 3a9 9 0 100 18 9 9 0 000-18zM12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18M3 12h18',
 
+    /*
+     * ---- Action glyphs ------------------------------------------------
+     *
+     * The set above names screens; these name verbs. They were missing, so
+     * every button in the panel was a word — «حذف» «تعديل» «معاينة» — and a
+     * row of four Arabic words is read letter by letter every single time.
+     * A shape is recognised by memory after the second visit, which is the
+     * whole reason the sidebar has icons already.
+     *
+     * `back` is deliberately NOT mirrored here: it is drawn pointing at the
+     * inline-start edge and flipped in CSS with `scaleX(-1)` under
+     * `html[dir='ltr']`, the same device `.arrow` uses on the public site.
+     * A second path would be a second thing to keep in step.
+     */
+    /* A file going up into a tray — the one action the media screen
+       exists for, and the only route in for anyone who does not drag. */
+    upload: 'M12 16V4M8 8l4-4 4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2',
+    back: 'M15 5l-7 7 7 7',
+    edit: 'M4 20h4L19 9a2.1 2.1 0 00-3-3L5 17v3z',
+    eye: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7zM12 15a3 3 0 100-6 3 3 0 000 6',
+    plus: 'M12 5v14M5 12h14',
+    check: 'M4 12.5l5.5 5.5L20 7',
+    close: 'M6 6l12 12M18 6L6 18',
+    /* Stacked planes — the section builder's own idea, drawn. */
+    layers: 'M12 3l9 5-9 5-9-5 9-5M3 13l9 5 9-5M3 17l9 5 9-5',
+    publish: 'M12 19V5M6 11l6-6 6 6',
+    unpublish: 'M12 5v14M6 13l6 6 6-6',
+
     dot: 'M12 12h.01',
 };
 </script>

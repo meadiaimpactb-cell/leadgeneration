@@ -61,7 +61,7 @@ const alternates = computed(() => props.seo.alternates ?? []);
 
     <footer class="cfoot">
         <Container>
-            <nav v-if="legalLinks.length" aria-label="legal" class="cfoot__legal">
+            <nav v-if="legalLinks.length" :aria-label="t('common.nav_legal')" class="cfoot__legal">
                 <Link
                     v-for="item in legalLinks"
                     :key="item.id"
@@ -102,6 +102,7 @@ const alternates = computed(() => props.seo.alternates ?? []);
 
 .cfoot__legal {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--s-5);
 }
 

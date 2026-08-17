@@ -29,27 +29,54 @@ class CrmSettings
     public const PROVIDERS = ['zid', 'odoo'];
 
     /**
-     * Credential fields per provider, and whether each is a secret.
+     * Credential fields per provider, and what kind of value each holds.
+     *
+     *   text   — an ordinary value, shown as typed.
+     *   secret — hidden on the way back to the browser, one line.
+     *   token  — hidden too, but too long for a line.
+     *
+     * `token` exists because Zid's access token is a JWT: it arrives from the
+     * dashboard well past a thousand characters. Behind a single-line password
+     * box it was a field nobody could read back or check, and behind the 512
+     * limit the save simply refused — which is what was blocking the Zid
+     * connection from being entered at all.
      *
      * Secrets are never sent back to the browser — see `redacted()`. A panel
      * that re-displays an API key puts it in every screenshot, every screen
      * share and every browser cache the client's team ever makes.
      *
-     * @var array<string, array<string, bool>>
+     * @var array<string, array<string, string>>
      */
     public const FIELDS = [
         'zid' => [
-            'base_url' => false,
-            'store_id' => false,
-            'access_token' => true,
+            'base_url' => 'text',
+            'store_id' => 'text',
+            'access_token' => 'token',
         ],
         'odoo' => [
-            'url' => false,
-            'database' => false,
-            'username' => false,
-            'api_key' => true,
+            'url' => 'text',
+            'database' => 'text',
+            'username' => 'text',
+            'api_key' => 'secret',
         ],
     ];
+
+    /**
+     * Accepted length per kind. Generous for a token and still bounded — the
+     * settings row is a JSON column, so the ceiling is a sanity check on a
+     * pasted value, not a storage limit.
+     */
+    public const MAX_LENGTH = [
+        'text' => 512,
+        'secret' => 512,
+        'token' => 4096,
+    ];
+
+    /** Whether a value of this kind must be kept out of the browser. */
+    public static function isSecret(string $type): bool
+    {
+        return $type !== 'text';
+    }
 
     public function __construct(private readonly Settings $settings) {}
 
@@ -96,14 +123,14 @@ class CrmSettings
         $out = [];
 
         foreach (self::FIELDS as $provider => $fields) {
-            foreach ($fields as $field => $isSecret) {
+            foreach ($fields as $field => $type) {
                 $saved = $this->settings->get("crm.{$provider}.{$field}");
                 $fromEnv = config("crm.drivers.{$provider}.{$field}");
                 $value = is_string($saved) && $saved !== '' ? $saved : $fromEnv;
 
                 $out[$provider][$field] = match (true) {
                     ! is_string($value) || $value === '' => '',
-                    $isSecret => '••••••••',
+                    self::isSecret($type) => '••••••••',
                     default => $value,
                 };
             }

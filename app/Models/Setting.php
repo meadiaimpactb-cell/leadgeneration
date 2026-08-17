@@ -7,6 +7,9 @@ namespace App\Models;
 use App\Models\Concerns\HasImageConversions;
 use App\Support\Settings;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Contracts\Activity;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -32,6 +35,18 @@ class Setting extends Model implements HasMedia
         // version is the one that defines the four sizes.
         HasImageConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
+
+    /*
+     * Audited BY KEY, never by value — see getActivitylogOptions below.
+     *
+     * Not the shared RecordsActivity trait, deliberately: its default logs
+     * every changed attribute, and the one attribute that changes here is
+     * `value`. This table holds the GA4 ID, the Meta CAPI token and the CRM
+     * credentials (§14.1, §22.9), so the default would quietly turn the audit
+     * trail into a second, permanent, un-rotatable store of every secret on
+     * the site — readable by anyone who can open the activity screen.
+     */
+    use LogsActivity;
 
     protected $guarded = ['id'];
 
@@ -63,5 +78,30 @@ class Setting extends Model implements HasMedia
 
         static::saved($flush);
         static::deleted($flush);
+    }
+
+    /**
+     * Log THAT a setting changed, never WHAT it changed to.
+     *
+     * `logOnly([])` is the whole point: no attribute values are captured, so
+     * no token, key or credential can reach the activity table. The audit
+     * question a settings change has to answer is "who altered the GA4 ID and
+     * when" — and that is answerable from the key and the causer alone. The
+     * value itself is one screen away for anyone entitled to see it, and
+     * permanently out of reach of anyone who is not.
+     *
+     * `dontSubmitEmptyLogs` is deliberately absent: with no attributes logged
+     * every entry is "empty" by Spatie's measure, and enabling it here would
+     * silently record nothing at all.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logOnly([]);
+    }
+
+    /** The key is the payload — attached here because nothing else is. */
+    public function tapActivity(Activity $activity, string $eventName): void
+    {
+        $activity->properties = collect(['key' => "{$this->group}.{$this->key}"]);
     }
 }

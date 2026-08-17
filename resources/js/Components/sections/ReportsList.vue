@@ -139,6 +139,11 @@ function recordDownload(report) {
 }
 
 .years__btn {
+    /* A filter is a control, and the padding alone left it about 36px tall —
+       under the 44px minimum every other control on this site keeps. */
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
     padding: var(--s-2) var(--s-4);
     border: 1px solid var(--hairline);
     background: transparent;
@@ -146,7 +151,7 @@ function recordDownload(report) {
     font: inherit;
     font-size: var(--fs-sm);
     cursor: pointer;
-    transition: color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+    transition: color var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease);
 }
 
 .years__btn--on {

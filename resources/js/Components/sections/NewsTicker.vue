@@ -69,14 +69,14 @@ const items = computed(() =>
                 -->
                 <ul class="news__copy">
                     <li v-for="(item, i) in items" :key="`a-${i}`" class="news__item">
-                        {{ item }}
                         <span class="news__sep" aria-hidden="true">&#9670;</span>
+                        {{ item }}
                     </li>
                 </ul>
                 <ul class="news__copy" aria-hidden="true">
                     <li v-for="(item, i) in items" :key="`b-${i}`" class="news__item">
-                        {{ item }}
                         <span class="news__sep">&#9670;</span>
+                        {{ item }}
                     </li>
                 </ul>
             </div>

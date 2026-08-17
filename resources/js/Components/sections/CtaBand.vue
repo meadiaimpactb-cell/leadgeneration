@@ -156,9 +156,23 @@ defineProps({
     color: rgba(255, 255, 255, 0.82);
 }
 
+/*
+ * The mono voice, at a size iOS will not fight.
+ *
+ * This was 0.90625rem. Safari zooms the whole page in when a field it is
+ * focusing sets type below 16px, and it never zooms back out — so tapping
+ * the email or phone box left the visitor stranded inside a magnified form,
+ * on the one control the site exists for. `.lead-input` sets 18px in
+ * components.css with a comment saying exactly that; this rule was undoing
+ * it on every dark band, which is every page.
+ *
+ * 1rem is the floor, not a preference: the mono face still reads as the
+ * technical voice beside the other fields, it is simply no longer small
+ * enough to trigger the zoom.
+ */
 .band :deep(.lead-input--mono) {
     font-family: var(--font-mono);
-    font-size: 0.90625rem;
+    font-size: var(--fs-body);
     letter-spacing: 0.02em;
     text-align: start;
 }

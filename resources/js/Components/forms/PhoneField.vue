@@ -266,6 +266,22 @@ watch(
     padding-inline-start: 92px;
 }
 
+/*
+ * The dial-code button keeps its width; the number gives up the end padding
+ * it does not need.
+ *
+ * 92px is what the flag and `+966` actually occupy, so it cannot shrink. But
+ * inside the dark band on a 320px screen the field is about 240px wide, and
+ * 92 + 16 of padding left roughly 130px for a number that sets at about 150 —
+ * the placeholder ran out of box. Trimming the trailing padding is the only
+ * space available without moving the button.
+ */
+@media (max-width: 380px) {
+    .iti--show-flags .iti__tel-input {
+        padding-inline-end: var(--s-2);
+    }
+}
+
 .iti__country-container {
     inset-inline-start: 0;
     inset-inline-end: auto;
@@ -321,8 +337,12 @@ watch(
     font: inherit;
 }
 
+/* Bounded by the screen as well as by the design. 260px of list plus the
+   search box above it is taller than a phone held sideways (375px), and the
+   countries below the fold could not be scrolled to — the list had already
+   used the whole viewport. */
 .iti__country-list {
-    max-block-size: 260px;
+    max-block-size: min(260px, 45svh);
 }
 
 .iti__country {

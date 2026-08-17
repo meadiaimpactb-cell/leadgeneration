@@ -15,6 +15,9 @@ use App\Models\SectionTranslation;
 use App\Models\User;
 use App\Observers\PageContentObserver;
 use App\Support\Settings;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -71,6 +74,8 @@ class AppServiceProvider extends ServiceProvider
         // width/height and the browser reserves the box (§15.1).
         Event::listen(MediaHasBeenAddedEvent::class, RecordMediaDimensions::class);
 
+        $this->recordSignIns();
+
         /*
          * A page's keyword scores follow the page.
          *
@@ -105,6 +110,37 @@ class AppServiceProvider extends ServiceProvider
      * per minute and generous enough that a person correcting a typo three
      * times is never blocked — the target is scripted abuse, not humans.
      */
+    /**
+     * Who signed in, who signed out, and who was turned away (§9.1 audit trail).
+     *
+     * Failed attempts are recorded as well as successful ones, and that is the
+     * half worth having: a successful login tells you what an administrator
+     * did, but a run of failures against one account is the only warning the
+     * panel gives that someone is trying to get in. §9.2 already locks the
+     * account after five — this is what makes the attempt visible afterwards.
+     *
+     * No password is touched here. `Failed` carries the submitted credentials;
+     * only the email is read from it, never `$event->credentials['password']`.
+     */
+    private function recordSignIns(): void
+    {
+        Event::listen(Login::class, fn (Login $event) => activity('auth')
+            ->causedBy($event->user)
+            ->event('login')
+            ->log('login'));
+
+        Event::listen(Logout::class, function (Logout $event): void {
+            if ($event->user !== null) {
+                activity('auth')->causedBy($event->user)->event('logout')->log('logout');
+            }
+        });
+
+        Event::listen(Failed::class, fn (Failed $event) => activity('auth')
+            ->event('login_failed')
+            ->withProperties(['email' => (string) ($event->credentials['email'] ?? '')])
+            ->log('login_failed'));
+    }
+
     private function configureRateLimiting(): void
     {
         RateLimiter::for('leads', fn (Request $request) => Limit::perMinute(

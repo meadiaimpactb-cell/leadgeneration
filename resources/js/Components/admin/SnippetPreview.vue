@@ -133,7 +133,7 @@ const descriptionState = computed(() => state(description.value.length, DESCRIPT
 
 .preview__label {
     font-weight: 700;
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
     color: var(--navy-900);
 }
 
@@ -146,8 +146,8 @@ const descriptionState = computed(() => state(description.value.length, DESCRIPT
 .card__url {
     display: block;
     margin-block-end: var(--s-1);
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
     overflow-wrap: anywhere;
 }
 
@@ -163,7 +163,7 @@ const descriptionState = computed(() => state(description.value.length, DESCRIPT
 
 .card__desc {
     margin: 0;
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
     line-height: 1.6;
     color: #4d5156;
     overflow-wrap: anywhere;
@@ -171,7 +171,7 @@ const descriptionState = computed(() => state(description.value.length, DESCRIPT
 
 .card__title--empty,
 .card__desc--empty {
-    color: var(--ink-600);
+    color: var(--muted);
     font-style: italic;
 }
 
@@ -184,9 +184,9 @@ const descriptionState = computed(() => state(description.value.length, DESCRIPT
 }
 
 .note {
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
     line-height: var(--lh-body);
-    color: var(--ink-600);
+    color: var(--muted);
 }
 
 .note__advice {
@@ -205,8 +205,8 @@ const descriptionState = computed(() => state(description.value.length, DESCRIPT
 }
 
 .disclaimer {
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
     line-height: var(--lh-body);
 }
 </style>

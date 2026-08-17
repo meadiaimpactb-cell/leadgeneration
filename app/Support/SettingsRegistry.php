@@ -150,6 +150,26 @@ class SettingsRegistry
             'leads.thanks.title.en' => ['screen' => 'confirmations', 'type' => 'text', 'order' => 40],
             'leads.thanks.body.en' => ['screen' => 'confirmations', 'type' => 'textarea', 'order' => 41],
 
+            /*
+             * The team's own alert wording — the editable template of the
+             * notifications screen's approved scope.
+             *
+             * Screen `notifications` is NOT one of SCREENS above, and that is
+             * deliberate: these are drawn by the notifications controller
+             * beside the recipient list, where the person choosing who gets
+             * the email is also the person deciding what it says. Naming the
+             * screen here keeps them off the settings pages — including
+             * `advanced`, which would otherwise adopt them as unknown keys and
+             * give the same three fields two different editors.
+             *
+             * Empty means the shipped wording in resources/lang stands. Unlike
+             * the enquirer's confirmation, silence is not an option here: this
+             * is an internal alert, and not sending it loses a lead.
+             */
+            'notifications.alert_subject' => ['screen' => 'notifications', 'type' => 'text', 'order' => 10],
+            'notifications.alert_intro' => ['screen' => 'notifications', 'type' => 'textarea', 'order' => 11],
+            'notifications.summary_subject' => ['screen' => 'notifications', 'type' => 'text', 'order' => 20],
+
             // ---- robots.txt, on a screen of its own ---------------------
             'seo.robots_txt' => ['screen' => 'robots', 'type' => 'code', 'order' => 10],
 

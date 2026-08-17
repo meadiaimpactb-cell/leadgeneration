@@ -41,6 +41,33 @@ class OdooCrmDriver implements CrmDriver
             && filled($c['username']) && filled($c['api_key']);
     }
 
+    /**
+     * Odoo's `common.login` is exactly the read-only credential probe this
+     * needs: it returns a uid or `false` and writes nothing.
+     */
+    public function verify(): CrmResult
+    {
+        $config = config('crm.drivers.odoo');
+
+        try {
+            $uid = $this->authenticate($config);
+
+            if ($uid === null) {
+                return CrmResult::failure(
+                    error: 'Odoo rejected the credentials — check the database name, username and API key.',
+                    retryable: false,
+                );
+            }
+
+            return CrmResult::success(
+                externalId: (string) $config['username'],
+                response: ['uid' => $uid, 'database' => $config['database']],
+            );
+        } catch (Throwable $e) {
+            return CrmResult::fromException($e);
+        }
+    }
+
     public function pushLead(Lead $lead): CrmResult
     {
         $config = config('crm.drivers.odoo');

@@ -16,6 +16,13 @@
 @import 'tailwindcss' source(none);
 @import './base.css';
 @import './components.css';
+/* The panel's design language. Every rule inside is nested under
+   `.shell` — the root of Layouts/AdminLayout.vue — so it reaches all
+   twenty-six admin screens and cannot reach the public site, which
+   never renders that element. Loaded after components.css because it
+   deliberately restyles `.table`, `.chip` and the form controls for
+   the panel only. */
+@import './admin.css';
 
 @source '../js/**/*.vue';
 @source '../js/**/*.js';

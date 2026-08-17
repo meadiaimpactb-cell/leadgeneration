@@ -13,9 +13,12 @@ import { useTranslation } from '@/Composables/useTranslation';
  * sales push — §4 is explicit that this site never steers a visitor toward a
  * direct purchase.
  *
- * Column headings are the navigation slot's own key, which is Latin by
- * definition. That is what lets them be set in the mono face without asking a
- * client editing the Arabic site to type an English word.
+ * Column headings are Latin micro-labels in both languages — `.mono-label`
+ * sets `direction: ltr` for exactly that. This docblock used to say they were
+ * the navigation slot's own key; they were not, they were four English words
+ * typed into this template, which made them the only text on every page of
+ * the site that Amad Craft could not change (§22.5). They come from
+ * resources/lang now, still Latin, and editable.
  */
 /**
  * `showLocation` is false on a page that carries its own location section —
@@ -128,7 +131,7 @@ const placeName = computed(() => {
                 aria-labelledby="visit-heading"
             >
                 <div class="visit__copy">
-                    <p class="mono-label mono-label--tight mono-label--gold">location</p>
+                    <p class="mono-label mono-label--tight mono-label--gold">{{ t('common.label_location') }}</p>
 
                     <h2 v-if="locationHeading" id="visit-heading" class="visit__title">
                         {{ locationHeading }}
@@ -263,7 +266,7 @@ const placeName = computed(() => {
                 </div>
 
                 <nav v-if="mainLinks.length" class="footer__col" :aria-label="t('common.menu')">
-                    <p class="mono-label mono-label--tight mono-label--gold footer__head">sitemap</p>
+                    <p class="mono-label mono-label--tight mono-label--gold footer__head">{{ t('common.label_sitemap') }}</p>
                     <ul class="footer__list">
                         <li v-for="item in mainLinks" :key="item.id">
                             <Link :href="item.url" class="footer__link">{{ item.label }}</Link>
@@ -271,8 +274,8 @@ const placeName = computed(() => {
                     </ul>
                 </nav>
 
-                <nav v-if="companyLinks.length || storeUrl" class="footer__col" aria-label="company">
-                    <p class="mono-label mono-label--tight mono-label--gold footer__head">company</p>
+                <nav v-if="companyLinks.length || storeUrl" class="footer__col" :aria-label="t('common.nav_company')">
+                    <p class="mono-label mono-label--tight mono-label--gold footer__head">{{ t('common.label_company') }}</p>
                     <ul class="footer__list">
                         <li v-for="item in companyLinks" :key="item.id">
                             <Link :href="item.url" class="footer__link">{{ item.label }}</Link>
@@ -293,7 +296,7 @@ const placeName = computed(() => {
                 </nav>
 
                 <div v-if="email || phone || social.length" class="footer__col">
-                    <p class="mono-label mono-label--tight mono-label--gold footer__head">contact</p>
+                    <p class="mono-label mono-label--tight mono-label--gold footer__head">{{ t('common.label_contact') }}</p>
 
                     <ul class="footer__list">
                         <li v-if="email">
@@ -325,7 +328,7 @@ const placeName = computed(() => {
             <div class="footer__base">
                 <p v-if="copyright" class="footer__copyright">{{ copyright }}</p>
 
-                <nav v-if="legalLinks.length" class="footer__legal" aria-label="legal">
+                <nav v-if="legalLinks.length" class="footer__legal" :aria-label="t('common.nav_legal')">
                     <Link
                         v-for="item in legalLinks"
                         :key="item.id"
@@ -683,8 +686,16 @@ const placeName = computed(() => {
      * The 44px target comes from the padding, not from a min-height on a
      * flex row. As a min-height it stretched every link to 44px and stacked
      * four of them into a 176px column of mostly empty space.
+     *
+     * 13px, not `--s-3`: at 12px the box measured 42.13px in the browser
+     * (12 + 12 + an 18.125px line), so the rule above described an intent the
+     * layout missed by two pixels. This is the smallest value that makes the
+     * comment true.
      */
-    padding-block: var(--s-3);
+    padding-block: 13px;
+    /* And a floor, because `--mono` below sets a smaller font and its line
+       box came out a pixel short of 44 on the padding alone. */
+    min-block-size: 44px;
     line-height: 1.25;
     transition: color var(--dur-micro) var(--ease);
 }

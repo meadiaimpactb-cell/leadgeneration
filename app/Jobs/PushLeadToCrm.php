@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Lead;
+use App\Models\NotificationRecipient;
 use App\Notifications\CrmSyncFailed;
 use App\Services\Crm\CrmManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -89,7 +90,10 @@ class PushLeadToCrm implements ShouldQueue
             'reason' => $reason,
         ]);
 
-        $recipients = config('site.leads.notify_to', []);
+        // Who hears about a broken integration is set in the panel, and is
+        // deliberately not the same list that hears about enquiries: the
+        // person who answers buyers cannot act on an expired API token.
+        $recipients = NotificationRecipient::emailsFor(NotificationRecipient::EVENT_CRM_FAILURE);
 
         if ($recipients !== []) {
             Notification::route('mail', $recipients)

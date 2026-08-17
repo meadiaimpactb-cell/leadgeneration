@@ -35,4 +35,22 @@ return [
     'optional' => 'Optional',
     'other_segments' => 'Other segments that may fit you',
     'diagram' => 'Diagram',
+
+    // The footer's Latin micro-labels — see the Arabic file for why they are
+    // Latin in both languages.
+    'label_sitemap' => 'sitemap',
+    'label_company' => 'company',
+    'label_contact' => 'contact',
+    'label_location' => 'location',
+
+    'nav_company' => 'Company links',
+    'nav_legal' => 'Legal links',
+    'pagination' => 'Result pages',
+
+    // Home-page section captions, keyed by section type — see the Arabic file.
+    'section_label_intro_statement' => 'manifesto',
+    'section_label_solutions_grid' => 'solutions',
+    'section_label_gallery' => 'showroom',
+    'section_label_sector_spotlight' => 'sectors',
+    'section_label_story_carousel' => 'voices',
 ];

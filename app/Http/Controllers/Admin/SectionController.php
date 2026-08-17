@@ -10,6 +10,7 @@ use App\Models\Page;
 use App\Models\Section;
 use App\Models\Sector;
 use App\Models\Solution;
+use App\Support\SectionSettings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,6 +45,17 @@ class SectionController extends Controller
             'ownerType' => $type,
             'ownerId' => $id,
             'ownerLabel' => $owner->t('title') ?? $owner->t('name') ?? $owner->slug,
+            /*
+             * So the builder can offer "preview" beside "back".
+             *
+             * Guarded by method_exists rather than by a type check: the four
+             * owner types are unrelated models that happen to share the
+             * sections relation, and only some of them are a page a visitor
+             * can open. A campaign has one, a solution has one; anything
+             * added later that does not simply returns null and the control
+             * is not drawn.
+             */
+            'ownerPreviewUrl' => method_exists($owner, 'previewUrl') ? $owner->previewUrl() : null,
             'sections' => $owner->sections()->with(['translations', 'media'])->get()
                 ->map(fn (Section $section): array => $this->payload($section)),
             'types' => Section::TYPES,
@@ -87,11 +99,41 @@ class SectionController extends Controller
 
         $data = $request->validate($rules);
 
-        DB::transaction(function () use ($section, $data): void {
-            $section->forceFill([
-                'is_active' => (bool) ($data['is_active'] ?? true),
-                'settings' => $data['settings'] ?? null,
-            ])->save();
+        DB::transaction(function () use ($request, $section, $data): void {
+            /*
+             * Absent is not empty.
+             *
+             * This used to read `$data['settings'] ?? null` and
+             * `(bool) ($data['is_active'] ?? true)`, so a request that simply
+             * did not mention a field OVERWROTE it: a PATCH carrying only a
+             * translation wiped the section's entire settings blob — its
+             * cards, its questions, its gallery images — and silently switched
+             * a disabled section back on.
+             *
+             * The panel's own builder always posts every field, which is why
+             * this never surfaced there. It cost 77 sections of content the
+             * first time anything else called the endpoint, and nothing in the
+             * response said so: the save returned 303 and the page simply went
+             * quiet, because the components render nothing when `items` is
+             * empty.
+             *
+             * A field is now written only when the request actually carries
+             * it. Clearing settings deliberately still works — send
+             * `settings: null`, which `has()` reports as present.
+             */
+            $changes = [];
+
+            if ($request->has('is_active')) {
+                $changes['is_active'] = (bool) $data['is_active'];
+            }
+
+            if ($request->has('settings')) {
+                $changes['settings'] = $data['settings'] ?? null;
+            }
+
+            if ($changes !== []) {
+                $section->forceFill($changes)->save();
+            }
 
             foreach ($data['translations'] ?? [] as $locale => $values) {
                 if (collect($values)->filter(fn ($v) => filled($v))->isEmpty()) {
@@ -161,6 +203,9 @@ class SectionController extends Controller
             'type' => $section->type,
             'isActive' => $section->is_active,
             'settings' => $section->settings ?? [],
+            // What this type can be told, so the JSON box stops being a
+            // guessing game — see App\Support\SectionSettings.
+            'settingsKeys' => SectionSettings::for($section->type),
             'sortOrder' => $section->sort_order,
             'translations' => $translations,
             'media' => [

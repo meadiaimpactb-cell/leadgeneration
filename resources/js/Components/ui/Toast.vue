@@ -279,6 +279,7 @@ function onKeydown(event) {
 }
 
 .toast__close {
+    position: relative;
     display: grid;
     place-items: center;
     inline-size: 28px;
@@ -290,6 +291,20 @@ function onKeydown(event) {
     background: none;
     color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
+}
+
+/*
+ * 44px of target around a 28px mark.
+ *
+ * The button stays the size it was drawn — a bigger tinted square in the
+ * corner of the confirmation would pull attention off the message. The
+ * reachable area is grown underneath it instead, which is what the 44px
+ * minimum is actually about.
+ */
+.toast__close::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
 }
 
 .toast__close svg {

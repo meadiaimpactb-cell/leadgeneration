@@ -203,6 +203,12 @@ class StructureSeeder extends Seeder
             ['leads', 'thanks.title.en', null, true],
             ['leads', 'thanks.body.en', null, true],
 
+            // The team alert's own wording, edited on the notifications
+            // screen. Private: read on the server when the mail is built.
+            ['notifications', 'alert_subject', null, false],
+            ['notifications', 'alert_intro', null, false],
+            ['notifications', 'summary_subject', null, false],
+
             // Tracking IDs live here, never in code (§14.1, §22.9).
             // Search Console ownership verification (§14.1). Public, because
             // it is emitted as a meta tag in the page head anyway.

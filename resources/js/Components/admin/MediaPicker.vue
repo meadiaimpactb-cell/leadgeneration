@@ -626,7 +626,7 @@ const formatDate = date;
  */
 @media (min-width: 900px) {
     .picker__body.has-rail {
-        grid-template-columns: 1fr 300px;
+        grid-template-columns: minmax(0, 1fr) 300px;
     }
 }
 
@@ -714,7 +714,7 @@ const formatDate = date;
 
 .facts {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: var(--s-1) var(--s-2);
     margin-block: var(--s-3);
     font-size: var(--fs-sm);
@@ -789,7 +789,7 @@ const formatDate = date;
 
 .queue__row {
     display: grid;
-    grid-template-columns: 1fr 160px;
+    grid-template-columns: minmax(0, 1fr) 160px;
     align-items: center;
     gap: var(--s-3);
     padding-block: var(--s-2);

@@ -1,0 +1,467 @@
+/* ============================================================
+   Amad Craft — the admin panel's design language
+   resources/css/admin.css
+
+   One place, not twenty-six.
+
+   The leads and pages screens each grew their own copy of this
+   while they were being designed. Keeping twenty-six copies in
+   step is not a thing anybody does successfully, so the shared
+   part lives here and each screen keeps only what is genuinely
+   its own.
+
+   ------------------------------------------------------------
+   EVERYTHING is nested under `.shell`, the root element of
+   Layouts/AdminLayout.vue. That is the whole isolation strategy:
+   the public site never renders `.shell`, so none of this can
+   reach it — the panel restyles `.table` and `.chip` freely
+   without touching the visitor-facing pages that use the same
+   words for different things.
+   ------------------------------------------------------------
+
+   THREE RULES THIS FILE HOLDS, each of which was broken before
+   it existed:
+
+   1. TYPE — four sizes, no fifth. Differences are made with
+      weight and colour, never by shrinking text. The panel had
+      eight sizes reaching down to 10px and read as a draft.
+
+   2. ARABIC — `--font-mono` is IBM Plex Mono, a Latin-only
+      subset carrying no Arabic glyph at all (see base.css). An
+      Arabic label set in it silently drops to a system fallback:
+      that is exactly why column headings rendered small and
+      broken. Arabic is set in `--font-body`, is never
+      letterspaced (tokens.css: «never letterspace Arabic») and
+      is never uppercased. The mono face is for Latin runs only —
+      slugs, counts, IDs, timestamps.
+
+   3. COLOUR — four identity colours and nothing else:
+        navy          #002546
+        lavender      #8685D8
+        burnt orange  #D7653B
+        light gold    #DCAD75
+      Every tint below is one of those at low alpha; every ink is
+      a token whose contrast §10.2 already checked. No new hex.
+   ============================================================ */
+
+.shell {
+  /* ---- The type scale. Four values, used everywhere. ---- */
+  --t-title: 1.0625rem;   /* panel titles, drawer titles        */
+  --t-body:  0.9375rem;   /* table and form content — default   */
+  --t-label: 0.875rem;    /* column headings, field labels      */
+  --t-meta:  0.8125rem;   /* chips, counts, secondary facts     */
+
+  /* ---- Row rhythm ---- */
+  --cell-x: var(--s-4);   /* the gutter between columns         */
+  --cell-y: 14px;
+
+  /* ---- The panel's own surface tints, all navy ---- */
+  --wash-1: rgba(0, 37, 70, 0.02);   /* a field at rest         */
+  --wash-2: rgba(0, 37, 70, 0.05);   /* a code well             */
+  --wash-3: rgba(0, 37, 70, 0.08);   /* a hover ground          */
+  --edge-1: rgba(0, 37, 70, 0.08);   /* a row rule              */
+  --edge-2: rgba(0, 37, 70, 0.12);   /* a container edge        */
+  --edge-3: rgba(0, 37, 70, 0.30);   /* a field edge, hovered   */
+
+  font-size: var(--t-body);
+}
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+
+.shell .panel {
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--r-md);
+  box-shadow: 0 1px 2px rgba(0, 37, 70, 0.04);
+}
+
+.shell .panel__title {
+  font-family: var(--font-body);
+  font-size: var(--t-title);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* ============================================================
+   CONTROLS
+
+   One shape for every field in the panel, and three states told
+   apart without anything moving. A border that thickens on focus
+   shifts every neighbour by a pixel, and a row of fields dancing
+   as you tab through them is the cheapest way to make a careful
+   layout feel loose.
+   ============================================================ */
+
+.shell input:not([type='checkbox']):not([type='radio']),
+.shell select,
+.shell textarea {
+  min-block-size: 44px;
+  padding-inline: var(--s-4);
+  border: 1px solid rgba(0, 37, 70, 0.14);
+  border-radius: var(--r-sm);
+  /* A tinted well, not white on white: against the panel's own
+     surface a white input with a hairline reads as an outline
+     drawn on nothing. A well reads as a place to put something. */
+  background: var(--wash-1);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  box-shadow: inset 0 1px 2px rgba(0, 37, 70, 0.04);
+  transition:
+    border-color var(--dur-micro) var(--ease),
+    background-color var(--dur-micro) var(--ease),
+    box-shadow var(--dur-micro) var(--ease);
+}
+
+.shell textarea {
+  padding-block: var(--s-3);
+  line-height: 1.7;
+}
+
+.shell input::placeholder,
+.shell textarea::placeholder {
+  color: var(--muted);
+}
+
+.shell input:hover:not([disabled]),
+.shell select:hover:not([disabled]),
+.shell textarea:hover:not([disabled]) {
+  border-color: var(--edge-3);
+  background: var(--paper);
+}
+
+/* Lavender is the identity's secondary and is already the public
+   site's `--focus-ring`, so the panel and the site agree about
+   what "focused" looks like. */
+.shell input:focus,
+.shell select:focus,
+.shell textarea:focus,
+.shell input:focus-visible,
+.shell select:focus-visible,
+.shell textarea:focus-visible {
+  outline: none;
+  border-color: var(--lavender-700);
+  background: var(--paper);
+  box-shadow:
+    0 0 0 3px rgba(134, 133, 216, 0.2),
+    inset 0 1px 2px rgba(0, 37, 70, 0.03);
+}
+
+.shell input[disabled],
+.shell select[disabled],
+.shell textarea[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* A select is a menu, not a text field: its own caret, on the
+   reading edge, in the panel's own ink. Flips with the document. */
+.shell select {
+  appearance: none;
+  padding-inline-end: var(--s-8);
+  background-image:
+    linear-gradient(45deg, transparent 49%, var(--navy-900) 50%, var(--navy-900) 57%, transparent 58%),
+    linear-gradient(-45deg, transparent 49%, var(--navy-900) 50%, var(--navy-900) 57%, transparent 58%);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  background-position: left var(--s-4) center, left calc(var(--s-4) + 5px) center;
+  cursor: pointer;
+}
+
+html[dir='ltr'] .shell select {
+  background-position: right calc(var(--s-4) + 5px) center, right var(--s-4) center;
+}
+
+/* Labels are Arabic: the Arabic face, no tracking, no uppercase. */
+.shell label,
+.shell .field__label {
+  font-family: var(--font-body);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--navy-900);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.shell .btn {
+  font-family: var(--font-body);
+  font-size: var(--t-label);
+  letter-spacing: 0;
+}
+
+.shell .btn[disabled],
+.shell .btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.shell .btn:active:not([disabled]) {
+  transform: translateY(1px);
+}
+
+/* An icon beside its word, on one baseline. */
+.shell .act {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/* Icon alone, square, still a 40px target. Used where a control
+   repeats on every row and its word would be read a dozen times. */
+.shell .act--icon {
+  inline-size: 40px;
+  min-block-size: 40px;
+  padding-inline: 0;
+  justify-content: center;
+  border-radius: var(--r-sm);
+}
+
+.shell .act--icon:hover        { background: var(--wash-3); }
+.shell .act--icon.danger:hover { background: rgba(215, 101, 59, 0.14); }
+
+.shell .danger { color: var(--action-600); }
+
+/* A count rides inside its control rather than beside it: one
+   target, and the number stays attached to what it counts. */
+.shell .act__count {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 22px;
+  min-block-size: 22px;
+  padding-inline: 6px;
+  border-radius: var(--r-pill);
+  background: var(--navy-900);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  /* A count is Latin in both locales and must not mirror. */
+  direction: ltr;
+}
+
+/* ============================================================
+   TABLES
+
+   A contained surface, not a set of loose rules: bordered,
+   rounded and clipped, so the header band and every row hairline
+   end on the same edge instead of running into the panel's
+   padding and stopping wherever they happen to.
+   ============================================================ */
+
+.shell .table-wrap {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--edge-2);
+  border-radius: var(--r-md);
+  contain: paint;
+}
+
+.shell .table {
+  inline-size: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--t-body);
+}
+
+/* Column headings, in Arabic, in the Arabic face — see rule 2. */
+.shell .table thead th {
+  padding: var(--cell-y) var(--cell-x);
+  text-align: start;
+  white-space: nowrap;
+  background: var(--paper-alt);
+  border-block-end: 1px solid var(--edge-2);
+  font-family: var(--font-body);
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--navy-900);
+}
+
+.shell .table td {
+  padding: var(--cell-y) var(--cell-x);
+  text-align: start;
+  vertical-align: middle;
+  border-block-end: 1px solid var(--edge-1);
+}
+
+/* A hairline between columns, not only under rows: a row mixing
+   Arabic, Latin and buttons reads as one strip without it. */
+.shell .table td + td,
+.shell .table th + th {
+  border-inline-start: 1px solid rgba(0, 37, 70, 0.07);
+}
+
+/* The last row ends on the container's border, not on one of its
+   own — two lines a pixel apart is the tell of a table nobody
+   looked at closely. */
+.shell .table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+/* No zebra: alternating fills fight the status colours for the
+   eye. A hairline and generous padding separate rows without
+   spending any colour at all. */
+.shell .table tbody tr {
+  transition: background-color var(--dur-micro) var(--ease);
+}
+
+.shell .table tbody tr:hover {
+  background: rgba(0, 37, 70, 0.035);
+}
+
+/* The primary link in a row: the thing being scanned for. */
+.shell .table__link {
+  display: inline-block;
+  font-size: var(--t-body);
+  font-weight: 700;
+  color: var(--navy-900);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-micro) var(--ease);
+}
+
+.shell .table tbody tr:hover .table__link,
+.shell .table__link:focus-visible {
+  text-decoration-color: var(--orange-500);
+}
+
+/* Row controls rest quiet and come forward on approach — a column
+   of forty buttons at full strength reads as noise. */
+.shell .table .act--icon {
+  opacity: 0.45;
+  transition:
+    opacity var(--dur-micro) var(--ease),
+    background-color var(--dur-micro) var(--ease);
+}
+
+.shell .table tr:hover .act--icon,
+.shell .table .act--icon:focus-visible {
+  opacity: 1;
+}
+
+/* A Latin fragment inside an RTL row — a slug, an id, a path.
+   Monospaced so it reads as a value, isolated so the row cannot
+   reorder it. */
+.shell .slug,
+.shell code {
+  display: inline-block;
+  max-inline-size: 100%;
+  padding: 4px var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--wash-2);
+  color: var(--navy-700);
+  font-family: var(--font-mono);
+  font-size: var(--t-meta);
+  direction: ltr;
+  unicode-bidi: isolate;
+  overflow-wrap: anywhere;
+}
+
+/* ============================================================
+   CHIPS — one state, one identity colour
+   ============================================================ */
+
+.shell .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px var(--s-3);
+  border-radius: var(--r-pill);
+  background: rgba(0, 37, 70, 0.06);
+  color: var(--navy-900);
+  font-family: var(--font-body);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* A dot before the word: legible at a glance, and still readable
+   to anyone who cannot separate the hues. */
+.shell .chip::before {
+  content: '';
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+
+.shell .chip--ok,
+.shell .chip--live    { background: rgba(30, 122, 90, 0.12);  color: var(--success); }
+.shell .chip--draft   { background: rgba(0, 37, 70, 0.07);    color: var(--muted); }
+.shell .chip--warn    { background: rgba(215, 101, 59, 0.12); color: var(--action-600); }
+.shell .chip--info    { background: rgba(134, 133, 216, 0.16); color: var(--lavender-700); }
+.shell .chip--gold    { background: rgba(220, 173, 117, 0.28); color: var(--action-600); }
+
+/* ============================================================
+   PAGER
+   ============================================================ */
+
+.shell .pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin-block-start: var(--s-5);
+  padding-block-start: var(--s-4);
+  border-block-start: 1px solid var(--hairline-soft);
+}
+
+.shell .pager__link {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 40px;
+  min-block-size: 40px;
+  padding-inline: var(--s-2);
+  border-radius: var(--r-sm);
+  color: var(--navy-900);
+  font-size: var(--t-label);
+  font-weight: 600;
+  transition: background-color var(--dur-micro) var(--ease);
+}
+
+.shell .pager__link:hover        { background: var(--wash-3); }
+.shell .pager__link.is-current   { background: var(--navy-900); color: #fff; }
+.shell .pager__link.is-disabled  { opacity: 0.35; pointer-events: none; }
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.shell .empty {
+  padding-block: var(--s-9);
+  color: var(--text-muted);
+  font-size: var(--t-body);
+  text-align: center;
+}
+
+/* ============================================================
+   MOTION — §10.7
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .shell input,
+  .shell select,
+  .shell textarea,
+  .shell .table tbody tr,
+  .shell .table .act--icon,
+  .shell .table__link,
+  .shell .pager__link {
+    transition: none;
+  }
+
+  .shell .btn:active:not([disabled]) {
+    transform: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .shell {
+    --cell-x: var(--s-3);
+  }
+}

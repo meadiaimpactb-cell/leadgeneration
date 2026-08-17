@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLeadRequest;
 use App\Jobs\PushLeadToCrm;
 use App\Models\LeadField;
+use App\Models\NotificationRecipient;
 use App\Notifications\LeadConfirmation;
 use App\Notifications\NewLeadReceived;
 use Illuminate\Http\RedirectResponse;
@@ -53,7 +54,9 @@ class LeadController extends Controller
         // wait on a third-party API before seeing their confirmation.
         PushLeadToCrm::dispatch($lead->id);
 
-        $recipients = config('site.leads.notify_to', []);
+        // From the panel now, not the server's .env — see the recipients
+        // table. Queued, so the visitor never waits on a mail server.
+        $recipients = NotificationRecipient::emailsFor(NotificationRecipient::EVENT_NEW_LEAD);
 
         if ($recipients !== []) {
             Notification::route('mail', $recipients)

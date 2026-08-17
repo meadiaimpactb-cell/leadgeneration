@@ -40,7 +40,7 @@ class LeadController extends Controller
 
         return Inertia::render('Admin/Leads/Index', [
             'leads' => $leads,
-            'filters' => $request->only(['from', 'to', 'campaign', 'source', 'status', 'crm', 'q', 'interest']),
+            'filters' => $request->only(['from', 'to', 'campaign', 'source', 'status', 'crm', 'q', 'interest', 'archived']),
             'statuses' => Lead::STATUSES,
             'campaigns' => Campaign::query()->orderBy('slug')->get()
                 ->map(fn (Campaign $c): array => ['id' => $c->id, 'slug' => $c->slug]),
@@ -63,7 +63,15 @@ class LeadController extends Controller
             'can' => [
                 'updateStatus' => $request->user()->can('update', $lead ?? new Lead),
                 'export' => $request->user()->can('export', Lead::class),
+                'archive' => $request->user()->can('archive', $lead ?? new Lead),
             ],
+            /*
+             * How many are put away, so the link to them can say so. A bare
+             * «الأرشيف» with nothing behind it is a dead end an editor clicks
+             * once and never again.
+             */
+            'archivedCount' => Lead::query()->archived()->count(),
+            'viewingArchived' => $request->boolean('archived'),
             // The side panel is part of the list page, so a deep link to one
             // lead still renders the list behind it (§11.4).
             'selected' => $lead?->exists ? $this->detail($lead) : null,
@@ -142,6 +150,32 @@ class LeadController extends Controller
     }
 
     /**
+     * Archive a lead, or put it back — one route, toggled by what it is now.
+     *
+     * This is the panel's whole answer to "get this row out of my list", and
+     * it is not a delete. Nothing is removed: `archived_at` is stamped, the
+     * leads list stops showing it by default, and every other reader — the
+     * dashboard counts, the CSV export, the CRM history — is untouched.
+     *
+     * A toggle rather than two routes because the act is its own undo. The
+     * first thing anybody does after tidying a list too enthusiastically is
+     * look for the way back, and if there isn't one they stop tidying.
+     */
+    public function archive(Request $request, Lead $lead): RedirectResponse
+    {
+        Gate::authorize('archive', $lead);
+
+        $archiving = ! $lead->isArchived();
+
+        $lead->forceFill(['archived_at' => $archiving ? now() : null])->save();
+
+        return back()->with(
+            'success',
+            __($archiving ? 'admin.lead_archived' : 'admin.lead_restored'),
+        );
+    }
+
+    /**
      * Export the current filter set (§9.1).
      *
      * Streamed rather than built in memory: an export must not fall over once
@@ -153,6 +187,26 @@ class LeadController extends Controller
 
         $query = $this->filtered($request)->with('campaign');
         $filename = 'amadcraft-leads-'.now()->format('Y-m-d-Hi').'.csv';
+
+        /*
+         * An export leaves the building, so it is audited (§9.1, §15.3).
+         *
+         * This is the one action in the panel that copies personal contact
+         * details onto somebody's laptop, and it is the one an audit trail is
+         * asked about afterwards. The row count and the filters are recorded,
+         * never the contacts themselves — the log must not become a second
+         * copy of the data it exists to account for.
+         */
+        activity('leads')
+            ->causedBy($request->user())
+            ->event('exported')
+            ->withProperties([
+                'rows' => (clone $query)->toBase()->getCountForPagination(),
+                'filters' => array_filter($request->only([
+                    'from', 'to', 'campaign', 'source', 'status', 'crm', 'q', 'interest',
+                ])),
+            ])
+            ->log('exported');
 
         return response()->streamDownload(function () use ($query): void {
             $out = fopen('php://output', 'wb');
@@ -232,6 +286,19 @@ class LeadController extends Controller
     private function filtered(Request $request): Builder
     {
         return Lead::query()
+            /*
+             * Archived rows are out of the list unless asked for.
+             *
+             * Applied here rather than as a global scope on the model, so the
+             * dashboard's counts and the CSV export still see every enquiry
+             * that ever arrived. Tidying a list must not change what the site
+             * is measured by (§1).
+             */
+            ->when(
+                $request->boolean('archived'),
+                fn (Builder $q) => $q->archived(),
+                fn (Builder $q) => $q->notArchived(),
+            )
             ->when($request->filled('from'), fn (Builder $q) => $q->whereDate('created_at', '>=', $request->date('from')))
             ->when($request->filled('to'), fn (Builder $q) => $q->whereDate('created_at', '<=', $request->date('to')))
             ->when($request->filled('campaign'), fn (Builder $q) => $q->where('campaign_id', $request->integer('campaign')))
@@ -257,6 +324,7 @@ class LeadController extends Controller
             'type' => $lead->contact_type,
             'message' => $lead->message,
             'status' => $lead->status,
+            'archived' => $lead->isArchived(),
             'crmStatus' => $lead->crm_status,
             /*
              * Which provider "synced" it.

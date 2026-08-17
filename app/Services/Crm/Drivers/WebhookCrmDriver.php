@@ -30,6 +30,23 @@ class WebhookCrmDriver implements CrmDriver
         return filled(config('crm.drivers.webhook.url'));
     }
 
+    /**
+     * A webhook has one verb and it writes. There is no read to probe with,
+     * and probing the write would post a fabricated lead into whatever
+     * Zapier scenario is on the other end — which is worse than not knowing.
+     *
+     * So this reports honestly that it cannot be proven from here. The way to
+     * verify a webhook is to send a real enquiry through the form and read the
+     * sync log, which the screen below already shows.
+     */
+    public function verify(): CrmResult
+    {
+        return CrmResult::failure(
+            error: 'A webhook cannot be tested without posting a lead to it. Send one real enquiry through the form and read the sync log instead.',
+            retryable: false,
+        );
+    }
+
     public function pushLead(Lead $lead): CrmResult
     {
         $payload = $this->payload($lead);

@@ -65,7 +65,7 @@ export const NAV_GROUPS = [
         label: 'admin.nav_clients',
         items: [
             { icon: 'crm', label: 'admin.crm_link', href: '/admin/integrations/crm', can: 'settings.manage' },
-            { icon: 'bell', label: 'admin.notifications', href: '/admin/integrations/notifications', can: 'settings.manage', soon: true },
+            { icon: 'bell', label: 'admin.notifications', href: '/admin/integrations/notifications', can: 'settings.manage' },
             { icon: 'fields', label: 'admin.lead_fields', href: '/admin/lead-fields', can: 'settings.manage' },
             { icon: 'message', label: 'settings.screen.confirmations', href: '/admin/integrations/confirmations', can: 'settings.manage' },
             { icon: 'shield', label: 'admin.spam_guard', href: '/admin/integrations/spam', can: 'settings.manage', soon: true },
@@ -89,7 +89,7 @@ export const NAV_GROUPS = [
         items: [
             { icon: 'navigation', label: 'admin.navigation', href: '/admin/navigation', can: 'navigation.manage' },
             { icon: 'users', label: 'admin.users_roles', href: '/admin/users', can: 'users.manage' },
-            { icon: 'activity', label: 'admin.activity_log', href: '/admin/activity', can: 'settings.manage', soon: true },
+            { icon: 'activity', label: 'admin.activity_log', href: '/admin/activity', can: 'settings.manage' },
         ],
     },
     {

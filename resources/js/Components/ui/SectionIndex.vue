@@ -11,9 +11,15 @@ import { useFormat } from '@/Composables/useFormat';
  *  · the position and the total come from the section's place in the
  *    `sections` rows, so deleting a block in the admin panel renumbers the
  *    rest instead of leaving a gap;
- *  · the caption comes from the section's own type slug, which is Latin by
- *    definition — the alternative was asking the client to type an English
- *    word into the Arabic site.
+ *  · the caption arrives already finished — either the label the client wrote
+ *    on the section in the panel, or the shipped label for its type.
+ *
+ * IT IS PRINTED VERBATIM. This component used to rewrite `_` and `-` into
+ * spaces, from when the prop really was a type slug (`intro_statement`). Once
+ * the client could write the caption themselves that stopped being a tidy-up
+ * and became an edit: a label typed as "chosen-in-panel" reached the page as
+ * "chosen in panel". Whoever passes a slug humanises it at the call site —
+ * today that is Pages/Public/Sector.vue and nowhere else.
  *
  * Digits go through useFormat, so they are Latin in both languages — the
  * Arabic-Indic forms the `ar-SA` default would otherwise produce never reach
@@ -23,7 +29,7 @@ const props = defineProps({
     /** 1-based position among the numbered sections. */
     index: { type: Number, default: null },
     total: { type: Number, default: null },
-    /** The section type slug, e.g. `intro_statement`. */
+    /** The finished caption, e.g. `manifesto`. Printed as given. */
     slug: { type: String, default: null },
     /**
      * `inline` puts counter and caption on one line, separated by a middle
@@ -49,7 +55,7 @@ const counter = computed(() =>
     props.index && props.total ? `${pad(props.index)} / ${pad(props.total)}` : null
 );
 
-const caption = computed(() => (props.slug ?? '').replace(/[_-]+/g, ' ').trim() || null);
+const caption = computed(() => (props.slug ?? '').trim() || null);
 </script>
 
 <template>
