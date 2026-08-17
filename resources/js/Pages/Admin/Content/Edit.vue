@@ -3,9 +3,12 @@ import { ref } from 'vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
 import MediaSlot from '@/Components/admin/MediaSlot.vue';
+import ScreenNav from '@/Components/admin/ScreenNav.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -117,8 +120,8 @@ function upload(collection, event) {
     );
 }
 
-function removeMedia(id) {
-    if (!confirm(t('admin.confirm_delete'))) return;
+async function removeMedia(id) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
     router.delete(`/admin/media/${id}`, { preserveScroll: true });
 }
 
@@ -140,6 +143,23 @@ function setMedia(collection, items) {
 
 <template>
     <AdminLayout :title="record ? (record.attributes.slug ?? record.attributes.name ?? t('admin.edit')) : t('admin.create')">
+        <!--
+            Sections only for the two entities that own any: a solution and a
+            segment each build their page out of blocks, the rest are records
+            on somebody else's page. Offering the builder where there is
+            nothing to build is worse than not offering it.
+        -->
+        <ScreenNav
+            :back-href="`/admin/content/${entity}`"
+            :back-label="meta.title ?? null"
+            :sections-href="
+                record && ['sectors', 'solutions'].includes(entity)
+                    ? `/admin/sections/${entity === 'sectors' ? 'sector' : 'solution'}/${record.id}`
+                    : null
+            "
+            :preview-href="record?.previewUrl ?? null"
+        />
+
         <form @submit.prevent="submit">
             <Panel :title="t('admin.shared_fields')">
                 <div class="grid">
@@ -200,11 +220,13 @@ function setMedia(collection, items) {
             </Panel>
 
             <div class="bar">
-                <button class="btn btn--cta" type="submit" :disabled="form.processing">
-                    {{ form.processing ? t('admin.saving') : t('admin.save') }}
+                <button class="act btn btn--cta" type="submit" :disabled="form.processing">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ form.processing ? t('admin.saving') : t('admin.save') }}</span>
                 </button>
-                <Link :href="`/admin/content/${entity}`" class="btn btn--ghost">
-                    {{ t('admin.cancel') }}
+                <Link :href="`/admin/content/${entity}`" class="act btn btn--ghost">
+                    <NavIcon name="close" :size="18" :muted="false" />
+                    <span>{{ t('admin.cancel') }}</span>
                 </Link>
             </div>
         </form>
@@ -233,9 +255,9 @@ function setMedia(collection, items) {
                     <ul v-if="record.media[collection]?.length" class="media__list">
                         <li v-for="item in record.media[collection]" :key="item.id" class="media__item">
                             <span dir="auto">{{ item.name }}</span>
-                            <button class="btn btn--ghost danger" type="button" @click="removeMedia(item.id)">
-                                {{ t('admin.delete') }}
-                            </button>
+                            <button class="btn btn--ghost danger act act--icon" type="button" @click="removeMedia(item.id)"
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"><NavIcon name="trash" :size="18" :muted="false" /></button>
                         </li>
                     </ul>
 

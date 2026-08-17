@@ -2,6 +2,7 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
@@ -79,10 +80,14 @@ function submit() {
             </Panel>
 
             <div class="bar">
-                <button class="btn btn--cta" type="submit" :disabled="form.processing">
-                    {{ form.processing ? t('admin.saving') : t('admin.save') }}
+                <button class="act btn btn--cta" type="submit" :disabled="form.processing">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ form.processing ? t('admin.saving') : t('admin.save') }}</span>
                 </button>
-                <Link href="/admin/users" class="btn btn--ghost">{{ t('admin.cancel') }}</Link>
+                <Link href="/admin/users" class="act btn btn--ghost">
+                    <NavIcon name="close" :size="18" :muted="false" />
+                    <span>{{ t('admin.cancel') }}</span>
+                </Link>
             </div>
         </form>
     </AdminLayout>

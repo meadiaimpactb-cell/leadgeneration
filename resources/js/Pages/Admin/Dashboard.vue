@@ -43,6 +43,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
 
 <template>
     <AdminLayout :title="t('admin.dashboard')">
+      <div class="dashscreen">
         <!--
             The CRM driver warning was removed at the client's request.
 
@@ -55,7 +56,18 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
             <li v-for="tile in tiles" :key="tile.label" class="tile" :class="`tile--${tile.tone}`">
                 <p class="tile__label">{{ tile.label }}</p>
                 <p class="tile__value tabular">{{ number(tile.value) }}</p>
-                <p v-if="tile.change !== undefined && tile.change !== null" class="tile__change tabular">
+                <!--
+                    The trend, as a shape rather than a sentence. Up is not
+                    automatically good and down is not automatically bad on
+                    every one of these tiles, so the chip states the direction
+                    and leaves the judgement to the person reading it.
+                -->
+                <p
+                    v-if="tile.change !== undefined && tile.change !== null"
+                    class="tile__change tabular"
+                    :class="tile.change > 0 ? 'is-up' : (tile.change < 0 ? 'is-down' : 'is-flat')"
+                >
+                    <span aria-hidden="true">{{ tile.change > 0 ? '↑' : (tile.change < 0 ? '↓' : '→') }}</span>
                     {{ tile.change > 0 ? '+' : '' }}{{ number(tile.change) }}%
                 </p>
             </li>
@@ -71,7 +83,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
                         :y="60 - (day.count / peak) * 60"
                         width="3"
                         :height="Math.max((day.count / peak) * 60, day.count > 0 ? 2 : 0)"
-                        fill="#002546"
+                        class="chart__bar"
                     />
                 </svg>
                 <div class="chart__axis">
@@ -129,63 +141,166 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
                 </li>
             </ul>
         </Panel>
+      </div>
     </AdminLayout>
 </template>
 
 <style scoped>
+/* ============================================================
+   /admin — the measurement dashboard
+
+   The panel's shared language (type scale, panels, buttons,
+   chips, empty state) lives in resources/css/admin.css under
+   `.shell`. What follows is only this screen's own: the tiles,
+   the two chart forms, and the latest-leads list.
+
+   The screen answers one question — is the site producing
+   enquiries, and is anyone answering them — so it is built as a
+   descending hierarchy: five figures, then the shape of the last
+   thirty days, then where they came from, then the ones that
+   arrived most recently. Nothing competes with the figures.
+
+   Colour is a signal here, never decoration. Four of the five
+   tiles are navy because four of them are just counts; the two
+   that can indicate a problem take gold and orange, and only
+   when the number is not zero.
+   ============================================================ */
+
+/* ---- Figures ---------------------------------------------- */
+
 .tiles {
     display: grid;
     gap: var(--gutter);
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-block-end: var(--s-5);
+    list-style: none;
+    padding: 0;
+}
+
+@media (min-width: 900px) {
+    /* Five across on a desk. They are read as one row of facts,
+       and wrapping the fifth onto its own line makes it look
+       like a different kind of thing. */
+    .tiles {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
 }
 
 .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
     padding: var(--s-5);
-    background: var(--paper);
+    border: 1px solid var(--hairline-soft);
     border-radius: var(--r-md);
-    box-shadow: inset 0 0 0 1px var(--hairline);
+    background: var(--paper);
+    box-shadow: 0 1px 2px rgba(0, 37, 70, 0.04);
+    overflow: hidden;
+}
+
+/*
+ * A band on the reading edge, carrying the tile's meaning.
+ *
+ * It is a rule rather than a tinted card because five filled
+ * cards in a row is a colour wheel, not a dashboard: the eye
+ * has nowhere to rest and no tile is more urgent than another.
+ * A 3px edge says the same thing and spends almost nothing.
+ */
+.tile::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 3px;
+    background: var(--band, rgba(0, 37, 70, 0.22));
 }
 
 .tile__label {
-    font-size: var(--fs-xs);
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--t-label);
+    font-weight: 600;
     color: var(--text-muted);
 }
 
+/*
+ * The figure. Latin face, tabular, and the one size on the screen
+ * allowed outside the panel's four — a number that is the whole
+ * point of a tile is information, not emphasis.
+ */
 .tile__value {
-    margin-block-start: var(--s-2);
-    font-size: var(--fs-h1);
-    font-weight: 600;
-    color: var(--navy-900);
+    margin: 0;
+    font-family: var(--font-body-en);
+    font-size: 2rem;
+    font-weight: 700;
     line-height: 1;
-}
-
-.tile--accent .tile__value {
-    color: var(--action-600);
-}
-
-.tile--danger .tile__value {
-    color: var(--action-600);
+    letter-spacing: -0.02em;
+    color: var(--navy-900);
+    direction: ltr;
 }
 
 .tile__change {
-    margin-block-start: var(--s-1);
-    font-size: var(--fs-xs);
-    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    align-self: flex-start;
+    padding: 4px var(--s-3);
+    border-radius: var(--r-pill);
+    font-family: var(--font-mono);
+    font-size: var(--t-meta);
+    font-weight: 500;
+    direction: ltr;
+}
+
+.tile__change.is-up   { background: rgba(30, 122, 90, 0.12);  color: var(--success); }
+.tile__change.is-down { background: rgba(215, 101, 59, 0.12); color: var(--action-600); }
+.tile__change.is-flat { background: rgba(0, 37, 70, 0.07);    color: var(--muted); }
+
+/* The band per tone. `accent` is «بانتظار الرد» and `danger` is
+   «لم تصل إلى CRM» — both are questions for a person, so they
+   get the two colours the identity reserves for attention. */
+.tile--navy   { --band: rgba(0, 37, 70, 0.22); }
+.tile--accent { --band: var(--gold-400); }
+.tile--danger { --band: var(--orange-500); }
+
+/* A zero on a problem tile is good news and should look calm. */
+.tile--danger .tile__value { color: var(--action-600); }
+
+/* ---- Thirty days ------------------------------------------ */
+
+.chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
 }
 
 .chart__svg {
     inline-size: 100%;
-    block-size: 120px;
+    block-size: 140px;
+    /* A ground for the bars to stand on rather than float above. */
+    border-block-end: 1px solid var(--hairline);
+}
+
+/* Colour belongs in the stylesheet, not in a `fill` attribute on
+   the element — it was a literal hex in the markup, which is the
+   one place nobody looks when the palette changes. */
+.chart__bar {
+    fill: var(--navy-900);
+    opacity: 0.85;
 }
 
 .chart__axis {
     display: flex;
     justify-content: space-between;
-    margin-block-start: var(--s-2);
-    font-size: var(--fs-xs);
-    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--t-meta);
+    color: var(--muted);
+    direction: ltr;
 }
+
+/* ---- Where they came from --------------------------------- */
 
 .split {
     display: grid;
@@ -194,100 +309,178 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
     margin-block-start: var(--s-5);
 }
 
-.split :deep(.panel + .panel) {
-    margin-block-start: 0;
+@media (min-width: 900px) {
+    .split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .bars {
     display: flex;
     flex-direction: column;
-    gap: var(--s-3);
+    gap: var(--s-4);
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
+/*
+ * Label, bar, value — three columns, so the numbers align down
+ * the edge and the bars all start from the same place. They were
+ * a flex row where each part took the width it happened to need,
+ * which put every bar at a different origin and made the lengths
+ * impossible to compare, which is the only thing a bar chart is
+ * for.
+ */
 .bars__row {
     display: grid;
-    grid-template-columns: 8rem 1fr 3rem;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) auto;
     gap: var(--s-3);
     align-items: center;
-    font-size: var(--fs-sm);
 }
 
 .bars__label {
+    font-size: var(--t-label);
+    color: var(--navy-900);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .bars__track {
-    block-size: 8px;
-    background: var(--navy-100);
+    display: block;
+    block-size: 10px;
     border-radius: var(--r-pill);
+    background: rgba(0, 37, 70, 0.07);
     overflow: hidden;
 }
 
 .bars__fill {
     display: block;
     block-size: 100%;
+    border-radius: var(--r-pill);
     background: var(--navy-900);
+    transition: inline-size var(--dur-el) var(--ease);
 }
 
 .bars__value {
-    text-align: end;
-    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--t-meta);
+    font-weight: 500;
+    color: var(--navy-900);
+    direction: ltr;
 }
+
+/* ---- Latest enquiries ------------------------------------- */
 
 .latest {
     display: flex;
     flex-direction: column;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
+/*
+ * A row of the same four facts every time, in the same four
+ * places: who, what they said, where it stands, whether it left
+ * the building. Aligned as a grid so the eye reads down a column
+ * instead of re-finding each field on every line.
+ */
 .latest__row {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--s-1);
-    padding-block: var(--s-3);
-    border-block-end: 1px solid var(--hairline);
-    font-size: var(--fs-sm);
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto auto;
+    gap: var(--s-4);
+    align-items: center;
+    padding-block: var(--s-4);
+    border-block-start: 1px solid var(--hairline-soft);
+}
+
+.latest__row:first-child {
+    border-block-start: 0;
+    padding-block-start: 0;
 }
 
 .latest__contact {
-    font-weight: 600;
-    color: var(--link);
+    font-weight: 700;
+    color: var(--navy-900);
+    direction: ltr;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--dur-micro) var(--ease);
 }
 
-.latest__msg,
+.latest__contact:hover,
+.latest__contact:focus-visible {
+    text-decoration-color: var(--orange-500);
+}
+
+.latest__msg {
+    color: var(--text-muted);
+    font-size: var(--t-label);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .latest__status {
-    color: var(--text-muted);
+    padding: 5px var(--s-3);
+    border-radius: var(--r-pill);
+    background: rgba(0, 37, 70, 0.07);
+    color: var(--navy-900);
+    font-size: var(--t-meta);
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-.latest__crm.is-failed {
-    color: var(--action-600);
-    font-weight: 600;
+.latest__crm {
+    font-size: var(--t-meta);
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--muted);
 }
 
-.empty {
-    color: var(--text-muted);
-    font-size: var(--fs-sm);
-}
+.latest__crm.is-synced  { color: var(--success); }
+.latest__crm.is-pending { color: var(--action-600); }
+.latest__crm.is-failed  { color: var(--action-600); }
 
-@media (min-width: 640px) {
-    .tiles {
-        grid-template-columns: repeat(3, 1fr);
+/* ---- Small screens ---------------------------------------- */
+
+@media (max-width: 767px) {
+    .tile { padding: var(--s-4); }
+    .tile__value { font-size: 1.625rem; }
+
+    /* The bar's label and its value keep their line; the track
+       takes the row underneath so neither is squeezed to nothing. */
+    .bars__row {
+        grid-template-columns: minmax(0, 1fr) auto;
     }
-}
 
-@media (min-width: 1024px) {
-    .tiles {
-        grid-template-columns: repeat(5, 1fr);
+    .bars__track {
+        grid-column: 1 / -1;
+        order: 3;
     }
 
-    .split {
-        grid-template-columns: 1fr 1fr;
-    }
-
+    /* Contact over message, state and CRM on one line beneath. */
     .latest__row {
-        grid-template-columns: 14rem 1fr 8rem 8rem;
-        align-items: center;
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .latest__msg {
+        grid-column: 1 / -1;
+        white-space: normal;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bars__fill,
+    .latest__contact {
+        transition: none;
     }
 }
 </style>

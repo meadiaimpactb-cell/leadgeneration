@@ -4,6 +4,8 @@ import { router, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 import { useFormat } from '@/Composables/useFormat';
 
@@ -41,13 +43,27 @@ function test() {
     router.post('/admin/integrations/crm/test', {}, { preserveScroll: true });
 }
 
-function resyncAll() {
-    if (!confirm(t('admin.crm_resync_confirm'))) return;
+async function resyncAll() {
+    if (!(await confirmDialog({ message: t('admin.crm_resync_confirm') }))) return;
 
     router.post('/admin/integrations/crm/resync-all', {}, { preserveScroll: true });
 }
 
 const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[provider]?.[field] ?? 'unset'}`);
+
+/**
+ * The control each credential kind gets. A `token` is a secret, but showing it
+ * as a password field made a 1,200-character JWT impossible to read back — so
+ * it gets a growing box instead. It is still never sent back to the browser:
+ * a saved token comes down as bullets, and only what is typed in this session
+ * is visible.
+ */
+const controlFor = (kind) => (kind === 'token' ? 'textarea' : kind === 'secret' ? 'password' : 'text');
+
+const hintFor = (provider, field, kind) =>
+    kind === 'token'
+        ? `${sourceLabel(provider, field)} — ${t('admin.crm_token_hint')}`
+        : sourceLabel(provider, field);
 </script>
 
 <template>
@@ -69,22 +85,41 @@ const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[pro
                 </li>
             </ul>
 
-            <div v-for="provider in providers" v-show="form.driver === provider" :key="`f-${provider}`" class="creds">
+            <!--
+                Only the chosen provider's fields are in the page, rather than
+                all of them with the others hidden. The token box measures
+                itself when it mounts, and an element inside a `display: none`
+                block has no height to measure; hiding the rest also left their
+                inputs reachable by keyboard while invisible on screen. Nothing
+                typed is lost by unmounting — the values live in
+                `form.credentials`, not in the DOM.
+            -->
+            <div v-if="fields[form.driver]" :key="`f-${form.driver}`" class="creds">
+                <!--
+                    A `token` is a secret too, but it is a JWT of a thousand
+                    characters and more. In a single-line password box it was a
+                    value nobody could read back, check the end of, or tell
+                    apart from a truncated paste — so it gets a box that grows
+                    with it, the way the contact form's message field does.
+                -->
                 <Field
-                    v-for="(isSecret, field) in fields[provider]"
+                    v-for="(kind, field) in fields[form.driver]"
                     :key="field"
-                    v-model="form.credentials[provider][field]"
+                    v-model="form.credentials[form.driver][field]"
                     :label="field.replace(/_/g, ' ')"
-                    :type="isSecret ? 'password' : 'text'"
+                    :type="controlFor(kind)"
+                    :autogrow="kind === 'token'"
+                    :rows="1"
                     dir="ltr"
-                    :hint="sourceLabel(provider, field)"
-                    :error="form.errors[`credentials.${provider}.${field}`]"
+                    :hint="hintFor(form.driver, field, kind)"
+                    :error="form.errors[`credentials.${form.driver}.${field}`]"
                 />
             </div>
 
             <div class="bar">
-                <button class="btn btn--cta" type="button" :disabled="form.processing" @click="save">
-                    {{ form.processing ? t('admin.saving') : t('admin.save') }}
+                <button class="act btn btn--cta" type="button" :disabled="form.processing" @click="save">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ form.processing ? t('admin.saving') : t('admin.save') }}</span>
                 </button>
                 <button class="btn btn--secondary" type="button" @click="test">
                     {{ t('admin.crm_test') }}
@@ -273,11 +308,11 @@ const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[pro
 
 @media (min-width: 900px) {
     .tiles {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .log__row {
-        grid-template-columns: 5rem 4rem 5rem 3rem 11rem 1fr;
+        grid-template-columns: 5rem 4rem 5rem 3rem 11rem minmax(0, 1fr);
     }
 
     .log__error {

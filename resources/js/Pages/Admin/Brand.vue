@@ -4,6 +4,8 @@ import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Workspace from '@/Components/admin/Workspace.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -45,7 +47,9 @@ function upload(collection, event) {
     );
 }
 
-function remove(asset) {
+async function remove(asset) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     router.delete(`/admin/brand/${asset.id}`, { preserveScroll: true });
 }
 </script>
@@ -77,9 +81,8 @@ function remove(asset) {
                                 class="btn btn--ghost slot__remove"
                                 type="button"
                                 @click="remove(assets[slot])"
-                            >
-                                {{ t('admin.delete') }}
-                            </button>
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"><NavIcon name="trash" :size="18" :muted="false" /></button>
                         </div>
                     </div>
                 </div>
@@ -180,10 +183,27 @@ function remove(asset) {
     color: var(--action-600);
 }
 
+/*
+ * One column until there is room for two.
+ *
+ * This was `repeat(2, 1fr)` at every width. `1fr` is `minmax(auto, 1fr)`, so
+ * the tracks refuse to shrink below their contents — a 40px chip, a name and
+ * a hex code come to about 195px — and two of those plus the gap do not fit
+ * on a 360px phone. The page scrolled sideways as a result; measured at 437px
+ * of document in a 360px viewport.
+ */
 .palette {
     display: grid;
     gap: var(--s-3);
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .palette {
+        /* minmax(0, …), not 1fr: the same refusal to shrink would otherwise
+           come back the moment a colour is given a longer name. */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .swatch {
@@ -193,6 +213,7 @@ function remove(asset) {
     padding: var(--s-3);
     border-radius: var(--r-sm);
     background: var(--paper-alt);
+    min-inline-size: 0;
 }
 
 .swatch__chip {
@@ -203,24 +224,38 @@ function remove(asset) {
     flex: 0 0 auto;
 }
 
+/*
+ * The name is the part that gives way.
+ *
+ * The chip and the hex are fixed-size and both carry meaning that truncation
+ * would destroy — half a hex code is not a colour. The name is the only item
+ * in the row that can lose its tail and still be read, so it is the one that
+ * shrinks. Without this the row overflowed its column at 1024px, where the
+ * sidebar appears and the two tracks are at their narrowest.
+ */
 .swatch__name {
     font-weight: 600;
     font-size: var(--fs-sm);
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .swatch__hex {
     margin-inline-start: auto;
     font-size: var(--fs-xs);
     color: var(--muted);
+    flex: 0 0 auto;
 }
 
 @media (min-width: 900px) {
     .slots {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .palette {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 </style>

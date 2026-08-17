@@ -1,11 +1,15 @@
 <script setup>
-import { ref } from 'vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
 import MediaSlot from '@/Components/admin/MediaSlot.vue';
+import ScreenNav from '@/Components/admin/ScreenNav.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
+import { notifyError } from '@/admin/notify';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -26,12 +30,65 @@ const props = defineProps({
     ownerType: { type: String, required: true },
     ownerId: { type: Number, required: true },
     ownerLabel: { type: String, default: null },
+    /** The live URL of the page these sections build, when it has one. */
+    ownerPreviewUrl: { type: String, default: null },
     sections: { type: Array, default: () => [] },
     types: { type: Array, default: () => [] },
     locales: { type: Array, default: () => [] },
 });
 
 const { t } = useTranslation();
+const page = usePage();
+
+/**
+ * Where "back" goes, worked out from whose sections these are.
+ *
+ * `ownerType` is already passed for the save endpoints; reusing it here means
+ * a new owner type gets its return path by adding one line, not by editing a
+ * component that had no idea it was reachable from four places.
+ */
+const OWNER_INDEX = {
+    page: '/admin/pages',
+    sector: '/admin/content/sectors',
+    solution: '/admin/content/solutions',
+    campaign: '/admin/campaigns',
+};
+
+const ownerIndexHref = computed(() => OWNER_INDEX[props.ownerType] ?? '/admin');
+const ownerPreviewUrl = computed(() => props.ownerPreviewUrl ?? null);
+
+/**
+ * A section type's name and description, as the editor reads them.
+ *
+ * The panel printed the raw key — `cta_band`, `sector_spotlight` — which is
+ * the developer's name for the block, not the visitor's. §9.1 requires the
+ * panel to be usable with no technical help, and a key is technical help by
+ * another name.
+ *
+ * Falls back to the key when a translation is missing rather than rendering
+ * an empty row: a new type added to `Section::TYPES` without its two strings
+ * should look unfinished, not invisible.
+ */
+function typeLabel(type) {
+    const key = `admin.section_type_${type}`;
+    const label = t(key);
+
+    return label === key ? type : label;
+}
+
+function typeHint(type) {
+    const key = `admin.section_type_hint_${type}`;
+    const hint = t(key);
+
+    return hint === key ? null : hint;
+}
+
+/** Sorted by the reader's alphabet, not by the order the constant happens to list. */
+const typeOptions = computed(() =>
+    [...props.types]
+        .map((ty) => ({ value: ty, label: typeLabel(ty) }))
+        .sort((a, b) => a.label.localeCompare(b.label, page.props.locale ?? 'ar'))
+);
 
 const FIELDS = {
     heading: 'text',
@@ -84,7 +141,26 @@ function addSection() {
     addForm.post(`/admin/sections/${props.ownerType}/${props.ownerId}`, { preserveScroll: true });
 }
 
+/*
+ * Which section's save is being answered.
+ *
+ * The screen edits every section at once, but saves one at a time, and Laravel
+ * returns errors keyed only by field — `translations.ar.heading` — with nothing
+ * to say which section they belong to. Handing that bag to all of them would
+ * put a red message under the wrong heading. So the errors are shown only on
+ * the section that asked.
+ */
+const savingId = ref(null);
+
+const pageErrors = computed(() => page.props.errors ?? {});
+
+function errorsFor(section) {
+    return savingId.value === section.id ? pageErrors.value : {};
+}
+
 function saveSection(section) {
+    savingId.value = section.id;
+
     router.patch(
         `/admin/sections/${section.id}`,
         {
@@ -92,12 +168,24 @@ function saveSection(section) {
             settings: section.settings,
             translations: section.translations,
         },
-        { preserveScroll: true }
+        {
+            preserveScroll: true,
+            /*
+             * The silence this screen used to answer with.
+             *
+             * A rejected save carries errors and no flash, and nothing here
+             * read either — so pressing save did visibly nothing, which reads
+             * as "saved" to everyone who has ever used a form. The messages
+             * now land under their fields, and the toast says a save was
+             * refused so the editor looks for them.
+             */
+            onError: () => notifyError(t('admin.save_failed')),
+        }
     );
 }
 
-function removeSection(section) {
-    if (!confirm(t('admin.confirm_delete'))) return;
+async function removeSection(section) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
     router.delete(`/admin/sections/${section.id}`, { preserveScroll: true });
 }
 
@@ -149,7 +237,9 @@ function addItem(section) {
     items(section).push(blank);
 }
 
-function removeItem(section, index) {
+async function removeItem(section, index) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     items(section).splice(index, 1);
 }
 
@@ -204,18 +294,37 @@ function updateSettings(section, text) {
 
 <template>
     <AdminLayout :title="`${t('admin.sections')} — ${ownerLabel ?? ''}`">
+        <!--
+            The builder is reached from four different lists — pages, segments,
+            solutions, campaigns — and had no way back to any of them. `owner`
+            is what the server already knows about who these sections belong
+            to, so the return path is derived rather than guessed.
+        -->
+        <ScreenNav :back-href="ownerIndexHref" :back-label="ownerLabel" :preview-href="ownerPreviewUrl" />
+
         <Panel :title="t('admin.add_section')" :hint="t('admin.order_hint')">
             <form class="add" @submit.prevent="addSection">
                 <Field
                     v-model="addForm.type"
                     :label="t('admin.add_section')"
                     type="select"
-                    :options="types.map((ty) => ({ value: ty, label: ty }))"
+                    :options="typeOptions"
                 />
-                <button class="btn btn--cta" type="submit" :disabled="addForm.processing">
-                    {{ t('admin.create') }}
+                <button class="btn btn--cta act" type="submit" :disabled="addForm.processing">
+                    <NavIcon name="plus" :size="18" :muted="false" />
+                    <span>{{ t('admin.create') }}</span>
                 </button>
             </form>
+
+            <!--
+                What the chosen type actually puts on the page.
+
+                The name alone does not separate «بطاقات» from «شبكة الحلول» —
+                both are a row of boxes to anyone who has not seen them
+                rendered. One line of description is the difference between
+                choosing and guessing.
+            -->
+            <p v-if="addForm.type" class="add__hint">{{ typeHint(addForm.type) }}</p>
         </Panel>
 
         <p v-if="!sections.length" class="empty">{{ t('admin.no_records') }}</p>
@@ -237,27 +346,47 @@ function updateSettings(section, text) {
                         :aria-expanded="open === section.id"
                         @click="open = open === section.id ? null : section.id"
                     >
-                        <span class="item__type latin">{{ section.type }}</span>
+                        <!--
+                            The name the editor reads, not the key the code
+                            uses. `.latin` is gone with the key: the label is
+                            Arabic on an Arabic screen and must set in the
+                            document's own face and direction.
+                        -->
+                        <span class="item__type">{{ typeLabel(section.type) }}</span>
                         <span v-if="!section.isActive" class="chip">{{ t('admin.inactive') }}</span>
                     </button>
 
                     <div class="item__tools">
                         <button
-                            class="btn btn--ghost"
+                            class="btn btn--ghost act act--icon"
                             type="button"
+                            :title="t('admin.move_up')"
                             :aria-label="t('admin.move_up')"
                             :disabled="index === 0"
                             @click="move(index, -1)"
-                        >↑</button>
+                        ><NavIcon name="publish" :size="18" :muted="false" /></button>
                         <button
-                            class="btn btn--ghost"
+                            class="btn btn--ghost act act--icon"
                             type="button"
+                            :title="t('admin.move_down')"
                             :aria-label="t('admin.move_down')"
                             :disabled="index === sections.length - 1"
                             @click="move(index, 1)"
-                        >↓</button>
-                        <button class="btn btn--ghost danger" type="button" @click="removeSection(section)">
-                            {{ t('admin.delete') }}
+                        ><NavIcon name="unpublish" :size="18" :muted="false" /></button>
+                        <!--
+                            Icon only, and titled: this button repeats on every
+                            row, and four Arabic words per row turns a list of
+                            twelve sections into a wall of text. The label
+                            survives for a screen reader and on hover.
+                        -->
+                        <button
+                            class="btn btn--ghost danger act act--icon"
+                            type="button"
+                            :title="t('admin.delete')"
+                            :aria-label="t('admin.delete')"
+                            @click="removeSection(section)"
+                        >
+                            <NavIcon name="trash" :size="18" :muted="false" />
                         </button>
                     </div>
                 </header>
@@ -269,6 +398,7 @@ function updateSettings(section, text) {
                         v-model="section.translations"
                         :locales="locales"
                         :fields="FIELDS"
+                        :errors="errorsFor(section)"
                     />
 
                     <!-- Chosen from the library and shown as pictures, so the
@@ -297,8 +427,9 @@ function updateSettings(section, text) {
                     <div v-if="itemSchema(section)" class="items">
                         <div class="items__head">
                             <p class="media__label">{{ t('admin.section_items') }}</p>
-                            <button class="btn btn--ghost" type="button" @click="addItem(section)">
-                                {{ t('admin.add_item') }}
+                            <button class="btn btn--secondary act" type="button" @click="addItem(section)">
+                                <NavIcon name="plus" :size="18" :muted="false" />
+                                <span>{{ t('admin.add_item') }}</span>
                             </button>
                         </div>
 
@@ -314,30 +445,51 @@ function updateSettings(section, text) {
 
                             <div class="items__tools">
                                 <button
-                                    class="btn btn--ghost"
+                                    class="btn btn--ghost act act--icon"
                                     type="button"
+                                    :title="t('admin.move_up')"
                                     :aria-label="t('admin.move_up')"
                                     :disabled="i === 0"
                                     @click="moveItem(section, i, -1)"
-                                >↑</button>
+                                ><NavIcon name="publish" :size="18" :muted="false" /></button>
                                 <button
-                                    class="btn btn--ghost"
+                                    class="btn btn--ghost act act--icon"
                                     type="button"
+                                    :title="t('admin.move_down')"
                                     :aria-label="t('admin.move_down')"
                                     :disabled="i === items(section).length - 1"
                                     @click="moveItem(section, i, 1)"
-                                >↓</button>
-                                <button class="btn btn--ghost danger" type="button" @click="removeItem(section, i)">
-                                    {{ t('admin.delete') }}
-                                </button>
+                                ><NavIcon name="unpublish" :size="18" :muted="false" /></button>
+                                <button
+                                    class="btn btn--ghost danger act act--icon"
+                                    type="button"
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"
+                                    @click="removeItem(section, i)"
+                                ><NavIcon name="trash" :size="18" :muted="false" /></button>
                             </div>
                         </div>
                     </div>
 
                     <details class="advanced">
                         <summary>{{ t('admin.advanced_json') }}</summary>
+
+                        <!--
+                            What this section type actually reads. Without it
+                            the box below is a textarea with no clue what may
+                            go in it, and every one of these keys stayed
+                            unreachable to anyone who had not read the Vue
+                            component (§9.1).
+                        -->
+                        <dl v-if="section.settingsKeys?.length" class="keys">
+                            <template v-for="key in section.settingsKeys" :key="key">
+                                <dt class="keys__name latin" dir="ltr">{{ key }}</dt>
+                                <dd class="keys__what">{{ t(`admin.section_setting_${key}`) }}</dd>
+                            </template>
+                        </dl>
+
                         <Field
-                            label="settings"
+                            :label="t('admin.field_settings')"
                             type="textarea"
                             dir="ltr"
                             :model-value="settingsText(section)"
@@ -346,8 +498,9 @@ function updateSettings(section, text) {
                         />
                     </details>
 
-                    <button class="btn btn--cta" type="button" @click="saveSection(section)">
-                        {{ t('admin.save') }}
+                    <button class="btn btn--cta act" type="button" @click="saveSection(section)">
+                        <NavIcon name="check" :size="18" :muted="false" />
+                        <span>{{ t('admin.save') }}</span>
                     </button>
                 </div>
             </li>
@@ -361,6 +514,32 @@ function updateSettings(section, text) {
     gap: var(--s-3);
     align-items: end;
     flex-wrap: wrap;
+}
+
+/* An icon beside its word, on one baseline. */
+.act {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+}
+
+/* Icon alone, square, still 44px of target. Used only where the control
+   repeats on every row and its word would be read a dozen times. */
+.act--icon {
+    inline-size: 44px;
+    min-block-size: 44px;
+    padding-inline: 0;
+    justify-content: center;
+}
+
+/* What the chosen type puts on the page. Sits under the picker so it is read
+   before the button is pressed, not after the section is already added. */
+.add__hint {
+    margin-block-start: var(--s-3);
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-inline-size: 70ch;
 }
 
 .list {
@@ -392,8 +571,12 @@ function updateSettings(section, text) {
     color: var(--navy-900);
 }
 
+/* The section's name in the row header. Weighted, because it is the one word
+   the editor scans down the list looking for. */
 .item__type {
-    font-size: var(--fs-sm);
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--navy-900);
 }
 
 .item__tools {
@@ -474,15 +657,45 @@ function updateSettings(section, text) {
     align-items: center;
 }
 
+/* The key reference above the JSON box: name on the start edge, what it does
+   beside it. Collapses to one column on a phone, where two would wrap. */
+.keys {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-1) var(--s-3);
+    margin-block: var(--s-3) var(--s-4);
+    padding: var(--s-3);
+    border-radius: var(--r-sm);
+    background: var(--paper-alt);
+    font-size: var(--fs-sm);
+}
+
+.keys__name {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--navy-900);
+}
+
+.keys__what {
+    margin: 0;
+    color: var(--text-muted);
+}
+
 .empty {
     margin-block-start: var(--s-5);
     color: var(--text-muted);
     font-size: var(--fs-sm);
 }
 
+@media (min-width: 640px) {
+    .keys {
+        grid-template-columns: auto 1fr;
+    }
+}
+
 @media (min-width: 1024px) {
     .items__row {
-        grid-template-columns: repeat(3, 1fr) auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
         align-items: end;
     }
 }

@@ -2,9 +2,11 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
 import SnippetPreview from '@/Components/admin/SnippetPreview.vue';
+import ScreenNav from '@/Components/admin/ScreenNav.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 const props = defineProps({
@@ -49,12 +51,20 @@ function submit() {
 
 <template>
     <AdminLayout :title="page ? page.slug : t('admin.create')">
+        <ScreenNav
+            back-href="/admin/pages"
+            :back-label="t('admin.pages')"
+            :sections-href="page ? `/admin/sections/page/${page.id}` : null"
+            :preview-href="page?.previewUrl ?? null"
+        />
+
         <form @submit.prevent="submit">
             <Panel :title="t('admin.shared_fields')">
                 <template #actions>
-                    <a v-if="page" class="btn btn--ghost" :href="page.previewUrl" target="_blank" rel="noopener">
-                        {{ t('admin.preview') }}
-                    </a>
+                    <a v-if="page" class="act btn btn--ghost" :href="page.previewUrl" target="_blank" rel="noopener">
+                    <NavIcon name="eye" :size="18" :muted="false" />
+                    <span>{{ t('admin.preview') }}</span>
+                </a>
                     <Link
                         v-if="page"
                         :href="`/admin/sections/page/${page.id}`"
@@ -67,7 +77,7 @@ function submit() {
                 <div class="grid">
                     <Field
                         v-model="form.slug"
-                        label="slug"
+                        :label="t('admin.field_slug')"
                         type="slug"
                         dir="ltr"
                         :error="form.errors.slug"
@@ -75,7 +85,7 @@ function submit() {
                     />
                     <Field
                         v-model="form.template"
-                        label="template"
+                        :label="t('admin.field_template')"
                         dir="ltr"
                         :error="form.errors.template"
                     />
@@ -92,6 +102,7 @@ function submit() {
                     v-model="form.translations"
                     :locales="locales"
                     :fields="FIELDS"
+                    :required="['title']"
                     :errors="form.errors"
                 />
             </Panel>
@@ -118,10 +129,14 @@ function submit() {
             </Panel>
 
             <div class="bar">
-                <button class="btn btn--cta" type="submit" :disabled="form.processing">
-                    {{ form.processing ? t('admin.saving') : t('admin.save') }}
+                <button class="act btn btn--cta" type="submit" :disabled="form.processing">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ form.processing ? t('admin.saving') : t('admin.save') }}</span>
                 </button>
-                <Link href="/admin/pages" class="btn btn--ghost">{{ t('admin.cancel') }}</Link>
+                <Link href="/admin/pages" class="act btn btn--ghost">
+                    <NavIcon name="close" :size="18" :muted="false" />
+                    <span>{{ t('admin.cancel') }}</span>
+                </Link>
             </div>
         </form>
     </AdminLayout>
@@ -136,7 +151,7 @@ function submit() {
 
 .snippet-intro {
     margin-block-end: var(--s-4);
-    color: var(--ink-600);
+    color: var(--muted);
     line-height: var(--lh-body);
 }
 

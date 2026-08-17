@@ -51,13 +51,17 @@ return [
     // Actions
     'save' => 'حفظ',
     'saving' => 'جارٍ الحفظ…',
+    'save_failed' => 'لم يُحفَظ. راجع الحقول المعلَّمة بالأحمر أدناه.',
     'saved' => 'تم الحفظ.',
     'create' => 'إضافة',
     'edit' => 'تعديل',
     'delete' => 'حذف',
     'deleted' => 'تم الحذف.',
     'cancel' => 'إلغاء',
+    'confirm_title' => 'تأكيد',
+    'confirm_yes' => 'تأكيد',
     'confirm_delete' => 'هل تريد الحذف؟ لا يمكن التراجع.',
+    'confirm_delete_redirect' => 'حذف هذا التحويل يعني أن الرابط القديم سيعطي 404 لمن يفتحه أو يشاركه. متأكد؟',
     'search' => 'بحث',
     'filter' => 'تصفية',
     'reset' => 'إعادة ضبط',
@@ -65,6 +69,8 @@ return [
     'back' => 'رجوع',
     'preview' => 'معاينة',
     'preview_notice' => 'أنت تشاهد معاينة غير منشورة. هذه الصفحة غير مرئية للزوار ولا تُؤرشف.',
+    // عنوان عمود الأزرار في الجداول. كان فارغًا، فبدا العمود بلا سبب.
+    'actions' => 'الإجراءات',
     'add_section' => 'إضافة قسم',
     'move_up' => 'تحريك لأعلى',
     'move_down' => 'تحريك لأسفل',
@@ -101,6 +107,22 @@ return [
     'crm_log' => 'سجل المزامنة',
     'attribution' => 'مصدر الزيارة',
     'attribution_direct' => 'لم يصل هذا الطلب عبر حملة: الزائر فتح الموقع مباشرة أو من رابط عادي، فلا توجد وسوم حملة تُذكر. الصفحة والرابط المُحيل أعلاه هما ما نعرفه عن مصدره.',
+    /*
+     * Field labels that were the database column name.
+     *
+     * `slug`, `starts_at`, `template` — a developer reads those instantly and
+     * the person maintaining the site does not, which is the same failure
+     * SettingsRegistry was written to fix (§9.1: usable with no technical
+     * help). The human labels for the utm_* fields were already here; the
+     * campaign editor simply was not using them.
+     */
+    'field_slug' => 'المعرّف في الرابط',
+    'field_starts_at' => 'تبدأ في',
+    'field_ends_at' => 'تنتهي في',
+    'field_url' => 'الرابط',
+    'field_settings' => 'إعدادات القسم (JSON)',
+    'field_template' => 'القالب',
+
     // The visit's own trail. Written the way the person reading this screen
     // would describe it, not the way the query string spells it: nobody
     // outside advertising knows what `utm_content` or `gclid` mean, and a
@@ -310,8 +332,11 @@ return [
     'crm_provider' => 'النظام النشط',
     'crm_provider_hint' => 'اختيار واحد فقط. المفاتيح تُحفظ في الإعدادات وتتقدّم على ما في ملف البيئة.',
     'crm_test' => 'اختبار الاتصال',
-    'crm_test_ok' => 'الاتصال بـ :driver مهيّأ بالكامل.',
     'crm_test_unconfigured' => 'المزوّد :driver ينقصه بيان اتصال أو أكثر — راجع الحقول أعلاه.',
+    'crm_verify_ok' => 'تم الاتصال بـ :driver بنجاح.',
+    'crm_verify_ok_as' => 'تم الاتصال بـ :driver بنجاح — الحساب: :account.',
+    'crm_verify_failed' => 'تعذّر الاتصال بـ :driver — :error',
+    'crm_token_hint' => 'الصقه كما هو من لوحة المزوّد. الحقل يتمدّد مع طوله.',
     'crm_status' => 'حالة المزامنة',
     'crm_last_success' => 'آخر إرسال ناجح',
     'crm_resync_all' => 'أعد إرسال العالقة (:count)',
@@ -397,4 +422,264 @@ return [
     'media_selected' => 'المحدد: :count',
     'media_section_of' => 'قسم :type',
     'media_close' => 'إغلاق',
+
+    // ---- شاشة التنبيهات (§6.2، §20 قرار 4) ----------------------------
+    'notify_recipients' => 'المستلمون',
+    'notify_recipients_hint' => 'من يصله البريد، وما الذي يصله. لكل عنوان اشتراكاته وحده — من يردّ على المشترين لا يحتاج تنبيه انقطاع تكامل، والعكس صحيح.',
+    'notify_empty' => 'لا يوجد مستلم بعد.',
+    'notify_add' => 'إضافة مستلم',
+    'notify_add_hint' => 'العنوان يُضاف مشتركًا في تنبيه الطلب الجديد وحده. البقية تُفعَّل يدويًا.',
+    'notify_email' => 'البريد الإلكتروني',
+    'notify_name' => 'الاسم (اختياري)',
+    'notify_active' => 'مُفعَّل',
+    'notify_events' => 'ما يصله',
+    'notify_event_new_lead' => 'طلب جديد',
+    'notify_event_new_lead_hint' => 'رسالة فور وصول كل طلب، تحمل وسيلة التواصل والرسالة والمصدر.',
+    'notify_event_crm_failure' => 'فشل الإرسال إلى CRM',
+    'notify_event_crm_failure_hint' => 'حين لا يصل طلب إلى نظام إدارة العلاقات بعد كل المحاولات. يخصّ من يصيان التكامل.',
+    'notify_event_daily_summary' => 'ملخص يومي',
+    'notify_event_daily_summary_hint' => 'رسالة واحدة كل صباح: كم وصل، وكم ما زال بلا رد.',
+
+    'notify_env_fallback' => 'لم يُضَف مستلم بعد، فالتنبيهات ما زالت تذهب إلى العنوان المضبوط في ملف الخادم: :list. أول عنوان تضيفه هنا يصبح المرجع الوحيد.',
+    'notify_nobody_on_new_lead' => 'لا أحد مشترك في تنبيه «طلب جديد». الطلبات تُحفظ في اللوحة، لكن لا يصل بها بريد إلى أحد.',
+    'notify_queue_sync' => 'الطابور معطّل حاليًا (sync)، فالبريد يُرسَل داخل طلب الزائر ويُبطئه. في الإنتاج شغّلوا queue:work.',
+
+    'notify_template' => 'قالب البريد',
+    'notify_template_hint' => 'نصوص التنبيه الداخلي للفريق. اتركوا أي حقل فارغًا فتُستخدم الصيغة الحالية — التنبيه لا يُترك بلا نص، فرسالة لا تُرسَل تعني طلبًا لا يعلم به أحد.',
+    'notify_alert_subject' => 'عنوان رسالة الطلب الجديد',
+    'notify_alert_subject_hint' => 'اكتبوا :contact حيث تريدون ظهور وسيلة تواصل المُرسِل، فيبقى الصف مقروءًا في قائمة البريد.',
+    'notify_alert_intro' => 'سطر افتتاحي (اختياري)',
+    'notify_alert_intro_hint' => 'يظهر قبل تفاصيل الطلب. موضع تعليمة ثابتة للفريق مثل مهلة الرد أو من يُنسخ.',
+    'notify_summary_subject' => 'عنوان الملخص اليومي',
+    'notify_summary_subject_hint' => 'يُرسل الملخص السابعة صباحًا، ويحتاج مهمة cron على الخادم — راجعوا docs/deployment.md.',
+
+    // ---- سجل النشاط (§9.1، §15.3) --------------------------------------
+    'activity_hint' => 'كل تغيير في المحتوى والإعدادات، وكل تصدير، وكل دخول — بفلاتر حسب المستخدم والنوع والفترة.',
+    'activity_read_only' => 'هذه الشاشة للقراءة فقط، ولا يوجد فيها حذف ولا تعديل عمدًا: سجل يستطيع صاحب الفعل تغييره ليس سجلًا. ولا تُعرض هنا قيم الإعدادات — تغيير الإعداد يُسجَّل باسم المفتاح وحده حتى لا يصير السجل مخزنًا ثانيًا للمفاتيح.',
+    'activity_all' => 'الكل',
+    'activity_user' => 'المستخدم',
+    'activity_event' => 'النوع',
+    'activity_area' => 'المجال',
+    'activity_from' => 'من تاريخ',
+    'activity_to' => 'إلى تاريخ',
+    'activity_when' => 'التاريخ',
+    'activity_subject' => 'السجل المتأثر',
+    'activity_detail' => 'التفصيل',
+    'activity_empty' => 'لا يوجد نشاط مطابق.',
+    'activity_system' => 'النظام',
+    'activity_pages' => 'صفحات السجل',
+    'activity_rows' => ':count صفًا',
+
+    'activity_event_created' => 'إنشاء',
+    'activity_event_updated' => 'تعديل',
+    'activity_event_deleted' => 'حذف',
+    'activity_event_restored' => 'استرجاع',
+    'activity_event_login' => 'دخول',
+    'activity_event_logout' => 'خروج',
+    'activity_event_login_failed' => 'محاولة دخول فاشلة',
+    'activity_event_exported' => 'تصدير',
+
+    'activity_subject_page' => 'صفحة',
+    'activity_subject_section' => 'قسم',
+    'activity_subject_solution' => 'حل',
+    'activity_subject_sector' => 'شريحة',
+    'activity_subject_showcaseproduct' => 'منتج',
+    'activity_subject_productcategory' => 'تصنيف منتجات',
+    'activity_subject_story' => 'قصة',
+    'activity_subject_report' => 'تقرير',
+    'activity_subject_trainingprogram' => 'برنامج تدريبي',
+    'activity_subject_partner' => 'شريك',
+    'activity_subject_campaign' => 'حملة',
+    'activity_subject_impactmetric' => 'رقم أثر',
+    'activity_subject_navigation' => 'قائمة',
+    'activity_subject_navigationitem' => 'عنصر قائمة',
+    'activity_subject_redirect' => 'تحويل',
+    'activity_subject_leadfield' => 'حقل نموذج',
+    'activity_subject_setting' => 'إعداد',
+    'activity_subject_cta' => 'زر دعوة',
+
+    // What each key in a section's settings JSON does — shown above the
+    // box in the section builder. See App\Support\SectionSettings.
+    'section_setting_eyebrow' => 'السطر الصغير اللاتيني فوق العنوان.',
+    'section_setting_index_label' => 'الكلمة بجانب رقم القسم («01 / 05 · MANIFESTO»). اتركها فارغة فتُستخدم كلمة نوع القسم.',
+    'section_setting_image' => 'صورة القسم: رابطها ونصّها البديل.',
+    'section_setting_images' => 'صور المعرض. الأسهل اختيارها من مكتبة الوسائط أعلاه بدل كتابتها هنا.',
+    'section_setting_logos' => 'شعارات الشركاء المعروضة في الشريط.',
+    'section_setting_items' => 'عناصر القسم (بطاقة أو سؤال أو محطة). الأسهل تحريرها من «العناصر» أعلاه.',
+    'section_setting_variants' => 'شكل البطاقات في هذا القسم.',
+    'section_setting_secondaryLabel' => 'نص الزر الثاني. اتركه فارغًا فلا يظهر زر ثانٍ.',
+    'section_setting_secondaryUrl' => 'وجهة الزر الثاني. الرابط المنتهي بامتداد ملف يظهر بأيقونة تنزيل.',
+    'section_setting_secondaryInterest' => 'يُسجَّل مع الطلب ليعرف الفريق أي زر ضُغط.',
+    'section_setting_firstFieldLabel' => 'تسمية أول حقل في النموذج على هذه الصفحة فقط — «اسم الشركة» لا تناسب حرفيًا فردًا.',
+    'section_setting_ctaUrl' => 'وجهة زر القسم.',
+    'section_setting_group' => 'أي مجموعة بيانات تواصل يعرضها القسم.',
+
+    /*
+     * الأرشفة — بديل اللوحة عن الحذف الذي لن يوجد.
+     *
+     * العميل المحتمل لا يُحذف (§9.1): هو السجل الوحيد لمهتمّ حقيقي وأثره
+     * يجب أن يبقى. لكن الحاجة إلى إخراج صفّ من القائمة حقيقية أيضًا —
+     * بيانات تجريبية قبل الإطلاق، ورسائل آلية بعده. الأرشفة تُخفي الصفّ من
+     * قائمة واحدة ولا تمسّ شيئًا آخر: لا العدّادات ولا التصدير ولا سجلّ CRM.
+     */
+    'lead_archive' => 'أرشفة',
+    'lead_restore' => 'إعادة من الأرشيف',
+    'lead_archived' => 'نُقل إلى الأرشيف. لم يُحذف — الصفّ وبياناته كما هي.',
+    'lead_restored' => 'أُعيد إلى القائمة.',
+    'lead_archive_view' => 'الأرشيف',
+    'lead_archive_back' => 'العودة إلى القائمة',
+    'lead_archive_empty' => 'الأرشيف فارغ.',
+    'lead_archive_note' => 'هذه الصفوف مخفيّة من القائمة فقط. ما زالت محسوبة في لوحة المؤشرات وتخرج مع التصدير.',
+
+    /*
+     * أسماء أنواع الأقسام، كما يقرؤها من يحرّر الموقع.
+     *
+     * كانت اللوحة تعرض المفتاح البرمجي كما هو — «cta_band» و«sector_spotlight»
+     * بخط لاتيني داخل واجهة عربية. من يحرّر الموقع ليس مبرمجًا (§9.1): عليه أن
+     * يعرف أي قسم يفتح دون أن يسأل أحدًا.
+     *
+     * القاعدة في التسمية: اسم يصف ما **يراه الزائر**، لا ما يسمّيه الكود.
+     * ولكل نوع سطر يشرح أين يظهر وما الذي يصلح له — لأن الاسم وحده لا يكفي
+     * للاختيار بين «بطاقات» و«شبكة الحلول».
+     */
+    'section_type_hero' => 'واجهة الصفحة',
+    'section_type_hint_hero' => 'أعلى الصفحة: صورة كبيرة وعنوان رئيسي وزرّا دعوة. قسم واحد لكل صفحة.',
+
+    'section_type_news_ticker' => 'الشريط الإخباري المتحرك',
+    'section_type_hint_news_ticker' => 'شريط رفيع يمرّ فوق القائمة العلوية، لعناوين قصيرة تتحرّك أفقيًا.',
+
+    'section_type_intro_statement' => 'الفقرة التعريفية',
+    'section_type_hint_intro_statement' => 'فقرة واحدة بخط كبير بلا صورة — بيان ما تفعله الشركة.',
+
+    'section_type_rich_text' => 'نص حر',
+    'section_type_hint_rich_text' => 'فقرات وعناوين وقوائم ونقاط، مع إمكانية إضافة صورة جانبية.',
+
+    'section_type_stats' => 'أرقام الأثر',
+    'section_type_hint_stats' => 'عدّادات كبيرة تتصاعد عند الظهور — تُدار أرقامها من شاشة «أرقام الأثر».',
+
+    'section_type_cards' => 'بطاقات',
+    'section_type_hint_cards' => 'صفّ بطاقات، كل واحدة بأيقونة وعنوان وسطر شرح. للخدمات والمزايا وحالات الاستخدام.',
+
+    'section_type_logos' => 'شريط الشعارات',
+    'section_type_hint_logos' => 'شعارات الجهات والشركاء تمرّ في شريط متحرك — تُدار من شاشة «الشركاء».',
+
+    'section_type_gallery' => 'معرض صور',
+    'section_type_hint_gallery' => 'شبكة صور بمقاسات متفاوتة، لعرض القطع أو المعرض من الداخل.',
+
+    'section_type_video' => 'مقطع فيديو',
+    'section_type_hint_video' => 'إطار فيديو بعرض الصفحة.',
+
+    'section_type_testimonial' => 'شهادة عميل',
+    'section_type_hint_testimonial' => 'اقتباس واحد كبير مع اسم قائله وصفته.',
+
+    'section_type_cta_band' => 'نموذج التواصل',
+    'section_type_hint_cta_band' => 'الشريط الكحلي الذي يحمل نموذج «ابدأ معنا». هذا هو القسم الذي تصل منه الطلبات.',
+
+    'section_type_accordion' => 'أسئلة متكررة',
+    'section_type_hint_accordion' => 'أسئلة تُفتح وتُغلق بالنقر. كل عنصر سؤال وجوابه.',
+
+    'section_type_timeline' => 'الخط الزمني',
+    'section_type_hint_timeline' => 'محطات مرتّبة رأسيًا بسنواتها — لتاريخ الشركة ومراحلها.',
+
+    'section_type_contact_block' => 'بيانات التواصل',
+    'section_type_hint_contact_block' => 'الهاتف والبريد وحسابات التواصل، مأخوذة من شاشة الإعدادات.',
+
+    'section_type_map' => 'الخريطة والموقع',
+    'section_type_hint_map' => 'خريطة المعرض مع العنوان وأوقات الدوام وزر «افتح في الخرائط».',
+
+    'section_type_media_split' => 'صورة بجانب نص',
+    'section_type_hint_media_split' => 'نصفان: صورة في جهة وشرح في الأخرى. يمكن عكس الجهتين.',
+
+    'section_type_process_steps' => 'خطوات العمل',
+    'section_type_hint_process_steps' => 'خطوات مرقّمة على خط أفقي — «كيف نعمل معكم». من ثلاث إلى خمس خطوات.',
+
+    'section_type_audience_split' => 'بابان لشريحتين',
+    'section_type_hint_audience_split' => 'عمودان متجاوران، كل واحد يخاطب فئة ويقودها إلى صفحتها.',
+
+    'section_type_solutions_grid' => 'شبكة الحلول',
+    'section_type_hint_solutions_grid' => 'قائمة الحلول بعناوينها وملخّصاتها — تُدار من شاشة «الحلول».',
+
+    'section_type_sector_spotlight' => 'قائمة الشرائح',
+    'section_type_hint_sector_spotlight' => 'صفوف الشرائح الأربع (الجهات الحكومية، الشركات، الشركاء، الحرفيون).',
+
+    'section_type_story_carousel' => 'قصص الحرفيين',
+    'section_type_hint_story_carousel' => 'شريط أفقي من القصص بصورها — يُدار من شاشة «القصص».',
+
+    'section_type_product_showcase' => 'عرض المنتجات',
+    'section_type_hint_product_showcase' => 'شبكة المنتجات مع مرشّحات التصنيف. للعرض فقط — لا شراء ولا أسعار.',
+
+    'section_type_reports_list' => 'قائمة التقارير',
+    'section_type_hint_reports_list' => 'أغلفة التقارير السنوية مع سنواتها وروابط تحميلها.',
+
+    'section_type_training_tracks' => 'المسارات التدريبية',
+    'section_type_hint_training_tracks' => 'بطاقات المسارات بصورها ومدّتها — تُدار من شاشة «التدريب».',
+
+    'section_type_bridge_model' => 'مخطط الجسر',
+    'section_type_hint_bridge_model' => 'رسم يوضّح نموذج العمل: الحرفي في طرف والمؤسسة في الطرف الآخر وبينهما المراحل.',
+
+    'section_type_team' => 'فريق العمل',
+    'section_type_hint_team' => 'شبكة صور الفريق بأسمائهم وصفاتهم الوظيفية.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | أسماء حقول المحرّر ثنائي اللغة
+    |--------------------------------------------------------------------------
+    | `f` هو اسم الحقل و`ph` هو الإرشاد داخل الصندوق. يقرأهما BilingualFields
+    | بالاصطلاح لا بالتمرير، فحقل جديد يكفيه مفتاح هنا. المفتاح الناقص يسقط
+    | على اسم العمود بدل أن يطبع المفتاح نفسه.
+    |
+    | الإرشاد يقول *كيف* يُملأ الحقل لا *ماذا* يُكتب فيه: كلمات الموقع يكتبها
+    | العميل (§22.1)، والمثال داخل الإرشاد جملة يشحنها أحدهم يومًا.
+    */
+    'f' => [
+        'title' => 'العنوان',
+        'subtitle' => 'العنوان الفرعي',
+        'heading' => 'العنوان',
+        'subheading' => 'العنوان الفرعي',
+        'body' => 'النص',
+        'excerpt' => 'المقتطف',
+        'summary' => 'الملخّص',
+        'description' => 'الوصف',
+        'name' => 'الاسم',
+        'display_name' => 'الاسم المعروض',
+        'label' => 'التسمية',
+        'quote' => 'الاقتباس',
+        'attribution' => 'قائل الاقتباس',
+        'note' => 'ملاحظة',
+        'outcomes' => 'المخرجات',
+        'craft_technique' => 'الحرفة أو الأسلوب',
+        'next_cohort' => 'الدفعة القادمة',
+        'cta_label' => 'نصّ زر الدعوة',
+        'cta_url' => 'رابط زر الدعوة',
+        'meta_title' => 'عنوان نتيجة البحث',
+        'meta_description' => 'وصف نتيجة البحث',
+        'meta_keywords' => 'الكلمات المفتاحية',
+        'keywords' => 'الكلمات المفتاحية',
+    ],
+
+    'ph' => [
+        'title' => 'العنوان كما يظهر للزائر أعلى الصفحة',
+        'subtitle' => 'سطر واحد يوضّح العنوان — اختياري',
+        'heading' => 'عنوان هذا القسم كما يظهر في الصفحة',
+        'subheading' => 'سطر تحت العنوان — اختياري',
+        'body' => 'نصّ القسم. اتركه فارغًا إن كان القسم صورًا أو بطاقات فقط',
+        'excerpt' => 'سطران يُستعملان في البطاقات وروابط المشاركة',
+        'summary' => 'ملخّص قصير في حدود ثلاثة أسطر',
+        'description' => 'وصف تفصيلي للسجلّ',
+        'name' => 'الاسم كما يُكتب رسميًا',
+        'display_name' => 'الاسم كما يظهر للزائر إن اختلف عن الرسمي',
+        'label' => 'كلمة أو كلمتان تظهران على العنصر',
+        'quote' => 'نصّ الاقتباس بلا علامات تنصيص — تُضاف تلقائيًا',
+        'attribution' => 'الاسم والصفة، مثل: الاسم — الصفة الوظيفية',
+        'note' => 'ملاحظة قصيرة تظهر بخط أصغر',
+        'outcomes' => 'مخرج في كل سطر',
+        'craft_technique' => 'اسم الحرفة أو الأسلوب المستعمل',
+        'next_cohort' => 'موعد الدفعة القادمة كما يُعلن',
+        'cta_label' => 'الكلمات على الزر، مثل: تواصل معنا',
+        'cta_url' => 'رابط يبدأ بـ / للداخلي أو https:// للخارجي',
+        'meta_title' => 'حتى ٦٠ حرفًا — يُترك فارغًا ليُستعمل العنوان',
+        'meta_description' => 'جملتان حتى ١٥٥ حرفًا تقنعان الباحث بالضغط',
+        'meta_keywords' => 'كلمات مفصولة بفواصل',
+        'keywords' => 'كلمات مفصولة بفواصل',
+    ],
 ];

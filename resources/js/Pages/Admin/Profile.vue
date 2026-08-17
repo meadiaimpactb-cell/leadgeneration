@@ -6,6 +6,7 @@ import Workspace from '@/Components/admin/Workspace.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
 import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 import { useFormat } from '@/Composables/useFormat';
 
@@ -97,7 +98,9 @@ function upload(collection, event) {
     );
 }
 
-function removeImage(collection) {
+async function removeImage(collection) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     router.delete(`/admin/profile/image/${collection}`, { preserveScroll: true });
 }
 </script>
@@ -119,8 +122,9 @@ function removeImage(collection) {
                 </div>
 
                 <div class="bar">
-                    <button class="btn btn--cta" type="button" :disabled="busy" @click="saveDetails">
-                        {{ busy === 'details' ? t('admin.saving') : t('admin.save') }}
+                    <button class="act btn btn--cta" type="button" :disabled="busy" @click="saveDetails">
+                        <NavIcon name="check" :size="18" :muted="false" />
+                        <span>{{ busy === 'details' ? t('admin.saving') : t('admin.save') }}</span>
                     </button>
                 </div>
             </Panel>
@@ -395,12 +399,12 @@ function removeImage(collection) {
 
 @media (min-width: 900px) {
     .split {
-        grid-template-columns: 280px 1fr;
+        grid-template-columns: 280px minmax(0, 1fr);
     }
 
     .grid,
     .slots {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 </style>

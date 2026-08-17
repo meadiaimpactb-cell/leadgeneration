@@ -5,6 +5,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Workspace from '@/Components/admin/Workspace.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import Field from '@/Components/admin/Field.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 import { useFormat } from '@/Composables/useFormat';
 
@@ -112,7 +113,9 @@ function add() {
     );
 }
 
-function remove(row) {
+async function remove(row) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     if (selected.value === row.id) selected.value = null;
 
     router.delete(`/admin/seo/keywords/${row.id}`, { preserveScroll: true });
@@ -341,7 +344,7 @@ function passed(row, name) {
 <style scoped>
 .intro {
     margin-block-end: var(--s-5);
-    color: var(--ink-600);
+    color: var(--muted);
     line-height: var(--lh-body);
 }
 
@@ -370,7 +373,7 @@ function passed(row, name) {
     padding-inline: var(--s-5);
     border: 1px solid var(--hairline);
     background: var(--paper);
-    color: var(--ink-600);
+    color: var(--muted);
     font: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -403,8 +406,8 @@ function passed(row, name) {
 
 .add__hint {
     margin-block: var(--s-2) var(--s-5);
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
 }
 
 .subject {
@@ -414,7 +417,7 @@ function passed(row, name) {
     box-shadow: inset 0 0 0 1px var(--hairline);
     border-inline-start: 3px solid var(--navy-900);
     line-height: var(--lh-body);
-    color: var(--ink-600);
+    color: var(--muted);
 }
 
 .subject.is-unset {
@@ -455,7 +458,7 @@ function passed(row, name) {
 }
 
 .chip.is-open {
-    background: var(--sand-100, var(--paper-alt, #fff));
+    background: var(--paper-alt);
 }
 
 .chip__star,
@@ -493,12 +496,12 @@ function passed(row, name) {
 
 .chip__score {
     font-variant-numeric: tabular-nums;
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
 }
 
 .chip__warn {
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
     color: #7A5B12;
 }
 
@@ -516,13 +519,13 @@ function passed(row, name) {
     align-items: center;
     gap: var(--s-3);
     margin-block-end: var(--s-5);
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
 }
 
 .tally__cell {
     padding-inline-start: var(--s-2);
     border-inline-start: 3px solid var(--hairline);
-    color: var(--ink-600);
+    color: var(--muted);
     font-variant-numeric: tabular-nums;
 }
 
@@ -590,14 +593,14 @@ function passed(row, name) {
 }
 
 .detail__band {
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
 }
 
 .note {
     margin-block-start: var(--s-3);
     padding: var(--s-3);
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
     line-height: var(--lh-body);
 }
 
@@ -608,7 +611,7 @@ function passed(row, name) {
 
 .note--stale {
     background: var(--paper-alt, #fff);
-    color: var(--ink-600);
+    color: var(--muted);
     box-shadow: inset 0 0 0 1px var(--hairline);
 }
 
@@ -640,26 +643,26 @@ function passed(row, name) {
 
 .check__text {
     flex: 1 1 auto;
-    color: var(--ink-600);
+    color: var(--muted);
 }
 
 .check__weight {
     flex: 0 0 auto;
     font-variant-numeric: tabular-nums;
-    font-size: var(--fs-caption);
-    color: var(--ink-400, var(--ink-600));
+    font-size: var(--t-meta);
+    color: var(--muted);
 }
 
 .empty {
     padding: var(--s-5);
     background: var(--paper);
-    color: var(--ink-600);
+    color: var(--muted);
 }
 
 .empty__help {
     display: block;
     margin-block-start: var(--s-2);
-    font-size: var(--fs-caption);
+    font-size: var(--t-meta);
 }
 
 @media (min-width: 768px) {

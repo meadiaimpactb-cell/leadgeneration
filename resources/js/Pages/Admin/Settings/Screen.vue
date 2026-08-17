@@ -4,6 +4,7 @@ import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Workspace from '@/Components/admin/Workspace.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
 import MediaSlot from '@/Components/admin/MediaSlot.vue';
 import { useTranslation } from '@/Composables/useTranslation';
@@ -210,8 +211,9 @@ function save() {
                 </template>
 
                 <div class="bar">
-                    <button class="btn btn--cta" type="button" :disabled="processing" @click="save">
-                        {{ processing ? t('admin.saving') : t('admin.save') }}
+                    <button class="act btn btn--cta" type="button" :disabled="processing" @click="save">
+                        <NavIcon name="check" :size="18" :muted="false" />
+                        <span>{{ processing ? t('admin.saving') : t('admin.save') }}</span>
                     </button>
                 </div>
             </Panel>
@@ -299,7 +301,7 @@ function save() {
 
 @media (min-width: 900px) {
     .grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .grid__wide {

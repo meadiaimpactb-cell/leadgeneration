@@ -52,8 +52,47 @@ function isMissing(locale) {
     return !Object.values(values).some((v) => v !== null && v !== undefined && String(v).trim() !== '');
 }
 
+/**
+ * A field's name in the editor's language.
+ *
+ * Resolved HERE rather than passed in by each screen. Every caller could pass
+ * `:labels` and none of them did, so all four bilingual screens rendered raw
+ * column names — `heading`, `cta url`, `meta description` — to an Arabic
+ * editor, in breach of §22.5. A prop that must be remembered in four places
+ * gets forgotten in four places; a lookup that happens once cannot be.
+ *
+ * `admin.f.<field>` is the convention. `translate()` returns the key itself
+ * when a string is missing, which is the signal to fall back — so an
+ * unnamed field degrades to its readable column name instead of printing
+ * "admin.f.whatever" at an editor.
+ *
+ * `labels` still wins where a screen needs to override one word in context.
+ */
 function label(field) {
-    return props.labels[field] ?? field.replace(/_/g, ' ');
+    if (props.labels[field]) {
+        return props.labels[field];
+    }
+
+    const key = `admin.f.${field}`;
+    const translated = t(key);
+
+    return translated === key ? field.replace(/_/g, ' ') : translated;
+}
+
+/**
+ * The hint inside the box: what to type here, and in what form.
+ *
+ * Same convention and same fallback as the label — `admin.ph.<field>`, and a
+ * missing string yields no placeholder rather than the key. It says how to
+ * fill the field, never what to say in it: the words on the site are the
+ * client's (§22.1), and an example sentence in a placeholder is a sentence
+ * somebody eventually ships.
+ */
+function placeholder(field) {
+    const key = `admin.ph.${field}`;
+    const translated = t(key);
+
+    return translated === key ? undefined : translated;
 }
 </script>
 
@@ -73,6 +112,7 @@ function label(field) {
                     :key="`${locale}-${field}`"
                     :label="label(field)"
                     :type="type"
+                    :placeholder="placeholder(field)"
                     :required="required.includes(field)"
                     :dir="DIRS[locale] ?? 'auto'"
                     :model-value="modelValue[locale]?.[field] ?? ''"
@@ -127,7 +167,7 @@ function label(field) {
 
 @media (min-width: 1024px) {
     .bi {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 </style>

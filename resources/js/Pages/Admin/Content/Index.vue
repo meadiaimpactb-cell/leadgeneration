@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -26,8 +28,8 @@ function title() {
     return t(`admin.${props.entity.replace(/-/g, '_')}`);
 }
 
-function destroy(record) {
-    if (!confirm(t('admin.confirm_delete'))) return;
+async function destroy(record) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
     router.delete(`/admin/content/${props.entity}/${record.id}`);
 }
 
@@ -62,9 +64,10 @@ function onDrop(index) {
                 <Link
                     v-if="meta.creatable"
                     :href="`/admin/content/${entity}/create`"
-                    class="btn btn--cta"
+                    class="btn btn--cta act"
                 >
-                    {{ t('admin.create') }}
+                    <NavIcon name="plus" :size="18" :muted="false" />
+                    <span>{{ t('admin.create') }}</span>
                 </Link>
             </template>
 
@@ -96,35 +99,65 @@ function onDrop(index) {
                         </span>
                     </div>
 
+                    <!--
+                        The same set of controls the pages list carries, in
+                        the same order and drawn the same way: what it opens
+                        first, then how it moves, then how it goes. Each is an
+                        icon with its word in `title` and `aria-label` — a row
+                        that repeats forty times cannot afford four Arabic
+                        words per line, and the sidebar already proved a glyph
+                        is found faster than a label read letter by letter.
+                    -->
                     <div class="row__tools">
                         <Link
                             v-if="meta.hasSections"
                             :href="`/admin/sections/${entity === 'sectors' ? 'sector' : 'solution'}/${record.id}`"
-                            class="btn btn--ghost"
+                            class="btn btn--secondary act act--sections"
                         >
-                            {{ t('admin.sections') }}
+                            <NavIcon name="layers" :size="18" :muted="false" />
+                            <span>{{ t('admin.sections') }}</span>
                         </Link>
+
+                        <Link
+                            :href="`/admin/content/${entity}/${record.id}/edit`"
+                            class="btn btn--ghost act act--icon"
+                            :title="t('admin.edit')"
+                            :aria-label="t('admin.edit')"
+                        >
+                            <NavIcon name="edit" :size="18" :muted="false" />
+                        </Link>
+
                         <button
-                            class="btn btn--ghost"
+                            class="btn btn--ghost act act--icon"
                             type="button"
+                            :title="t('admin.move_up')"
                             :aria-label="t('admin.move_up')"
                             :disabled="index === 0"
                             @click="move(index, -1)"
-                        >↑</button>
+                        >
+                            <NavIcon name="publish" :size="18" :muted="false" />
+                        </button>
+
                         <button
-                            class="btn btn--ghost"
+                            class="btn btn--ghost act act--icon"
                             type="button"
+                            :title="t('admin.move_down')"
                             :aria-label="t('admin.move_down')"
                             :disabled="index === records.length - 1"
                             @click="move(index, 1)"
-                        >↓</button>
+                        >
+                            <NavIcon name="unpublish" :size="18" :muted="false" />
+                        </button>
+
                         <button
                             v-if="meta.deletable"
-                            class="btn btn--ghost danger"
+                            class="btn btn--ghost danger act act--icon"
                             type="button"
+                            :title="t('admin.delete')"
+                            :aria-label="t('admin.delete')"
                             @click="destroy(record)"
                         >
-                            {{ t('admin.delete') }}
+                            <NavIcon name="trash" :size="18" :muted="false" />
                         </button>
                     </div>
                 </li>
@@ -173,6 +206,32 @@ function onDrop(index) {
     display: flex;
     gap: var(--s-1);
     margin-inline-start: auto;
+}
+
+/* The sections button keeps its word — it is the one control here
+   that opens a different screen, and a glyph alone would make it
+   look like a sibling of the three that act on this row. */
+.act--sections {
+    min-block-size: 40px;
+    padding-inline: var(--s-3);
+    font-size: var(--t-meta);
+    white-space: nowrap;
+}
+
+/* Quiet at rest, present on approach — the same behaviour the
+   pages list uses, so a row reads the same in both places. */
+.row__tools .act--icon {
+    opacity: 0.45;
+    transition: opacity var(--dur-micro) var(--ease);
+}
+
+.row:hover .act--icon,
+.row__tools .act--icon:focus-visible {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .row__tools .act--icon { transition: none; }
 }
 
 .row__tools .btn {

@@ -3,7 +3,9 @@ import { reactive } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -44,7 +46,9 @@ function addItem(navId) {
     });
 }
 
-function removeItem(navId, index) {
+async function removeItem(navId, index) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     state[navId].splice(index, 1);
 }
 
@@ -65,11 +69,13 @@ function save(navId) {
     <AdminLayout :title="t('admin.navigation')">
         <Panel v-for="nav in navigations" :key="nav.id" :title="nav.key">
             <template #actions>
-                <button class="btn btn--ghost" type="button" @click="addItem(nav.id)">
-                    {{ t('admin.create') }}
+                <button class="act btn btn--ghost" type="button" @click="addItem(nav.id)">
+                    <NavIcon name="plus" :size="18" :muted="false" />
+                    <span>{{ t('admin.create') }}</span>
                 </button>
-                <button class="btn btn--cta" type="button" @click="save(nav.id)">
-                    {{ t('admin.save') }}
+                <button class="act btn btn--cta" type="button" @click="save(nav.id)">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ t('admin.save') }}</span>
                 </button>
             </template>
 
@@ -85,28 +91,30 @@ function save(navId) {
                             :label="`${t('admin.navigation')} · ${locale.toUpperCase()}`"
                             :dir="DIRS[locale]"
                         />
-                        <Field v-model="item.url" label="url" dir="ltr" required />
+                        <Field v-model="item.url" :label="t('admin.field_url')" dir="ltr" required />
                         <Field v-model="item.isActive" :label="t('admin.active')" type="checkbox" />
                     </div>
 
                     <div class="item__tools">
                         <button
-                            class="btn btn--ghost"
+                            class="btn btn--ghost act act--icon"
                             type="button"
+                            :title="t('admin.move_up')"
                             :aria-label="t('admin.move_up')"
                             :disabled="index === 0"
                             @click="move(nav.id, index, -1)"
-                        >↑</button>
+                        ><NavIcon name="publish" :size="18" :muted="false" /></button>
                         <button
-                            class="btn btn--ghost"
+                            class="btn btn--ghost act act--icon"
                             type="button"
+                            :title="t('admin.move_down')"
                             :aria-label="t('admin.move_down')"
                             :disabled="index === state[nav.id].length - 1"
                             @click="move(nav.id, index, 1)"
-                        >↓</button>
-                        <button class="btn btn--ghost danger" type="button" @click="removeItem(nav.id, index)">
-                            {{ t('admin.delete') }}
-                        </button>
+                        ><NavIcon name="unpublish" :size="18" :muted="false" /></button>
+                        <button class="btn btn--ghost danger act act--icon" type="button" @click="removeItem(nav.id, index)"
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"><NavIcon name="trash" :size="18" :muted="false" /></button>
                     </div>
                 </li>
             </ol>
@@ -162,7 +170,7 @@ function save(navId) {
 
 @media (min-width: 1024px) {
     .item__fields {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         align-items: end;
     }
 }

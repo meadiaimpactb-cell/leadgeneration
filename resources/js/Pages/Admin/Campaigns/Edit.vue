@@ -2,6 +2,7 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
 import BilingualFields from '@/Components/admin/BilingualFields.vue';
 import { useTranslation } from '@/Composables/useTranslation';
@@ -63,9 +64,10 @@ function submit() {
         <form @submit.prevent="submit">
             <Panel :title="t('admin.shared_fields')">
                 <template #actions>
-                    <a v-if="campaign" class="btn btn--ghost" :href="campaign.previewUrl" target="_blank" rel="noopener">
-                        {{ t('admin.preview') }}
-                    </a>
+                    <a v-if="campaign" class="act btn btn--ghost" :href="campaign.previewUrl" target="_blank" rel="noopener">
+                    <NavIcon name="eye" :size="18" :muted="false" />
+                    <span>{{ t('admin.preview') }}</span>
+                </a>
                     <Link
                         v-if="campaign"
                         :href="`/admin/sections/campaign/${campaign.id}`"
@@ -76,12 +78,12 @@ function submit() {
                 </template>
 
                 <div class="grid">
-                    <Field v-model="form.slug" label="slug" type="slug" dir="ltr" :error="form.errors.slug" required />
-                    <Field v-model="form.starts_at" label="starts_at" type="date" :error="form.errors.starts_at" />
-                    <Field v-model="form.ends_at" label="ends_at" type="date" :error="form.errors.ends_at" />
-                    <Field v-model="form.default_utm_source" label="utm_source" dir="ltr" />
-                    <Field v-model="form.default_utm_medium" label="utm_medium" dir="ltr" />
-                    <Field v-model="form.default_utm_campaign" label="utm_campaign" dir="ltr" />
+                    <Field v-model="form.slug" :label="t('admin.field_slug')" type="slug" dir="ltr" :error="form.errors.slug" required />
+                    <Field v-model="form.starts_at" :label="t('admin.field_starts_at')" type="date" :error="form.errors.starts_at" />
+                    <Field v-model="form.ends_at" :label="t('admin.field_ends_at')" type="date" :error="form.errors.ends_at" />
+                    <Field v-model="form.default_utm_source" :label="t('admin.utm_source')" dir="ltr" />
+                    <Field v-model="form.default_utm_medium" :label="t('admin.utm_medium')" dir="ltr" />
+                    <Field v-model="form.default_utm_campaign" :label="t('admin.utm_campaign')" dir="ltr" />
                     <Field v-model="form.is_active" :label="t('admin.active')" type="checkbox" />
                 </div>
             </Panel>
@@ -91,15 +93,20 @@ function submit() {
                     v-model="form.translations"
                     :locales="locales"
                     :fields="FIELDS"
+                    :required="['title']"
                     :errors="form.errors"
                 />
             </Panel>
 
             <div class="bar">
-                <button class="btn btn--cta" type="submit" :disabled="form.processing">
-                    {{ form.processing ? t('admin.saving') : t('admin.save') }}
+                <button class="act btn btn--cta" type="submit" :disabled="form.processing">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ form.processing ? t('admin.saving') : t('admin.save') }}</span>
                 </button>
-                <Link href="/admin/campaigns" class="btn btn--ghost">{{ t('admin.cancel') }}</Link>
+                <Link href="/admin/campaigns" class="act btn btn--ghost">
+                    <NavIcon name="close" :size="18" :muted="false" />
+                    <span>{{ t('admin.cancel') }}</span>
+                </Link>
             </div>
         </form>
     </AdminLayout>

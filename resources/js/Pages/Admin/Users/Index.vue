@@ -2,6 +2,8 @@
 import { Link, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 import { useFormat } from '@/Composables/useFormat';
 
@@ -13,8 +15,8 @@ defineProps({
 const { t } = useTranslation();
 const { dateTime } = useFormat();
 
-function disable(user) {
-    if (!confirm(t('admin.confirm_delete'))) return;
+async function disable(user) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
     router.delete(`/admin/users/${user.id}`);
 }
 
@@ -25,7 +27,10 @@ function disable(user) {
     <AdminLayout :title="t('admin.users')">
         <Panel :title="t('admin.users')">
             <template #actions>
-                <Link href="/admin/users/create" class="btn btn--cta">{{ t('admin.create') }}</Link>
+                <Link href="/admin/users/create" class="act btn btn--cta">
+                    <NavIcon name="plus" :size="18" :muted="false" />
+                    <span>{{ t('admin.create') }}</span>
+                </Link>
             </template>
 
             <div class="table-wrap">
@@ -61,12 +66,11 @@ function disable(user) {
                             <td>
                                 <button
                                     v-if="user.isActive"
-                                    class="btn btn--ghost danger"
+                                    class="btn btn--ghost danger act act--icon"
                                     type="button"
                                     @click="disable(user)"
-                                >
-                                    {{ t('admin.delete') }}
-                                </button>
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"><NavIcon name="trash" :size="18" :muted="false" /></button>
                             </td>
                         </tr>
                     </tbody>

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 import { useFormat } from '@/Composables/useFormat';
 
@@ -91,7 +92,9 @@ function upload(collection, event) {
     );
 }
 
-function removeImage(collection) {
+async function removeImage(collection) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     router.delete(`/admin/profile/image/${collection}`, { preserveScroll: true });
 }
 </script>
@@ -112,9 +115,8 @@ function removeImage(collection) {
                     class="hero__coverBtn hero__coverBtn--del"
                     type="button"
                     @click="removeImage('cover')"
-                >
-                    {{ t('admin.delete') }}
-                </button>
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"><NavIcon name="trash" :size="18" :muted="false" /></button>
             </template>
         </div>
 
@@ -465,7 +467,7 @@ function removeImage(collection) {
 
 @media (min-width: 1024px) {
     .split {
-        grid-template-columns: 288px 1fr;
+        grid-template-columns: 288px minmax(0, 1fr);
     }
 }
 </style>

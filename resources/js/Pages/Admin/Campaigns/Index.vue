@@ -2,6 +2,8 @@
 import { Link, router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -14,8 +16,8 @@ defineProps({
 
 const { t } = useTranslation();
 
-function destroy(campaign) {
-    if (!confirm(t('admin.confirm_delete'))) return;
+async function destroy(campaign) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
     router.delete(`/admin/campaigns/${campaign.id}`);
 }
 </script>
@@ -36,7 +38,7 @@ function destroy(campaign) {
                     <thead>
                         <tr>
                             <th>{{ t('admin.campaigns') }}</th>
-                            <th>slug</th>
+                            <th>{{ t('admin.field_slug') }}</th>
                             <th>{{ t('admin.campaign_leads') }}</th>
                             <th>{{ t('admin.published') }}</th>
                             <th></th>
@@ -63,12 +65,13 @@ function destroy(campaign) {
                                 >
                                     {{ t('admin.sections') }}
                                 </Link>
-                                <a class="btn btn--ghost" :href="campaign.previewUrl" target="_blank" rel="noopener">
-                                    {{ t('admin.preview') }}
-                                </a>
-                                <button class="btn btn--ghost danger" type="button" @click="destroy(campaign)">
-                                    {{ t('admin.delete') }}
-                                </button>
+                                <a class="act btn btn--ghost" :href="campaign.previewUrl" target="_blank" rel="noopener">
+                    <NavIcon name="eye" :size="18" :muted="false" />
+                    <span>{{ t('admin.preview') }}</span>
+                </a>
+                                <button class="btn btn--ghost danger act act--icon" type="button" @click="destroy(campaign)"
+                                    :title="t('admin.delete')"
+                                    :aria-label="t('admin.delete')"><NavIcon name="trash" :size="18" :muted="false" /></button>
                             </td>
                         </tr>
                     </tbody>

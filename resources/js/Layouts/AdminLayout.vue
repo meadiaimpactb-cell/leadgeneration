@@ -1,7 +1,10 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import Logo from '@/Components/ui/Logo.vue';
+import Toast from '@/Components/ui/Toast.vue';
+import ConfirmDialog from '@/Components/admin/ConfirmDialog.vue';
+import { notice } from '@/admin/notify';
 import NavIcon from '@/Components/admin/NavIcon.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 import { NAV_GROUPS } from '@/admin/navigation';
@@ -23,6 +26,61 @@ const menuOpen = ref(false);
 
 const user = computed(() => page.props.auth?.user ?? null);
 const can = computed(() => page.props.auth?.can ?? {});
+
+/*
+ * Flash messages, shown as the site's own toast.
+ *
+ * Watched by reference rather than by value: Laravel sends a fresh flash bag
+ * with every response, so saving the same form twice produces two distinct
+ * objects carrying the identical string. A value watcher would see no change
+ * and stay silent on the second save — which is exactly the moment the editor
+ * most needs telling that something happened.
+ *
+ * `toastKey` remounts the component so a second message interrupts the first
+ * rather than queueing behind a countdown that is already half spent.
+ */
+const toastOpen = ref(false);
+const toastType = ref('success');
+const toastText = ref(null);
+const toastKey = ref(0);
+
+watch(
+    () => page.props.flash,
+    (flash) => {
+        const text = flash?.success ?? flash?.error ?? null;
+
+        if (! text) {
+            return;
+        }
+
+        toastType.value = flash.success ? 'success' : 'error';
+        toastText.value = text;
+        toastKey.value += 1;
+        toastOpen.value = true;
+    },
+    { immediate: true }
+);
+
+/*
+ * The same toast, raised by a screen rather than by a redirect.
+ *
+ * A rejected save carries validation errors and no flash, so the flash watcher
+ * above stays silent on the one outcome the editor most needs announced. See
+ * admin/notify.js.
+ */
+watch(
+    () => notice.bump,
+    (bump) => {
+        if (bump === 0) {
+            return;
+        }
+
+        toastType.value = notice.type;
+        toastText.value = notice.text;
+        toastKey.value += 1;
+        toastOpen.value = true;
+    }
+);
 
 /*
  * The sidebar's contents come from one module — resources/js/admin/navigation.js.
@@ -186,17 +244,38 @@ function logout() {
                 </button>
             </header>
 
-            <p v-if="page.props.flash?.success" class="flash flash--ok" role="status">
-                {{ page.props.flash.success }}
-            </p>
-            <p v-if="page.props.flash?.error" class="flash flash--bad" role="alert">
-                {{ page.props.flash.error }}
-            </p>
-
             <main class="content">
                 <slot />
             </main>
         </div>
+
+        <!--
+            The same confirmation the visitor gets when an enquiry is sent.
+
+            It replaces a static paragraph that was pushed in above the content:
+            that banner moved the whole page down when it appeared, stayed
+            until the next navigation, and was easy to miss entirely if the
+            editor was looking at the bottom of a long form when they saved.
+
+            A toast is the right shape for "that worked" — it arrives where the
+            eye is not, announces itself to a screen reader, and leaves on its
+            own. Errors carry `duration: 0` so they wait to be dismissed.
+        -->
+        <Toast
+            :key="toastKey"
+            :open="toastOpen"
+            :type="toastType"
+            :title="toastText"
+            :duration="toastType === 'error' ? 0 : 4000"
+            @close="toastOpen = false"
+        />
+
+        <!--
+            Mounted once for the whole panel. Screens ask through
+            `admin/confirm.js` and await an answer, so a handler can pose a
+            question without also having to render one.
+        -->
+        <ConfirmDialog />
     </div>
 </template>
 
@@ -294,25 +373,16 @@ function logout() {
     white-space: nowrap;
 }
 
-.side__link {
-    display: block;
-    padding: var(--s-3);
-    min-block-size: 44px;
-    border-radius: var(--r-sm);
-    color: rgba(255, 255, 255, 0.84);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-}
-
-.side__link:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-}
-
-.side__link.is-current {
-    background: var(--action-600);
-    color: #fff;
-}
+/*
+ * `.side__link`, `.side__link:hover` and `.side__link.is-current` were
+ * declared here as well as further down this file. Every property in the
+ * earlier copy — display, padding, min-block-size, colour, background — was
+ * overridden by the later one, so the earlier block styled nothing at all
+ * while appearing to. It was also the copy that carried `min-block-size: 44px`,
+ * which is how the sidebar came to miss the §10.8 target size by 4px with a
+ * rule for it sitting right there in the file. The surviving block is the one
+ * below, next to the icon and rail styles it belongs with.
+ */
 
 .main {
     flex: 1;
@@ -353,6 +423,21 @@ function logout() {
 .topbar__title {
     font-size: var(--fs-h3);
     margin-inline-end: auto;
+    /*
+     * A flex child defaults to `min-width: auto`, which means it refuses to
+     * shrink below its own longest word. On a 360px screen that is enough to
+     * push "view site" and "sign out" off the edge and make the whole page
+     * scroll sideways — measured on /admin/content/training-programs, whose
+     * title is the longest in the panel.
+     *
+     * The title is also the one thing on this bar the operator can afford to
+     * lose the tail of: it names the screen they just tapped to reach, and
+     * the sidebar still shows it in full. The controls cannot be lost.
+     */
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .topbar__user {
@@ -373,24 +458,6 @@ function logout() {
     color: var(--action-600);
     min-block-size: 44px;
     padding-inline: var(--s-2);
-}
-
-.flash {
-    margin: var(--s-4) var(--s-5) 0;
-    padding: var(--s-3) var(--s-4);
-    border-radius: var(--r-sm);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-}
-
-.flash--ok {
-    background: #e6f4ef;
-    color: var(--success);
-}
-
-.flash--bad {
-    background: var(--gold-100);
-    color: var(--action-600);
 }
 
 .content {
@@ -473,7 +540,9 @@ function logout() {
     align-items: center;
     gap: var(--s-3);
     padding: var(--s-2) var(--s-3);
-    min-block-size: 40px;
+    /* §10.8: 44px, not 40. Measured at 41.9px before this — the row is the
+       most-tapped control in the panel on a phone, and it was the shortest. */
+    min-block-size: 44px;
     border-radius: var(--r-sm);
     color: rgb(255 255 255 / 0.78);
     font-size: var(--fs-sm);

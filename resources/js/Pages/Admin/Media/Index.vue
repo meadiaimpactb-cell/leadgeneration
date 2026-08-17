@@ -3,7 +3,9 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import { useFormat } from '@/Composables/useFormat';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -159,14 +161,14 @@ async function saveAlt() {
  * lose the image — "are you sure?" on its own asks a question the person
  * cannot answer.
  */
-function destroy(item) {
+async function destroy(item) {
     const inUse = usage.value.length;
 
     const message = inUse
         ? t('admin.media_delete_warning', { count: inUse })
         : t('admin.confirm_delete');
 
-    if (!confirm(message)) return;
+    if (!(await confirmDialog({ message }))) return;
 
     router.delete(`/admin/media/${item.id}`, {
         data: { force: true },
@@ -326,10 +328,24 @@ const formatDate = date;
                 @dragleave.prevent="dragOver = false"
                 @drop.prevent="onDrop"
             >
-                <p class="drop__label">{{ t('admin.media_drop_here') }}</p>
-                <button type="button" class="btn btn--ghost" @click="pick">
-                    {{ t('admin.media_or_browse') }}
+                <!--
+                    The order is deliberate: the glyph, then the button, then
+                    the drag instruction underneath.
+
+                    Dragging a file is the shortcut for people who already know
+                    it works; the button is the route everybody else has, and it
+                    was drawn as `btn--ghost` — the quietest variant in the set.
+                    The only way to upload on the screen whose entire purpose is
+                    uploading was the least visible thing on it.
+                -->
+                <NavIcon name="upload" :size="32" :muted="false" class="drop__glyph" />
+
+                <button type="button" class="btn btn--cta act drop__btn" @click="pick">
+                    <NavIcon name="upload" :size="18" :muted="false" />
+                    <span>{{ t('admin.media_or_browse') }}</span>
                 </button>
+
+                <p class="drop__label">{{ t('admin.media_drop_here') }}</p>
 
                 <input ref="fileInput" type="file" multiple :accept="ACCEPT" class="drop__input" @change="onPick" />
             </div>
@@ -465,7 +481,7 @@ const formatDate = date;
 
 @media (min-width: 1024px) {
     .screen {
-        grid-template-columns: 1fr 320px;
+        grid-template-columns: minmax(0, 1fr) 320px;
     }
 }
 
@@ -516,7 +532,7 @@ const formatDate = date;
 
 .facts {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: var(--s-1) var(--s-2);
     margin-block: var(--s-3);
     font-size: var(--fs-sm);
@@ -581,14 +597,59 @@ const formatDate = date;
     margin-block-start: var(--s-3);
 }
 
+/*
+ * The drop zone, rebuilt around what people actually do.
+ *
+ * It was a dashed box with a sentence and a ghost button. The
+ * sentence read as the instruction and the button — the only way
+ * in for anyone not dragging a file — read as an afterthought.
+ * Now the button is the loudest thing in the box and the drag
+ * instruction sits underneath it as the shortcut it is.
+ */
 .drop {
     display: grid;
     justify-items: center;
-    gap: var(--s-3);
-    padding: var(--s-6) var(--s-4);
-    border: 2px dashed var(--hairline);
+    gap: var(--s-4);
+    padding: var(--s-9) var(--s-5);
+    border: 2px dashed rgba(0, 37, 70, 0.2);
     border-radius: var(--r-md);
+    background: rgba(0, 37, 70, 0.02);
     text-align: center;
+    transition:
+        border-color var(--dur-micro) var(--ease),
+        background-color var(--dur-micro) var(--ease);
+}
+
+/* Dragging a file over it: the whole box acknowledges, in the
+   identity's action colour rather than a browser default. */
+.drop.is-over {
+    border-color: var(--orange-500);
+    background: rgba(215, 101, 59, 0.06);
+}
+
+.drop__glyph {
+    color: var(--navy-900);
+    opacity: 0.35;
+}
+
+.drop.is-over .drop__glyph {
+    color: var(--action-600);
+    opacity: 1;
+}
+
+/* Sized so it cannot be mistaken for a secondary control. */
+.drop__btn {
+    min-block-size: 52px;
+    padding-inline: var(--s-7);
+    font-size: var(--t-body);
+    font-weight: 700;
+}
+
+/* The shortcut, stated under the button rather than over it. */
+.drop__label {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--t-label);
 }
 
 .drop.is-over {
@@ -608,7 +669,7 @@ const formatDate = date;
 
 .queue__row {
     display: grid;
-    grid-template-columns: 1fr 160px;
+    grid-template-columns: minmax(0, 1fr) 160px;
     align-items: center;
     gap: var(--s-3);
     padding-block: var(--s-2);

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import MediaPicker from '@/Components/admin/MediaPicker.vue';
 import NavIcon from '@/Components/admin/NavIcon.vue';
+import { confirmDialog } from '@/admin/confirm';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
@@ -93,7 +94,9 @@ function dedupe(list) {
     });
 }
 
-function remove(index) {
+async function remove(index) {
+    if (!(await confirmDialog({ message: t('admin.confirm_delete') }))) return;
+
     const next = [...items.value];
     next.splice(index, 1);
     emit('update:modelValue', next);

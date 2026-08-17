@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
+import NavIcon from '@/Components/admin/NavIcon.vue';
 import Field from '@/Components/admin/Field.vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
@@ -57,7 +58,10 @@ const enabledCount = () => state.filter((f) => f.isEnabled).length;
         <Panel :title="t('admin.lead_fields')" :hint="t('admin.order_hint')">
             <template #actions>
                 <span class="count">{{ t('admin.lead_fields_enabled', { count: enabledCount() }) }}</span>
-                <button class="btn btn--cta" type="button" @click="save">{{ t('admin.save') }}</button>
+                <button class="act btn btn--cta" type="button" @click="save">
+                    <NavIcon name="check" :size="18" :muted="false" />
+                    <span>{{ t('admin.save') }}</span>
+                </button>
             </template>
 
             <ol class="fields">
@@ -72,19 +76,21 @@ const enabledCount = () => state.filter((f) => f.isEnabled).length;
 
                         <div class="field-row__tools">
                             <button
-                                class="btn btn--ghost"
+                                class="btn btn--ghost act act--icon"
                                 type="button"
-                                :aria-label="t('admin.move_up')"
+                                :title="t('admin.move_up')"
+                            :aria-label="t('admin.move_up')"
                                 :disabled="index === 0"
                                 @click="move(index, -1)"
-                            >↑</button>
+                            ><NavIcon name="publish" :size="18" :muted="false" /></button>
                             <button
-                                class="btn btn--ghost"
+                                class="btn btn--ghost act act--icon"
                                 type="button"
-                                :aria-label="t('admin.move_down')"
+                                :title="t('admin.move_down')"
+                            :aria-label="t('admin.move_down')"
                                 :disabled="index === state.length - 1"
                                 @click="move(index, 1)"
-                            >↓</button>
+                            ><NavIcon name="unpublish" :size="18" :muted="false" /></button>
                         </div>
                     </header>
 
@@ -251,7 +257,7 @@ const enabledCount = () => state.filter((f) => f.isEnabled).length;
 
 @media (min-width: 1024px) {
     .field-row__locales {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 </style>

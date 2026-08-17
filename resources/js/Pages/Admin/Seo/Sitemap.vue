@@ -180,7 +180,7 @@ function selectUrl() {
 <style scoped>
 .intro {
     margin-block-end: var(--s-5);
-    color: var(--ink-600);
+    color: var(--muted);
     line-height: var(--lh-body);
 }
 
@@ -227,14 +227,14 @@ function selectUrl() {
 
 .handover__hint,
 .footnote {
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
     line-height: var(--lh-body);
 }
 
 .stamp {
     margin-block: var(--s-5) var(--s-3);
-    color: var(--ink-600);
+    color: var(--muted);
 }
 
 .files {
@@ -270,7 +270,7 @@ function selectUrl() {
 
 .file__count {
     font-variant-numeric: tabular-nums;
-    color: var(--ink-600);
+    color: var(--muted);
 }
 
 .file__btn {
@@ -309,7 +309,7 @@ function selectUrl() {
 }
 
 .url__date {
-    font-size: var(--fs-caption);
-    color: var(--ink-600);
+    font-size: var(--t-meta);
+    color: var(--muted);
 }
 </style>

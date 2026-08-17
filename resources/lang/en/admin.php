@@ -45,13 +45,17 @@ return [
 
     'save' => 'Save',
     'saving' => 'Saving…',
+    'save_failed' => 'Not saved. Check the fields marked in red below.',
     'saved' => 'Saved.',
     'create' => 'Add',
     'edit' => 'Edit',
     'delete' => 'Delete',
     'deleted' => 'Deleted.',
     'cancel' => 'Cancel',
+    'confirm_title' => 'Please confirm',
+    'confirm_yes' => 'Confirm',
     'confirm_delete' => 'Delete this? It cannot be undone.',
+    'confirm_delete_redirect' => 'Deleting this redirect means the old URL answers 404 for anyone who opens or shares it. Sure?',
     'search' => 'Search',
     'filter' => 'Filter',
     'reset' => 'Reset',
@@ -59,6 +63,9 @@ return [
     'back' => 'Back',
     'preview' => 'Preview',
     'preview_notice' => 'You are viewing an unpublished preview. This page is not visible to visitors and is not indexed.',
+    // The heading over a table's button column. It was blank, which left the
+    // column looking like it was there by accident.
+    'actions' => 'Actions',
     'add_section' => 'Add section',
     'move_up' => 'Move up',
     'move_down' => 'Move down',
@@ -93,6 +100,14 @@ return [
     'crm_log' => 'Sync log',
     'attribution' => 'Traffic source',
     'attribution_direct' => 'This enquiry did not arrive through a campaign: the visitor opened the site directly or followed a plain link, so there are no campaign tags to show. The page and referrer above are what is known about where they came from.',
+    // Field labels that were the database column name — see the Arabic file.
+    'field_slug' => 'URL identifier',
+    'field_starts_at' => 'Starts on',
+    'field_ends_at' => 'Ends on',
+    'field_url' => 'Link',
+    'field_settings' => 'Section settings (JSON)',
+    'field_template' => 'Template',
+
     'lead_page_url' => 'Page the enquiry was sent from',
     'lead_referrer' => 'Link the visitor arrived from',
     'utm_source' => 'Campaign source (Google, Instagram…)',
@@ -293,8 +308,11 @@ return [
     'crm_provider' => 'Active system',
     'crm_provider_hint' => 'One only. Credentials are saved in settings and take precedence over the environment file.',
     'crm_test' => 'Test connection',
-    'crm_test_ok' => 'The :driver connection is fully configured.',
     'crm_test_unconfigured' => ':driver is missing one or more credentials — check the fields above.',
+    'crm_verify_ok' => 'Connected to :driver.',
+    'crm_verify_ok_as' => 'Connected to :driver — account: :account.',
+    'crm_verify_failed' => 'Could not connect to :driver — :error',
+    'crm_token_hint' => 'Paste it exactly as the provider gives it. The box grows with its length.',
     'crm_status' => 'Sync status',
     'crm_last_success' => 'Last successful push',
     'crm_resync_all' => 'Re-send the backlog (:count)',
@@ -380,4 +398,269 @@ return [
     'media_selected' => 'Selected: :count',
     'media_section_of' => ':type section',
     'media_close' => 'Close',
+
+    // ---- The notifications screen (§6.2, §20 decision 4) --------------
+    'notify_recipients' => 'Recipients',
+    'notify_recipients_hint' => 'Who gets email, and what they get. Each address subscribes on its own — whoever answers buyers does not need an alert about a broken integration, and the reverse.',
+    'notify_empty' => 'No recipient yet.',
+    'notify_add' => 'Add a recipient',
+    'notify_add_hint' => 'A new address is subscribed to the new-enquiry alert only. The rest are opted into deliberately.',
+    'notify_email' => 'Email address',
+    'notify_name' => 'Name (optional)',
+    'notify_active' => 'Active',
+    'notify_events' => 'What they receive',
+    'notify_event_new_lead' => 'New enquiry',
+    'notify_event_new_lead_hint' => 'Sent the moment an enquiry arrives, carrying the contact details, the message and the source.',
+    'notify_event_crm_failure' => 'CRM push failed',
+    'notify_event_crm_failure_hint' => 'When an enquiry never reaches the CRM after every retry. For whoever maintains the integration.',
+    'notify_event_daily_summary' => 'Daily summary',
+    'notify_event_daily_summary_hint' => 'One message each morning: how many arrived, and how many are still unanswered.',
+
+    'notify_env_fallback' => 'No recipient has been added yet, so alerts still go to the address configured on the server: :list. The first address added here becomes the only one used.',
+    'notify_nobody_on_new_lead' => 'Nobody is subscribed to the new-enquiry alert. Enquiries are still saved in the panel, but no email reaches anyone.',
+    'notify_queue_sync' => 'The queue is off (sync), so mail is sent inside the visitor’s own request and slows it down. Run queue:work in production.',
+
+    'notify_template' => 'Email template',
+    'notify_template_hint' => 'The wording of the team’s internal alert. Leave a field empty and the current wording stands — this alert is never left unsent, because an email that does not go out is an enquiry nobody hears about.',
+    'notify_alert_subject' => 'New-enquiry subject line',
+    'notify_alert_subject_hint' => 'Write :contact where the sender’s email or number should appear, so the row stays readable in an inbox list.',
+    'notify_alert_intro' => 'Opening line (optional)',
+    'notify_alert_intro_hint' => 'Shown above the enquiry details. A place for a standing instruction such as a reply deadline or who to copy.',
+    'notify_summary_subject' => 'Daily summary subject line',
+    'notify_summary_subject_hint' => 'The summary is sent at 07:00 and needs a cron entry on the server — see docs/deployment.md.',
+
+    // ---- The activity log (§9.1, §15.3) --------------------------------
+    'activity_hint' => 'Every content and settings change, every export, every sign-in — filtered by user, type and period.',
+    'activity_read_only' => 'This screen is read-only, with no edit and no delete, deliberately: a log the person who acted can alter is not a log. Settings values are never shown here either — a settings change is recorded by its key alone, so the log cannot become a second store of your keys.',
+    'activity_all' => 'All',
+    'activity_user' => 'User',
+    'activity_event' => 'Type',
+    'activity_area' => 'Area',
+    'activity_from' => 'From',
+    'activity_to' => 'To',
+    'activity_when' => 'When',
+    'activity_subject' => 'Record',
+    'activity_detail' => 'Detail',
+    'activity_empty' => 'No matching activity.',
+    'activity_system' => 'System',
+    'activity_pages' => 'Log pages',
+    'activity_rows' => ':count rows',
+
+    'activity_event_created' => 'Created',
+    'activity_event_updated' => 'Updated',
+    'activity_event_deleted' => 'Deleted',
+    'activity_event_restored' => 'Restored',
+    'activity_event_login' => 'Signed in',
+    'activity_event_logout' => 'Signed out',
+    'activity_event_login_failed' => 'Failed sign-in',
+    'activity_event_exported' => 'Exported',
+
+    'activity_subject_page' => 'Page',
+    'activity_subject_section' => 'Section',
+    'activity_subject_solution' => 'Solution',
+    'activity_subject_sector' => 'Segment',
+    'activity_subject_showcaseproduct' => 'Product',
+    'activity_subject_productcategory' => 'Product category',
+    'activity_subject_story' => 'Story',
+    'activity_subject_report' => 'Report',
+    'activity_subject_trainingprogram' => 'Training programme',
+    'activity_subject_partner' => 'Partner',
+    'activity_subject_campaign' => 'Campaign',
+    'activity_subject_impactmetric' => 'Impact figure',
+    'activity_subject_navigation' => 'Menu',
+    'activity_subject_navigationitem' => 'Menu item',
+    'activity_subject_redirect' => 'Redirect',
+    'activity_subject_leadfield' => 'Form field',
+    'activity_subject_setting' => 'Setting',
+    'activity_subject_cta' => 'Call to action',
+
+    // What each key in a section's settings JSON does — shown above the
+    // box in the section builder. See App\Support\SectionSettings.
+    'section_setting_eyebrow' => 'The small Latin line above the heading.',
+    'section_setting_index_label' => 'The word beside the section number ("01 / 05 · MANIFESTO"). Leave empty to use the label for its type.',
+    'section_setting_image' => 'The section’s image: its URL and alt text.',
+    'section_setting_images' => 'Gallery images. Easier chosen from the media library above than typed here.',
+    'section_setting_logos' => 'The partner logos shown in the strip.',
+    'section_setting_items' => 'The section’s items (a card, a question, a milestone). Easier edited under "Items" above.',
+    'section_setting_variants' => 'How the cards in this section look.',
+    'section_setting_secondaryLabel' => 'The second button’s words. Leave empty and no second button appears.',
+    'section_setting_secondaryUrl' => 'Where the second button goes. A URL ending in a file extension shows a download glyph.',
+    'section_setting_secondaryInterest' => 'Recorded with the enquiry so the team knows which button was pressed.',
+    'section_setting_firstFieldLabel' => 'The first form field’s label on this page only — "Company name" does not suit a lone artisan.',
+    'section_setting_ctaUrl' => 'Where the section’s button goes.',
+    'section_setting_group' => 'Which set of contact details the block shows.',
+
+    /*
+     * Archiving — the panel's substitute for the delete that will never exist.
+     *
+     * A lead is never deleted (§9.1): it is the only record of a real prospect
+     * and its trail must survive. But the need to get a row out of the way is
+     * real too — demo data before launch, automated noise after it. Archiving
+     * hides the row from one list and touches nothing else: not the counts,
+     * not the export, not the CRM history.
+     */
+    'lead_archive' => 'Archive',
+    'lead_restore' => 'Restore',
+    'lead_archived' => 'Moved to the archive. Nothing was deleted — the record and its data are untouched.',
+    'lead_restored' => 'Back in the list.',
+    'lead_archive_view' => 'Archive',
+    'lead_archive_back' => 'Back to the list',
+    'lead_archive_empty' => 'The archive is empty.',
+    'lead_archive_note' => 'These rows are hidden from the list only. They are still counted on the dashboard and still leave with the export.',
+
+    /*
+     * Section type names, as the person editing the site reads them.
+     *
+     * The panel used to print the programmatic key verbatim — "cta_band",
+     * "sector_spotlight" — which tells an editor nothing about which block on
+     * the page it is. §9.1 requires the panel to be usable with no technical
+     * help, and a key is technical help by another name.
+     *
+     * Naming rule: describe what the **visitor sees**, not what the code calls
+     * it. Each type also carries one line saying where it appears and what it
+     * is for, because a name alone does not separate "Cards" from
+     * "Solutions grid".
+     */
+    'section_type_hero' => 'Page opener',
+    'section_type_hint_hero' => 'Top of the page: large image, main heading, two call-to-action buttons. One per page.',
+
+    'section_type_news_ticker' => 'Scrolling news strip',
+    'section_type_hint_news_ticker' => 'A thin strip above the header for short headlines that travel across it.',
+
+    'section_type_intro_statement' => 'Opening statement',
+    'section_type_hint_intro_statement' => 'A single large-type paragraph with no image — what the company does, stated plainly.',
+
+    'section_type_rich_text' => 'Free text',
+    'section_type_hint_rich_text' => 'Paragraphs, headings, lists and bullets, optionally beside an image.',
+
+    'section_type_stats' => 'Impact figures',
+    'section_type_hint_stats' => 'Large counters that climb into view — the numbers come from the Impact figures screen.',
+
+    'section_type_cards' => 'Cards',
+    'section_type_hint_cards' => 'A row of cards, each with an icon, a title and a line. For services, benefits and use cases.',
+
+    'section_type_logos' => 'Logo strip',
+    'section_type_hint_logos' => 'Partner and client logos travelling in a strip — managed on the Partners screen.',
+
+    'section_type_gallery' => 'Image gallery',
+    'section_type_hint_gallery' => 'A grid of images at varying ratios, for the pieces or the showroom.',
+
+    'section_type_video' => 'Video',
+    'section_type_hint_video' => 'A full-width video frame.',
+
+    'section_type_testimonial' => 'Testimonial',
+    'section_type_hint_testimonial' => 'One large quotation with the name and role of whoever said it.',
+
+    'section_type_cta_band' => 'Enquiry form',
+    'section_type_hint_cta_band' => 'The navy band carrying the "start with us" form. This is the section enquiries arrive from.',
+
+    'section_type_accordion' => 'Frequently asked questions',
+    'section_type_hint_accordion' => 'Questions that open and close on click. Each item is a question and its answer.',
+
+    'section_type_timeline' => 'Timeline',
+    'section_type_hint_timeline' => 'Milestones stacked vertically with their years — the company’s history.',
+
+    'section_type_contact_block' => 'Contact details',
+    'section_type_hint_contact_block' => 'Phone, email and social accounts, taken from the Settings screen.',
+
+    'section_type_map' => 'Map and location',
+    'section_type_hint_map' => 'The showroom map with its address, opening hours and an "open in maps" button.',
+
+    'section_type_media_split' => 'Image beside text',
+    'section_type_hint_media_split' => 'Two halves: an image on one side, an explanation on the other. The sides can be swapped.',
+
+    'section_type_process_steps' => 'How we work',
+    'section_type_hint_process_steps' => 'Numbered steps on one horizontal rule. Three to five steps.',
+
+    'section_type_audience_split' => 'Two doors',
+    'section_type_hint_audience_split' => 'Two columns side by side, each addressing one audience and leading to its page.',
+
+    'section_type_solutions_grid' => 'Solutions grid',
+    'section_type_hint_solutions_grid' => 'The solutions with their headings and summaries — managed on the Solutions screen.',
+
+    'section_type_sector_spotlight' => 'Segment list',
+    'section_type_hint_sector_spotlight' => 'Rows for the four segments (government, companies, partners, artisans).',
+
+    'section_type_story_carousel' => 'Artisan stories',
+    'section_type_hint_story_carousel' => 'A horizontal rail of stories with their photographs — managed on the Stories screen.',
+
+    'section_type_product_showcase' => 'Product showcase',
+    'section_type_hint_product_showcase' => 'A grid of products with category filters. Display only — no prices, no purchase.',
+
+    'section_type_reports_list' => 'Reports list',
+    'section_type_hint_reports_list' => 'Annual report covers with their years and download links.',
+
+    'section_type_training_tracks' => 'Training tracks',
+    'section_type_hint_training_tracks' => 'Track cards with their images and durations — managed on the Training screen.',
+
+    'section_type_bridge_model' => 'Bridge diagram',
+    'section_type_hint_bridge_model' => 'A drawing of the business model: the artisan at one end, the institution at the other, the stages between.',
+
+    'section_type_team' => 'Team',
+    'section_type_hint_team' => 'A grid of the team’s photographs with names and roles.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Field names for the bilingual editor
+    |--------------------------------------------------------------------------
+    | `f` names the field, `ph` is the hint inside the box. BilingualFields
+    | reads both by convention rather than by prop, so a new field needs only a
+    | key here. A missing key falls back to the column name rather than
+    | printing the key at an editor.
+    |
+    | A hint says HOW to fill the field, never WHAT to say in it: the words on
+    | the site are the client's (§22.1), and an example inside a hint is a
+    | sentence somebody eventually ships.
+    */
+    'f' => [
+        'title' => 'Title',
+        'subtitle' => 'Subtitle',
+        'heading' => 'Heading',
+        'subheading' => 'Subheading',
+        'body' => 'Body',
+        'excerpt' => 'Excerpt',
+        'summary' => 'Summary',
+        'description' => 'Description',
+        'name' => 'Name',
+        'display_name' => 'Display name',
+        'label' => 'Label',
+        'quote' => 'Quote',
+        'attribution' => 'Attributed to',
+        'note' => 'Note',
+        'outcomes' => 'Outcomes',
+        'craft_technique' => 'Craft or technique',
+        'next_cohort' => 'Next cohort',
+        'cta_label' => 'Button text',
+        'cta_url' => 'Button link',
+        'meta_title' => 'Search result title',
+        'meta_description' => 'Search result description',
+        'meta_keywords' => 'Keywords',
+        'keywords' => 'Keywords',
+    ],
+
+    'ph' => [
+        'title' => 'The title as the visitor sees it at the top of the page',
+        'subtitle' => 'One line explaining the title — optional',
+        'heading' => 'This section’s heading as it appears on the page',
+        'subheading' => 'A line under the heading — optional',
+        'body' => 'The section’s text. Leave empty if the section is only images or cards',
+        'excerpt' => 'Two lines, used on cards and share links',
+        'summary' => 'A short summary, about three lines',
+        'description' => 'A fuller description of this record',
+        'name' => 'The name as written formally',
+        'display_name' => 'The name shown to visitors, if different from the formal one',
+        'label' => 'One or two words shown on the element',
+        'quote' => 'The quotation without quote marks — those are added for you',
+        'attribution' => 'Name and role, as: Name — job title',
+        'note' => 'A short note, shown in smaller type',
+        'outcomes' => 'One outcome per line',
+        'craft_technique' => 'The craft or technique used',
+        'next_cohort' => 'When the next cohort runs, as announced',
+        'cta_label' => 'The words on the button, e.g. Contact us',
+        'cta_url' => 'A link starting with / for internal or https:// for external',
+        'meta_title' => 'Up to 60 characters — leave empty to reuse the title',
+        'meta_description' => 'Two sentences up to 155 characters that earn the click',
+        'meta_keywords' => 'Words separated by commas',
+        'keywords' => 'Words separated by commas',
+    ],
 ];
