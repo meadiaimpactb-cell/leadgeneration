@@ -7,8 +7,6 @@ namespace Tests\Feature;
 use App\Models\Partner;
 use Database\Seeders\DemoContentSeeder;
 use Database\Seeders\DemoExtrasSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -41,18 +39,6 @@ class PartnerLogosTest extends TestCase
         'Impact Valley Capital' => 'impact-valley.webp',
         'AMAD — Sustainability & Social Responsibility Program' => 'amad-program.webp',
     ];
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed([
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-            DemoExtrasSeeder::class,
-        ]);
-    }
 
     /**
      * Site-wide rows, which is what this page publishes.

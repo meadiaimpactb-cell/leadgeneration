@@ -7,8 +7,6 @@ namespace Tests\Feature;
 use App\Models\Page;
 use App\Models\Sector;
 use App\Models\Solution;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,7 +26,6 @@ class PublicPagesTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([StructureSeeder::class, NavigationSeeder::class]);
         $this->publishPages();
     }
 
@@ -137,12 +134,18 @@ class PublicPagesTest extends TestCase
     #[Test]
     public function legal_pages_are_not_indexed(): void
     {
-        $page = Page::query()->create([
-            'slug' => 'legal/privacy',
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
-        $page->translations()->create(['locale' => 'ar', 'title' => 'الخصوصية']);
+        // The structural seeders already ship this page, so the test adopts it
+        // rather than insisting on creating it — what it asserts is the
+        // noindex, not who made the row.
+        $page = Page::query()->firstOrCreate(
+            ['slug' => 'legal/privacy'],
+            ['status' => 'published', 'published_at' => now()],
+        );
+        $page->forceFill(['status' => 'published', 'published_at' => now()])->save();
+        $page->translations()->updateOrCreate(
+            ['locale' => 'ar'],
+            ['title' => 'الخصوصية'],
+        );
 
         // Legal pages dilute the crawl budget and carry no ranking value.
         $this->get('/ar/legal/privacy')

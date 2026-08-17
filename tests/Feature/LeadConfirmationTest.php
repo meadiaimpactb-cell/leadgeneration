@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Lead;
+use App\Models\LeadField;
 use App\Models\Setting;
 use App\Notifications\LeadConfirmation;
 use App\Support\Settings;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
@@ -30,11 +29,17 @@ class LeadConfirmationTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * The confirmation is about wording, not about the form's shape, so the
+     * demo lead form's extra required fields are cleared here — a submission
+     * carrying only a contact would otherwise be rejected before any
+     * notification could be sent. See LeadCaptureTest for the same note.
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed([RolesSeeder::class, StructureSeeder::class]);
+        LeadField::query()->delete();
     }
 
     /** The client, writing the wording in the panel. */

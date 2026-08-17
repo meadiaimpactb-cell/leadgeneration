@@ -10,10 +10,6 @@ use App\Models\Setting;
 use App\Models\ShowcaseProduct;
 use App\Models\Solution;
 use App\Support\Settings;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\DemoExtrasSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -33,13 +29,6 @@ class SitemapAndRobotsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-            DemoExtrasSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }
@@ -133,13 +122,24 @@ class SitemapAndRobotsTest extends TestCase
      *
      * `every_listed_url_actually_resolves` walks what the seeders produced,
      * and all of those pages have literal routes — so it stayed green while
-     * this was broken. Public pages are served by named routes, not by a
-     * `/{locale}/{slug}` catch-all, so a page created in the panel with any
-     * other slug was published, indexable, translated, listed in the sitemap,
-     * and answered 404 at the address the sitemap gave.
+     * this was broken. A page created in the panel with any other slug was
+     * published, indexable, translated, listed in the sitemap, and answered
+     * 404 at the address the sitemap gave.
+     *
+     * WHY THIS TEST NOW ASSERTS THE OPPOSITE RESPONSE
+     *
+     * The rule has not changed: the sitemap must never advertise a URL that
+     * 404s. What changed is which half of that pair was wrong. This test used
+     * to hold the sitemap back, because public pages were served only by named
+     * routes and there was no address for a panel-created page to answer at.
+     * Commit 58cea1a closed that the other way round — it gave every published,
+     * translated page an address through `/{locale}/{slug}` — so the honest
+     * assertion is now that the page resolves AND is listed. Keeping the old
+     * one would have demanded a 404 from a page the panel deliberately
+     * publishes.
      */
     #[Test]
-    public function a_page_with_no_route_of_its_own_is_not_listed(): void
+    public function a_page_created_in_the_panel_answers_and_is_listed(): void
     {
         $page = Page::query()->create([
             'slug' => 'a-slug-with-no-route',
@@ -151,10 +151,10 @@ class SitemapAndRobotsTest extends TestCase
 
         $page->translations()->create(['locale' => 'ar', 'title' => 'صفحة بلا مسار']);
 
-        $this->get('/ar/a-slug-with-no-route')->assertNotFound();
+        $this->get('/ar/a-slug-with-no-route')->assertOk();
 
-        $this->assertNotContains(url('ar/a-slug-with-no-route'), $this->locations(),
-            'The sitemap is advertising a URL that answers 404.');
+        $this->assertContains(url('ar/a-slug-with-no-route'), $this->locations(),
+            'A page the panel publishes answers 200 and no sitemap mentions it.');
     }
 
     #[Test]

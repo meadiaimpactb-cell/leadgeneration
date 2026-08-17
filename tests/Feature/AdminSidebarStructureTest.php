@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\Admin\UpcomingScreenController;
 use App\Models\User;
-use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -35,8 +34,6 @@ class AdminSidebarStructureTest extends TestCase
 
     private function admin(): User
     {
-        $this->seed(RolesSeeder::class);
-
         $user = User::factory()->create(['is_active' => true]);
         $user->assignRole('super-admin');
 

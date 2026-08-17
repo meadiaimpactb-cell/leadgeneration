@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Page;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -32,8 +30,6 @@ class DraftPreviewTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([StructureSeeder::class, NavigationSeeder::class]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }

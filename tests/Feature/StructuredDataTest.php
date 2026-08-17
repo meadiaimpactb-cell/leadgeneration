@@ -10,11 +10,6 @@ use App\Models\Setting;
 use App\Models\Solution;
 use App\Services\Seo\SchemaBuilder;
 use App\Support\Settings;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\DemoExtrasSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -31,19 +26,6 @@ use Tests\TestCase;
 class StructuredDataTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed([
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            LeadFieldsSeeder::class,
-            DemoContentSeeder::class,
-            DemoExtrasSeeder::class,
-        ]);
-    }
 
     /** The JSON-LD block on a rendered page, decoded. */
     private function graphFor(string $url): array

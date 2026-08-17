@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -16,13 +14,6 @@ use Tests\TestCase;
 class LocaleRoutingTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed([StructureSeeder::class, NavigationSeeder::class]);
-    }
 
     #[Test]
     public function the_root_falls_back_to_the_default_locale(): void

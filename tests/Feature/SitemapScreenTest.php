@@ -6,11 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Page;
 use App\Models\User;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -39,13 +34,6 @@ class SitemapScreenTest extends TestCase
          * proving nothing. The count assertion in the first test is there to
          * keep it that way.
          */
-        $this->seed([
-            RolesSeeder::class,
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            LeadFieldsSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         $this->admin = User::query()->create([
             'name' => 'SEO admin',

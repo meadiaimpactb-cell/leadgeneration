@@ -8,11 +8,6 @@ use App\Models\Page;
 use App\Models\Sector;
 use App\Models\Solution;
 use App\Support\NavigationBuilder;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\DemoExtrasSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -35,14 +30,6 @@ class NoBrokenInternalLinksTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            StructureSeeder::class,
-            LeadFieldsSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-            DemoExtrasSeeder::class,
-        ]);
 
         NavigationBuilder::flush();
     }

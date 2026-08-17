@@ -8,6 +8,7 @@ use App\Jobs\PushLeadToCrm;
 use App\Models\Campaign;
 use App\Models\CrmSyncLog;
 use App\Models\Lead;
+use App\Models\LeadField;
 use App\Notifications\NewLeadReceived;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -22,6 +23,26 @@ use Tests\TestCase;
 class LeadCaptureTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * These tests exercise the endpoint against the brief's own form —
+     * contact, and nothing else compulsory (§6.1).
+     *
+     * TestSeeder ships the demo lead form, which switches organisation and
+     * phone on and marks them required, so a submission carrying only a
+     * contact is rejected before it reaches any of the behaviour under test.
+     * That configuration is the client's to make and is covered by
+     * LeadFormBuilderTest; here it is noise. Clearing the rows puts the
+     * endpoint back on its documented floor — StoreLeadRequest still requires
+     * a contact with no field rows at all — and the delete rolls back with the
+     * test's transaction.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        LeadField::query()->delete();
+    }
 
     #[Test]
     public function it_stores_a_lead_from_an_email(): void
@@ -83,7 +104,12 @@ class LeadCaptureTest extends TestCase
         Queue::fake();
         Notification::fake();
 
-        $campaign = Campaign::query()->create(['slug' => 'riyadh-season', 'is_active' => true]);
+        // firstOrCreate, not create: the demo seeder already ships a campaign
+        // on this slug, and the test only needs one to exist.
+        $campaign = Campaign::query()->firstOrCreate(
+            ['slug' => 'riyadh-season'],
+            ['is_active' => true],
+        );
 
         $this->post('/leads', [
             'contact' => 'a@b.sa',

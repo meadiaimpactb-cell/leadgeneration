@@ -29,9 +29,21 @@ class LeadFormBuilderTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * This file is about the form as shipped, so it restores the shipped rows.
+     *
+     * TestSeeder runs LeadFieldsSeeder and then DemoContentSeeder, and the
+     * latter switches organisation and phone on to demonstrate the builder.
+     * That is a legitimate client configuration, but it is not the default
+     * these tests describe — so the table is reset to LeadFieldsSeeder's
+     * output alone, inside the test's own transaction.
+     */
     protected function setUp(): void
     {
         parent::setUp();
+
+        LeadField::query()->delete();
+        $this->seed(LeadFieldsSeeder::class);
 
         Queue::fake();
         Notification::fake();
@@ -41,8 +53,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function the_shipped_form_is_exactly_the_two_fields_the_brief_defines(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         $enabled = LeadField::query()->enabled()->pluck('key')->all();
 
         $this->assertSame(['contact', 'message'], $enabled);
@@ -51,8 +61,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function a_name_field_exists_but_ships_switched_off(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         // §6.1: "Name — never asked". The capability is available to the
         // client; the default is the brief's.
         $name = LeadField::query()->where('key', 'name')->sole();
@@ -63,8 +71,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function the_contact_field_cannot_be_switched_off(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         $contact = LeadField::query()->where('key', LeadField::KEY_CONTACT)->sole();
 
         $this->assertTrue($contact->is_locked);
@@ -74,6 +80,11 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function the_contact_value_is_required_even_with_no_field_rows_at_all(): void
     {
+        // Emptied on purpose. TestSeeder gives every test the shipped field
+        // rows, and this test is about their absence; the delete rolls back
+        // with the rest of the transaction.
+        LeadField::query()->delete();
+
         // The regression this guards: rules were derived from lead_fields, so
         // an empty table produced an endpoint that accepted anything and then
         // crashed on a null contact.
@@ -89,6 +100,9 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function a_lead_still_stores_with_no_field_rows_at_all(): void
     {
+        // As above — the point of the test is the empty table.
+        LeadField::query()->delete();
+
         $this->post('/leads', [LeadField::KEY_CONTACT => 'buyer@ministry.gov.sa']);
 
         $this->assertSame('buyer@ministry.gov.sa', Lead::sole()->contact_value);
@@ -97,8 +111,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function an_enabled_extra_field_is_captured_onto_the_lead(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         LeadField::query()->where('key', 'organisation')->update(['is_enabled' => true]);
         Cache::flush();
 
@@ -115,8 +127,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function a_disabled_field_is_ignored_even_if_it_is_posted(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         // `name` ships disabled. Posting it anyway must not store it.
         $this->post('/leads', [
             LeadField::KEY_CONTACT => 'buyer@ministry.gov.sa',
@@ -129,8 +139,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function a_required_extra_field_is_enforced(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         LeadField::query()->where('key', 'organisation')
             ->update(['is_enabled' => true, 'is_required' => true]);
         Cache::flush();
@@ -145,8 +153,6 @@ class LeadFormBuilderTest extends TestCase
     #[Test]
     public function a_select_field_only_accepts_its_own_options(): void
     {
-        $this->seed(LeadFieldsSeeder::class);
-
         LeadField::query()->where('key', 'sector')->update(['is_enabled' => true]);
         Cache::flush();
 

@@ -10,9 +10,6 @@ use App\Models\PageKeyword;
 use App\Models\User;
 use App\Services\Seo\KeywordAnalyzer;
 use App\Services\Seo\TextNormalizer;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -41,8 +38,6 @@ class PageKeywordAnalysisTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([RolesSeeder::class, StructureSeeder::class, NavigationSeeder::class]);
 
         $this->admin = User::query()->create([
             'name' => 'SEO admin',

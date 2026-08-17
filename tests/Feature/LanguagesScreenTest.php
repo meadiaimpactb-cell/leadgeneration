@@ -6,10 +6,9 @@ namespace Tests\Feature;
 
 use App\Models\Setting;
 use App\Models\Solution;
+use App\Models\Story;
 use App\Models\User;
 use App\Support\Settings;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -29,8 +28,6 @@ class LanguagesScreenTest extends TestCase
 
     private function admin(): User
     {
-        $this->seed([RolesSeeder::class, StructureSeeder::class]);
-
         $user = User::factory()->create(['is_active' => true]);
         $user->assignRole('super-admin');
 
@@ -92,6 +89,11 @@ class LanguagesScreenTest extends TestCase
     {
         $admin = $this->admin();
 
+        // The assertions below count one solution, so this test owns the
+        // table. TestSeeder's demo solutions are cleared inside the test's
+        // transaction and come back for the next one.
+        Solution::query()->delete();
+
         $solution = Solution::query()->create([
             'slug' => 'coverage-probe',
             'sort_order' => 0,
@@ -120,6 +122,10 @@ class LanguagesScreenTest extends TestCase
     #[Test]
     public function an_empty_content_type_reports_no_percentage_at_all(): void
     {
+        // "Empty" is the subject of this test, so it has to make it so:
+        // TestSeeder ships demo stories.
+        Story::query()->delete();
+
         $row = $this->rowFor($this->admin(), 'stories');
 
         $this->assertSame(0, $row['total']);

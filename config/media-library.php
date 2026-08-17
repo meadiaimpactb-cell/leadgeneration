@@ -81,8 +81,23 @@ return [
     /*
      * This queue connection will be used to generate derived and responsive images.
      * Leave empty to use the default queue connection.
+     *
+     * Read through its own key first so image work can be routed separately
+     * from the rest of the queue. Production is unchanged — with
+     * MEDIA_QUEUE_CONNECTION unset this still resolves to QUEUE_CONNECTION.
+     *
+     * The test suite is why the seam exists. Tests need QUEUE_CONNECTION=sync
+     * so the queued CRM push (§6.2) runs inside the request and can be
+     * asserted on; welding image conversions to that same connection made
+     * every seeded image generate five resizes inline. That was 29 of the 34
+     * seconds DemoContentSeeder cost, paid again for each of the 262 test
+     * methods that seed it. `phpunit.xml` points this at `null` instead, so
+     * the four queued conversions are discarded while `thumb` — registered
+     * nonQueued in HasImageConversions — still runs. Nothing asserts a
+     * conversion exists: every reader guards with hasGeneratedConversion()
+     * and falls back to the original file.
      */
-    'queue_connection_name' => env('QUEUE_CONNECTION', 'sync'),
+    'queue_connection_name' => env('MEDIA_QUEUE_CONNECTION', env('QUEUE_CONNECTION', 'sync')),
 
     /*
      * This queue will be used to generate derived and responsive images.

@@ -6,8 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Page;
 use App\Models\User;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -30,8 +28,6 @@ class PageSlugCollisionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([RolesSeeder::class, StructureSeeder::class]);
 
         $this->admin = User::factory()->create(['is_active' => true]);
         $this->admin->assignRole('super-admin');

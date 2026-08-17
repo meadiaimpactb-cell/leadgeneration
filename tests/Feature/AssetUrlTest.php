@@ -7,9 +7,7 @@ namespace Tests\Feature;
 use App\Models\Page;
 use App\Models\Sector;
 use App\Models\User;
-use Database\Seeders\NavigationSeeder;
 use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -36,8 +34,6 @@ class AssetUrlTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([StructureSeeder::class, NavigationSeeder::class]);
 
         Page::query()->update([
             'status' => 'published',

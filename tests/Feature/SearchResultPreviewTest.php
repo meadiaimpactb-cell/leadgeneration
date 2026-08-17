@@ -7,11 +7,6 @@ namespace Tests\Feature;
 use App\Models\Page;
 use App\Models\User;
 use App\Support\Settings;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -40,13 +35,6 @@ class SearchResultPreviewTest extends TestCase
         // The demo content is what publishes the pages. Without it every public
         // URL below answers 404 and the comparison this file exists for cannot
         // run at all.
-        $this->seed([
-            RolesSeeder::class,
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            LeadFieldsSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         $this->admin = User::query()->create([
             'name' => 'Editor',

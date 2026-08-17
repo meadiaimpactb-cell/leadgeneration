@@ -10,10 +10,6 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Support\Settings;
 use App\Support\SettingsRegistry;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -36,13 +32,6 @@ class SeoAdminTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            RolesSeeder::class,
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
 
@@ -93,6 +82,24 @@ class SeoAdminTest extends TestCase
 
             $keys = array_merge($keys, array_column($props['fields'], 'key'));
         }
+
+        /*
+         * The notifications wording is managed too, just not on a generic
+         * settings screen: SettingsRegistry files those three keys under a
+         * `notifications` screen, and that screen is NotificationController's
+         * at /admin/integrations/notifications — deliberately, so the
+         * addresses, their subscriptions and the mail's wording stay one
+         * decision in one place. Walking SCREENS alone therefore reports them
+         * as unreachable when they are not, so this screen is walked as well.
+         * What the test guards is that every setting has somewhere to be
+         * edited, and these do.
+         */
+        $keys = array_merge($keys, array_keys(
+            $this->actingAs($this->admin)
+                ->get('/admin/integrations/notifications')
+                ->assertOk()
+                ->viewData('page')['props']['template'],
+        ));
 
         $all = Setting::query()->get()
             ->map(fn (Setting $s): string => "{$s->group}.{$s->key}")

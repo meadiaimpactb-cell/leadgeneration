@@ -7,8 +7,6 @@ namespace Tests\Feature;
 use App\Models\Sector;
 use App\Models\Solution;
 use App\Models\User;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -27,8 +25,6 @@ class SolutionSegmentTaxonomyTest extends TestCase
 
     private function admin(): User
     {
-        $this->seed([RolesSeeder::class, StructureSeeder::class]);
-
         $user = User::factory()->create(['is_active' => true]);
         $user->assignRole('super-admin');
 

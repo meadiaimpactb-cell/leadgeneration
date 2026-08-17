@@ -7,11 +7,7 @@ namespace Tests\Feature;
 use App\Models\Lead;
 use App\Models\LeadField;
 use App\Models\Page;
-use Database\Seeders\DemoContentSeeder;
 use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -40,13 +36,6 @@ class LeadFormAnswersInPlaceTest extends TestCase
         // LeadFieldsSeeder is not optional here: without it the form has no
         // fields at all, and every assertion about its shape passes or fails
         // for the wrong reason.
-        $this->seed([
-            RolesSeeder::class,
-            StructureSeeder::class,
-            LeadFieldsSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }

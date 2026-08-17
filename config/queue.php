@@ -35,6 +35,21 @@ return [
             'driver' => 'sync',
         ],
 
+        /*
+         * Accepts jobs and drops them. Used by the test suite for image
+         * conversions, which are correct in production and pure cost in a test
+         * (see MEDIA_QUEUE_CONNECTION in phpunit.xml).
+         *
+         * It is named `discard` and not `null` on purpose. `env('X')` where X
+         * is the string `null` yields PHP null, so `MEDIA_QUEUE_CONNECTION=null`
+         * reads back as "no connection given" — which Spatie takes as "use the
+         * default one", quietly putting the conversions back on `sync`. That
+         * exact trap already cost this project once with CRM_DRIVER=null.
+         */
+        'discard' => [
+            'driver' => 'null',
+        ],
+
         'database' => [
             'driver' => 'database',
             'connection' => env('DB_QUEUE_CONNECTION'),

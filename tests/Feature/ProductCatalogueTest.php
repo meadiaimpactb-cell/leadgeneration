@@ -7,8 +7,6 @@ namespace Tests\Feature;
 use App\Models\Page;
 use App\Models\ProductCategory;
 use App\Models\ShowcaseProduct;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Attributes\Test;
@@ -37,8 +35,6 @@ class ProductCatalogueTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([StructureSeeder::class, NavigationSeeder::class]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }

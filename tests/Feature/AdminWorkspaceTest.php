@@ -10,10 +10,6 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
 use App\Support\Brand;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -37,8 +33,6 @@ class AdminWorkspaceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([RolesSeeder::class, StructureSeeder::class, NavigationSeeder::class, DemoContentSeeder::class]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
 

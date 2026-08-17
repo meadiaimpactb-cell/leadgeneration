@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Lead;
 use App\Models\User;
-use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -36,8 +35,6 @@ class LeadsScreenRendersWithArchivedTest extends TestCase
 
     private function admin(): User
     {
-        $this->seed(RolesSeeder::class);
-
         $user = User::query()->create([
             'name' => 'Screen probe',
             'email' => 'screen@amadcraft.test',

@@ -11,9 +11,6 @@ use App\Models\User;
 use App\Notifications\LeadDailySummary;
 use App\Notifications\NewLeadReceived;
 use App\Support\Settings;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
@@ -33,13 +30,6 @@ use Tests\TestCase;
 class NotificationRecipientsTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed([RolesSeeder::class, StructureSeeder::class, LeadFieldsSeeder::class]);
-    }
 
     private function admin(): User
     {

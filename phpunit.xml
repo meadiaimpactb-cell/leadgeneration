@@ -34,6 +34,20 @@
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <!--
+            Image conversions are discarded here, and only here. The suite
+            needs QUEUE_CONNECTION=sync so the queued CRM push runs inside the
+            request; media-library used to inherit that connection, so every
+            seeded image ran five GD resizes inline — 29s of DemoContentSeeder's
+            34s, repaid on each test that seeds it.
+
+            `thumb` is registered nonQueued and still runs, so the panel tiles
+            a test looks at are real. Nothing asserts a derived file exists:
+            MediaResource, HasAttachedMedia, Section and Media all guard with
+            hasGeneratedConversion() and fall back to the original. A test that
+            needs the real pipeline sets the connection back with config().
+        -->
+        <env name="MEDIA_QUEUE_CONNECTION" value="discard"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="APP_LOCALE" value="ar"/>
         <env name="APP_FALLBACK_LOCALE" value="ar"/>

@@ -7,8 +7,6 @@ namespace Tests\Feature;
 use App\Models\Setting;
 use App\Models\Solution;
 use App\Models\User;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\Activitylog\Models\Activity;
@@ -31,8 +29,6 @@ class ActivityLogTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([RolesSeeder::class, StructureSeeder::class]);
 
         /*
          * Start from an empty trail.

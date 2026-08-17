@@ -6,11 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Page;
 use App\Models\Section;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -44,14 +39,6 @@ class HomeSectionCaptionsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            RolesSeeder::class,
-            StructureSeeder::class,
-            LeadFieldsSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }

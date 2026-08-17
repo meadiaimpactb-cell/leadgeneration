@@ -8,8 +8,6 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Support\Locales;
 use App\Support\Settings;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -33,8 +31,6 @@ class LocaleNegotiationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([StructureSeeder::class, NavigationSeeder::class]);
 
         Page::query()->update([
             'status' => 'published',

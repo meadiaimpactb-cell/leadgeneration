@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Lead;
 use App\Models\User;
-use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -22,13 +21,6 @@ use Tests\TestCase;
 class AdminAccessTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed(RolesSeeder::class);
-    }
 
     private function userWithRole(string $role, bool $active = true): User
     {

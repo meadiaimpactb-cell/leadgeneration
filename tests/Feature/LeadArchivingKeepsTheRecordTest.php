@@ -7,7 +7,6 @@ namespace Tests\Feature;
 use App\Models\Lead;
 use App\Models\User;
 use App\Policies\LeadPolicy;
-use Database\Seeders\RolesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia;
@@ -31,13 +30,6 @@ use Tests\TestCase;
 class LeadArchivingKeepsTheRecordTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed(RolesSeeder::class);
-    }
 
     private function lead(array $attributes = []): Lead
     {

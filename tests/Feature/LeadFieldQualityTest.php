@@ -9,11 +9,6 @@ use App\Models\LeadField;
 use App\Models\Page;
 use App\Models\User;
 use App\Rules\InternationalPhone;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
@@ -35,14 +30,6 @@ class LeadFieldQualityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            RolesSeeder::class,
-            StructureSeeder::class,
-            LeadFieldsSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }

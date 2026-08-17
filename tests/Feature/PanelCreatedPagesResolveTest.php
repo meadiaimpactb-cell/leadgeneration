@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Page;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\NavigationSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -34,12 +31,6 @@ class PanelCreatedPagesResolveTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            StructureSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }

@@ -12,11 +12,7 @@ use App\Models\Story;
 use App\Models\TrainingProgram;
 use App\Models\User;
 use App\Services\Crm\Drivers\LeadPayload;
-use Database\Seeders\DemoContentSeeder;
-use Database\Seeders\LeadFieldsSeeder;
-use Database\Seeders\NavigationSeeder;
 use Database\Seeders\RolesSeeder;
-use Database\Seeders\StructureSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
@@ -39,13 +35,6 @@ class TrainingPageServesTwoAudiencesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->seed([
-            StructureSeeder::class,
-            LeadFieldsSeeder::class,
-            NavigationSeeder::class,
-            DemoContentSeeder::class,
-        ]);
 
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }
