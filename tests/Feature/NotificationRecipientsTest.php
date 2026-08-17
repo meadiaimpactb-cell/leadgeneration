@@ -168,6 +168,46 @@ class NotificationRecipientsTest extends TestCase
     }
 
     /**
+     * The digest counts work still to do, and an archived enquiry is work
+     * somebody has already finished.
+     *
+     * Archiving is what this panel has instead of deleting, and it stamps
+     * `archived_at` without touching `status` — so before this was fixed, a
+     * lead archived while still marked «new» was reported as awaiting a reply
+     * every morning, for ever. A figure that can only rise is one the team
+     * stops reading, which costs more than the figure was ever worth.
+     *
+     * `arrived` deliberately still counts it: §1 is measured on enquiries
+     * received, and that total must not fall when someone tidies a list.
+     */
+    #[Test]
+    public function an_archived_enquiry_is_no_longer_awaiting_a_reply(): void
+    {
+        $this->recipient('manager@amadcraft.test', ['daily_summary' => true]);
+
+        $this->lead()->forceFill(['archived_at' => now()])->save();
+
+        Notification::fake();
+
+        $this->artisan('amad:daily-summary')->assertSuccessful();
+
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            LeadDailySummary::class,
+            function (LeadDailySummary $summary): bool {
+                $this->assertSame(0, $summary->awaiting,
+                    'An archived enquiry was reported as still awaiting a reply.');
+                $this->assertSame(0, $summary->notSynced,
+                    'An archived enquiry was reported as still waiting to reach the CRM.');
+                $this->assertSame(1, $summary->arrived,
+                    'Archiving must not erase an enquiry from the count of what arrived (§1).');
+
+                return true;
+            },
+        );
+    }
+
+    /**
      * Nobody subscribed is a valid morning, not a failed command. Exiting
      * non-zero would put a routine quiet day in the failure log, where a real
      * fault then becomes harder to see.

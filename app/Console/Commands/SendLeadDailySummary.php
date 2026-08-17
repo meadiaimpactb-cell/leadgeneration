@@ -44,11 +44,22 @@ class SendLeadDailySummary extends Command
 
         $arrived = Lead::query()->where('created_at', '>=', now()->subDays($days))->count();
 
-        // Both of these are all-time, not per-period, on purpose: an enquiry
-        // that has sat unanswered for a week is the one worth reporting, and
-        // a window would be exactly what hides it.
-        $awaiting = Lead::query()->where('status', 'new')->count();
-        $notSynced = Lead::query()->notSynced()->count();
+        /*
+         * Both of these are all-time, not per-period, on purpose: an enquiry
+         * that has sat unanswered for a week is the one worth reporting, and a
+         * window would be exactly what hides it.
+         *
+         * Archived enquiries are excluded, and only here. Archiving is what
+         * this panel has instead of deleting, so a lead that carries
+         * `archived_at` is one somebody has already dealt with — counting it
+         * every morning produced a figure that could never fall, and a figure
+         * that never falls is one the team learns to skip. `arrived` above and
+         * the dashboard's own totals still count everything that ever came in,
+         * for the reason Lead::scopeArchived gives: §1 is measured on enquiries
+         * received, and that number must not drop when someone tidies a list.
+         */
+        $awaiting = Lead::query()->notArchived()->where('status', 'new')->count();
+        $notSynced = Lead::query()->notArchived()->notSynced()->count();
 
         Notification::route('mail', $recipients)->notify(new LeadDailySummary(
             arrived: $arrived,
