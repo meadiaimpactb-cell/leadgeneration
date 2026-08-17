@@ -11,6 +11,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Sentry\Laravel\Integration;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
@@ -49,7 +50,22 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        /*
+         * Report unhandled exceptions to Sentry — when, and only when, a DSN
+         * is configured.
+         *
+         * With `SENTRY_LARAVEL_DSN` empty the integration is inert: nothing is
+         * captured, nothing is transmitted, and development is unaffected. That
+         * is the state the repository ships in, deliberately. Sending error
+         * payloads to a third party is a decision about where this project's
+         * data goes, and it belongs to Amad Craft, not to a default.
+         *
+         * On the live site the alternative is what the panel has now: a 500
+         * reaches the visitor, `APP_DEBUG=false` correctly hides the trace, and
+         * the only record is a line in `storage/logs/laravel.log` that nobody
+         * is watching. Two real 500s this week were found by screenshot.
+         */
+        Integration::handles($exceptions);
     })
     ->create()
     // §7.3 places UI strings under resources/lang/{ar,en}.
