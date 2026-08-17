@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Support\ContentRegistry;
+use App\Support\ResourcePresenter;
 use App\Support\ResourceRules;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -43,7 +44,7 @@ class ResourceController extends Controller
             ->get()
             ->map(fn (Model $record): array => [
                 'id' => $record->getKey(),
-                'title' => $this->titleOf($record, $config),
+                'title' => ResourcePresenter::titleOf($record, $config),
                 'slug' => $record->slug ?? null,
                 'active' => (bool) $record->{$flag},
                 'sortOrder' => $record->sort_order,
@@ -55,7 +56,7 @@ class ResourceController extends Controller
             'entity' => $entity,
             'records' => $records,
             'locales' => array_keys(config('site.locales')),
-            'meta' => $this->meta($config),
+            'meta' => ResourcePresenter::meta($config),
         ]);
     }
 
@@ -71,10 +72,10 @@ class ResourceController extends Controller
         return Inertia::render('Admin/Content/Edit', [
             'entity' => $entity,
             'record' => null,
-            'meta' => $this->meta($config),
-            'options' => $this->relationOptions($config),
-            'taxonomyOptions' => $this->taxonomyOptions($config),
-            'taxonomyValues' => $this->taxonomyValues(null, $config),
+            'meta' => ResourcePresenter::meta($config),
+            'options' => ResourcePresenter::relationOptions($config),
+            'taxonomyOptions' => ResourcePresenter::taxonomyOptions($config),
+            'taxonomyValues' => ResourcePresenter::taxonomyValues(null, $config),
             'locales' => array_keys(config('site.locales')),
         ]);
     }
@@ -88,11 +89,11 @@ class ResourceController extends Controller
 
         return Inertia::render('Admin/Content/Edit', [
             'entity' => $entity,
-            'record' => $this->payload($record, $config),
-            'meta' => $this->meta($config),
-            'options' => $this->relationOptions($config),
-            'taxonomyOptions' => $this->taxonomyOptions($config),
-            'taxonomyValues' => $this->taxonomyValues($record, $config),
+            'record' => ResourcePresenter::payload($record, $config),
+            'meta' => ResourcePresenter::meta($config),
+            'options' => ResourcePresenter::relationOptions($config),
+            'taxonomyOptions' => ResourcePresenter::taxonomyOptions($config),
+            'taxonomyValues' => ResourcePresenter::taxonomyValues($record, $config),
             'locales' => array_keys(config('site.locales')),
         ]);
     }
@@ -254,187 +255,6 @@ class ResourceController extends Controller
                 $record->{$taxonomy['relation']}()->sync($ids);
             }
         });
-    }
-
-    /** @return array<string, mixed> */
-    private function payload(Model $record, array $config): array
-    {
-        $translations = [];
-        $locales = array_keys(config('site.locales'));
-
-        foreach ($locales as $locale) {
-            $row = $record->translationFor($locale);
-
-            foreach (array_keys($config['fields']) as $field) {
-                $translations[$locale][$field] = $row?->getAttribute($field);
-            }
-        }
-
-        $attributes = [];
-
-        foreach (array_keys($config['attributes']) as $name) {
-            $attributes[$name] = $record->getAttribute($name);
-        }
-
-        $media = [];
-
-        foreach ($config['media'] as $collection) {
-            // Images chosen from the library first, the record's own uploads
-            // only when there are none — the same order of authority the
-            // public resources read through `mediaFor()`, so the panel and the
-            // page cannot disagree about which picture is current.
-            $attached = $record->attachedMedia($collection);
-
-            $items = $attached->isNotEmpty() ? $attached : $record->getMedia($collection);
-
-            $media[$collection] = $items
-                ->map(function ($item) use ($locales): array {
-                    $translations = [];
-
-                    foreach ($locales as $locale) {
-                        $row = $item->translation($locale);
-
-                        $translations[$locale] = [
-                            'alt_text' => $row?->alt_text,
-                            'caption' => $row?->caption,
-                        ];
-                    }
-
-                    return [
-                        'id' => $item->id,
-                        // getUrl(), not getFullUrl(): the latter prefixes APP_URL,
-                        // so every thumbnail in the panel breaks the moment the
-                        // site is opened on a host APP_URL does not name — the dev
-                        // port, staging, or after the §16 domain move. Same reason
-                        // MediaResource and SectionController use it. An <img>
-                        // never needs the host.
-                        'url' => $item->getUrl(),
-                        'thumb' => $item->thumbUrl(),
-                        'name' => $item->file_name,
-                        'mime' => $item->mime_type,
-                        'translations' => $translations,
-                    ];
-                })->values();
-        }
-
-        return [
-            'id' => $record->getKey(),
-            'active' => (bool) $record->{$config['flag']},
-            'attributes' => $attributes,
-            'translations' => $translations,
-            'media' => $media,
-        ];
-    }
-
-    /**
-     * Options for every `relation:` attribute, so the form can render a
-     * select rather than asking for a raw id.
-     *
-     * @return array<string, list<array{value: int, label: string}>>
-     */
-    private function relationOptions(array $config): array
-    {
-        $options = [];
-
-        foreach ($config['attributes'] as $name => $type) {
-            if (! str_starts_with($type, 'relation:')) {
-                continue;
-            }
-
-            $target = ContentRegistry::get(substr($type, strlen('relation:')));
-
-            $options[$name] = $target['model']::query()
-                ->with('translations')
-                ->orderBy('sort_order')
-                ->get()
-                ->map(fn (Model $r): array => [
-                    'value' => $r->getKey(),
-                    'label' => (string) $this->titleOf($r, $target),
-                ])
-                ->all();
-        }
-
-        return $options;
-    }
-
-    /**
-     * Choices for every many-to-many picker on this entity.
-     *
-     * Labelled from the target's own first translated field, exactly as the
-     * single-relation selects are, so a segment renamed in its own editor
-     * renames itself here too.
-     *
-     * @return array<string, list<array{value: int, label: string}>>
-     */
-    private function taxonomyOptions(array $config): array
-    {
-        $options = [];
-
-        foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
-            $target = ContentRegistry::get($taxonomy['entity']);
-
-            $options[$name] = $target['model']::query()
-                ->with('translations')
-                ->orderBy('sort_order')
-                ->get()
-                ->map(fn (Model $r): array => [
-                    'value' => $r->getKey(),
-                    'label' => (string) $this->titleOf($r, $target),
-                ])
-                ->all();
-        }
-
-        return $options;
-    }
-
-    /**
-     * The ids currently selected for each picker, in their pivot order.
-     *
-     * @return array<string, list<int>>
-     */
-    private function taxonomyValues(?Model $record, array $config): array
-    {
-        $selected = [];
-
-        foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
-            // modelKeys() rather than pluck('<table>.id'): the relation knows
-            // its own key, and naming the table here would silently return
-            // nothing the day a second taxonomy is added.
-            $selected[$name] = $record === null
-                ? []
-                : $record->{$taxonomy['relation']}()->get()->modelKeys();
-        }
-
-        return $selected;
-    }
-
-    /**
-     * The first translated field is the record's human label.
-     */
-    private function titleOf(Model $record, array $config): ?string
-    {
-        $first = array_key_first($config['fields']);
-
-        return $record->t($first) ?? $record->slug ?? $record->name ?? "#{$record->getKey()}";
-    }
-
-    /** @return array<string, mixed> */
-    private function meta(array $config): array
-    {
-        return [
-            'fields' => $config['fields'],
-            // So the editor marks what it is going to refuse to save without,
-            // rather than teaching it through an error after the fact.
-            'required' => $config['required'] ?? [],
-            'attributes' => $config['attributes'],
-            'media' => $config['media'],
-            'creatable' => $config['creatable'],
-            'deletable' => $config['deletable'],
-            'hasSections' => $config['hasSections'],
-            // Label + entity per picker, so the form can title the field
-            // without knowing what a taxonomy is.
-            'taxonomies' => $config['taxonomies'] ?? [],
-        ];
     }
 
     /** @return array<string, mixed> */
