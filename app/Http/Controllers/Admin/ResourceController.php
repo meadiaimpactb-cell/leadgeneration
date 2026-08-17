@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Support\ContentRegistry;
+use App\Support\ResourceRules;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -205,29 +206,9 @@ class ResourceController extends Controller
      */
     private function persist(Request $request, Model $record, array $config): void
     {
-        $rules = ['active' => ['boolean']];
-
-        foreach ($config['attributes'] as $name => $type) {
-            $rules["attributes.{$name}"] = $this->rulesFor($type);
-        }
-
-        // Many-to-many pickers, e.g. the audience segments a solution serves.
-        foreach ($config['taxonomies'] ?? [] as $name => $taxonomy) {
-            $rules["taxonomies.{$name}"] = ['array'];
-            $rules["taxonomies.{$name}.*"] = ['integer', 'exists:'.$taxonomy['table'].',id'];
-        }
-
-        foreach (array_keys(config('site.locales')) as $locale) {
-            foreach ($config['fields'] as $field => $type) {
-                $rules["translations.{$locale}.{$field}"] = array_merge(
-                    ['nullable'],
-                    $this->presenceRulesFor($config, $locale, $field),
-                    ['string', $type === 'text' ? 'max:255' : 'max:20000'],
-                );
-            }
-        }
-
-        $data = $request->validate($rules);
+        $data = $request->validate(
+            ResourceRules::for($config, array_keys(config('site.locales'))),
+        );
 
         DB::transaction(function () use ($record, $config, $data): void {
             $attributes = $data['attributes'] ?? [];
@@ -273,51 +254,6 @@ class ResourceController extends Controller
                 $record->{$taxonomy['relation']}()->sync($ids);
             }
         });
-    }
-
-    /**
-     * What makes one translated field compulsory, if anything does.
-     *
-     * Every field stays `nullable`, because a record that exists in one
-     * language and not the other is normal and §12 wants it stored that way —
-     * and because empty strings arrive here as null, so dropping `nullable`
-     * makes `string` fail on every blank box.
-     *
-     * An entity may name fields it cannot be described without — the outcome
-     * line on a training track — and those become required *for a locale being
-     * written*, never for a locale left alone. `required_with` is an implicit
-     * rule, so it still fires alongside `nullable`, and it fires only once
-     * something else in that same column has been typed: a blank English side
-     * still means "not translated" and still deletes its row.
-     *
-     * @return list<string>
-     */
-    private function presenceRulesFor(array $config, string $locale, string $field): array
-    {
-        if (! in_array($field, $config['required'] ?? [], true)) {
-            return [];
-        }
-
-        $siblings = array_map(
-            fn (string $other): string => "translations.{$locale}.{$other}",
-            array_values(array_diff(array_keys($config['fields']), [$field])),
-        );
-
-        return ['required_with:'.implode(',', $siblings)];
-    }
-
-    /** @return list<string> */
-    private function rulesFor(string $type): array
-    {
-        return match (true) {
-            $type === 'number' => ['nullable', 'numeric'],
-            $type === 'url' => ['nullable', 'url', 'max:512'],
-            $type === 'slug' => ['required', 'string', 'max:191'],
-            str_starts_with($type, 'relation:') => ['nullable', 'integer'],
-            str_starts_with($type, 'enum:') => ['required', 'string',
-                'in:'.substr($type, strlen('enum:'))],
-            default => ['nullable', 'string', 'max:255'],
-        };
     }
 
     /** @return array<string, mixed> */
