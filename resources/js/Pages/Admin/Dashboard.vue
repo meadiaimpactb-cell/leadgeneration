@@ -18,18 +18,29 @@ const props = defineProps({
     bySource: { type: Array, default: () => [] },
     byCampaign: { type: Array, default: () => [] },
     latest: { type: Array, default: () => [] },
+    /*
+     * Whether this administrator may see enquiries at all.
+     *
+     * The controller decides and sends nothing it should not; this flag exists
+     * so the screen does not draw empty lead panels to somebody who will never
+     * have any. It is presentation only — the authorisation is enforced
+     * server-side (§9.2), and hiding these blocks is not what protects them.
+     */
+    maySeeLeads: { type: Boolean, default: false },
 });
 
 const { t } = useTranslation();
 const { number, dayMonth } = useFormat();
 
-const tiles = computed(() => [
-    { label: t('admin.total_leads'), value: props.stats.total, tone: 'navy' },
-    { label: t('admin.leads_30d'), value: props.stats.recent, change: props.stats.change, tone: 'navy' },
-    { label: t('admin.qualified_leads'), value: props.stats.qualified, tone: 'navy' },
-    { label: t('admin.unanswered'), value: props.stats.unanswered, tone: 'accent' },
-    { label: t('admin.crm_failures'), value: props.stats.failedCrm, tone: props.stats.failedCrm > 0 ? 'danger' : 'navy' },
-]);
+const tiles = computed(() => (props.maySeeLeads
+    ? [
+        { label: t('admin.total_leads'), value: props.stats.total, tone: 'navy' },
+        { label: t('admin.leads_30d'), value: props.stats.recent, change: props.stats.change, tone: 'navy' },
+        { label: t('admin.qualified_leads'), value: props.stats.qualified, tone: 'navy' },
+        { label: t('admin.unanswered'), value: props.stats.unanswered, tone: 'accent' },
+        { label: t('admin.crm_failures'), value: props.stats.failedCrm, tone: props.stats.failedCrm > 0 ? 'danger' : 'navy' },
+    ]
+    : []));
 
 // A simple bar chart in plain SVG — no charting library, so the dashboard
 // costs nothing against the JS budget (§15.1).
@@ -73,7 +84,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
             </li>
         </ul>
 
-        <Panel :title="t('admin.leads_by_day')" :hint="t('admin.no_targets_note')">
+        <Panel v-if="maySeeLeads" :title="t('admin.leads_by_day')" :hint="t('admin.no_targets_note')">
             <div class="chart" role="img" :aria-label="t('admin.leads_by_day')">
                 <svg :viewBox="`0 0 ${daily.length * 4} 60`" preserveAspectRatio="none" class="chart__svg">
                     <rect
@@ -94,7 +105,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
         </Panel>
 
         <div class="split">
-            <Panel :title="t('admin.leads_by_source')">
+            <Panel v-if="maySeeLeads" :title="t('admin.leads_by_source')">
                 <p v-if="!bySource.length" class="empty">{{ t('admin.no_records') }}</p>
                 <ul v-else class="bars">
                     <li v-for="row in bySource" :key="row.label" class="bars__row">
@@ -107,7 +118,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
                 </ul>
             </Panel>
 
-            <Panel :title="t('admin.leads_by_campaign')">
+            <Panel v-if="maySeeLeads" :title="t('admin.leads_by_campaign')">
                 <p v-if="!byCampaign.length" class="empty">{{ t('admin.no_records') }}</p>
                 <ul v-else class="bars">
                     <li v-for="row in byCampaign" :key="row.label" class="bars__row">
@@ -121,7 +132,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
             </Panel>
         </div>
 
-        <Panel :title="t('admin.latest_leads')">
+        <Panel v-if="maySeeLeads" :title="t('admin.latest_leads')">
             <template #actions>
                 <Link href="/admin/leads" class="btn btn--secondary">{{ t('admin.leads') }}</Link>
             </template>
