@@ -93,6 +93,52 @@
         </script>
         <script async src="https://www.googletagmanager.com/gtm.js?id={{ $gtm }}"></script>
     @endif
+
+    {{--
+        The other three the panel asks for (§14.1).
+
+        These fields existed on the tracking screen, with placeholders and
+        validation patterns, and nothing rendered them. An operator pasted a
+        GA4 id, saw it save, and got no analytics — the panel promised an
+        integration it did not perform, and said nothing. A dead field is worse
+        than an absent one, because it is believed.
+
+        ⚠️ DO NOT ALSO ADD THESE AS TAGS INSIDE GTM. Either place works; both
+        together fire twice and every figure doubles. The panel is the simpler
+        of the two for someone who is not a tag manager, so it is wired here —
+        anyone who prefers to manage them in GTM should leave these three blank
+        rather than fill them in as well.
+    --}}
+    @if ($ga4 = $settings->get('tracking.ga4_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga4 }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', @json($ga4));
+        </script>
+    @endif
+
+    @if ($pixel = $settings->get('tracking.meta_pixel_id'))
+        <script>
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', @json($pixel));
+            fbq('track', 'PageView');
+        </script>
+    @endif
+
+    @if ($clarity = $settings->get('tracking.clarity_id'))
+        <script>
+            (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", @json($clarity));
+        </script>
+    @endif
 </head>
 <body>
     {{-- Keyboard users reach the content without tabbing the whole header (§10.8). --}}
