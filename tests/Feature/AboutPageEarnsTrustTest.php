@@ -116,7 +116,24 @@ class AboutPageEarnsTrustTest extends TestCase
 
         $this->assertStringContainsString('617', $body,
             'The about page does not read the figures from the shared record.');
-        $this->assertStringNotContainsString('240', $body,
+
+        /*
+         * The stale figure must not be RENDERED — which is not the same as it
+         * being absent from the document.
+         *
+         * This asserted `240` appeared nowhere in the HTML at all, and the
+         * page carries strings nobody controls: the CSRF token, and Inertia's
+         * asset version, which is an md5 of the build manifest. The build that
+         * shipped the dashboard fix produced version
+         * e182e5be34a16b625029fd52409a61d1 — `…fd52409a61d1` contains `240`,
+         * and this test began failing on every run for a reason that had
+         * nothing to do with impact figures. It was a coin toss on every
+         * `npm run build`.
+         *
+         * A figure reaches the page as the text of its own element, so that is
+         * what is checked.
+         */
+        $this->assertStringNotContainsString('>240<', $body,
             'The about page carries its own stale copy of the artisan figure.');
     }
 

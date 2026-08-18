@@ -70,7 +70,11 @@ class ImpactPageProvesItsClaimsTest extends TestCase
 
         $this->assertStringContainsString('617', $impact,
             'The impact page does not read the artisan figure from the record.');
-        $this->assertStringNotContainsString('240', $impact,
+
+        // `>240<` and not `240`: see AboutPageEarnsTrustTest for why. A bare
+        // three-digit string also matches Inertia's asset version hash, so
+        // this test used to fail or pass depending on the last build.
+        $this->assertStringNotContainsString('>240<', $impact,
             'The impact page still carries the previous artisan figure.');
     }
 
