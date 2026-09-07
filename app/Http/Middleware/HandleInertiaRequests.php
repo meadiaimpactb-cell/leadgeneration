@@ -54,6 +54,16 @@ class HandleInertiaRequests extends Middleware
             // CTA band on nearly every page, so it must render identically
             // wherever it is (§6.1: one form only).
             'leadFields' => fn (): array => $this->leadFields(),
+            /*
+             * Whether the pages the landing page replaced are still switched
+             * on. The admin sidebar hides their editors when they are not —
+             * driven by the same `site.legacy_pages` flag the router reads, so
+             * the menu and the site can never disagree about which pages
+             * exist. A second list in the sidebar would be a second thing to
+             * keep in step, which is how the old "القطاعات" entry survived
+             * the screen it pointed at.
+             */
+            'legacyPages' => (bool) config('site.legacy_pages'),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
@@ -83,7 +93,7 @@ class HandleInertiaRequests extends Middleware
     private function leadFields(): array
     {
         return Cache::remember(
-            'lead_fields.'.app()->getLocale(),
+            LeadField::cacheKey(app()->getLocale()),
             now()->addHour(),
             fn (): array => LeadField::query()
                 ->enabled()

@@ -106,14 +106,35 @@ class NavigationItem extends Model
             return $url;
         }
 
+        /*
+         * A fragment is split off before the path is read, and put back after.
+         *
+         * The landing page's menu points at `/ar#government`: a real path, so
+         * a visitor on any other page follows it to the landing page and the
+         * browser scrolls. Without this the whole string was treated as one
+         * segment — «ar#government» matched no locale — and the English site
+         * served links back into the Arabic one, which is the exact failure
+         * §12 exists to stop.
+         */
+        $fragment = '';
+
+        if (str_contains($url, '#')) {
+            [$url, $anchor] = explode('#', $url, 2);
+            $fragment = '#'.$anchor;
+
+            if ($url === '' || $url === '/') {
+                return $fragment;
+            }
+        }
+
         $segments = explode('/', ltrim($url, '/'));
 
         if (! array_key_exists($segments[0] ?? '', Locales::all())) {
-            return $url;
+            return $url.$fragment;
         }
 
         $segments[0] = $locale;
 
-        return '/'.implode('/', $segments);
+        return rtrim('/'.implode('/', $segments), '/').$fragment;
     }
 }

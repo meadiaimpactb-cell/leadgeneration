@@ -127,18 +127,51 @@ class Page extends Model
     }
 
     /**
+     * Slugs served from the locale root rather than from /{locale}/{slug}.
+     *
+     * `landing` is what answers there since 7 September 2026; `home` is the
+     * page it replaced and is kept here because its row still exists and must
+     * not start advertising /{locale}/home if it is ever republished.
+     *
+     * Kept in step with PageController::RESERVED, which 404s these same slugs
+     * on the catch-all route. The two are the same rule from opposite ends: a
+     * page at the root must not also answer at its slug, and must not be
+     * advertised there. Missing the second half put /ar/landing into the
+     * sitemap pointing at a 404.
+     */
+    public const ROOT_SLUGS = ['landing', 'home'];
+
+    /**
+     * The pages the landing-page decision retired (7 September 2026).
+     *
+     * Named once, here, because three places have to agree about them: the
+     * router refuses to register their routes, PageController refuses to serve
+     * them through the catch-all, and the sitemap must not advertise a URL
+     * that answers 301. Three copies of one list is how the sitemap came to
+     * publish eleven redirects.
+     */
+    public const RETIRED_SLUGS = ['about', 'solutions', 'products', 'impact', 'training', 'partners', 'contact'];
+
+    /** Empty while `site.legacy_pages` is on — then nothing is retired. */
+    public static function retiredSlugs(): array
+    {
+        return config('site.legacy_pages') ? [] : self::RETIRED_SLUGS;
+    }
+
+    /**
      * Where this page actually lives on the public site.
      *
-     * The home page is served from the locale root, not from /{locale}/home —
-     * so its URL cannot be derived from its slug like every other page. This
-     * method is the single place that knows that, which is what stopped the
-     * admin panel's preview button from pointing at a 404.
+     * The landing page is served from the locale root, not from
+     * /{locale}/landing — so its URL cannot be derived from its slug like
+     * every other page. This method is the single place that knows that,
+     * which is what stopped the admin panel's preview button from pointing at
+     * a 404.
      */
     public function publicUrl(?string $locale = null): string
     {
         $locale ??= app()->getLocale();
 
-        return $this->slug === 'home'
+        return in_array($this->slug, self::ROOT_SLUGS, true)
             ? url($locale)
             : url("{$locale}/{$this->slug}");
     }
@@ -154,6 +187,25 @@ class Page extends Model
         return $this->status === 'published'
             && $this->published_at !== null
             && $this->published_at->isPast();
+    }
+
+    /**
+     * Pages that still answer, for the screens that list them.
+     *
+     * The SEO and keyword screens ask an editor to write a title and choose
+     * search terms for each page they list. Listing the retired ones asked
+     * for that work on eleven addresses that answer 301 — effort spent on
+     * pages no visitor reaches, on a screen whose whole job is to direct
+     * effort where it counts.
+     *
+     * A scope rather than a filter in each controller, because three screens
+     * had to agree and a fourth will be added.
+     */
+    public function scopeNotRetired(Builder $query): Builder
+    {
+        $retired = self::retiredSlugs();
+
+        return $retired === [] ? $query : $query->whereNotIn('slug', $retired);
     }
 
     /** Pages the public may see. Drafts are reachable only by preview token. */

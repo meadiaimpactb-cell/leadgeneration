@@ -9,6 +9,7 @@ use App\Models\Concerns\RecordsActivity;
 use App\Rules\InternationalPhone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * One field on the lead form, managed from the admin panel.
@@ -113,5 +114,30 @@ class LeadField extends Model
                 ->values()
                 ->all(),
         ];
+    }
+
+    /**
+     * Where the browser-facing shape of the form is cached, per locale.
+     *
+     * The key lived in three places by the time the landing page needed it:
+     * HandleInertiaRequests wrote it, LeadFieldController forgot it, and a
+     * seeder that switches a field on or off has to forget it too — otherwise
+     * the change is correct in the database and invisible on the site for up
+     * to an hour. That is not a theoretical gap: it is exactly what happened
+     * when the landing page's two-field form was seeded and the site kept
+     * rendering four boxes.
+     *
+     * One definition, so switching a field anywhere reaches the page.
+     */
+    public static function cacheKey(string $locale): string
+    {
+        return "lead_fields.{$locale}";
+    }
+
+    public static function flushCache(): void
+    {
+        foreach (array_keys(config('site.locales')) as $locale) {
+            Cache::forget(self::cacheKey($locale));
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Resources\ImpactMetricResource;
 use App\Http\Resources\PartnerResource;
 use App\Models\ImpactMetric;
+use App\Models\Page;
 use App\Models\Partner;
 use Illuminate\Database\Eloquent\Collection;
 use Inertia\Inertia;
@@ -102,15 +103,24 @@ class PageController extends PublicController
     /**
      * Slugs the catch-all must never answer.
      *
-     * `home` is the one that matters. The home page is a `pages` row like any
-     * other, and its `publicUrl()` is `/{locale}` — so without this, `/ar/home`
-     * would render the same sections at a second address and split the ranking
-     * of the page that matters most (§13). The rest are structural prefixes:
+     * `landing` and `home` are the ones that matter. Each is a `pages` row
+     * like any other whose `publicUrl()` is `/{locale}` — so without this,
+     * `/ar/landing` would render the same sections at a second address and
+     * split the ranking of the page that matters most (§13). That is not
+     * hypothetical: adding the landing page opened exactly that hole, and
+     * `/ar/landing` answered 200 with the whole site on it until this line
+     * named it. The rest are structural prefixes:
      * unreachable through this route today, because the `{locale}` group is
      * constrained to the configured locales, but named here so that stays true
      * if a locale is ever added.
      */
-    private const RESERVED = ['home', 'admin', 'api', 'build', 'storage', 'vendor'];
+    private const RESERVED = [...Page::ROOT_SLUGS, 'admin', 'api', 'build', 'storage', 'vendor'];
+
+    /** Slugs this route must not answer, given the current configuration. */
+    private function reserved(): array
+    {
+        return [...self::RESERVED, ...Page::retiredSlugs()];
+    }
 
     /**
      * Any page the client created in the panel (§9.1).
@@ -123,7 +133,7 @@ class PageController extends PublicController
      */
     public function show(string $locale, string $slug): Response
     {
-        if (in_array($slug, self::RESERVED, true)) {
+        if (in_array($slug, $this->reserved(), true)) {
             throw new NotFoundHttpException;
         }
 

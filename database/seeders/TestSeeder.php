@@ -59,6 +59,7 @@ class TestSeeder extends Seeder
             RedirectsSeeder::class,
             DemoContentSeeder::class,
             DemoExtrasSeeder::class,
+            LandingPageSeeder::class,
         ]);
     }
 }

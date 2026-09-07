@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Models\LeadField;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -113,8 +112,6 @@ class LeadFieldController extends Controller
 
     private function flushCache(): void
     {
-        foreach (array_keys(config('site.locales')) as $locale) {
-            Cache::forget("lead_fields.{$locale}");
-        }
+        LeadField::flushCache();
     }
 }

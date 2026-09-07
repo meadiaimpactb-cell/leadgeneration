@@ -26,6 +26,10 @@ class DatabaseSeeder extends Seeder
             LeadFieldsSeeder::class,
             NavigationSeeder::class,
             RedirectsSeeder::class,
+            // The one landing page the site now is (7 September 2026):
+            // its copy, then the site-wide switchover it requires.
+            LandingPageSeeder::class,
+            LandingSwitchoverSeeder::class,
         ]);
     }
 }

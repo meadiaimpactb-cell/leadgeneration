@@ -17,6 +17,32 @@ return [
     | Supported locales. Arabic is the default and the fallback.
     | Adding a locale here is a code + content decision, not a setting.
     */
+    /*
+    |--------------------------------------------------------------------------
+    | The pages the landing-page decision retired (7 September 2026)
+    |--------------------------------------------------------------------------
+    |
+    | Management replaced the multi-page site with one landing page. The
+    | eleven pages it replaced are switched off HERE rather than deleted,
+    | because retiring them and deleting them are different decisions and only
+    | the first has been taken.
+    |
+    | OFF (the default) — their routes are never registered, so the paths
+    | return 404 and `ApplyRedirects` carries each one 301 to its anchor on
+    | the landing page. That middleware only consults the `redirects` table on
+    | a 404, which is exactly why removing the routes is what retires a page;
+    | adding a redirect row on its own does nothing while the route answers.
+    |
+    | ON — every page answers again, unchanged. That is how this is reversed:
+    | one line in `.env`, no deployment of code. It is also what `.env.testing`
+    | sets, so the suite keeps covering seven controllers and their pages while
+    | they exist. A separate test covers the retired state itself.
+    |
+    | Delete the routes, the controllers and their tests only once Amad Craft
+    | decides these pages are not coming back.
+    */
+    'legacy_pages' => (bool) env('SITE_LEGACY_PAGES', false),
+
     'locales' => [
         'ar' => [
             'name' => 'العربية',
