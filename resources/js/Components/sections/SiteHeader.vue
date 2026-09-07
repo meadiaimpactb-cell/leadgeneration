@@ -6,6 +6,8 @@ import Logo from '@/Components/ui/Logo.vue';
 import LangSwitch from '@/Components/ui/LangSwitch.vue';
 import Button from '@/Components/ui/Button.vue';
 import { useTranslation } from '@/Composables/useTranslation';
+import { useHashCta } from '@/Composables/useHashCta';
+import { useScrollSpy } from '@/Composables/useScrollSpy';
 
 /**
  * The header (§11.1) — a navy bar at the top of every page.
@@ -52,7 +54,62 @@ const settings = computed(() => page.props.settings ?? {});
  * contact screen rather than written here (§22.1). Unset means no button.
  */
 const ctaLabel = computed(() => settings.value[`contact.header_cta.${locale.value}`] ?? null);
-const contactUrl = computed(() => `/${locale.value}/contact`);
+/*
+ * The header's CTA target.
+ *
+ * `/{locale}#contact` since the landing-page decision — `/{locale}/contact`
+ * is one of the retired paths and answers 301, so the site's most-pressed
+ * button was costing every visitor a redirect to reach its own form.
+ */
+const contactUrl = computed(() => `/${locale.value}#contact`);
+
+const { onHashCta } = useHashCta();
+
+/**
+ * Menu entries that point at a section of the page being read.
+ *
+ * The landing page's five entries are stored as `/{locale}#anchor` so they
+ * work from anywhere: from the legal pages they navigate, and here they
+ * should scroll. Which of the two it is cannot be decided when the menu is
+ * built — only against the URL currently open.
+ */
+function inPage(url) {
+    if (typeof url !== 'string' || !url.includes('#')) {
+        return null;
+    }
+
+    const [path, fragment] = url.split('#');
+    const here = page.url.split('#')[0].split('?')[0];
+
+    return path === '' || path === here ? `#${fragment}` : null;
+}
+
+const anchors = computed(() =>
+    items.value.map((item) => inPage(item.url)).filter(Boolean).map((href) => href.slice(1))
+);
+
+const { active } = useScrollSpy(anchors);
+
+function isCurrentSection(item) {
+    const anchor = inPage(item.url);
+
+    return anchor !== null && anchor.slice(1) === active.value;
+}
+
+/**
+ * A menu link that targets this page scrolls; anything else navigates.
+ *
+ * The anchor is left in the markup either way, so the link works with the
+ * keyboard, with middle-click, and before the JavaScript has run.
+ */
+function onItemClick(event, item) {
+    const anchor = inPage(item.url);
+
+    if (anchor !== null) {
+        closeAll();
+        onHashCta(event, anchor);
+    }
+}
 
 function toggle(id) {
     openMenu.value = openMenu.value === id ? null : id;
@@ -153,7 +210,24 @@ function start() {
                              well as the trigger for its submenu, so it is a
                              <Link> with a separate disclosure button beside
                              it rather than a button that swallows the page. -->
-                        <Link :href="item.url" class="header__link link-weave">
+                        <!--
+                            A plain <a> when it targets this page: Inertia
+                            intercepts <Link> and issues a visit, so the
+                            fragment never reaches the browser and the page
+                            re-renders at the top instead of scrolling.
+                        -->
+                        <a
+                            v-if="inPage(item.url)"
+                            :href="item.url"
+                            class="header__link link-weave"
+                            :class="{ 'is-current': isCurrentSection(item) }"
+                            :aria-current="isCurrentSection(item) ? 'location' : undefined"
+                            @click="onItemClick($event, item)"
+                        >
+                            {{ item.label }}
+                        </a>
+
+                        <Link v-else :href="item.url" class="header__link link-weave">
                             {{ item.label }}
                         </Link>
 
@@ -684,5 +758,25 @@ function start() {
     .header__mobile {
         display: none;
     }
+}
+
+/*
+ * The section being read. A plain gold rule — NOT the Sadu thread, which
+ * §10.1 fixes at exactly three homes and a nav underline is not one of them.
+ * Gold as a hairline is §10.2's own listed use.
+ */
+.header__link.is-current {
+    position: relative;
+    color: #fff;
+}
+
+.header__link.is-current::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0;
+    inline-size: 100%;
+    block-size: 2px;
+    background: var(--gold-400);
 }
 </style>

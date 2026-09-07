@@ -44,8 +44,17 @@ class MetaBuilder
         return [
             'title' => $title,
             'siteName' => $siteName,
-            // "Page — Site", or just the site name on the home page.
-            'fullTitle' => $title !== null && $title !== '' ? "{$title} — {$siteName}" : $siteName,
+            /*
+             * "Page — Site", or just the site name when there is no page
+             * title, or when the page title IS the site name.
+             *
+             * That last case is not hypothetical: the landing page's title is
+             * the company's own name, and appending the suffix produced
+             * «أمد الحرف — أمد الحرف» in the browser tab and in every search
+             * result for the site's only page. A title that says the same
+             * thing twice spends half its pixels saying nothing.
+             */
+            'fullTitle' => $this->fullTitle($title, $siteName),
             'description' => $description,
             // Target keywords for this page, per §13's SEO input. Emitted
             // because Bing and Yandex still read the tag weakly; the value
@@ -141,5 +150,31 @@ class MetaBuilder
         }
 
         return $alternates;
+    }
+
+    /** "Page — Site", without repeating the site name when it is the title. */
+    private function fullTitle(?string $title, string $siteName): string
+    {
+        $title = trim((string) $title);
+
+        $site = trim($siteName);
+
+        if ($title === '' || mb_strtolower($title) === mb_strtolower($site)) {
+            return $site;
+        }
+
+        /*
+         * Never say the brand twice.
+         *
+         * A meta title written for a single landing page naturally opens with
+         * the company name — «أمد الحرف — نحوّل الثقافة السعودية…» — and
+         * appending the site name after it produced the name at both ends of
+         * one line, spending the pixels a search result has on repetition.
+         */
+        if (mb_stripos($title, $site) !== false) {
+            return $title;
+        }
+
+        return "{$title} — {$site}";
     }
 }

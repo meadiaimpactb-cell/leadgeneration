@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import Button from '@/Components/ui/Button.vue';
 import { useHashCta } from '@/Composables/useHashCta';
+import { useSettingText } from '@/Composables/useSettingText';
 
 /**
  * sections/Hero (§11.1) — two real panes: copy and media.
@@ -28,7 +29,52 @@ const props = defineProps({
     image: { type: Object, default: null },
     /** Impact figures, when the page has them. Never invented here. */
     trust: { type: Array, default: () => [] },
+    /**
+     * Several audience actions instead of one primary and one secondary.
+     *
+     * `[{ label, source }]`. The landing page addresses three audiences from
+     * the same hero, and each button records which one pressed it so the lead
+     * carries its segment without a third field being put to the visitor.
+     *
+     * When empty — every other page — the named ctaLabel/secondaryLabel pair
+     * below renders exactly as it always has. Nothing about the existing
+     * composition changes; this only adds a second way to fill the same row.
+     */
+    ctas: { type: Array, default: () => [] },
+    /**
+     * Prose inside the copy pane, under the subtitle.
+     *
+     * The landing page's approved introduction is four short paragraphs and
+     * they belong beside the film, not in a band under it: the two-pane
+     * composition IS the design, and moving the copy out of it leaves a
+     * full-width column of text that reads as a document.
+     */
+    body: { type: String, default: null },
+    /**
+     * The section's raw settings, for the bilingual eyebrow.
+     *
+     * `settings` is one JSON column shared by both locales, so a label that
+     * differs between them carries `eyebrow` and `eyebrow_en` on the same
+     * row. Without this the Arabic page printed «B2B · CRAFT SUPPLY» — a
+     * Latin phrase, twice, on a right-to-left page written entirely in
+     * Arabic.
+     *
+     * An empty Arabic value means no label AND no spine: both are gated on
+     * it, and neither is invented here to fill the gap (§22.1).
+     */
+    settings: { type: Object, default: () => ({}) },
+    /**
+     * Set the subtitle at display scale, in gold.
+     *
+     * The approved hero puts its second line at headline size in gold — on
+     * the pages that ship one, that line is the heading's own second line.
+     * The landing page keeps its subtitle a separate field, so this gives it
+     * the same weight without folding it into the <h1>.
+     */
+    displaySub: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(['segment']);
 
 /**
  * The headline is split on newlines so the client controls where it breaks.
@@ -69,6 +115,10 @@ const secondaryDownloads = computed(() =>
  * see the composable for why an anchor alone is not enough.
  */
 const { onHashCta } = useHashCta();
+const { text } = useSettingText();
+
+/** The eyebrow in the language being read; the plain prop is the fallback. */
+const label = computed(() => text(props.settings, 'eyebrow') ?? props.eyebrow);
 
 /**
  * The still that stands in until the moving file arrives. For a video this is
@@ -101,14 +151,14 @@ const paneGround = computed(() =>
                     to the seam between the panes, and the seam is on the
                     physical left in Arabic. The LTR override below moves it.
                 -->
-                <span v-if="eyebrow" class="hero__spine mono-label" aria-hidden="true">
-                    {{ eyebrow }}
+                <span v-if="label" class="hero__spine mono-label" aria-hidden="true">
+                    {{ label }}
                 </span>
 
                 <div class="hero__inner">
-                    <p v-if="eyebrow" class="hero__eyebrow">
+                    <p v-if="label" class="hero__eyebrow">
                         <span class="sadu-mark sadu-weave" aria-hidden="true" />
-                        <span class="mono-label mono-label--gold">{{ eyebrow }}</span>
+                        <span class="mono-label mono-label--gold">{{ label }}</span>
                     </p>
 
                     <h1 v-if="headingLines.length" class="hero__heading">
@@ -120,9 +170,32 @@ const paneGround = computed(() =>
                         >{{ line }}</span>
                     </h1>
 
-                    <p v-if="subheading" class="hero__sub">{{ subheading }}</p>
+                    <p
+                        v-if="subheading"
+                        class="hero__sub"
+                        :class="{ 'hero__sub--display': displaySub }"
+                    >{{ subheading }}</p>
 
-                    <div v-if="ctaLabel || secondaryLabel" class="hero__actions">
+                    <div v-if="body" class="hero__body" v-html="body" />
+
+                    <!--
+                        The audience actions, when a page supplies them. Real
+                        anchors to a real place on this page, so they work
+                        with the keyboard and before the JavaScript has run.
+                    -->
+                    <div v-if="ctas.length" class="hero__actions">
+                        <Button
+                            v-for="(action, i) in ctas"
+                            :key="i"
+                            :variant="i === 0 ? 'cta-lg' : 'secondary'"
+                            href="#contact"
+                            @click="emit('segment', $event, action.source)"
+                        >
+                            {{ action.label }}
+                        </Button>
+                    </div>
+
+                    <div v-else-if="ctaLabel || secondaryLabel" class="hero__actions">
                         <Button v-if="ctaLabel" variant="cta-lg" :href="ctaUrl" @click="onHashCta($event, ctaUrl)">
                             {{ ctaLabel }}
                         </Button>
@@ -300,6 +373,36 @@ const paneGround = computed(() =>
     line-height: var(--lh-body);
     color: rgba(255, 255, 255, 0.78);
     max-inline-size: 50ch;
+}
+
+/* The same weight the heading's accent line carries on the pages that use
+   one — display scale, gold, tight leading. */
+.hero__sub--display {
+    margin-block-start: var(--s-4);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.18;
+    color: var(--gold-400);
+    max-inline-size: 22ch;
+}
+
+.hero__body {
+    margin-block-start: var(--s-5);
+    max-inline-size: 52ch;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.hero__body :deep(p) {
+    margin-block-start: var(--s-3);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+}
+
+/* The two closing lines are the turn the page rests on — «ليست مهمتنا أن
+   نبيعك منتجاً» and the line that answers it. Gold, at the same size. */
+.hero__body :deep(p:nth-last-child(-n + 2)) {
+    color: var(--gold-400);
 }
 
 .hero__actions {

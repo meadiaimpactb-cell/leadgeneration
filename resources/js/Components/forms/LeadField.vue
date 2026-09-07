@@ -168,6 +168,34 @@ const liveErrors = reactive({});
  */
 const EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 
+/**
+ * What the browser may fill in for a field.
+ *
+ * `PhoneField` already sets its own; this covers the plain inputs, which had
+ * neither a `name` nor an autocomplete hint — so the browser had nothing to
+ * match against and offered nothing. That was tolerable while every extra
+ * field was switched off. It is not now: `name` is one of the two controls on
+ * the site's only form, and on a phone the difference between a saved value
+ * offered in one tap and a name typed out by hand is a real share of the
+ * completions this site is measured on (§1).
+ *
+ * Anything unrecognised gets `on` rather than a guessed token: a wrong token
+ * makes the browser offer the wrong value, which is worse than no offer.
+ */
+const AUTOCOMPLETE = {
+    name: 'name',
+    organisation: 'organization',
+    job_title: 'organization-title',
+    email: 'email',
+};
+
+function autocompleteFor(field) {
+    if (field.type === 'email') return 'email';
+    if (field.type === 'tel') return 'tel';
+
+    return AUTOCOMPLETE[field.key] ?? 'on';
+}
+
 function onPhoneValidity(key, state) {
     if (state.empty || state.valid) {
         delete liveErrors[key];
@@ -562,6 +590,8 @@ function submit() {
                         :id="fieldId(field.key)"
                         v-model="values[field.key]"
                         class="lead-input"
+                        :name="field.key"
+                        :autocomplete="autocompleteFor(field)"
                         :type="field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text'"
                         :placeholder="field.placeholder ?? ''"
                         :maxlength="field.maxLength ?? undefined"
@@ -814,8 +844,22 @@ function submit() {
      * collapsed the CtaBand heading to one word per line; the form carries it
      * on every page, so it is the one worth fixing first.
      */
+    /*
+     * As many columns as there are fields, up to two — not two regardless.
+     *
+     * A flat `repeat(2, …)` was written when the form carried two extra
+     * fields, an organisation and a phone, and they sat side by side. The
+     * approved form now asks one extra thing — a name — and that lone input
+     * was rendering at half the row while the contact field beneath it ran
+     * the full width, which reads as a mistake rather than as a layout.
+     *
+     * `auto-fit` collapses the track that has no field in it, so one field
+     * fills the row and two still share it. The form's shape is the client's
+     * to change from the panel, and the grid now follows whatever they choose
+     * instead of assuming two.
+     */
     .lead__extras {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     }
 }
 

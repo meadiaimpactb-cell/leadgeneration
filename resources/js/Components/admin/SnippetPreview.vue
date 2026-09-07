@@ -50,14 +50,28 @@ const headline = computed(() => {
 
     if (!own) return '';
 
-    // Exactly what MetaBuilder builds: "Page — Site".
-    return props.siteName ? `${own} — ${props.siteName}` : own;
+    /*
+     * Exactly what MetaBuilder builds — and it has to stay exactly that.
+     *
+     * MetaBuilder skips the suffix when the title already IS the site name,
+     * or already contains it. This preview did not, so it showed the client
+     * «أمد الحرف — أمد الحرف» for a title that ships as «أمد الحرف». A preview
+     * that disagrees with the page is worse than no preview: it is advice
+     * given about something else.
+     */
+    const site = (props.siteName || '').trim();
+
+    if (!site) return own;
+
+    return own.toLowerCase().includes(site.toLowerCase()) ? own : `${own} — ${site}`;
 });
 
 const url = computed(() => {
     const slug = (props.slug || '').replace(/^\/+|\/+$/g, '');
 
-    return [props.baseUrl, props.locale, slug === 'home' ? '' : slug]
+    // `landing` and `home` are both served from the locale root, so neither
+    // appears in the URL — Page::ROOT_SLUGS says so on the server side.
+    return [props.baseUrl, props.locale, ['home', 'landing'].includes(slug) ? '' : slug]
         .filter(Boolean)
         .join('/');
 });

@@ -316,7 +316,65 @@ class SitemapGenerator
             );
         }
 
-        return $entries;
+        return $this->deduplicated($this->onlyReachable($entries));
+    }
+
+    /**
+     * Drop anything the site will not actually serve at 200.
+     *
+     * `reachable()` was applied to managed pages only, which was enough while
+     * every listing route existed. It is not now: the landing-page decision
+     * retired eleven pages, and the sitemap went on advertising all of them —
+     * a crawler following the file met a 301 at every entry, which is the
+     * "no redirect chains, no duplicate content" defect §13 is about.
+     *
+     * Applied to every entry rather than to pages, because the retirement
+     * took solutions, segments and stories with it and each was produced by
+     * its own loop with its own assumptions.
+     *
+     * @param  list<array<string, mixed>>  $entries
+     * @return list<array<string, mixed>>
+     */
+    private function onlyReachable(array $entries): array
+    {
+        return array_values(array_filter(
+            $entries,
+            fn (array $entry): bool => $this->reachable($entry['loc']),
+        ));
+    }
+
+    /**
+     * One entry per URL.
+     *
+     * Two `pages` rows can resolve to the same address — `landing` and the
+     * `home` row it replaced both serve `/{locale}` — and a sitemap listing
+     * one URL twice tells a crawler the site contradicts itself about its own
+     * most important page. The first entry wins, because the loops above are
+     * ordered by `sort_order` and the earlier row is the one the client put
+     * first.
+     *
+     * Guarding here rather than at the one known cause: any future pair of
+     * routes that collapse onto one URL is the same defect, and this is the
+     * last point where it can still be seen.
+     *
+     * @param  list<array<string, mixed>>  $entries
+     * @return list<array<string, mixed>>
+     */
+    private function deduplicated(array $entries): array
+    {
+        $seen = [];
+        $unique = [];
+
+        foreach ($entries as $entry) {
+            if (isset($seen[$entry['loc']])) {
+                continue;
+            }
+
+            $seen[$entry['loc']] = true;
+            $unique[] = $entry;
+        }
+
+        return $unique;
     }
 
     /**
@@ -362,6 +420,20 @@ class SitemapGenerator
      */
     private function reachable(string $url): bool
     {
+        /*
+         * A matched route is not the same as a served page.
+         *
+         * `/ar/about` still matches — the catch-all `/{locale}/{slug}` takes
+         * any single segment — while PageController refuses it as a retired
+         * slug and answers 404. Route matching alone therefore reported every
+         * retired page as reachable and kept them all in the sitemap.
+         */
+        $slug = basename((string) parse_url($url, PHP_URL_PATH));
+
+        if (in_array($slug, Page::retiredSlugs(), true)) {
+            return false;
+        }
+
         try {
             app('router')->getRoutes()->match(Request::create($url, 'GET'));
 

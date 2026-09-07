@@ -22,7 +22,7 @@ import SaduDivider from '@/Components/ui/SaduDivider.vue';
  * including the figures and the logo strip renders through SectionRenderer,
  * so the client can reorder the whole page from the panel. The datasets it
  * cannot type into a settings field are handed down through `data`, which is
- * how the figures here stay the same records the home page and /impact read.
+ * how the figures here stay the same records /impact reads.
  */
 const props = defineProps({
     page: { type: Object, required: true },

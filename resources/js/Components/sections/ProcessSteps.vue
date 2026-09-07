@@ -17,6 +17,17 @@ import { useSettingText } from '@/Composables/useSettingText';
 defineProps({
     heading: { type: String, default: null },
     eyebrow: { type: String, default: null },
+    /**
+     * The line under the heading, and the closing note under the steps.
+     *
+     * Both columns already existed on `section_translations` and neither was
+     * drawn here, so an editor could type them, see them saved, and never
+     * find them on the page. The landing page's «كيف نعمل؟» block carries
+     * both — a subtitle and the «النتيجة؟» line that closes the argument.
+     */
+    subheading: { type: String, default: null },
+    /** Closing prose under the steps. HTML, authored in the panel. */
+    body: { type: String, default: null },
     /** `[{ title, body }]` from the section's settings. */
     items: { type: Array, default: () => [] },
 });
@@ -44,6 +55,8 @@ const { text } = useSettingText();
                 {{ heading }}
             </h2>
 
+            <p v-if="subheading" class="process__sub reveal">{{ subheading }}</p>
+
             <!-- An ordered list, because the order is the content. -->
             <!-- Capped at five: six stages across a 768px row give each one
                  about 120px, which is narrower than the shortest Arabic step
@@ -58,6 +71,8 @@ const { text } = useSettingText();
                     </p>
                 </li>
             </ol>
+
+            <div v-if="body" class="prose__body process__note reveal" v-html="body" />
         </Container>
     </section>
 </template>
@@ -76,5 +91,16 @@ const { text } = useSettingText();
 .steps > :last-child::before {
     inset-inline-end: auto;
     inline-size: 12px;
+}
+
+.process__sub {
+    margin-block-start: var(--s-3);
+    color: var(--text-muted);
+    max-inline-size: 60ch;
+}
+
+.process__note {
+    margin-block-start: var(--s-6);
+    max-inline-size: 70ch;
 }
 </style>
