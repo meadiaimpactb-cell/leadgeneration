@@ -32,6 +32,24 @@ class SolutionsPanelTest extends TestCase
     {
         parent::setUp();
 
+        /*
+         * SUSPENDED, NOT DELETED — pending the decision in docs/landing-page.md §4.
+         *
+         * The solutions panel is SiteHeader's dropdown over the four audience
+         * segments. LandingSwitchoverSeeder replaces the header menu with the
+         * five in-page anchors, so after the switchover no page on the site
+         * carries the panel and there is nothing left to assert it against.
+         *
+         * Repointing it at /about would make it green while production has no
+         * panel at all, which is worse than a suspension that says so. The
+         * rule it holds — a chooser, in the approved order, numbered, with a
+         * line under each name — is still worth keeping written down if any
+         * of the segment pages return.
+         */
+        $this->markTestSkipped(
+            'The header no longer carries the solutions panel since the landing-page switchover; see docs/landing-page.md §4.'
+        );
+
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }
 

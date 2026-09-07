@@ -40,6 +40,27 @@ class HomeSectionCaptionsTest extends TestCase
     {
         parent::setUp();
 
+        /*
+         * SUSPENDED, NOT DELETED — pending the decision in docs/landing-page.md §4.
+         *
+         * These check `caption()` in Home.vue by fetching `/`. Since the
+         * management decision of 7 September 2026 the root serves the single
+         * landing page, which numbers nothing and captions nothing, so there
+         * is no longer a URL that reaches the code under test.
+         *
+         * Home.vue and HomeController are still in the tree on purpose: if any
+         * of the eleven retired pages come back, reverting is one line in
+         * routes/web.php, and these tests come back with them. Deleting the
+         * component and its tests is the same decision as running
+         * LandingRedirectsSeeder, and that decision is Amad Craft's.
+         *
+         * Skipped loudly rather than removed, so the cost of leaving the
+         * question open stays visible in every run.
+         */
+        $this->markTestSkipped(
+            'Home.vue is unrouted since the landing-page switchover; see docs/landing-page.md §4.'
+        );
+
         Page::query()->update(['status' => 'published', 'published_at' => now()]);
     }
 

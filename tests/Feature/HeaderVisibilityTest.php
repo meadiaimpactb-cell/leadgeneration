@@ -82,8 +82,20 @@ class HeaderVisibilityTest extends TestCase
         );
     }
 
+    /**
+     * Two pages qualify, and both are the same page at different times.
+     *
+     * `Home.vue` served `/` until the landing-page decision of 7 September
+     * 2026 and is kept while the retirement is reversible; `Landing.vue`
+     * serves it now. Each opens on a full-bleed navy hero, which is the only
+     * thing that earns this flag — the header's navy meets the hero's navy
+     * and the gold hairline is what separates them.
+     *
+     * The list stays explicit rather than becoming a count: what matters is
+     * WHICH pages do this, and a page added by mistake should fail by name.
+     */
     #[Test]
-    public function only_the_home_page_opts_into_a_transparent_header(): void
+    public function only_a_page_opening_on_a_navy_hero_opts_into_the_merged_header(): void
     {
         $pages = glob(base_path('resources/js/Pages/Public/*.vue')) ?: [];
 
@@ -101,9 +113,9 @@ class HeaderVisibilityTest extends TestCase
         }
 
         $this->assertSame(
-            ['Home.vue'],
+            ['Home.vue', 'Landing.vue'],
             $optedIn,
-            'Only the home page has a hero the header may float over. '
+            'Only a page opening on a full-bleed navy hero may merge with the header. '
             .'Any other page doing this renders a white header on a white background.'
         );
     }

@@ -78,16 +78,27 @@ class ImpactPageProvesItsClaimsTest extends TestCase
             'The impact page still carries the previous artisan figure.');
     }
 
-    /** The same assertion from the other end. One render per test — SSR. */
+    /**
+     * The same assertion from the other end. One render per test — SSR.
+     *
+     * Measured on /about rather than on the root. The root is the single
+     * landing page now (7 September 2026) and the approved copy for it
+     * carries no figures at all, so there is nothing there to read the record
+     * — inventing an impact block to keep this test pointed at it would be
+     * writing content (§22.1). /about still renders the same `impact` rows
+     * through the same ImpactStats, so the rule this guards — one record, one
+     * figure, wherever it appears — is unchanged and still checked from two
+     * ends.
+     */
     #[Test]
-    public function the_home_page_reads_the_same_record(): void
+    public function another_page_reads_the_same_record(): void
     {
         ImpactMetric::query()->where('key', 'artisans')->update(['value_numeric' => 617]);
 
-        $home = $this->get('/ar')->assertOk()->getContent();
+        $about = $this->get('/ar/about')->assertOk()->getContent();
 
-        $this->assertStringContainsString('617', $home,
-            'The home page does not read the artisan figure from the same record.');
+        $this->assertStringContainsString('617', $about,
+            'The about page does not read the artisan figure from the same record.');
     }
 
     /**

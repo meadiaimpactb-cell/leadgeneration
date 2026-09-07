@@ -69,11 +69,20 @@ class NoBrokenInternalLinksTest extends TestCase
         $broken = [];
 
         foreach (Page::query()->published()->with('translations')->get() as $page) {
-            // The home page lives at the locale root, not at /home.
-            $suffix = $page->slug === 'home' ? '' : '/'.$page->slug;
-
             foreach ($page->translatedLocales() as $locale) {
-                $path = "/{$locale}{$suffix}";
+                /*
+                 * Asked of the page, not rebuilt from its slug.
+                 *
+                 * This used to compose "/{locale}/{slug}" with one special
+                 * case for `home`, which made it a third copy of a rule that
+                 * already lives in Page::ROOT_SLUGS and PageController. When
+                 * the landing page joined that list the copy here went stale
+                 * and the test reported /ar/landing → 404 as a broken page —
+                 * a URL the site never advertises. `publicUrl()` is what the
+                 * sitemap, the menus and the preview button all ask, so it is
+                 * what this should check.
+                 */
+                $path = parse_url($page->publicUrl($locale), PHP_URL_PATH) ?: '/';
                 $status = $this->get($path)->getStatusCode();
 
                 if ($status >= 400) {
