@@ -60,10 +60,28 @@ const sourceLabel = (provider, field) => t(`admin.crm_source_${props.sources[pro
  */
 const controlFor = (kind) => (kind === 'token' ? 'textarea' : kind === 'secret' ? 'password' : 'text');
 
-const hintFor = (provider, field, kind) =>
-    kind === 'token'
-        ? `${sourceLabel(provider, field)} — ${t('admin.crm_token_hint')}`
-        : sourceLabel(provider, field);
+/**
+ * Some credentials are copied from the provider's dashboard; others only ever
+ * come out of an authorisation exchange and cannot be found on any page.
+ *
+ * The generic "paste it as the provider gives it" note is true of the first
+ * kind and actively misleading about the second — it led to an authorisation
+ * code being pasted into the OAuth token box, which fails as an opaque 401.
+ * So the fields that are not pasted say so themselves.
+ */
+const FIELD_NOTES = {
+    'zid.access_token': 'admin.crm_hint_zid_manager',
+    'zid.oauth_token': 'admin.crm_hint_zid_oauth',
+};
+
+const hintFor = (provider, field, kind) => {
+    const source = sourceLabel(provider, field);
+    const note = FIELD_NOTES[`${provider}.${field}`];
+
+    if (note) return `${source} — ${t(note)}`;
+
+    return kind === 'token' ? `${source} — ${t('admin.crm_token_hint')}` : source;
+};
 </script>
 
 <template>

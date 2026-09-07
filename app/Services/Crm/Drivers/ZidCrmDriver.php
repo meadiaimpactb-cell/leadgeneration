@@ -44,6 +44,19 @@ use Throwable;
  * put the OAuth token Zid returns into the second field. No code change is
  * waiting on that; `headers()` already sends both the moment it is filled in.
  *
+ * AND THE PART THAT IS EASY TO GET WRONG — measured 18 Aug 2026: the store a
+ * request acts on is decided **entirely by the Bearer token**. Pairing a
+ * manager token freshly minted for store 1200977 with a Bearer issued for the
+ * development store returned 200 and the *development* store's profile, with
+ * `Store-Id: 1200977` sitting in the same request being ignored. `Store-Id`
+ * and `X-Manager-Token` do not select or constrain the store; only the OAuth
+ * grant behind the Bearer does.
+ *
+ * That is why `verify()` compares the returned store id against the saved one
+ * rather than trusting the request it just sent. Without that check the panel
+ * would cheerfully report a healthy connection while every lead went to a
+ * different merchant's store — the one failure here that would be silent.
+ *
  * ALSO STILL OPEN: `verify()` is exercised against a real endpoint and is
  * trustworthy. `pushLead()` is not. Zid publishes no lead resource, so the path
  * it posts to does not exist and will 404; what a B2B enquiry should become on
