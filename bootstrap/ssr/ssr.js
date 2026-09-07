@@ -15849,6 +15849,18 @@ const _sfc_main$Q = {
     const written = computed(
       () => props.items.map((item) => ({
         icon: item.icon,
+        /*
+         * The running number the client wrote on the card, if any.
+         *
+         * The approved copy for «ماذا نقدم؟» names its four areas
+         * «01 — الهدايا المؤسسية» and so on. The number was stored in the
+         * section's settings and drawn by nothing, so four
+         * approved labels reached the page without the half that ordered
+         * them. Not derived from the index: the client wrote it, and a
+         * derived counter would silently renumber a set they had
+         * deliberately numbered otherwise.
+         */
+        number: item.number ?? null,
         title: text(item, "title"),
         body: text(item, "body")
       })).filter((item) => item.title || item.body)
@@ -15859,25 +15871,25 @@ const _sfc_main$Q = {
           ref_key: "root",
           ref: root,
           class: ["section", [`cardsec--${__props.variant}`, __props.variant === "band" ? "on-dark" : null]]
-        }, _attrs))} data-v-3b74f89e>`);
+        }, _attrs))} data-v-88351d39>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
               if (__props.heading) {
-                _push2(`<h2 class="reveal" data-v-3b74f89e${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 class="reveal" data-v-88351d39${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="cards__sub reveal" data-v-3b74f89e${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="cards__sub reveal" data-v-88351d39${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<ul class="cards" data-v-3b74f89e${_scopeId}><!--[-->`);
+              _push2(`<ul class="cards" data-v-88351d39${_scopeId}><!--[-->`);
               ssrRenderList(written.value, (item, i) => {
-                _push2(`<li class="card reveal" data-v-3b74f89e${_scopeId}>`);
+                _push2(`<li class="card reveal" data-v-88351d39${_scopeId}>`);
                 if (item.icon) {
-                  _push2(`<span class="cards__icon" data-v-3b74f89e${_scopeId}>`);
+                  _push2(`<span class="cards__icon" data-v-88351d39${_scopeId}>`);
                   _push2(ssrRenderComponent(NavIcon, {
                     name: item.icon,
                     size: 28,
@@ -15888,13 +15900,18 @@ const _sfc_main$Q = {
                 } else {
                   _push2(`<!---->`);
                 }
+                if (item.number) {
+                  _push2(`<span class="cards__number mono-label" data-v-88351d39${_scopeId}>${ssrInterpolate(item.number)}</span>`);
+                } else {
+                  _push2(`<!---->`);
+                }
                 if (item.title) {
-                  _push2(`<h3 class="cards__title" data-v-3b74f89e${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
+                  _push2(`<h3 class="cards__title" data-v-88351d39${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (item.body) {
-                  _push2(`<p class="cards__body" data-v-3b74f89e${_scopeId}>${ssrInterpolate(item.body)}</p>`);
+                  _push2(`<p class="cards__body" data-v-88351d39${_scopeId}>${ssrInterpolate(item.body)}</p>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -15928,12 +15945,16 @@ const _sfc_main$Q = {
                           muted: false
                         }, null, 8, ["name"])
                       ])) : createCommentVNode("", true),
-                      item.title ? (openBlock(), createBlock("h3", {
+                      item.number ? (openBlock(), createBlock("span", {
                         key: 1,
+                        class: "cards__number mono-label"
+                      }, toDisplayString(item.number), 1)) : createCommentVNode("", true),
+                      item.title ? (openBlock(), createBlock("h3", {
+                        key: 2,
                         class: "cards__title"
                       }, toDisplayString(item.title), 1)) : createCommentVNode("", true),
                       item.body ? (openBlock(), createBlock("p", {
-                        key: 2,
+                        key: 3,
                         class: "cards__body"
                       }, toDisplayString(item.body), 1)) : createCommentVNode("", true)
                     ]);
@@ -15957,7 +15978,7 @@ _sfc_main$Q.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CardsGrid.vue");
   return _sfc_setup$Q ? _sfc_setup$Q(props, ctx) : void 0;
 };
-const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-3b74f89e"]]);
+const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-88351d39"]]);
 const _sfc_main$P = {
   __name: "FaqAccordion",
   __ssrInlineRender: true,
@@ -17734,29 +17755,29 @@ const _sfc_main$B = {
           ref_key: "root",
           ref: root,
           class: "section flow"
-        }, _attrs))} data-v-c0bf9555>`);
+        }, _attrs))} data-v-2cd225c7>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
               if (__props.heading) {
-                _push2(`<h2 class="h2 reveal" data-v-c0bf9555${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 class="h2 reveal" data-v-2cd225c7${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="flow__sub reveal" data-v-c0bf9555${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="flow__sub reveal" data-v-2cd225c7${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.body) {
-                _push2(`<div class="prose prose__body reveal" data-v-c0bf9555${_scopeId}>${__props.body ?? ""}</div>`);
+                _push2(`<div class="prose prose__body reveal" data-v-2cd225c7${_scopeId}>${__props.body ?? ""}</div>`);
               } else {
                 _push2(`<!---->`);
               }
               if (written.value.length) {
-                _push2(`<ol class="flow__chain reveal" data-v-c0bf9555${_scopeId}><!--[-->`);
+                _push2(`<ol class="flow__chain reveal" data-v-2cd225c7${_scopeId}><!--[-->`);
                 ssrRenderList(written.value, (step, i) => {
-                  _push2(`<li class="flow__step" data-v-c0bf9555${_scopeId}>${ssrInterpolate(step)}</li>`);
+                  _push2(`<li class="flow__step" data-v-2cd225c7${_scopeId}>${ssrInterpolate(step)}</li>`);
                 });
                 _push2(`<!--]--></ol>`);
               } else {
@@ -17806,7 +17827,7 @@ _sfc_main$B.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ValueFlow.vue");
   return _sfc_setup$B ? _sfc_setup$B(props, ctx) : void 0;
 };
-const ValueFlow = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["__scopeId", "data-v-c0bf9555"]]);
+const ValueFlow = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["__scopeId", "data-v-2cd225c7"]]);
 const LEAD_SOURCE = /* @__PURE__ */ Symbol("leadSource");
 function provideLeadSource() {
   const source = ref(null);
@@ -17851,30 +17872,30 @@ const _sfc_main$A = {
           ref_key: "root",
           ref: root,
           class: "section segments"
-        }, _attrs))} data-v-05b46f3e>`);
+        }, _attrs))} data-v-684ad86a>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
               if (__props.heading) {
-                _push2(`<h2 class="h2 reveal" data-v-05b46f3e${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 class="h2 reveal" data-v-684ad86a${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="segments__sub reveal" data-v-05b46f3e${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="segments__sub reveal" data-v-684ad86a${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<ul class="segments__grid" data-v-05b46f3e${_scopeId}><!--[-->`);
+              _push2(`<ul class="segments__grid" data-v-684ad86a${_scopeId}><!--[-->`);
               ssrRenderList(written.value, (item, i) => {
-                _push2(`<li class="segments__card reveal" data-v-05b46f3e${_scopeId}>`);
+                _push2(`<li class="segments__card reveal" data-v-684ad86a${_scopeId}>`);
                 if (item.title) {
-                  _push2(`<h3 class="segments__title" data-v-05b46f3e${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
+                  _push2(`<h3 class="segments__title" data-v-684ad86a${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (item.body) {
-                  _push2(`<p class="segments__body" data-v-05b46f3e${_scopeId}>${ssrInterpolate(item.body)}</p>`);
+                  _push2(`<p class="segments__body" data-v-684ad86a${_scopeId}>${ssrInterpolate(item.body)}</p>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -17959,7 +17980,7 @@ _sfc_main$A.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SegmentCards.vue");
   return _sfc_setup$A ? _sfc_setup$A(props, ctx) : void 0;
 };
-const SegmentCards = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-05b46f3e"]]);
+const SegmentCards = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-684ad86a"]]);
 const _sfc_main$z = {
   __name: "SegmentCta",
   __ssrInlineRender: true,
@@ -17980,12 +18001,12 @@ const _sfc_main$z = {
         _push(`<section${ssrRenderAttrs(mergeProps({
           ref_key: "root",
           ref: root,
-          class: "segment-cta on-dark"
-        }, _attrs))} data-v-443c1691>`);
+          class: "segment-cta"
+        }, _attrs))} data-v-9f80faaa>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`<div class="segment-cta__inner reveal" data-v-443c1691${_scopeId}>`);
+              _push2(`<div class="segment-cta__inner reveal" data-v-9f80faaa${_scopeId}>`);
               _push2(ssrRenderComponent(_sfc_main$1h, {
                 variant: "cta-lg",
                 href: "#contact",
@@ -18035,7 +18056,7 @@ _sfc_main$z.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SegmentCta.vue");
   return _sfc_setup$z ? _sfc_setup$z(props, ctx) : void 0;
 };
-const SegmentCta = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["__scopeId", "data-v-443c1691"]]);
+const SegmentCta = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["__scopeId", "data-v-9f80faaa"]]);
 const _sfc_main$y = {
   __name: "RoleSplit",
   __ssrInlineRender: true,
@@ -18060,30 +18081,30 @@ const _sfc_main$y = {
           ref_key: "root",
           ref: root,
           class: "section split"
-        }, _attrs))} data-v-1d694576>`);
+        }, _attrs))} data-v-05e96e1d>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
               if (__props.heading) {
-                _push2(`<h2 class="h2 reveal" data-v-1d694576${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 class="h2 reveal" data-v-05e96e1d${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="split__sub reveal" data-v-1d694576${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="split__sub reveal" data-v-05e96e1d${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<dl class="split__grid reveal" data-v-1d694576${_scopeId}><!--[-->`);
+              _push2(`<dl class="split__grid reveal" data-v-05e96e1d${_scopeId}><!--[-->`);
               ssrRenderList(written.value, (column, i) => {
-                _push2(`<div class="split__col" data-v-1d694576${_scopeId}>`);
+                _push2(`<div class="split__col" data-v-05e96e1d${_scopeId}>`);
                 if (column.title) {
-                  _push2(`<dt class="split__role" data-v-1d694576${_scopeId}>${ssrInterpolate(column.title)}</dt>`);
+                  _push2(`<dt class="split__role" data-v-05e96e1d${_scopeId}>${ssrInterpolate(column.title)}</dt>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (column.body) {
-                  _push2(`<dd class="split__body" data-v-1d694576${_scopeId}>${ssrInterpolate(column.body)}</dd>`);
+                  _push2(`<dd class="split__body" data-v-05e96e1d${_scopeId}>${ssrInterpolate(column.body)}</dd>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -18091,7 +18112,7 @@ const _sfc_main$y = {
               });
               _push2(`<!--]--></dl>`);
               if (__props.body) {
-                _push2(`<div class="prose prose__body split__note reveal" data-v-1d694576${_scopeId}>${__props.body ?? ""}</div>`);
+                _push2(`<div class="prose prose__body split__note reveal" data-v-05e96e1d${_scopeId}>${__props.body ?? ""}</div>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -18145,7 +18166,7 @@ _sfc_main$y.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/RoleSplit.vue");
   return _sfc_setup$y ? _sfc_setup$y(props, ctx) : void 0;
 };
-const RoleSplit = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["__scopeId", "data-v-1d694576"]]);
+const RoleSplit = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["__scopeId", "data-v-05e96e1d"]]);
 const _sfc_main$x = {
   __name: "SectionRenderer",
   __ssrInlineRender: true,
@@ -20838,27 +20859,27 @@ const _sfc_main$f = {
       return text(props.settings.contexts ?? {}, source.value);
     });
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "lcontact-outer" }, _attrs))} data-v-45e4ee44>`);
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "lcontact-outer" }, _attrs))} data-v-4b38826c>`);
       _push(ssrRenderComponent(_sfc_main$11, null, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="band on-dark" data-v-45e4ee44${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-45e4ee44${_scopeId}></span><div class="band__grid" data-v-45e4ee44${_scopeId}><div class="band__pitch" data-v-45e4ee44${_scopeId}>`);
+            _push2(`<div class="band on-dark" data-v-4b38826c${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-4b38826c${_scopeId}></span><div class="band__grid" data-v-4b38826c${_scopeId}><div class="band__pitch" data-v-4b38826c${_scopeId}>`);
             if (__props.heading) {
-              _push2(`<h2 class="band__title" data-v-45e4ee44${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              _push2(`<h2 class="band__title" data-v-4b38826c${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.body) {
-              _push2(`<div class="band__note" data-v-45e4ee44${_scopeId}>${__props.body ?? ""}</div>`);
+              _push2(`<div class="band__note" data-v-4b38826c${_scopeId}>${__props.body ?? ""}</div>`);
             } else {
               _push2(`<!---->`);
             }
             if (context.value) {
-              _push2(`<p class="band__context" aria-live="polite" data-v-45e4ee44${_scopeId}>${ssrInterpolate(context.value)}</p>`);
+              _push2(`<p class="band__context" aria-live="polite" data-v-4b38826c${_scopeId}>${ssrInterpolate(context.value)}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`</div><div class="band__form" data-v-45e4ee44${_scopeId}>`);
+            _push2(`</div><div class="band__form" data-v-4b38826c${_scopeId}>`);
             _push2(ssrRenderComponent(LeadField, {
               layout: "inline",
               "submit-label": submitLabel.value,
@@ -20913,7 +20934,7 @@ _sfc_main$f.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/LandingContact.vue");
   return _sfc_setup$f ? _sfc_setup$f(props, ctx) : void 0;
 };
-const LandingContact = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["__scopeId", "data-v-45e4ee44"]]);
+const LandingContact = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["__scopeId", "data-v-4b38826c"]]);
 const INDEXABLE = "rich_text";
 const _sfc_main$e = {
   __name: "Landing",
@@ -20970,7 +20991,7 @@ const _sfc_main$e = {
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<section${ssrRenderAttr("id", group.anchor ?? void 0)} class="${ssrRenderClass([`anchor-group--${g % 2 === 0 ? "paper" : "sand"}`, "anchor-group"])}" data-v-c39155a0${_scopeId}><!--[-->`);
+              _push2(`<section${ssrRenderAttr("id", group.anchor ?? void 0)} class="${ssrRenderClass([`anchor-group--${g % 2 === 0 ? "paper" : "sand"}`, "anchor-group"])}" data-v-9042feb7${_scopeId}><!--[-->`);
               ssrRenderList(group.sections, (section) => {
                 _push2(`<!--[-->`);
                 if (section.type === "hero") {
@@ -21055,7 +21076,7 @@ _sfc_main$e.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Landing.vue");
   return _sfc_setup$e ? _sfc_setup$e(props, ctx) : void 0;
 };
-const Landing = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["__scopeId", "data-v-c39155a0"]]);
+const Landing = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["__scopeId", "data-v-9042feb7"]]);
 const __vite_glob_0_31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Landing
