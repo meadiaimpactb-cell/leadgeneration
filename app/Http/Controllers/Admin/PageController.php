@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\Redirect;
 use App\Support\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,22 @@ class PageController extends Controller
     {
         Gate::authorize('viewAny', Page::class);
 
+        $retired = Page::retiredSlugs();
+
+        /*
+         * Where each retired page now sends its visitors.
+         *
+         * Looked up once and handed to the screen, so a row can say «تُحوَّل
+         * إلى ‎/ar#government» instead of leaving an editor to guess whether a
+         * page still does anything. One query, not one per row.
+         */
+        $redirects = $retired === []
+            ? collect()
+            : Redirect::query()
+                ->where('is_active', true)
+                ->where('from_path', 'like', '/'.app()->getLocale().'/%')
+                ->pluck('to_path', 'from_path');
+
         return Inertia::render('Admin/Pages/Index', [
             'pages' => Page::query()
                 ->with('translations')
@@ -44,7 +61,21 @@ class PageController extends Controller
                     'sections' => $page->sections_count,
                     'locales' => $page->translatedLocales(),
                     'previewUrl' => $page->previewUrl(),
-                ]),
+                    /*
+                     * The site itself. There is one page with a body since the
+                     * landing-page decision, and it was sorting to the bottom
+                     * of thirteen rows — the one thing the editor opens every
+                     * day, last, under eleven that no longer answer.
+                     */
+                    'isSite' => $page->slug === 'landing',
+                    'retired' => in_array($page->slug, $retired, true),
+                    'redirectsTo' => $redirects->get('/'.app()->getLocale().'/'.$page->slug),
+                ])
+                ->sortBy(fn (array $page): array => [
+                    $page['isSite'] ? 0 : 1,
+                    $page['retired'] ? 1 : 0,
+                ])
+                ->values(),
             'locales' => array_keys(config('site.locales')),
         ]);
     }

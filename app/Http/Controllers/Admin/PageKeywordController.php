@@ -218,6 +218,9 @@ class PageKeywordController extends Controller
     {
         return Page::query()
             ->published()
+            // Retired pages answer 301; choosing search terms for them would
+            // be work spent on an address nobody reaches.
+            ->notRetired()
             ->with('translations')
             ->get()
             ->map(fn (Page $page): array => [

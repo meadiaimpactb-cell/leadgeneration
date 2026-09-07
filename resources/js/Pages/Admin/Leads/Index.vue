@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, watch } from 'vue';
+import { computed, onBeforeUnmount, reactive, watch } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
@@ -269,9 +269,111 @@ function toggleArchive(lead) {
     );
 }
 
+/**
+ * What to call an answer the visitor gave beyond the contact value.
+ *
+ * Read from `lead_fields` — the same row that put the input on the form and
+ * carries the label the visitor read — before falling back to a translation
+ * key. The key alone was the whole mechanism, so switching a field on in the
+ * panel produced a row headed `admin.lead_extra_name` on this screen until a
+ * developer added a string for it. Enabling the name field did exactly that.
+ *
+ * The last resort is the key itself rather than a blank: a salesperson seeing
+ * `name` still knows what they are looking at.
+ */
+/**
+ * Whether a detail is worth a row.
+ *
+ * Most enquiries carry no campaign, no segment and no stated interest —
+ * someone typed the address and filled in the form. Printing «الحملة —» for
+ * each of those turns three answered questions into three rows that read as
+ * missing information, and pushes the facts that ARE here below the fold of
+ * the modal.
+ *
+ * The rows that never disappear are the ones that cannot be empty: when it
+ * arrived, how to reply, what state it is in, where it came from.
+ */
+/**
+ * The page an enquiry came from, when that is worth a row.
+ *
+ * Every enquiry now arrives from the same landing page, so its address is a
+ * constant — a row repeated on every record that answers a question nobody
+ * asked. A campaign page at `/c/{slug}` is different: that is the one thing
+ * the marketing team opens this panel to learn.
+ */
+function tellingPageUrl(lead) {
+    if (!has(lead.pageUrl)) {
+        return false;
+    }
+
+    const path = String(lead.pageUrl).replace(/^https?:\/\/[^/]+/, '').replace(/[#?].*$/, '');
+
+    // `/ar` and `/en` — the landing page itself, in either language.
+    return !/^\/[a-z]{2}\/?$/.test(path);
+}
+
+/** Whether this enquiry carried any attribution at all. */
+function hasAttribution(lead) {
+    return tellingPageUrl(lead)
+        || has(lead.referrer)
+        || Object.values(lead.utm ?? {}).some((value) => has(value));
+}
+
+function has(value) {
+    return value !== null && value !== undefined && String(value).trim() !== '';
+}
+
+function extraLabel(key) {
+    const field = (page.props.leadFields ?? []).find((f) => f.key === key);
+
+    if (field?.label) {
+        return field.label;
+    }
+
+    const translated = t(`admin.lead_extra_${key}`);
+
+    return translated === `admin.lead_extra_${key}` ? key : translated;
+}
+
 function closePanel() {
     router.get('/admin/leads', clean(), { preserveState: true, preserveScroll: true });
 }
+
+/*
+ * Escape closes it.
+ *
+ * Listened for on the document, not on the dialog element. `@keydown.esc` on
+ * a <div> fires only while that div has focus, and nothing gives it focus —
+ * so the binding read as working and answered no key the operator pressed.
+ * Bound only while a lead is open, and removed with the component.
+ */
+function onEscape(event) {
+    if (event.key === 'Escape') {
+        closePanel();
+    }
+}
+
+watch(
+    () => props.selected,
+    (open) => {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        document.removeEventListener('keydown', onEscape);
+
+        if (open) {
+            document.addEventListener('keydown', onEscape);
+        }
+    },
+    { immediate: true }
+);
+
+onBeforeUnmount(() => {
+    if (typeof document !== 'undefined') {
+        document.removeEventListener('keydown', onEscape);
+    }
+});
 
 // Timestamps go through useFormat: Gregorian calendar, Latin digits.
 </script>
@@ -551,8 +653,28 @@ function closePanel() {
             </nav>
         </Panel>
 
-        <!-- Side panel: full detail + UTM + CRM sync log (§11.4). -->
-        <aside v-if="selected" class="drawer" role="dialog" aria-modal="false">
+        <!--
+            Full detail + UTM + CRM sync log (§11.4), as a modal over the table.
+
+            It was a drawer pinned to the inline edge, 480px wide, which is
+            where a panel goes when it is meant to be read ALONGSIDE the list.
+            Nothing here is read alongside anything: an operator opens one
+            enquiry, reads it, decides, and closes it. On a laptop the drawer
+            also covered the rows it was launched from, so the list it sat
+            beside was the part it hid.
+
+            Centred, over a scrim, at a width that lets the pairs sit in two
+            columns instead of one long ladder.
+        -->
+        <div
+            v-if="selected"
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            :aria-label="selected.contact"
+            @click.self="closePanel"
+        >
+            <div class="modal__card">
             <header class="drawer__head">
                 <h2 class="drawer__title latin">{{ selected.contact }}</h2>
                 <button class="drawer__close" type="button" :aria-label="t('common.close')" @click="closePanel">
@@ -576,7 +698,7 @@ function closePanel() {
                     </dd>
 
                     <template v-for="(value, key) in selected.extra ?? {}" :key="key">
-                        <dt>{{ t(`admin.lead_extra_${key}`) }}</dt>
+                        <dt>{{ extraLabel(key) }}</dt>
                         <dd :class="{ ltr: key === 'phone' }">
                             <!-- A phone is a link: one tap to call from a
                                  phone, one click to dial from a desktop app. -->
@@ -587,8 +709,10 @@ function closePanel() {
                         </dd>
                     </template>
 
-                    <dt>{{ t('admin.lead_message') }}</dt>
-                    <dd>{{ selected.message ?? '—' }}</dd>
+                    <template v-if="has(selected.message)">
+                        <dt>{{ t('admin.lead_message') }}</dt>
+                        <dd>{{ selected.message }}</dd>
+                    </template>
 
                     <dt>{{ t('admin.lead_status') }}</dt>
                     <dd>{{ t(`admin.status_${selected.status}`) }}</dd>
@@ -606,22 +730,42 @@ function closePanel() {
                     <dt>{{ t('admin.lead_source') }}</dt>
                     <dd>{{ originOf(selected) }}</dd>
 
-                    <dt>{{ t('admin.lead_campaign') }}</dt>
-                    <dd>{{ selected.campaign ?? '—' }}</dd>
+                    <template v-if="has(selected.campaign)">
+                        <dt>{{ t('admin.lead_campaign') }}</dt>
+                        <dd>{{ selected.campaign }}</dd>
+                    </template>
 
-                    <dt>{{ t('admin.sectors') }}</dt>
-                    <dd>{{ selected.sectorHint ?? '—' }}</dd>
+                    <template v-if="has(selected.sectorHint)">
+                        <dt>{{ t('admin.sectors') }}</dt>
+                        <dd>{{ selected.sectorHint }}</dd>
+                    </template>
 
-                    <dt>{{ t('admin.lead_interest') }}</dt>
-                    <dd>{{ selected.interest ? interestLabel(selected.interest) : '—' }}</dd>
+                    <template v-if="has(selected.interest)">
+                        <dt>{{ t('admin.lead_interest') }}</dt>
+                        <dd>{{ interestLabel(selected.interest) }}</dd>
+                    </template>
                 </dl>
 
                 <h3 class="drawer__sub">{{ t('admin.attribution') }}</h3>
-                <dl class="pairs">
-                    <dt>{{ t('admin.lead_page_url') }}</dt>
-                    <dd class="ltr">{{ selected.pageUrl ?? '—' }}</dd>
-                    <dt>{{ t('admin.lead_referrer') }}</dt>
-                    <dd class="ltr">{{ selected.referrer ?? '—' }}</dd>
+
+                <!-- An enquiry that arrived with nothing tagged leaves this
+                     list empty, and an empty <dl> under a heading reads as a
+                     section that failed to load. The note below is the whole
+                     answer in that case. -->
+                <dl v-if="hasAttribution(selected)" class="pairs">
+                    <!-- Only when it says something. On a one-page site the
+                         landing page's own address is on every enquiry, so
+                         printing it tells the reader nothing they did not
+                         already know; a campaign page's address does. -->
+                    <template v-if="tellingPageUrl(selected)">
+                        <dt>{{ t('admin.lead_page_url') }}</dt>
+                        <dd class="ltr">{{ selected.pageUrl }}</dd>
+                    </template>
+
+                    <template v-if="has(selected.referrer)">
+                        <dt>{{ t('admin.lead_referrer') }}</dt>
+                        <dd class="ltr">{{ selected.referrer }}</dd>
+                    </template>
                     <!--
                         One loop, not two.
 
@@ -677,7 +821,8 @@ function closePanel() {
                     </li>
                 </ul>
             </div>
-        </aside>
+            </div>
+        </div>
       </div>
     </AdminLayout>
 </template>
@@ -1070,17 +1215,39 @@ function closePanel() {
 
 /* ---- Detail drawer ---------------------------------------- */
 
-.drawer {
+/* The scrim. Dark enough to take the table out of the reading order, light
+   enough that the operator keeps their place in it. */
+.modal {
     position: fixed;
-    inset-block: 0;
-    inset-inline-end: 0;
+    inset: 0;
     z-index: 70;
+    display: grid;
+    place-items: center;
+    padding: var(--s-5);
+    background: rgba(0, 37, 70, 0.45);
+    overflow-y: auto;
+}
+
+.modal__card {
     display: flex;
     flex-direction: column;
-    inline-size: min(480px, 100%);
+    inline-size: min(560px, 100%);
+    max-block-size: min(86vh, 900px);
     background: var(--paper);
-    border-inline-start: 1px solid var(--hairline);
-    box-shadow: -24px 0 60px rgba(0, 37, 70, 0.16);
+    border-radius: var(--r-md);
+    box-shadow: 0 24px 70px rgba(0, 37, 70, 0.28);
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .modal__card {
+        animation: modal-in 180ms cubic-bezier(0.2, 0.7, 0.3, 1);
+    }
+}
+
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
 }
 
 html[dir='ltr'] .drawer {
@@ -1129,17 +1296,32 @@ html[dir='ltr'] .drawer {
 
 .drawer__close:hover { background: rgba(255, 255, 255, 0.22); }
 
+/*
+ * One column, at a width a reader's eye can hold.
+ *
+ * This was a two-column grid, and the wider of the two rules also turned the
+ * enquiry's own list into two columns — which split every `dt` from the `dd`
+ * under it, so the label sat at one edge and its value in the middle of the
+ * modal with nothing joining them.
+ *
+ * The length that made two columns tempting is gone: rows with no value are
+ * no longer drawn at all, and most enquiries carry neither a campaign nor a
+ * segment nor an interest. What is left is short enough to read down.
+ */
 .drawer__body {
     flex: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: var(--s-6);
+    padding: var(--s-5);
+    display: grid;
+    gap: var(--s-5);
+    align-content: start;
 }
 
 /* A section heading inside the drawer — Arabic, so the Arabic
    face, no tracking, no uppercase. */
 .drawer__sub {
-    margin-block: var(--s-7) var(--s-4);
+    margin-block: 0 var(--s-3);
     padding-block-end: var(--s-2);
     border-block-end: 1px solid var(--hairline-soft);
     font-family: var(--font-body);
@@ -1150,25 +1332,56 @@ html[dir='ltr'] .drawer {
     color: var(--navy-900);
 }
 
-/* Label above value, not beside it: an Arabic label and a Latin
-   URL in two columns leaves both cramped and neither aligned. */
+/*
+ * Label and value on one line: «التاريخ   7 سبتمبر 2026».
+ *
+ * A definition list does this by itself in a two-column grid — `dt` falls in
+ * the first track, the `dd` after it in the second, and the next pair starts
+ * a new row. Stacked, six facts of three words each ran the height of the
+ * modal and needed a scrollbar to show five.
+ *
+ * The label column is `minmax(7rem, auto)`: wide enough that the longest
+ * label sets it, capped so a long one cannot squeeze the value out. `1fr` on
+ * the value with `minmax(0, …)` so a URL wraps inside its column instead of
+ * pushing the grid past the card.
+ */
 .pairs {
     display: grid;
-    gap: var(--s-4);
+    grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+    column-gap: var(--s-4);
+    row-gap: var(--s-3);
+    align-items: baseline;
     margin: 0;
 }
 
 .pairs dt {
+    margin: 0;
     font-size: var(--t-meta);
     font-weight: 600;
     color: var(--muted);
+    /* The colons line up in a column of their own, so the eye follows one
+       edge down the list instead of hunting the start of each value. */
+    text-align: end;
+}
+
+/*
+ * The colon belongs to the presentation, not to the string.
+ *
+ * Written here rather than appended to each label in `resources/lang`,
+ * because every one of those labels is also read out on its own — in the CSV
+ * export, in the notification email, in the CRM payload — and a trailing
+ * colon travels with it into all three.
+ */
+.pairs dt::after {
+    content: ":";
+    margin-inline-start: 1px;
 }
 
 .pairs dd {
-    margin: 5px 0 0;
+    margin: 0;
     color: var(--text);
     font-size: var(--t-body);
-    line-height: 1.75;
+    line-height: 1.5;
     overflow-wrap: break-word;
 }
 

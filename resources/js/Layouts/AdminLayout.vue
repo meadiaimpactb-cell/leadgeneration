@@ -87,11 +87,26 @@ watch(
  * This layout resolves the labels and filters by permission; it no longer
  * carries the map of the panel itself.
  */
+
+/**
+ * Whether the pages the landing page replaced are still switched on.
+ *
+ * Read from the server rather than hard-coded here, so the menu and the router
+ * are answering the same `site.legacy_pages` flag. An entry whose only job is
+ * to edit a retired page is hidden — the screen still opens for anyone with
+ * the URL, which is what makes turning the flag back on enough to restore it.
+ */
+const legacyPages = computed(() => page.props.legacyPages !== false);
+
 const visibleGroups = computed(() =>
     NAV_GROUPS.map((group) => ({
         label: t(group.label),
         items: group.items
             .filter((item) => !item.can || can.value[item.can])
+            .filter((item) => !item.legacy || legacyPages.value)
+            // Taken out of the menu at the client's request; the screen itself
+            // still answers for anyone holding its URL.
+            .filter((item) => !item.hidden)
             .map((item) => ({ ...item, label: t(item.label) })),
     })).filter((group) => group.items.length)
 );

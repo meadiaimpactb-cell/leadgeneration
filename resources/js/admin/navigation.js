@@ -13,6 +13,14 @@
  *   href    the admin path
  *   can     the permission required to see it; omit for "any admin"
  *   soon    true while the screen is a placeholder awaiting its phase
+ *   hidden  true if Amad Craft asked for the entry to be taken out of the
+ *           menu. The screen still opens for anyone with its URL — this is a
+ *           menu decision, not a removal — so putting it back is deleting one
+ *           word here.
+ *   legacy  true if the screen only edits pages the landing-page decision
+ *           retired; hidden while `site.legacy_pages` is off, and back the
+ *           moment it is on. The screens themselves still open — this hides
+ *           the entry, it does not remove the editor.
  *
  * Order and grouping here are the client's approved structure. Keep them.
  */
@@ -30,7 +38,7 @@ export const NAV_GROUPS = [
         label: 'admin.nav_content',
         items: [
             { icon: 'pages', label: 'admin.pages', href: '/admin/pages', can: 'pages.view' },
-            { icon: 'solutions', label: 'admin.solutions', href: '/admin/content/solutions', can: 'solutions.manage' },
+            { icon: 'solutions', label: 'admin.solutions', href: '/admin/content/solutions', can: 'solutions.manage' , legacy: true },
             /*
              * The four audience segments, as a sub-entry of Solutions.
              *
@@ -42,14 +50,14 @@ export const NAV_GROUPS = [
              * to be told about in words, which is the thing this panel exists
              * to avoid.
              */
-            { icon: 'sectors', label: 'admin.solution_segments', href: '/admin/content/sectors', can: 'sectors.manage', sub: true },
-            { icon: 'products', label: 'admin.products', href: '/admin/content/products', can: 'products.manage' },
-            { icon: 'categories', label: 'admin.product_categories', href: '/admin/content/product-categories', can: 'products.manage' },
-            { icon: 'impact', label: 'admin.impact_metrics', href: '/admin/content/impact-metrics', can: 'impact.manage' },
-            { icon: 'stories', label: 'admin.stories', href: '/admin/content/stories', can: 'stories.manage' },
-            { icon: 'reports', label: 'admin.reports', href: '/admin/content/reports', can: 'reports.manage' },
-            { icon: 'training', label: 'admin.training', href: '/admin/content/training-programs', can: 'training.manage' },
-            { icon: 'partners', label: 'admin.partners', href: '/admin/content/partners', can: 'partners.manage' },
+            { icon: 'sectors', label: 'admin.solution_segments', href: '/admin/content/sectors', can: 'sectors.manage', sub: true , legacy: true },
+            { icon: 'products', label: 'admin.products', href: '/admin/content/products', can: 'products.manage' , legacy: true },
+            { icon: 'categories', label: 'admin.product_categories', href: '/admin/content/product-categories', can: 'products.manage' , legacy: true },
+            { icon: 'impact', label: 'admin.impact_metrics', href: '/admin/content/impact-metrics', can: 'impact.manage' , legacy: true },
+            { icon: 'stories', label: 'admin.stories', href: '/admin/content/stories', can: 'stories.manage' , legacy: true },
+            { icon: 'reports', label: 'admin.reports', href: '/admin/content/reports', can: 'reports.manage' , legacy: true },
+            { icon: 'training', label: 'admin.training', href: '/admin/content/training-programs', can: 'training.manage' , legacy: true },
+            { icon: 'partners', label: 'admin.partners', href: '/admin/content/partners', can: 'partners.manage' , legacy: true },
             { icon: 'media', label: 'admin.media_library', href: '/admin/media', can: 'media.manage' },
         ],
     },
@@ -57,7 +65,7 @@ export const NAV_GROUPS = [
         key: 'campaigns',
         label: 'admin.nav_campaigns',
         items: [
-            { icon: 'campaigns', label: 'admin.campaigns_landing', href: '/admin/campaigns', can: 'campaigns.view' },
+            { icon: 'campaigns', label: 'admin.campaigns_landing', href: '/admin/campaigns', can: 'campaigns.view' , legacy: true },
         ],
     },
     {
@@ -67,8 +75,21 @@ export const NAV_GROUPS = [
             { icon: 'crm', label: 'admin.crm_link', href: '/admin/integrations/crm', can: 'settings.manage' },
             { icon: 'bell', label: 'admin.notifications', href: '/admin/integrations/notifications', can: 'settings.manage' },
             { icon: 'fields', label: 'admin.lead_fields', href: '/admin/lead-fields', can: 'settings.manage' },
-            { icon: 'message', label: 'settings.screen.confirmations', href: '/admin/integrations/confirmations', can: 'settings.manage' },
-            { icon: 'shield', label: 'admin.spam_guard', href: '/admin/integrations/spam', can: 'settings.manage', soon: true },
+            /*
+             * Hidden at Amad Craft's request (7 September 2026).
+             *
+             * The visitor's on-screen thank-you falls back to the shipped wording when
+             * no setting is written, so hiding this loses the ability to reword it,
+             * not the message itself (§6.2 step 4).
+             */
+            { icon: 'message', label: 'settings.screen.confirmations', href: '/admin/integrations/confirmations', can: 'settings.manage' , hidden: true },
+            /*
+             * Hidden at Amad Craft's request (7 September 2026).
+             *
+             * The honeypot and the rate limit are in the request path and keep working;
+             * this screen was only ever the placeholder for the spam TAB (§6.1).
+             */
+            { icon: 'shield', label: 'admin.spam_guard', href: '/admin/integrations/spam', can: 'settings.manage', soon: true , hidden: true },
         ],
     },
     {
@@ -101,7 +122,13 @@ export const NAV_GROUPS = [
             { icon: 'contact', label: 'settings.screen.contact', href: '/admin/settings/contact', can: 'settings.manage' },
             { icon: 'languages', label: 'admin.languages', href: '/admin/languages', can: 'settings.manage' },
             { icon: 'store', label: 'settings.screen.store', href: '/admin/settings/store', can: 'settings.manage' },
-            { icon: 'backup', label: 'admin.backups', href: '/admin/backups', can: 'settings.manage', soon: true },
+            /*
+             * Hidden at Amad Craft's request (7 September 2026).
+             *
+             * Backups keep running from scripts/backup-db.ps1; this screen was the
+             * placeholder that would have listed them.
+             */
+            { icon: 'backup', label: 'admin.backups', href: '/admin/backups', can: 'settings.manage', soon: true , hidden: true },
             { icon: 'advanced', label: 'settings.screen.advanced', href: '/admin/settings/advanced', can: 'settings.manage' },
         ],
     },

@@ -4,18 +4,37 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Panel from '@/Components/admin/Panel.vue';
 import NavIcon from '@/Components/admin/NavIcon.vue';
 import { confirmDialog } from '@/admin/confirm';
+import { computed, ref } from 'vue';
 import { useTranslation } from '@/Composables/useTranslation';
 
 /**
  * Pages list (§9.1). Publish/unpublish and the preview link live here; the
  * page's body is built in the section builder.
  */
-defineProps({
+const props = defineProps({
     pages: { type: Array, default: () => [] },
     locales: { type: Array, default: () => [] },
 });
 
 const { t } = useTranslation();
+
+/**
+ * The pages an editor works on, and the ones that no longer answer.
+ *
+ * Since the landing-page decision the site is one page with twenty-seven
+ * sections; the other eleven are retired and redirect. Listing all thirteen
+ * as equals made the screen read as a site with thirteen pages — the editor
+ * had to know which was which from memory, which is precisely what a panel
+ * exists to stop.
+ */
+const live = computed(() => props.pages.filter((page) => !page.retired));
+const retired = computed(() => props.pages.filter((page) => page.retired));
+
+/** Retired rows stay collapsed: they are a record, not a workspace. */
+const showRetired = ref(false);
+
+/** What the table draws — the live pages, plus the retired ones when asked. */
+const rows = computed(() => (showRetired.value ? [...live.value, ...retired.value] : live.value));
 
 function togglePublish(page) {
     router.post(
@@ -44,7 +63,34 @@ async function destroy(page) {
 
             <p v-if="!pages.length" class="empty">{{ t('admin.no_records') }}</p>
 
-            <div v-else class="table-wrap">
+            <!--
+                Wrapped in a <template>, and this is not a formatting choice.
+                The disclosure below used to sit between the `v-if` above and
+                the table's `v-else`, which silently re-paired that `v-else`
+                with the BUTTON's condition — so the table rendered only when
+                there were no retired pages, and the editor opened this screen
+                to find every page gone. `v-if`/`v-else` must stay adjacent.
+            -->
+            <template v-else>
+                <!--
+                    The retired pages, behind a disclosure and closed by
+                    default. They still exist and can still be opened — but
+                    they answer 301 now, so they belong in a drawer marked as
+                    such rather than interleaved with the page the editor came
+                    here to work on.
+                -->
+                <button
+                    v-if="retired.length"
+                    type="button"
+                    class="retired-toggle"
+                    :aria-expanded="showRetired"
+                    @click="showRetired = !showRetired"
+                >
+                    {{ showRetired ? t('admin.hide_retired_pages') : t('admin.show_retired_pages') }}
+                    <span class="retired-toggle__count">{{ retired.length }}</span>
+                </button>
+
+            <div class="table-wrap">
                 <table class="table">
                     <!--
                         Each column is given the width its content actually
@@ -73,11 +119,23 @@ async function destroy(page) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="page in pages" :key="page.id" class="row">
+                        <tr v-for="page in rows" :key="page.id" class="row" :class="{ 'row--site': page.isSite }">
                             <td class="cell-title">
                                 <Link :href="`/admin/pages/${page.id}/edit`" class="table__link">
                                     {{ page.title ?? page.slug }}
                                 </Link>
+
+                                <!-- The one page the site actually serves. -->
+                                <span v-if="page.isSite" class="chip chip--site">
+                                    {{ t('admin.the_site_page') }}
+                                </span>
+
+                                <!-- And where a retired one sends its visitors,
+                                     so nobody has to guess whether it still
+                                     does anything. -->
+                                <span v-if="page.retired && page.redirectsTo" class="chip chip--retired">
+                                    {{ t('admin.redirects_to') }} <code>{{ page.redirectsTo }}</code>
+                                </span>
                                 <!-- The "translation missing" indicator (§9.1). -->
                                 <span
                                     v-for="loc in locales.filter((l) => !page.locales.includes(l))"
@@ -173,6 +231,7 @@ async function destroy(page) {
                     </tbody>
                 </table>
             </div>
+            </template>
         </Panel>
       </div>
     </AdminLayout>
@@ -235,5 +294,55 @@ async function destroy(page) {
    little air from the title beside it. */
 .chip--warn {
     margin-inline-start: var(--s-2);
+}
+
+/* The site page: named, and lifted off the rows around it. */
+.chip--site {
+    background: var(--navy-900);
+    color: #fff;
+}
+
+.row--site {
+    background: rgba(0, 37, 70, 0.03);
+}
+
+/* A retired page is not an error and not a draft — it answers, it just
+   answers 301. Muted, with the destination shown rather than described. */
+.chip--retired {
+    background: var(--sand);
+    color: var(--text-muted);
+}
+
+.chip--retired code {
+    font-family: var(--font-mono);
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+.retired-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-block-end: var(--s-4);
+    padding: var(--s-2) var(--s-3);
+    background: none;
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+}
+
+.retired-toggle:hover {
+    color: var(--text);
+}
+
+.retired-toggle__count {
+    padding-inline: var(--s-2);
+    border-radius: var(--r-pill);
+    background: var(--sand);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
 }
 </style>
