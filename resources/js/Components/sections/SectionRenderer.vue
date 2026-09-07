@@ -14,6 +14,10 @@ import BridgeModel from '@/Components/sections/BridgeModel.vue';
 import TeamGrid from '@/Components/sections/TeamGrid.vue';
 import ImpactStats from '@/Components/sections/ImpactStats.vue';
 import PartnersLogos from '@/Components/sections/PartnersLogos.vue';
+import ValueFlow from '@/Components/sections/ValueFlow.vue';
+import SegmentCards from '@/Components/sections/SegmentCards.vue';
+import SegmentCta from '@/Components/sections/SegmentCta.vue';
+import RoleSplit from '@/Components/sections/RoleSplit.vue';
 
 /**
  * Renders whatever the client composed in the section builder (§9.1).
@@ -71,6 +75,10 @@ const COMPONENTS = {
     team: TeamGrid,
     stats: ImpactStats,
     logos: PartnersLogos,
+    value_flow: ValueFlow,
+    segment_cards: SegmentCards,
+    segment_cta: SegmentCta,
+    role_split: RoleSplit,
 };
 
 const renderable = computed(() =>
@@ -85,6 +93,14 @@ const renderable = computed(() =>
 /** Map a section row onto the props its component expects. */
 function propsFor(section) {
     const base = {
+        /*
+         * The raw settings bag, for components that read a KEYED map rather
+         * than named props — a per-segment label, or the contact block's
+         * per-segment context lines. Spreading settings below still gives
+         * every existing component its named props unchanged; this only adds
+         * a way to reach the bag whole.
+         */
+        settings: section.settings ?? {},
         heading: section.heading,
         subheading: section.subheading,
         body: section.body,

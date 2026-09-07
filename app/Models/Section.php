@@ -82,6 +82,18 @@ class Section extends Model implements HasMedia
          */
         'bridge_model',
         'team',
+        /*
+         * The single landing page (management decision, 7 September 2026).
+         *
+         * `segment_cta` is a band with a BUTTON where `cta_band` has a form:
+         * that decision allows exactly one form on the site, in #contact, so
+         * every other band has to carry the visitor there instead of offering
+         * a second field.
+         */
+        'value_flow',
+        'segment_cards',
+        'segment_cta',
+        'role_split',
     ];
 
     protected $guarded = ['id'];

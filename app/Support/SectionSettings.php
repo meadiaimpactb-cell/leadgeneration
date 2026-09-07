@@ -51,6 +51,14 @@ class SectionSettings
             'cards' => ['items'],
             'logos' => ['logos', 'group'],
             'cta_band' => ['eyebrow', 'firstFieldLabel', 'variants'],
+            /*
+             * The landing page's four types are deliberately ABSENT, for the
+             * same reason `accordion` is: this map describes settings a PUBLIC
+             * PAGE reads by name. They reach their components through
+             * SectionRenderer's prop spread instead, so there is no
+             * `x.settings?.key` expression to keep in step with — and listing
+             * them here would advertise keys the reachability scan cannot see.
+             */
         ];
     }
 

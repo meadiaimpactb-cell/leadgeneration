@@ -86,7 +86,17 @@ const alternates = computed(() => props.seo.alternates ?? []);
     -->
     <slot name="ticker" />
 
-    <SiteHeader :over-hero="overHero && !previewing" />
+    <!--
+        The header, overridable by the page.
+
+        Every multi-page route uses the default and is untouched. The single
+        landing page supplies its own, because its menu scrolls to sections of
+        the page it is already on rather than navigating to other pages — a
+        different control, not a variant of this one.
+    -->
+    <slot name="header">
+        <SiteHeader :over-hero="overHero && !previewing" />
+    </slot>
 
     <main id="main">
         <slot />

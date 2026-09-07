@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Public\CampaignController;
 use App\Http\Controllers\Public\ContactController;
-use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\ImpactController;
+use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\Public\LeadController;
 use App\Http\Controllers\Public\LocaleRedirectController;
 use App\Http\Controllers\Public\PageController;
@@ -47,48 +47,72 @@ Route::get('/sitemap-{locale}.xml', [SeoFileController::class, 'locale'])
 Route::prefix('{locale}')
     ->whereIn('locale', array_keys(config('site.locales')))
     ->group(function (): void {
-        Route::get('/', [HomeController::class, 'index'])->name('home');
-
-        Route::get('/about', [PageController::class, 'about'])->name('about');
-
-        Route::get('/solutions', [SolutionController::class, 'index'])->name('solutions.index');
+        /*
+         * The single landing page (management decision, 7 September 2026).
+         *
+         * The route name stays `home`: it is referenced by the sitemap, the
+         * navigation table, the footer and a number of tests, and renaming it
+         * would break all of them to no purpose. What answers here changed;
+         * where it lives did not (§22.7).
+         */
+        Route::get('/', [LandingController::class, 'index'])->name('home');
 
         /*
-         * The four audience segments, addressed as solutions.
+         * The eleven pages the landing-page decision retired (7 Sept 2026).
          *
-         * They are Sector records served by SectorController — only the URL
-         * moved, because "is there something here for a body like mine" is
-         * what a buyer opens a Solutions menu to answer.
+         * Registered only while `site.legacy_pages` is on. With it off — the
+         * default, and production — none of these paths resolve, so each
+         * returns 404 and `ApplyRedirects` carries it 301 to its anchor on the
+         * landing page from the `redirects` table (§22.7).
          *
-         * Registered as four LITERAL paths, not as one `{slug}` route with a
-         * whereIn constraint. Laravel's route collection is keyed by method
-         * and URI, so a second `/solutions/{slug}` route silently replaces
-         * the first however it is constrained — which is exactly what
-         * happened: the segments all returned 404 while the solutions below
-         * kept working. Literal URIs are distinct keys, so both live.
+         * Switched off rather than deleted: the controllers, the Vue pages and
+         * their tests are all still here and still exercised with the flag on,
+         * so restoring any of these pages is one line in `.env` rather than a
+         * recovery from git. Delete them when Amad Craft says they are not
+         * coming back.
          */
-        foreach (['government', 'companies', 'partners', 'artisans'] as $segment) {
-            Route::get("/solutions/{$segment}", [SectorController::class, 'show'])
-                ->defaults('slug', $segment)
-                ->name("sectors.{$segment}");
+        if (config('site.legacy_pages')) {
+            Route::get('/about', [PageController::class, 'about'])->name('about');
+
+            Route::get('/solutions', [SolutionController::class, 'index'])->name('solutions.index');
+
+            /*
+             * The four audience segments, addressed as solutions.
+             *
+             * They are Sector records served by SectorController — only the URL
+             * moved, because "is there something here for a body like mine" is
+             * what a buyer opens a Solutions menu to answer.
+             *
+             * Registered as four LITERAL paths, not as one `{slug}` route with a
+             * whereIn constraint. Laravel's route collection is keyed by method
+             * and URI, so a second `/solutions/{slug}` route silently replaces
+             * the first however it is constrained — which is exactly what
+             * happened: the segments all returned 404 while the solutions below
+             * kept working. Literal URIs are distinct keys, so both live.
+             */
+            foreach (['government', 'companies', 'partners', 'artisans'] as $segment) {
+                Route::get("/solutions/{$segment}", [SectorController::class, 'show'])
+                    ->defaults('slug', $segment)
+                    ->name("sectors.{$segment}");
+            }
+
+            Route::get('/solutions/{slug}', [SolutionController::class, 'show'])->name('solutions.show');
+
+            Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+            Route::get('/impact', [ImpactController::class, 'index'])->name('impact.index');
+            /*
+             * Literal before wildcard. `/impact/stories` and `/impact/stories/{slug}`
+             * are distinct routes rather than one optional parameter, for the same
+             * reason the four solution segments are four literal routes: Laravel
+             * keys its route collection by method+URI, and a second registration on
+             * one URI silently replaces the first.
+             */
+            Route::get('/impact/stories', [ImpactController::class, 'stories'])->name('impact.stories');
+            Route::get('/impact/stories/{slug}', [ImpactController::class, 'story'])->name('impact.story');
+            Route::get('/training', [TrainingController::class, 'index'])->name('training.index');
+            Route::get('/partners', [PartnerController::class, 'index'])->name('partners.index');
+            Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
         }
-
-        Route::get('/solutions/{slug}', [SolutionController::class, 'show'])->name('solutions.show');
-
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-        Route::get('/impact', [ImpactController::class, 'index'])->name('impact.index');
-        /*
-         * Literal before wildcard. `/impact/stories` and `/impact/stories/{slug}`
-         * are distinct routes rather than one optional parameter, for the same
-         * reason the four solution segments are four literal routes: Laravel
-         * keys its route collection by method+URI, and a second registration on
-         * one URI silently replaces the first.
-         */
-        Route::get('/impact/stories', [ImpactController::class, 'stories'])->name('impact.stories');
-        Route::get('/impact/stories/{slug}', [ImpactController::class, 'story'])->name('impact.story');
-        Route::get('/training', [TrainingController::class, 'index'])->name('training.index');
-        Route::get('/partners', [PartnerController::class, 'index'])->name('partners.index');
-        Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 
         // Campaign landing pages — no navigation, one goal (§11.3).
         Route::get('/c/{slug}', [CampaignController::class, 'show'])->name('campaigns.show');
