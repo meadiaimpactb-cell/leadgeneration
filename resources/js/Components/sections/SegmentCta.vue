@@ -31,7 +31,7 @@ const label = computed(() => text(props.settings, 'label'));
 </script>
 
 <template>
-    <section v-if="label" ref="root" class="segment-cta on-dark">
+    <section v-if="label" ref="root" class="segment-cta">
         <Container>
             <div class="segment-cta__inner reveal">
                 <Button variant="cta-lg" href="#contact" @click="goToForm($event, source)">
@@ -43,8 +43,21 @@ const label = computed(() => text(props.settings, 'label'));
 </template>
 
 <style scoped>
+/*
+ * No band behind the button.
+ *
+ * This block used to paint a full-bleed navy field and stand one orange
+ * button in the middle of it, which spent a whole screen-width of the
+ * page's boldest colour on a single control — and put a hard navy edge
+ * between two halves of the same argument. The button carries itself:
+ * `--cta-lg` is the 18px/700 weight the identity sizes `#D7653B` for
+ * precisely so it can stand on the page's own light ground and still
+ * clear AA.
+ *
+ * The section keeps its own vertical room so the button is not read as
+ * belonging to the paragraph above it.
+ */
 .segment-cta {
-    background: var(--navy-900);
     padding-block: var(--s-7);
 }
 

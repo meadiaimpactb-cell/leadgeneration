@@ -41,6 +41,18 @@ const written = computed(() =>
     props.items
         .map((item) => ({
             icon: item.icon,
+            /*
+             * The running number the client wrote on the card, if any.
+             *
+             * The approved copy for «ماذا نقدم؟» names its four areas
+             * «01 — الهدايا المؤسسية» and so on. The number was stored in the
+             * section's settings and drawn by nothing, so four
+             * approved labels reached the page without the half that ordered
+             * them. Not derived from the index: the client wrote it, and a
+             * derived counter would silently renumber a set they had
+             * deliberately numbered otherwise.
+             */
+            number: item.number ?? null,
             title: text(item, 'title'),
             body: text(item, 'body'),
         }))
@@ -72,6 +84,10 @@ const written = computed(() =>
                     <span v-if="item.icon" class="cards__icon">
                         <NavIcon :name="item.icon" :size="28" :weight="1.4" :muted="false" />
                     </span>
+
+                    <!-- Latin digits in both languages, like every other
+                         counter on the site — useFormat's rule. -->
+                    <span v-if="item.number" class="cards__number mono-label">{{ item.number }}</span>
                     <h3 v-if="item.title" class="cards__title">
                         {{ item.title }}
                     </h3>
@@ -158,5 +174,23 @@ const written = computed(() =>
     .cards {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+/*
+ * The counter, in the accent that passes on the ground it sits on.
+ *
+ * Gold is §10.2's divider and hairline colour, not a text colour on a light
+ * surface: #DCAD75 on the warm paper is about 1.7:1, which is unreadable and
+ * fails AA outright. It reads correctly on navy, so the band overrides it
+ * below. Setting gold here and hoping every future card set is a band is how
+ * an unreadable number ships.
+ */
+.cards__number {
+    color: var(--action-600);
+    font-size: var(--fs-xs);
+}
+
+.cardsec--band .cards__number {
+    color: var(--gold-400);
 }
 </style>

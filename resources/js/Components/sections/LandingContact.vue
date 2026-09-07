@@ -164,7 +164,7 @@ const context = computed(() => {
     padding-inline-start: var(--s-3);
     border-inline-start: 2px solid var(--gold-400);
     color: var(--gold-400);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-body);
 }
 
 .band__form {

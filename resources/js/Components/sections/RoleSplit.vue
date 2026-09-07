@@ -67,10 +67,36 @@ const written = computed(() =>
     margin-block-start: var(--s-6);
 }
 
+/*
+ * Two panels, not two paragraphs with a rule over each.
+ *
+ * The section divides the work between the partner and Amad Craft, and a
+ * boundary is easier to check when the two sides are two surfaces. The first
+ * column is the partner's — paper, the reader's own side — and the second is
+ * Amad Craft's on navy. Both take the company's octagon.
+ */
 .split__col {
-    padding-block-start: var(--s-4);
-    /* The gold hairline is §10.2's divider role, not a fourth Sadu home. */
-    border-block-start: 2px solid var(--gold-400);
+    --c: var(--cut-soft);
+    padding: var(--s-6) var(--s-5);
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    clip-path: polygon(
+        var(--c) 0, 100% 0, 100% calc(100% - var(--c)),
+        calc(100% - var(--c)) 100%, 0 100%, 0 var(--c)
+    );
+}
+
+.split__col:last-child {
+    background: var(--navy-900);
+    border-color: transparent;
+}
+
+.split__col:last-child .split__role {
+    color: #fff;
+}
+
+.split__col:last-child .split__body {
+    color: rgba(255, 255, 255, 0.78);
 }
 
 .split__role {

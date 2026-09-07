@@ -61,12 +61,24 @@ const written = computed(() => props.steps.map((step) => text(step, 'title')).fi
     max-inline-size: 60ch;
 }
 
+/*
+ * The chain, on a rule.
+ *
+ * It was eight bordered boxes with a hairline between them, which read as a
+ * row of tags rather than as a sequence — the thing the section exists to
+ * show is the DISTANCE between owning a skill and shipping a product, and
+ * eight equal boxes flatten it.
+ *
+ * They now sit on one gold rule, each a cut node with its number above it:
+ * the same treatment `.steps` gives the six-stage timeline further down the
+ * page, so a reader meets one idea of "a sequence" twice rather than two.
+ */
 .flow__chain {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    gap: var(--s-3);
-    margin-block-start: var(--s-6);
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--s-6) var(--s-4);
+    margin-block-start: var(--s-7);
     padding: 0;
     list-style: none;
     counter-reset: flow;
@@ -74,38 +86,69 @@ const written = computed(() => props.steps.map((step) => text(step, 'title')).fi
 
 .flow__step {
     position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--s-2);
-    padding: var(--s-3) var(--s-4);
-    border: 1px solid var(--hairline);
-    border-radius: var(--r-md);
-    background: var(--paper);
-    font-size: var(--fs-sm);
-    line-height: 1.5;
+    counter-increment: flow;
+    padding-block-start: var(--s-6);
+    /*
+     * Body size, not the small one. These eight are the argument the section
+     * makes — the distance between owning a skill and shipping a product —
+     * and Arabic at 14px asks a procurement reader to lean in. `--lh-body`
+     * resolves to 1.85 on the Arabic site (§10.3), which is the room the
+     * script needs and the Latin one does not.
+     */
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--text);
 }
 
+/* The rule, drawn per node rather than once behind them all: it then stops
+   at the end of each row instead of running through the gap when the grid
+   wraps. */
 .flow__step::before {
-    counter-increment: flow;
+    content: "";
+    position: absolute;
+    inset-block-start: 9px;
+    inset-inline: 0;
+    block-size: 1px;
+    background: repeating-linear-gradient(
+        to right,
+        var(--gold-400) 0 4px,
+        transparent 4px 10px
+    );
+}
+
+/* The node: the company's own octagon, sitting on the rule. */
+.flow__step::after {
     content: counter(flow, decimal-leading-zero);
-    font-family: var(--font-mono);
-    font-size: var(--fs-xs);
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    display: grid;
+    place-items: center;
+    inline-size: 22px;
+    block-size: 22px;
+    background: var(--navy-900);
     color: var(--gold-400);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    clip-path: polygon(
+        30% 0, 70% 0, 100% 30%, 100% 70%,
+        70% 100%, 30% 100%, 0 70%, 0 30%
+    );
 }
 
 /*
- * The connector. `::after` sits on the inline-end of every step but the last,
- * and the glyph itself is mirrored by the writing direction — so the chain
- * reads right-to-left in Arabic and left-to-right in English from one rule.
- * No `left`/`right` anywhere (§22.6).
+ * Four across on a wide screen, not as many as fit.
+ *
+ * `auto-fit` gave seven columns at desktop width, which left the eighth step
+ * alone on a second row with six empty columns beside it — a hole the width
+ * of the page in the middle of the section, and the reason this block looked
+ * like it had lost something. Four columns divide the eight evenly into two
+ * rows, and each node gets the width its label needs.
  */
-.flow__step:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    inset-inline-end: calc(var(--s-3) * -1);
-    inline-size: var(--s-3);
-    block-size: 1px;
-    background: var(--hairline-gold);
+@media (min-width: 1024px) {
+    .flow__chain {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
