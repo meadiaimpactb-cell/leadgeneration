@@ -1,4 +1,4 @@
-import { computed, mergeProps, unref, useSSRContext, ref, watch, onBeforeUnmount, reactive, nextTick, withCtx, createVNode, toDisplayString, openBlock, createBlock, createCommentVNode, useId, onMounted, resolveDynamicComponent, Fragment, renderList, createTextVNode, withModifiers, withDirectives, vModelRadio, vModelCheckbox, renderSlot, vModelText, vShow, onUnmounted, provide, inject, createSlots, createSSRApp, h } from "vue";
+import { computed, mergeProps, unref, useSSRContext, ref, watch, onBeforeUnmount, reactive, nextTick, withCtx, createVNode, toDisplayString, openBlock, createBlock, createCommentVNode, useId, onMounted, resolveDynamicComponent, Fragment, renderList, withDirectives, vModelText, createTextVNode, withModifiers, vModelRadio, vModelCheckbox, renderSlot, vShow, onUnmounted, provide, inject, createSlots, createSSRApp, h } from "vue";
 import { ssrRenderAttrs, ssrInterpolate, ssrRenderAttr, ssrRenderStyle, ssrRenderTeleport, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrRenderSlot, ssrIncludeBooleanAttr, ssrRenderVNode, ssrLooseEqual, ssrLooseContain, ssrRenderDynamicModel } from "vue/server-renderer";
 import { usePage, router, Head, Link, useForm, createInertiaApp } from "@inertiajs/vue3";
 import { renderToString } from "@vue/server-renderer";
@@ -43,13 +43,27 @@ const _sfc_main$1F = {
       type: String,
       default: "navy",
       validator: (v) => ["navy", "lavender", "black", "white"].includes(v)
-    }
+    },
+    /**
+     * Draw the mark that ships with the build, never the client's upload.
+     *
+     * For the brand screen, and only for it. Everywhere else on the site the
+     * upload has to win — that is the whole point of the slot. But the screen
+     * that offers to replace the shipped mark has to be able to show what the
+     * shipped mark IS, and it said «using the logo shipped with the system»
+     * into an empty box: the one place on the site where a client could not
+     * see the logo was the logo screen.
+     */
+    shipped: { type: Boolean, default: false }
   },
   setup(__props) {
     const props = __props;
     const { t } = useTranslation();
     const page = usePage();
     const uploaded = computed(() => {
+      if (props.shipped) {
+        return null;
+      }
       const brand = page.props.brand ?? {};
       return props.tone === "white" ? brand.logo_dark : brand.logo_light;
     });
@@ -68,14 +82,14 @@ const _sfc_main$1F = {
           class: ["logo logo--file", `logo--${__props.lockup}`],
           src: uploaded.value,
           alt: unref(t)("common.logo_alt")
-        }, _attrs))} data-v-ef29b1f9>`);
+        }, _attrs))} data-v-bf546892>`);
       } else {
         _push(`<span${ssrRenderAttrs(mergeProps({
           class: ["logo", `logo--${__props.lockup}`],
           style: { "--logo-colour": colour.value, "--logo-src": `url(${src.value})` },
           role: "img",
           "aria-label": unref(t)("common.logo_alt")
-        }, _attrs))} data-v-ef29b1f9></span>`);
+        }, _attrs))} data-v-bf546892></span>`);
       }
     };
   }
@@ -86,7 +100,7 @@ _sfc_main$1F.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Logo.vue");
   return _sfc_setup$1F ? _sfc_setup$1F(props, ctx) : void 0;
 };
-const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1F, [["__scopeId", "data-v-ef29b1f9"]]);
+const Logo = /* @__PURE__ */ _export_sfc(_sfc_main$1F, [["__scopeId", "data-v-bf546892"]]);
 const _sfc_main$1E = {
   __name: "Toast",
   __ssrInlineRender: true,
@@ -135,21 +149,21 @@ const _sfc_main$1E = {
           class: ["toast", [`toast--${__props.type}`, { "is-held": paused.value }]],
           role: "status",
           "aria-live": "polite"
-        }, _attrs))} data-v-a6f0af59><span class="sadu-edge sadu-weave toast__edge" aria-hidden="true" data-v-a6f0af59></span><span class="toast__mark" aria-hidden="true" data-v-a6f0af59><svg viewBox="0 0 44 44" data-v-a6f0af59><circle class="toast__ring" cx="22" cy="22" r="20" data-v-a6f0af59></circle>`);
+        }, _attrs))} data-v-a462d73c><span class="sadu-edge sadu-weave toast__edge" aria-hidden="true" data-v-a462d73c></span><span class="toast__mark" aria-hidden="true" data-v-a462d73c><svg viewBox="0 0 44 44" data-v-a462d73c><circle class="toast__ring" cx="22" cy="22" r="20" data-v-a462d73c></circle>`);
         if (!isError.value) {
-          _push(`<path class="toast__glyph" d="M13 22.5l6 6 12-12" data-v-a6f0af59></path>`);
+          _push(`<path class="toast__glyph" d="M13 22.5l6 6 12-12" data-v-a462d73c></path>`);
         } else {
-          _push(`<path class="toast__glyph" d="M22 12v13M22 30v.5" data-v-a6f0af59></path>`);
+          _push(`<path class="toast__glyph" d="M22 12v13M22 30v.5" data-v-a462d73c></path>`);
         }
-        _push(`</svg></span><div class="toast__body" data-v-a6f0af59><p class="toast__title" data-v-a6f0af59>${ssrInterpolate(__props.title)}</p>`);
+        _push(`</svg></span><div class="toast__body" data-v-a462d73c><p class="toast__title" data-v-a462d73c>${ssrInterpolate(__props.title)}</p>`);
         if (__props.message) {
-          _push(`<p class="toast__text" data-v-a6f0af59>${ssrInterpolate(__props.message)}</p>`);
+          _push(`<p class="toast__text" data-v-a462d73c>${ssrInterpolate(__props.message)}</p>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`</div><button type="button" class="toast__close"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-a6f0af59><svg viewBox="0 0 16 16" aria-hidden="true" data-v-a6f0af59><path d="M4 4l8 8M12 4l-8 8" data-v-a6f0af59></path></svg></button>`);
+        _push(`</div><button type="button" class="toast__close"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-a462d73c><svg viewBox="0 0 16 16" aria-hidden="true" data-v-a462d73c><path d="M4 4l8 8M12 4l-8 8" data-v-a462d73c></path></svg></button>`);
         if (__props.duration > 0) {
-          _push(`<span class="toast__timer" style="${ssrRenderStyle({ animationDuration: `${__props.duration}ms` })}" aria-hidden="true" data-v-a6f0af59></span>`);
+          _push(`<span class="toast__timer" style="${ssrRenderStyle({ animationDuration: `${__props.duration}ms` })}" aria-hidden="true" data-v-a462d73c></span>`);
         } else {
           _push(`<!---->`);
         }
@@ -166,7 +180,7 @@ _sfc_main$1E.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/Toast.vue");
   return _sfc_setup$1E ? _sfc_setup$1E(props, ctx) : void 0;
 };
-const Toast = /* @__PURE__ */ _export_sfc(_sfc_main$1E, [["__scopeId", "data-v-a6f0af59"]]);
+const Toast = /* @__PURE__ */ _export_sfc(_sfc_main$1E, [["__scopeId", "data-v-a462d73c"]]);
 const state = reactive({
   open: false,
   title: null,
@@ -1268,13 +1282,13 @@ const _sfc_main$1x = {
       return path === href;
     }
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<!--[--><section class="hero" data-v-3a6eaeb4><div class="hero__cover" style="${ssrRenderStyle(profile.value.cover ? { backgroundImage: `url(${profile.value.cover})` } : null)}" data-v-3a6eaeb4>`);
+      _push(`<!--[--><section class="hero" data-v-a7840cc6><div class="hero__cover" style="${ssrRenderStyle(profile.value.cover ? { backgroundImage: `url(${profile.value.cover})` } : null)}" data-v-a7840cc6>`);
       if (__props.editable) {
-        _push(`<!--[--><label class="hero__coverBtn" data-v-3a6eaeb4>`);
+        _push(`<!--[--><label class="hero__coverBtn" data-v-a7840cc6>`);
         _push(ssrRenderComponent(NavIcon, { name: "brand" }, null, _parent));
-        _push(`<span data-v-3a6eaeb4>${ssrInterpolate(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.cover_add"))}</span><input type="file" accept="image/*" data-v-3a6eaeb4></label>`);
+        _push(`<span data-v-a7840cc6>${ssrInterpolate(busy.value === "cover" ? unref(t)("admin.saving") : unref(t)("admin.cover_add"))}</span><input type="file" accept="image/*" data-v-a7840cc6></label>`);
         if (profile.value.cover) {
-          _push(`<button class="hero__coverBtn hero__coverBtn--del" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-3a6eaeb4>`);
+          _push(`<button class="hero__coverBtn hero__coverBtn--del" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-a7840cc6>`);
           _push(ssrRenderComponent(NavIcon, {
             name: "trash",
             size: 18,
@@ -1288,20 +1302,20 @@ const _sfc_main$1x = {
       } else {
         _push(`<!---->`);
       }
-      _push(`</div><div class="hero__bar" data-v-3a6eaeb4><div class="hero__portrait" data-v-3a6eaeb4>`);
+      _push(`</div><div class="hero__bar" data-v-a7840cc6><div class="hero__portrait" data-v-a7840cc6>`);
       if (profile.value.avatar) {
-        _push(`<img class="hero__img"${ssrRenderAttr("src", profile.value.avatar)} alt="" data-v-3a6eaeb4>`);
+        _push(`<img class="hero__img"${ssrRenderAttr("src", profile.value.avatar)} alt="" data-v-a7840cc6>`);
       } else {
-        _push(`<span class="hero__initials" aria-hidden="true" data-v-3a6eaeb4>${ssrInterpolate(initials.value)}</span>`);
+        _push(`<span class="hero__initials" aria-hidden="true" data-v-a7840cc6>${ssrInterpolate(initials.value)}</span>`);
       }
       if (__props.editable) {
-        _push(`<label class="hero__camera"${ssrRenderAttr("title", unref(t)("admin.avatar_add"))} data-v-3a6eaeb4>`);
+        _push(`<label class="hero__camera"${ssrRenderAttr("title", unref(t)("admin.avatar_add"))} data-v-a7840cc6>`);
         _push(ssrRenderComponent(NavIcon, { name: "stories" }, null, _parent));
-        _push(`<span class="visually-hidden" data-v-3a6eaeb4>${ssrInterpolate(unref(t)("admin.avatar_add"))}</span><input type="file" accept="image/*" data-v-3a6eaeb4></label>`);
+        _push(`<span class="visually-hidden" data-v-a7840cc6>${ssrInterpolate(unref(t)("admin.avatar_add"))}</span><input type="file" accept="image/*" data-v-a7840cc6></label>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`</div><div class="hero__who" data-v-3a6eaeb4><h2 class="hero__name" data-v-3a6eaeb4>${ssrInterpolate(profile.value.name)}</h2><p class="hero__email latin" data-v-3a6eaeb4>${ssrInterpolate(profile.value.email)}</p><div class="badges" data-v-3a6eaeb4><span class="badge badge--role" data-v-3a6eaeb4>${ssrInterpolate(roleLabel.value)}</span><span class="${ssrRenderClass([profile.value.twoFactor ? "badge--ok" : "badge--warn", "badge"])}" data-v-3a6eaeb4>${ssrInterpolate(profile.value.twoFactor ? unref(t)("admin.twofa_on") : unref(t)("admin.twofa_off"))}</span></div></div><dl class="stats" data-v-3a6eaeb4><div class="stat" data-v-3a6eaeb4><dt data-v-3a6eaeb4>${ssrInterpolate(unref(t)("admin.last_login"))}</dt><dd data-v-3a6eaeb4>${ssrInterpolate(profile.value.lastLoginAt ? unref(dateTime)(profile.value.lastLoginAt) : "—")}</dd></div><div class="stat" data-v-3a6eaeb4><dt data-v-3a6eaeb4>${ssrInterpolate(unref(t)("admin.member_since"))}</dt><dd data-v-3a6eaeb4>${ssrInterpolate(profile.value.createdAt ? unref(date)(profile.value.createdAt) : "—")}</dd></div></dl></div></section><div class="split" data-v-3a6eaeb4><nav class="tabs"${ssrRenderAttr("aria-label", unref(t)("admin.profile"))} data-v-3a6eaeb4><p class="tabs__head" data-v-3a6eaeb4>${ssrInterpolate(unref(t)("admin.profile"))}</p><!--[-->`);
+      _push(`</div><div class="hero__who" data-v-a7840cc6><h2 class="hero__name" data-v-a7840cc6>${ssrInterpolate(profile.value.name)}</h2><p class="hero__email latin" data-v-a7840cc6>${ssrInterpolate(profile.value.email)}</p><div class="badges" data-v-a7840cc6><span class="badge badge--role" data-v-a7840cc6>${ssrInterpolate(roleLabel.value)}</span><span class="${ssrRenderClass([profile.value.twoFactor ? "badge--ok" : "badge--warn", "badge"])}" data-v-a7840cc6>${ssrInterpolate(profile.value.twoFactor ? unref(t)("admin.twofa_on") : unref(t)("admin.twofa_off"))}</span></div></div><dl class="stats" data-v-a7840cc6><div class="stat" data-v-a7840cc6><dt data-v-a7840cc6>${ssrInterpolate(unref(t)("admin.last_login"))}</dt><dd data-v-a7840cc6>${ssrInterpolate(profile.value.lastLoginAt ? unref(dateTime)(profile.value.lastLoginAt) : "—")}</dd></div><div class="stat" data-v-a7840cc6><dt data-v-a7840cc6>${ssrInterpolate(unref(t)("admin.member_since"))}</dt><dd data-v-a7840cc6>${ssrInterpolate(profile.value.createdAt ? unref(date)(profile.value.createdAt) : "—")}</dd></div></dl></div></section><div class="split" data-v-a7840cc6><nav class="tabs"${ssrRenderAttr("aria-label", unref(t)("admin.profile"))} data-v-a7840cc6><p class="tabs__head" data-v-a7840cc6>${ssrInterpolate(unref(t)("admin.profile"))}</p><!--[-->`);
       ssrRenderList(workspace.value.tabs ?? [], (item) => {
         _push(ssrRenderComponent(unref(Link), {
           key: item.href,
@@ -1314,7 +1328,7 @@ const _sfc_main$1x = {
               _push2(ssrRenderComponent(NavIcon, {
                 name: TAB_ICONS[item.key] ?? "dot"
               }, null, _parent2, _scopeId));
-              _push2(`<span class="tab__text" data-v-3a6eaeb4${_scopeId}><span class="tab__title" data-v-3a6eaeb4${_scopeId}>${ssrInterpolate(item.label)}</span><span class="tab__note" data-v-3a6eaeb4${_scopeId}>${ssrInterpolate(item.hint)}</span></span>`);
+              _push2(`<span class="tab__text" data-v-a7840cc6${_scopeId}><span class="tab__title" data-v-a7840cc6${_scopeId}>${ssrInterpolate(item.label)}</span><span class="tab__note" data-v-a7840cc6${_scopeId}>${ssrInterpolate(item.hint)}</span></span>`);
             } else {
               return [
                 createVNode(NavIcon, {
@@ -1332,7 +1346,7 @@ const _sfc_main$1x = {
       });
       _push(`<!--]-->`);
       if ((workspace.value.shortcuts ?? []).length) {
-        _push(`<!--[--><p class="tabs__head tabs__head--spaced" data-v-3a6eaeb4>${ssrInterpolate(unref(t)("admin.settings"))}</p><!--[-->`);
+        _push(`<!--[--><p class="tabs__head tabs__head--spaced" data-v-a7840cc6>${ssrInterpolate(unref(t)("admin.settings"))}</p><!--[-->`);
         ssrRenderList(workspace.value.shortcuts, (item) => {
           _push(ssrRenderComponent(unref(Link), {
             key: item.href,
@@ -1345,7 +1359,7 @@ const _sfc_main$1x = {
                 _push2(ssrRenderComponent(NavIcon, {
                   name: item.icon
                 }, null, _parent2, _scopeId));
-                _push2(`<span class="tab__text" data-v-3a6eaeb4${_scopeId}><span class="tab__title" data-v-3a6eaeb4${_scopeId}>${ssrInterpolate(item.label)}</span><span class="tab__note" data-v-3a6eaeb4${_scopeId}>${ssrInterpolate(item.hint)}</span></span>`);
+                _push2(`<span class="tab__text" data-v-a7840cc6${_scopeId}><span class="tab__title" data-v-a7840cc6${_scopeId}>${ssrInterpolate(item.label)}</span><span class="tab__note" data-v-a7840cc6${_scopeId}>${ssrInterpolate(item.hint)}</span></span>`);
               } else {
                 return [
                   createVNode(NavIcon, {
@@ -1365,7 +1379,7 @@ const _sfc_main$1x = {
       } else {
         _push(`<!---->`);
       }
-      _push(`</nav><div class="pane" data-v-3a6eaeb4>`);
+      _push(`</nav><div class="pane" data-v-a7840cc6>`);
       ssrRenderSlot(_ctx.$slots, "default", {}, null, _push, _parent);
       _push(`</div></div><!--]-->`);
     };
@@ -1377,18 +1391,69 @@ _sfc_main$1x.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/Workspace.vue");
   return _sfc_setup$1x ? _sfc_setup$1x(props, ctx) : void 0;
 };
-const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$1x, [["__scopeId", "data-v-3a6eaeb4"]]);
+const Workspace = /* @__PURE__ */ _export_sfc(_sfc_main$1x, [["__scopeId", "data-v-a7840cc6"]]);
 const _sfc_main$1w = {
   __name: "Brand",
   __ssrInlineRender: true,
   props: {
     assets: { type: Object, default: () => ({}) },
-    palette: { type: Array, default: () => [] }
+    /** The four chosen colours, keyed by family name. */
+    palette: { type: Object, default: () => ({}) },
+    /** The four §23 approved, for the badge and the way back. */
+    identity: { type: Object, default: () => ({}) },
+    /** Every custom property the theme reads, derived server-side. */
+    derived: { type: Object, default: () => ({}) },
+    /** @type {{pair: string, ratio: number, minimum: number, passes: boolean}[]} */
+    contrast: { type: Array, default: () => [] }
   },
   setup(__props) {
+    const props = __props;
     const { t } = useTranslation();
     const busy = ref(null);
     const SLOTS = ["logo_light", "logo_dark", "favicon", "og_image"];
+    const FAMILIES = ["navy", "lavender", "orange", "gold"];
+    const chosen = ref({ ...props.palette });
+    const saving = ref(false);
+    const isHex = (value) => /^#[0-9a-fA-F]{6}$/.test(value ?? "");
+    const dirty = computed(() => FAMILIES.some((f) => chosen.value[f] !== props.palette[f]));
+    const valid = computed(() => FAMILIES.every((f) => isHex(chosen.value[f])));
+    const isIdentity = computed(
+      () => FAMILIES.every((f) => (chosen.value[f] ?? "").toUpperCase() === props.identity[f])
+    );
+    function type(family, value) {
+      const hex = value.startsWith("#") ? value : `#${value}`;
+      if (isHex(hex)) {
+        chosen.value[family] = hex.toUpperCase();
+      }
+    }
+    function save() {
+      if (!valid.value) return;
+      saving.value = true;
+      router.put("/admin/brand/palette", { ...chosen.value }, {
+        preserveScroll: true,
+        onFinish: () => {
+          saving.value = false;
+        }
+      });
+    }
+    async function reset() {
+      if (!await confirmDialog({ message: t("admin.confirm_reset") })) return;
+      chosen.value = { ...props.identity };
+      save();
+    }
+    function paint(tokens) {
+      Object.entries(tokens ?? {}).forEach(([property, value]) => {
+        document.documentElement.style.setProperty(property, value);
+      });
+    }
+    const ramp = computed(
+      () => Object.entries(props.derived).filter(([name]) => !name.endsWith("-rgb"))
+    );
+    onMounted(() => paint(props.derived));
+    watch(() => props.derived, paint);
+    watch(() => props.palette, (fresh) => {
+      chosen.value = { ...fresh };
+    });
     function upload(collection, event) {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -1424,17 +1489,33 @@ const _sfc_main$1w = {
                   }, {
                     default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
-                        _push4(`<p class="intro" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_hint"))}</p><div class="slots" data-v-a08a8eb9${_scopeId3}><!--[-->`);
+                        _push4(`<p class="intro" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_hint"))}</p><div class="slots" data-v-380ab01a${_scopeId3}><!--[-->`);
                         ssrRenderList(SLOTS, (slot) => {
-                          _push4(`<div class="slot" data-v-a08a8eb9${_scopeId3}><h3 class="slot__title" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(unref(t)(`admin.brand_${slot}`))}</h3><p class="slot__hint" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(unref(t)(`admin.brand_${slot}_hint`))}</p><div class="${ssrRenderClass([{ "slot__frame--dark": slot === "logo_dark" }, "slot__frame"])}" data-v-a08a8eb9${_scopeId3}>`);
+                          _push4(`<div class="slot" data-v-380ab01a${_scopeId3}><h3 class="slot__title" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)(`admin.brand_${slot}`))}</h3><p class="slot__hint" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)(`admin.brand_${slot}_hint`))}</p><div class="${ssrRenderClass([{ "slot__frame--dark": slot === "logo_dark" }, "slot__frame"])}" data-v-380ab01a${_scopeId3}>`);
                           if (__props.assets[slot]) {
-                            _push4(`<img class="slot__img"${ssrRenderAttr("src", __props.assets[slot].url)} alt="" data-v-a08a8eb9${_scopeId3}>`);
+                            _push4(`<img class="slot__img"${ssrRenderAttr("src", __props.assets[slot].url)} alt="" data-v-380ab01a${_scopeId3}>`);
+                          } else if (slot === "logo_light") {
+                            _push4(ssrRenderComponent(Logo, {
+                              class: "slot__logo",
+                              lockup: "horizontal",
+                              tone: "navy",
+                              shipped: ""
+                            }, null, _parent4, _scopeId3));
+                          } else if (slot === "logo_dark") {
+                            _push4(ssrRenderComponent(Logo, {
+                              class: "slot__logo",
+                              lockup: "horizontal",
+                              tone: "white",
+                              shipped: ""
+                            }, null, _parent4, _scopeId3));
+                          } else if (slot === "favicon") {
+                            _push4(`<img class="slot__img slot__img--icon" src="/favicon-256x256.png" alt="" data-v-380ab01a${_scopeId3}>`);
                           } else {
-                            _push4(`<span class="slot__empty" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_default"))}</span>`);
+                            _push4(`<span class="slot__empty" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_og_none"))}</span>`);
                           }
-                          _push4(`</div><div class="slot__actions" data-v-a08a8eb9${_scopeId3}><label class="btn btn--ghost slot__upload" data-v-a08a8eb9${_scopeId3}><span data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*,.ico" data-v-a08a8eb9${_scopeId3}></label>`);
+                          _push4(`</div><p class="slot__source" data-v-380ab01a${_scopeId3}>${ssrInterpolate(__props.assets[slot] ? unref(t)("admin.brand_uploaded") : unref(t)("admin.brand_default"))}</p><div class="slot__actions" data-v-380ab01a${_scopeId3}><label class="btn btn--ghost slot__upload" data-v-380ab01a${_scopeId3}><span data-v-380ab01a${_scopeId3}>${ssrInterpolate(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" accept="image/*,.ico" data-v-380ab01a${_scopeId3}></label>`);
                           if (__props.assets[slot]) {
-                            _push4(`<button class="btn btn--ghost slot__remove" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-a08a8eb9${_scopeId3}>`);
+                            _push4(`<button class="btn btn--ghost slot__remove" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-380ab01a${_scopeId3}>`);
                             _push4(ssrRenderComponent(NavIcon, {
                               name: "trash",
                               size: 18,
@@ -1466,11 +1547,29 @@ const _sfc_main$1w = {
                                     class: "slot__img",
                                     src: __props.assets[slot].url,
                                     alt: ""
-                                  }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                  }, null, 8, ["src"])) : slot === "logo_light" ? (openBlock(), createBlock(Logo, {
                                     key: 1,
+                                    class: "slot__logo",
+                                    lockup: "horizontal",
+                                    tone: "navy",
+                                    shipped: ""
+                                  })) : slot === "logo_dark" ? (openBlock(), createBlock(Logo, {
+                                    key: 2,
+                                    class: "slot__logo",
+                                    lockup: "horizontal",
+                                    tone: "white",
+                                    shipped: ""
+                                  })) : slot === "favicon" ? (openBlock(), createBlock("img", {
+                                    key: 3,
+                                    class: "slot__img slot__img--icon",
+                                    src: "/favicon-256x256.png",
+                                    alt: ""
+                                  })) : (openBlock(), createBlock("span", {
+                                    key: 4,
                                     class: "slot__empty"
-                                  }, toDisplayString(unref(t)("admin.brand_default")), 1))
+                                  }, toDisplayString(unref(t)("admin.brand_og_none")), 1))
                                 ], 2),
+                                createVNode("p", { class: "slot__source" }, toDisplayString(__props.assets[slot] ? unref(t)("admin.brand_uploaded") : unref(t)("admin.brand_default")), 1),
                                 createVNode("div", { class: "slot__actions" }, [
                                   createVNode("label", { class: "btn btn--ghost slot__upload" }, [
                                     createVNode("span", null, toDisplayString(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
@@ -1508,27 +1607,139 @@ const _sfc_main$1w = {
                   }, {
                     default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
-                        _push4(`<p class="intro" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_palette_hint"))}</p><ul class="palette" data-v-a08a8eb9${_scopeId3}><!--[-->`);
-                        ssrRenderList(__props.palette, (colour) => {
-                          _push4(`<li class="swatch" data-v-a08a8eb9${_scopeId3}><span class="swatch__chip" style="${ssrRenderStyle({ background: colour.hex })}" aria-hidden="true" data-v-a08a8eb9${_scopeId3}></span><span class="swatch__name" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(unref(t)(`admin.colour_${colour.name}`))}</span><code class="swatch__hex latin" data-v-a08a8eb9${_scopeId3}>${ssrInterpolate(colour.hex)}</code></li>`);
+                        _push4(`<p class="intro" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_palette_hint"))}</p><ul class="palette" data-v-380ab01a${_scopeId3}><!--[-->`);
+                        ssrRenderList(FAMILIES, (family) => {
+                          _push4(`<li class="swatch" data-v-380ab01a${_scopeId3}><label class="swatch__chip" data-v-380ab01a${_scopeId3}><input${ssrRenderAttr("value", chosen.value[family])} class="swatch__picker" type="color"${ssrRenderAttr("aria-label", unref(t)(`admin.colour_${family}`))} data-v-380ab01a${_scopeId3}></label><input class="swatch__hex latin" type="text" dir="ltr" inputmode="text" maxlength="7" spellcheck="false"${ssrRenderAttr("value", chosen.value[family])}${ssrRenderAttr("aria-label", unref(t)(`admin.colour_${family}`))} data-v-380ab01a${_scopeId3}>`);
+                          if (chosen.value[family] !== __props.identity[family]) {
+                            _push4(`<span class="chip chip--warn swatch__badge"${ssrRenderAttr("title", `${unref(t)("admin.brand_palette_identity")}: ${__props.identity[family]}`)} data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_palette_changed"))}</span>`);
+                          } else {
+                            _push4(`<!---->`);
+                          }
+                          _push4(`</li>`);
                         });
-                        _push4(`<!--]--></ul>`);
+                        _push4(`<!--]--></ul><div class="actions" data-v-380ab01a${_scopeId3}><button class="btn btn--primary" type="button"${ssrIncludeBooleanAttr(!dirty.value || !valid.value || saving.value) ? " disabled" : ""} data-v-380ab01a${_scopeId3}>${ssrInterpolate(saving.value ? unref(t)("admin.saving") : unref(t)("admin.brand_palette_save"))}</button>`);
+                        if (!isIdentity.value) {
+                          _push4(`<button class="btn btn--ghost" type="button" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_palette_reset"))}</button>`);
+                        } else {
+                          _push4(`<!---->`);
+                        }
+                        _push4(`</div>`);
                       } else {
                         return [
                           createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_palette_hint")), 1),
                           createVNode("ul", { class: "palette" }, [
-                            (openBlock(true), createBlock(Fragment, null, renderList(__props.palette, (colour) => {
-                              return openBlock(), createBlock("li", {
-                                key: colour.hex,
+                            (openBlock(), createBlock(Fragment, null, renderList(FAMILIES, (family) => {
+                              return createVNode("li", {
+                                key: family,
                                 class: "swatch"
                               }, [
+                                createVNode("label", { class: "swatch__chip" }, [
+                                  withDirectives(createVNode("input", {
+                                    "onUpdate:modelValue": ($event) => chosen.value[family] = $event,
+                                    class: "swatch__picker",
+                                    type: "color",
+                                    "aria-label": unref(t)(`admin.colour_${family}`)
+                                  }, null, 8, ["onUpdate:modelValue", "aria-label"]), [
+                                    [vModelText, chosen.value[family]]
+                                  ])
+                                ]),
+                                createVNode("input", {
+                                  class: "swatch__hex latin",
+                                  type: "text",
+                                  dir: "ltr",
+                                  inputmode: "text",
+                                  maxlength: "7",
+                                  spellcheck: "false",
+                                  value: chosen.value[family],
+                                  "aria-label": unref(t)(`admin.colour_${family}`),
+                                  onInput: ($event) => type(family, $event.target.value)
+                                }, null, 40, ["value", "aria-label", "onInput"]),
+                                chosen.value[family] !== __props.identity[family] ? (openBlock(), createBlock("span", {
+                                  key: 0,
+                                  class: "chip chip--warn swatch__badge",
+                                  title: `${unref(t)("admin.brand_palette_identity")}: ${__props.identity[family]}`
+                                }, toDisplayString(unref(t)("admin.brand_palette_changed")), 9, ["title"])) : createCommentVNode("", true)
+                              ]);
+                            }), 64))
+                          ]),
+                          createVNode("div", { class: "actions" }, [
+                            createVNode("button", {
+                              class: "btn btn--primary",
+                              type: "button",
+                              disabled: !dirty.value || !valid.value || saving.value,
+                              onClick: save
+                            }, toDisplayString(saving.value ? unref(t)("admin.saving") : unref(t)("admin.brand_palette_save")), 9, ["disabled"]),
+                            !isIdentity.value ? (openBlock(), createBlock("button", {
+                              key: 0,
+                              class: "btn btn--ghost",
+                              type: "button",
+                              onClick: reset
+                            }, toDisplayString(unref(t)("admin.brand_palette_reset")), 1)) : createCommentVNode("", true)
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Panel, {
+                    title: unref(t)("admin.brand_derived")
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<p class="intro" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_derived_hint"))}</p><ul class="ramp" data-v-380ab01a${_scopeId3}><!--[-->`);
+                        ssrRenderList(ramp.value, ([name, value]) => {
+                          _push4(`<li class="ramp__item" data-v-380ab01a${_scopeId3}><span class="ramp__chip" style="${ssrRenderStyle({ background: value })}" aria-hidden="true" data-v-380ab01a${_scopeId3}></span><code class="ramp__name latin" data-v-380ab01a${_scopeId3}>${ssrInterpolate(name)}</code><code class="ramp__hex latin" data-v-380ab01a${_scopeId3}>${ssrInterpolate(value)}</code></li>`);
+                        });
+                        _push4(`<!--]--></ul>`);
+                      } else {
+                        return [
+                          createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_derived_hint")), 1),
+                          createVNode("ul", { class: "ramp" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(ramp.value, ([name, value]) => {
+                              return openBlock(), createBlock("li", {
+                                key: name,
+                                class: "ramp__item"
+                              }, [
                                 createVNode("span", {
-                                  class: "swatch__chip",
-                                  style: { background: colour.hex },
+                                  class: "ramp__chip",
+                                  style: { background: value },
                                   "aria-hidden": "true"
                                 }, null, 4),
-                                createVNode("span", { class: "swatch__name" }, toDisplayString(unref(t)(`admin.colour_${colour.name}`)), 1),
-                                createVNode("code", { class: "swatch__hex latin" }, toDisplayString(colour.hex), 1)
+                                createVNode("code", { class: "ramp__name latin" }, toDisplayString(name), 1),
+                                createVNode("code", { class: "ramp__hex latin" }, toDisplayString(value), 1)
+                              ]);
+                            }), 128))
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(ssrRenderComponent(Panel, {
+                    title: unref(t)("admin.brand_contrast")
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<p class="intro" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.brand_contrast_hint"))}</p><ul class="checks" data-v-380ab01a${_scopeId3}><!--[-->`);
+                        ssrRenderList(__props.contrast, (row) => {
+                          _push4(`<li class="check" data-v-380ab01a${_scopeId3}><span class="check__name" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)(`admin.contrast_${row.pair}`))}</span><code class="check__ratio latin" data-v-380ab01a${_scopeId3}>${ssrInterpolate(row.ratio)}:1</code><span class="check__min latin" data-v-380ab01a${_scopeId3}>${ssrInterpolate(unref(t)("admin.contrast_minimum"))} ${ssrInterpolate(row.minimum)}:1</span><span class="${ssrRenderClass([row.passes ? "chip--ok" : "chip--warn", "chip"])}" data-v-380ab01a${_scopeId3}>${ssrInterpolate(row.passes ? unref(t)("admin.contrast_pass") : unref(t)("admin.contrast_fail"))}</span></li>`);
+                        });
+                        _push4(`<!--]--></ul>`);
+                      } else {
+                        return [
+                          createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_contrast_hint")), 1),
+                          createVNode("ul", { class: "checks" }, [
+                            (openBlock(true), createBlock(Fragment, null, renderList(__props.contrast, (row) => {
+                              return openBlock(), createBlock("li", {
+                                key: row.pair,
+                                class: "check"
+                              }, [
+                                createVNode("span", { class: "check__name" }, toDisplayString(unref(t)(`admin.contrast_${row.pair}`)), 1),
+                                createVNode("code", { class: "check__ratio latin" }, toDisplayString(row.ratio) + ":1", 1),
+                                createVNode("span", { class: "check__min latin" }, toDisplayString(unref(t)("admin.contrast_minimum")) + " " + toDisplayString(row.minimum) + ":1", 1),
+                                createVNode("span", {
+                                  class: ["chip", row.passes ? "chip--ok" : "chip--warn"]
+                                }, toDisplayString(row.passes ? unref(t)("admin.contrast_pass") : unref(t)("admin.contrast_fail")), 3)
                               ]);
                             }), 128))
                           ])
@@ -1560,11 +1771,29 @@ const _sfc_main$1w = {
                                   class: "slot__img",
                                   src: __props.assets[slot].url,
                                   alt: ""
-                                }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                                }, null, 8, ["src"])) : slot === "logo_light" ? (openBlock(), createBlock(Logo, {
                                   key: 1,
+                                  class: "slot__logo",
+                                  lockup: "horizontal",
+                                  tone: "navy",
+                                  shipped: ""
+                                })) : slot === "logo_dark" ? (openBlock(), createBlock(Logo, {
+                                  key: 2,
+                                  class: "slot__logo",
+                                  lockup: "horizontal",
+                                  tone: "white",
+                                  shipped: ""
+                                })) : slot === "favicon" ? (openBlock(), createBlock("img", {
+                                  key: 3,
+                                  class: "slot__img slot__img--icon",
+                                  src: "/favicon-256x256.png",
+                                  alt: ""
+                                })) : (openBlock(), createBlock("span", {
+                                  key: 4,
                                   class: "slot__empty"
-                                }, toDisplayString(unref(t)("admin.brand_default")), 1))
+                                }, toDisplayString(unref(t)("admin.brand_og_none")), 1))
                               ], 2),
+                              createVNode("p", { class: "slot__source" }, toDisplayString(__props.assets[slot] ? unref(t)("admin.brand_uploaded") : unref(t)("admin.brand_default")), 1),
                               createVNode("div", { class: "slot__actions" }, [
                                 createVNode("label", { class: "btn btn--ghost slot__upload" }, [
                                   createVNode("span", null, toDisplayString(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
@@ -1601,18 +1830,98 @@ const _sfc_main$1w = {
                       default: withCtx(() => [
                         createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_palette_hint")), 1),
                         createVNode("ul", { class: "palette" }, [
-                          (openBlock(true), createBlock(Fragment, null, renderList(__props.palette, (colour) => {
-                            return openBlock(), createBlock("li", {
-                              key: colour.hex,
+                          (openBlock(), createBlock(Fragment, null, renderList(FAMILIES, (family) => {
+                            return createVNode("li", {
+                              key: family,
                               class: "swatch"
                             }, [
+                              createVNode("label", { class: "swatch__chip" }, [
+                                withDirectives(createVNode("input", {
+                                  "onUpdate:modelValue": ($event) => chosen.value[family] = $event,
+                                  class: "swatch__picker",
+                                  type: "color",
+                                  "aria-label": unref(t)(`admin.colour_${family}`)
+                                }, null, 8, ["onUpdate:modelValue", "aria-label"]), [
+                                  [vModelText, chosen.value[family]]
+                                ])
+                              ]),
+                              createVNode("input", {
+                                class: "swatch__hex latin",
+                                type: "text",
+                                dir: "ltr",
+                                inputmode: "text",
+                                maxlength: "7",
+                                spellcheck: "false",
+                                value: chosen.value[family],
+                                "aria-label": unref(t)(`admin.colour_${family}`),
+                                onInput: ($event) => type(family, $event.target.value)
+                              }, null, 40, ["value", "aria-label", "onInput"]),
+                              chosen.value[family] !== __props.identity[family] ? (openBlock(), createBlock("span", {
+                                key: 0,
+                                class: "chip chip--warn swatch__badge",
+                                title: `${unref(t)("admin.brand_palette_identity")}: ${__props.identity[family]}`
+                              }, toDisplayString(unref(t)("admin.brand_palette_changed")), 9, ["title"])) : createCommentVNode("", true)
+                            ]);
+                          }), 64))
+                        ]),
+                        createVNode("div", { class: "actions" }, [
+                          createVNode("button", {
+                            class: "btn btn--primary",
+                            type: "button",
+                            disabled: !dirty.value || !valid.value || saving.value,
+                            onClick: save
+                          }, toDisplayString(saving.value ? unref(t)("admin.saving") : unref(t)("admin.brand_palette_save")), 9, ["disabled"]),
+                          !isIdentity.value ? (openBlock(), createBlock("button", {
+                            key: 0,
+                            class: "btn btn--ghost",
+                            type: "button",
+                            onClick: reset
+                          }, toDisplayString(unref(t)("admin.brand_palette_reset")), 1)) : createCommentVNode("", true)
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"]),
+                    createVNode(Panel, {
+                      title: unref(t)("admin.brand_derived")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_derived_hint")), 1),
+                        createVNode("ul", { class: "ramp" }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(ramp.value, ([name, value]) => {
+                            return openBlock(), createBlock("li", {
+                              key: name,
+                              class: "ramp__item"
+                            }, [
                               createVNode("span", {
-                                class: "swatch__chip",
-                                style: { background: colour.hex },
+                                class: "ramp__chip",
+                                style: { background: value },
                                 "aria-hidden": "true"
                               }, null, 4),
-                              createVNode("span", { class: "swatch__name" }, toDisplayString(unref(t)(`admin.colour_${colour.name}`)), 1),
-                              createVNode("code", { class: "swatch__hex latin" }, toDisplayString(colour.hex), 1)
+                              createVNode("code", { class: "ramp__name latin" }, toDisplayString(name), 1),
+                              createVNode("code", { class: "ramp__hex latin" }, toDisplayString(value), 1)
+                            ]);
+                          }), 128))
+                        ])
+                      ]),
+                      _: 1
+                    }, 8, ["title"]),
+                    createVNode(Panel, {
+                      title: unref(t)("admin.brand_contrast")
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_contrast_hint")), 1),
+                        createVNode("ul", { class: "checks" }, [
+                          (openBlock(true), createBlock(Fragment, null, renderList(__props.contrast, (row) => {
+                            return openBlock(), createBlock("li", {
+                              key: row.pair,
+                              class: "check"
+                            }, [
+                              createVNode("span", { class: "check__name" }, toDisplayString(unref(t)(`admin.contrast_${row.pair}`)), 1),
+                              createVNode("code", { class: "check__ratio latin" }, toDisplayString(row.ratio) + ":1", 1),
+                              createVNode("span", { class: "check__min latin" }, toDisplayString(unref(t)("admin.contrast_minimum")) + " " + toDisplayString(row.minimum) + ":1", 1),
+                              createVNode("span", {
+                                class: ["chip", row.passes ? "chip--ok" : "chip--warn"]
+                              }, toDisplayString(row.passes ? unref(t)("admin.contrast_pass") : unref(t)("admin.contrast_fail")), 3)
                             ]);
                           }), 128))
                         ])
@@ -1649,11 +1958,29 @@ const _sfc_main$1w = {
                                 class: "slot__img",
                                 src: __props.assets[slot].url,
                                 alt: ""
-                              }, null, 8, ["src"])) : (openBlock(), createBlock("span", {
+                              }, null, 8, ["src"])) : slot === "logo_light" ? (openBlock(), createBlock(Logo, {
                                 key: 1,
+                                class: "slot__logo",
+                                lockup: "horizontal",
+                                tone: "navy",
+                                shipped: ""
+                              })) : slot === "logo_dark" ? (openBlock(), createBlock(Logo, {
+                                key: 2,
+                                class: "slot__logo",
+                                lockup: "horizontal",
+                                tone: "white",
+                                shipped: ""
+                              })) : slot === "favicon" ? (openBlock(), createBlock("img", {
+                                key: 3,
+                                class: "slot__img slot__img--icon",
+                                src: "/favicon-256x256.png",
+                                alt: ""
+                              })) : (openBlock(), createBlock("span", {
+                                key: 4,
                                 class: "slot__empty"
-                              }, toDisplayString(unref(t)("admin.brand_default")), 1))
+                              }, toDisplayString(unref(t)("admin.brand_og_none")), 1))
                             ], 2),
+                            createVNode("p", { class: "slot__source" }, toDisplayString(__props.assets[slot] ? unref(t)("admin.brand_uploaded") : unref(t)("admin.brand_default")), 1),
                             createVNode("div", { class: "slot__actions" }, [
                               createVNode("label", { class: "btn btn--ghost slot__upload" }, [
                                 createVNode("span", null, toDisplayString(busy.value === slot ? unref(t)("admin.saving") : unref(t)("admin.upload")), 1),
@@ -1690,18 +2017,98 @@ const _sfc_main$1w = {
                     default: withCtx(() => [
                       createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_palette_hint")), 1),
                       createVNode("ul", { class: "palette" }, [
-                        (openBlock(true), createBlock(Fragment, null, renderList(__props.palette, (colour) => {
-                          return openBlock(), createBlock("li", {
-                            key: colour.hex,
+                        (openBlock(), createBlock(Fragment, null, renderList(FAMILIES, (family) => {
+                          return createVNode("li", {
+                            key: family,
                             class: "swatch"
                           }, [
+                            createVNode("label", { class: "swatch__chip" }, [
+                              withDirectives(createVNode("input", {
+                                "onUpdate:modelValue": ($event) => chosen.value[family] = $event,
+                                class: "swatch__picker",
+                                type: "color",
+                                "aria-label": unref(t)(`admin.colour_${family}`)
+                              }, null, 8, ["onUpdate:modelValue", "aria-label"]), [
+                                [vModelText, chosen.value[family]]
+                              ])
+                            ]),
+                            createVNode("input", {
+                              class: "swatch__hex latin",
+                              type: "text",
+                              dir: "ltr",
+                              inputmode: "text",
+                              maxlength: "7",
+                              spellcheck: "false",
+                              value: chosen.value[family],
+                              "aria-label": unref(t)(`admin.colour_${family}`),
+                              onInput: ($event) => type(family, $event.target.value)
+                            }, null, 40, ["value", "aria-label", "onInput"]),
+                            chosen.value[family] !== __props.identity[family] ? (openBlock(), createBlock("span", {
+                              key: 0,
+                              class: "chip chip--warn swatch__badge",
+                              title: `${unref(t)("admin.brand_palette_identity")}: ${__props.identity[family]}`
+                            }, toDisplayString(unref(t)("admin.brand_palette_changed")), 9, ["title"])) : createCommentVNode("", true)
+                          ]);
+                        }), 64))
+                      ]),
+                      createVNode("div", { class: "actions" }, [
+                        createVNode("button", {
+                          class: "btn btn--primary",
+                          type: "button",
+                          disabled: !dirty.value || !valid.value || saving.value,
+                          onClick: save
+                        }, toDisplayString(saving.value ? unref(t)("admin.saving") : unref(t)("admin.brand_palette_save")), 9, ["disabled"]),
+                        !isIdentity.value ? (openBlock(), createBlock("button", {
+                          key: 0,
+                          class: "btn btn--ghost",
+                          type: "button",
+                          onClick: reset
+                        }, toDisplayString(unref(t)("admin.brand_palette_reset")), 1)) : createCommentVNode("", true)
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"]),
+                  createVNode(Panel, {
+                    title: unref(t)("admin.brand_derived")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_derived_hint")), 1),
+                      createVNode("ul", { class: "ramp" }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(ramp.value, ([name, value]) => {
+                          return openBlock(), createBlock("li", {
+                            key: name,
+                            class: "ramp__item"
+                          }, [
                             createVNode("span", {
-                              class: "swatch__chip",
-                              style: { background: colour.hex },
+                              class: "ramp__chip",
+                              style: { background: value },
                               "aria-hidden": "true"
                             }, null, 4),
-                            createVNode("span", { class: "swatch__name" }, toDisplayString(unref(t)(`admin.colour_${colour.name}`)), 1),
-                            createVNode("code", { class: "swatch__hex latin" }, toDisplayString(colour.hex), 1)
+                            createVNode("code", { class: "ramp__name latin" }, toDisplayString(name), 1),
+                            createVNode("code", { class: "ramp__hex latin" }, toDisplayString(value), 1)
+                          ]);
+                        }), 128))
+                      ])
+                    ]),
+                    _: 1
+                  }, 8, ["title"]),
+                  createVNode(Panel, {
+                    title: unref(t)("admin.brand_contrast")
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("p", { class: "intro" }, toDisplayString(unref(t)("admin.brand_contrast_hint")), 1),
+                      createVNode("ul", { class: "checks" }, [
+                        (openBlock(true), createBlock(Fragment, null, renderList(__props.contrast, (row) => {
+                          return openBlock(), createBlock("li", {
+                            key: row.pair,
+                            class: "check"
+                          }, [
+                            createVNode("span", { class: "check__name" }, toDisplayString(unref(t)(`admin.contrast_${row.pair}`)), 1),
+                            createVNode("code", { class: "check__ratio latin" }, toDisplayString(row.ratio) + ":1", 1),
+                            createVNode("span", { class: "check__min latin" }, toDisplayString(unref(t)("admin.contrast_minimum")) + " " + toDisplayString(row.minimum) + ":1", 1),
+                            createVNode("span", {
+                              class: ["chip", row.passes ? "chip--ok" : "chip--warn"]
+                            }, toDisplayString(row.passes ? unref(t)("admin.contrast_pass") : unref(t)("admin.contrast_fail")), 3)
                           ]);
                         }), 128))
                       ])
@@ -1725,7 +2132,7 @@ _sfc_main$1w.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Brand.vue");
   return _sfc_setup$1w ? _sfc_setup$1w(props, ctx) : void 0;
 };
-const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$1w, [["__scopeId", "data-v-a08a8eb9"]]);
+const Brand = /* @__PURE__ */ _export_sfc(_sfc_main$1w, [["__scopeId", "data-v-380ab01a"]]);
 const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Brand
@@ -2651,22 +3058,22 @@ const _sfc_main$1s = {
           class: "picker",
           role: "dialog",
           "aria-modal": "true"
-        }, _attrs))} data-v-7fadc60b><div class="picker__scrim" data-v-7fadc60b></div><div class="picker__panel" data-v-7fadc60b><header class="picker__head" data-v-7fadc60b><div class="picker__tabs" role="tablist" data-v-7fadc60b><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "library" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "library")} data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_tab_library"))}</button><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "upload" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "upload")} data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_tab_upload"))}</button></div><button type="button" class="btn btn--ghost" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_close"))}</button></header><div class="${ssrRenderClass([{ "has-rail": activeItem.value }, "picker__body"])}" style="${ssrRenderStyle(tab.value === "library" ? null : { display: "none" })}" data-v-7fadc60b><div class="picker__main" data-v-7fadc60b><input${ssrRenderAttr("value", search.value)} type="search" class="picker__search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-7fadc60b>`);
+        }, _attrs))} data-v-72bb41af><div class="picker__scrim" data-v-72bb41af></div><div class="picker__panel" data-v-72bb41af><header class="picker__head" data-v-72bb41af><div class="picker__tabs" role="tablist" data-v-72bb41af><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "library" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "library")} data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_tab_library"))}</button><button type="button" role="tab" class="${ssrRenderClass([{ "is-active": tab.value === "upload" }, "picker__tab"])}"${ssrRenderAttr("aria-selected", tab.value === "upload")} data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_tab_upload"))}</button></div><button type="button" class="btn btn--ghost" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_close"))}</button></header><div class="${ssrRenderClass([{ "has-rail": activeItem.value }, "picker__body"])}" style="${ssrRenderStyle(tab.value === "library" ? null : { display: "none" })}" data-v-72bb41af><div class="picker__main" data-v-72bb41af><input${ssrRenderAttr("value", search.value)} type="search" class="picker__search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-72bb41af>`);
         if (!loading.value && items.value.length === 0) {
-          _push(`<p class="picker__empty" data-v-7fadc60b>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
+          _push(`<p class="picker__empty" data-v-72bb41af>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<ul class="grid" data-v-7fadc60b><!--[-->`);
+        _push(`<ul class="grid" data-v-72bb41af><!--[-->`);
         ssrRenderList(items.value, (item) => {
-          _push(`<li data-v-7fadc60b><button type="button" class="${ssrRenderClass([{ "is-chosen": isChosen(item), "is-active": active.value === item.id }, "grid__cell"])}"${ssrRenderAttr("aria-pressed", isChosen(item))} data-v-7fadc60b>`);
+          _push(`<li data-v-72bb41af><button type="button" class="${ssrRenderClass([{ "is-chosen": isChosen(item), "is-active": active.value === item.id }, "grid__cell"])}"${ssrRenderAttr("aria-pressed", isChosen(item))} data-v-72bb41af>`);
           if (isVideo(item)) {
-            _push(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-7fadc60b></video>`);
+            _push(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-72bb41af></video>`);
           } else {
-            _push(`<img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-7fadc60b>`);
+            _push(`<img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-72bb41af>`);
           }
           if (isChosen(item)) {
-            _push(`<span class="grid__tick" aria-hidden="true" data-v-7fadc60b>✓</span>`);
+            _push(`<span class="grid__tick" aria-hidden="true" data-v-72bb41af>✓</span>`);
           } else {
             _push(`<!---->`);
           }
@@ -2674,31 +3081,31 @@ const _sfc_main$1s = {
         });
         _push(`<!--]--></ul>`);
         if (page.value < lastPage.value) {
-          _push(`<button type="button" class="btn btn--ghost picker__more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
+          _push(`<button type="button" class="btn btn--ghost picker__more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
         } else {
           _push(`<!---->`);
         }
         _push(`</div>`);
         if (activeItem.value) {
-          _push(`<aside class="picker__side" data-v-7fadc60b>`);
+          _push(`<aside class="picker__side" data-v-72bb41af>`);
           if (isVideo(activeItem.value)) {
-            _push(`<video${ssrRenderAttr("src", activeItem.value.url)} class="picker__preview" muted playsinline controls data-v-7fadc60b></video>`);
+            _push(`<video${ssrRenderAttr("src", activeItem.value.url)} class="picker__preview" muted playsinline controls data-v-72bb41af></video>`);
           } else {
-            _push(`<img${ssrRenderAttr("src", activeItem.value.thumb)}${ssrRenderAttr("alt", "")} class="picker__preview" data-v-7fadc60b>`);
+            _push(`<img${ssrRenderAttr("src", activeItem.value.thumb)}${ssrRenderAttr("alt", "")} class="picker__preview" data-v-72bb41af>`);
           }
-          _push(`<dl class="facts" data-v-7fadc60b><dt data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-7fadc60b>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-7fadc60b>`);
+          _push(`<dl class="facts" data-v-72bb41af><dt data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-72bb41af>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-72bb41af>`);
           if (activeItem.value.width) {
-            _push(`<span data-v-7fadc60b>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+            _push(`<span data-v-72bb41af>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
           } else {
-            _push(`<span data-v-7fadc60b>—</span>`);
+            _push(`<span data-v-72bb41af>—</span>`);
           }
-          _push(`</dd><dt data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-7fadc60b>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-7fadc60b>${ssrInterpolate(unref(formatDate)(activeItem.value.createdAt))}</dd><dt data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_used_in"))}</dt><dd data-v-7fadc60b>${ssrInterpolate(activeItem.value.usageCount ? unref(t)("admin.media_usage_count", { count: activeItem.value.usageCount }) : unref(t)("admin.media_unused"))}</dd></dl><!--[-->`);
+          _push(`</dd><dt data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-72bb41af>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-72bb41af>${ssrInterpolate(unref(formatDate)(activeItem.value.createdAt))}</dd><dt data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_used_in"))}</dt><dd data-v-72bb41af>${ssrInterpolate(activeItem.value.usageCount ? unref(t)("admin.media_usage_count", { count: activeItem.value.usageCount }) : unref(t)("admin.media_unused"))}</dd></dl><!--[-->`);
           ssrRenderList(LOCALES, (code) => {
-            _push(`<div class="picker__alt" data-v-7fadc60b><label${ssrRenderAttr("for", `alt-${code}`)} data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-7fadc60b></div>`);
+            _push(`<div class="picker__alt" data-v-72bb41af><label${ssrRenderAttr("for", `alt-${code}`)} data-v-72bb41af>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-72bb41af></div>`);
           });
-          _push(`<!--]--><p class="picker__hint" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.alt_text_hint"))}</p>`);
+          _push(`<!--]--><p class="picker__hint" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.alt_text_hint"))}</p>`);
           if (savingAlt.value) {
-            _push(`<p class="picker__hint" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
+            _push(`<p class="picker__hint" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
           } else {
             _push(`<!---->`);
           }
@@ -2706,17 +3113,17 @@ const _sfc_main$1s = {
         } else {
           _push(`<!---->`);
         }
-        _push(`</div><div class="picker__body" style="${ssrRenderStyle(tab.value === "upload" ? null : { display: "none" })}" data-v-7fadc60b><div class="picker__main" data-v-7fadc60b><div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-7fadc60b><p class="drop__label" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT$1)} class="drop__input" data-v-7fadc60b></div>`);
+        _push(`</div><div class="picker__body" style="${ssrRenderStyle(tab.value === "upload" ? null : { display: "none" })}" data-v-72bb41af><div class="picker__main" data-v-72bb41af><div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-72bb41af><p class="drop__label" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><button type="button" class="btn btn--ghost" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</button><input type="file" multiple${ssrRenderAttr("accept", ACCEPT$1)} class="drop__input" data-v-72bb41af></div>`);
         if (uploads.value.length) {
-          _push(`<ul class="queue" data-v-7fadc60b><!--[-->`);
+          _push(`<ul class="queue" data-v-72bb41af><!--[-->`);
           ssrRenderList(uploads.value, (entry, i) => {
-            _push(`<li class="queue__row" data-v-7fadc60b><span class="queue__name" dir="auto" data-v-7fadc60b>${ssrInterpolate(entry.name)}</span>`);
+            _push(`<li class="queue__row" data-v-72bb41af><span class="queue__name" dir="auto" data-v-72bb41af>${ssrInterpolate(entry.name)}</span>`);
             if (entry.error) {
-              _push(`<span class="queue__error" data-v-7fadc60b>${ssrInterpolate(entry.error)}</span>`);
+              _push(`<span class="queue__error" data-v-72bb41af>${ssrInterpolate(entry.error)}</span>`);
             } else if (entry.done) {
-              _push(`<span class="queue__done" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
+              _push(`<span class="queue__done" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
             } else {
-              _push(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-7fadc60b><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-7fadc60b></span></span>`);
+              _push(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-72bb41af><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-72bb41af></span></span>`);
             }
             _push(`</li>`);
           });
@@ -2724,7 +3131,7 @@ const _sfc_main$1s = {
         } else {
           _push(`<!---->`);
         }
-        _push(`</div></div><footer class="picker__foot" data-v-7fadc60b><p class="picker__count" data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_selected", { count: chosen.value.length }))}</p><button type="button" class="btn btn--primary"${ssrIncludeBooleanAttr(!canInsert.value) ? " disabled" : ""} data-v-7fadc60b>${ssrInterpolate(unref(t)("admin.media_insert_count", { count: chosen.value.length }))}</button></footer></div></div>`);
+        _push(`</div></div><footer class="picker__foot" data-v-72bb41af><p class="picker__count" data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_selected", { count: chosen.value.length }))}</p><button type="button" class="btn btn--primary"${ssrIncludeBooleanAttr(!canInsert.value) ? " disabled" : ""} data-v-72bb41af>${ssrInterpolate(unref(t)("admin.media_insert_count", { count: chosen.value.length }))}</button></footer></div></div>`);
       } else {
         _push(`<!---->`);
       }
@@ -2737,7 +3144,7 @@ _sfc_main$1s.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/admin/MediaPicker.vue");
   return _sfc_setup$1s ? _sfc_setup$1s(props, ctx) : void 0;
 };
-const MediaPicker = /* @__PURE__ */ _export_sfc(_sfc_main$1s, [["__scopeId", "data-v-7fadc60b"]]);
+const MediaPicker = /* @__PURE__ */ _export_sfc(_sfc_main$1s, [["__scopeId", "data-v-72bb41af"]]);
 const _sfc_main$1r = {
   __name: "MediaSlot",
   __ssrInlineRender: true,
@@ -3084,13 +3491,13 @@ const _sfc_main$1p = {
               "sections-href": __props.record && ["sectors", "solutions"].includes(__props.entity) ? `/admin/sections/${__props.entity === "sectors" ? "sector" : "solution"}/${__props.record.id}` : null,
               "preview-href": __props.record?.previewUrl ?? null
             }, null, _parent2, _scopeId));
-            _push2(`<form data-v-445aa4db${_scopeId}>`);
+            _push2(`<form data-v-4048e8b5${_scopeId}>`);
             _push2(ssrRenderComponent(Panel, {
               title: unref(t)("admin.shared_fields")
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<div class="grid" data-v-445aa4db${_scopeId2}><!--[-->`);
+                  _push3(`<div class="grid" data-v-4048e8b5${_scopeId2}><!--[-->`);
                   ssrRenderList(__props.meta.attributes, (type, name) => {
                     _push3(ssrRenderComponent(Field, {
                       key: name,
@@ -3149,13 +3556,13 @@ const _sfc_main$1p = {
               }, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<ul class="picker" data-v-445aa4db${_scopeId2}><!--[-->`);
+                    _push3(`<ul class="picker" data-v-4048e8b5${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.taxonomyOptions[name] ?? [], (option) => {
-                      _push3(`<li data-v-445aa4db${_scopeId2}><label class="picker__row" data-v-445aa4db${_scopeId2}><input type="checkbox"${ssrIncludeBooleanAttr(unref(form).taxonomies[name].includes(option.value)) ? " checked" : ""} data-v-445aa4db${_scopeId2}><span data-v-445aa4db${_scopeId2}>${ssrInterpolate(option.label)}</span></label></li>`);
+                      _push3(`<li data-v-4048e8b5${_scopeId2}><label class="picker__row" data-v-4048e8b5${_scopeId2}><input type="checkbox"${ssrIncludeBooleanAttr(unref(form).taxonomies[name].includes(option.value)) ? " checked" : ""} data-v-4048e8b5${_scopeId2}><span data-v-4048e8b5${_scopeId2}>${ssrInterpolate(option.label)}</span></label></li>`);
                     });
                     _push3(`<!--]--></ul>`);
                     if (!(__props.taxonomyOptions[name] ?? []).length) {
-                      _push3(`<p class="picker__empty" data-v-445aa4db${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                      _push3(`<p class="picker__empty" data-v-4048e8b5${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                     } else {
                       _push3(`<!---->`);
                     }
@@ -3216,13 +3623,13 @@ const _sfc_main$1p = {
               }),
               _: 1
             }, _parent2, _scopeId));
-            _push2(`<div class="bar" data-v-445aa4db${_scopeId}><button class="act btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-445aa4db${_scopeId}>`);
+            _push2(`<div class="bar" data-v-4048e8b5${_scopeId}><button class="act btn btn--cta" type="submit"${ssrIncludeBooleanAttr(unref(form).processing) ? " disabled" : ""} data-v-4048e8b5${_scopeId}>`);
             _push2(ssrRenderComponent(NavIcon, {
               name: "check",
               size: 18,
               muted: false
             }, null, _parent2, _scopeId));
-            _push2(`<span data-v-445aa4db${_scopeId}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</span></button>`);
+            _push2(`<span data-v-4048e8b5${_scopeId}>${ssrInterpolate(unref(form).processing ? unref(t)("admin.saving") : unref(t)("admin.save"))}</span></button>`);
             _push2(ssrRenderComponent(unref(Link), {
               href: `/admin/content/${__props.entity}`,
               class: "act btn btn--ghost"
@@ -3234,7 +3641,7 @@ const _sfc_main$1p = {
                     size: 18,
                     muted: false
                   }, null, _parent3, _scopeId2));
-                  _push3(`<span data-v-445aa4db${_scopeId2}>${ssrInterpolate(unref(t)("admin.cancel"))}</span>`);
+                  _push3(`<span data-v-4048e8b5${_scopeId2}>${ssrInterpolate(unref(t)("admin.cancel"))}</span>`);
                 } else {
                   return [
                     createVNode(NavIcon, {
@@ -3257,7 +3664,7 @@ const _sfc_main$1p = {
                   if (_push3) {
                     _push3(`<!--[-->`);
                     ssrRenderList(__props.meta.media, (collection) => {
-                      _push3(`<div class="media" data-v-445aa4db${_scopeId2}>`);
+                      _push3(`<div class="media" data-v-4048e8b5${_scopeId2}>`);
                       if (!DOCUMENTS.includes(collection)) {
                         _push3(ssrRenderComponent(MediaSlot, {
                           "model-value": __props.record.media[collection] ?? [],
@@ -3266,11 +3673,11 @@ const _sfc_main$1p = {
                           "onUpdate:modelValue": (v) => setMedia(collection, v)
                         }, null, _parent3, _scopeId2));
                       } else {
-                        _push3(`<!--[--><p class="media__label latin" data-v-445aa4db${_scopeId2}>${ssrInterpolate(collection)}</p>`);
+                        _push3(`<!--[--><p class="media__label latin" data-v-4048e8b5${_scopeId2}>${ssrInterpolate(collection)}</p>`);
                         if (__props.record.media[collection]?.length) {
-                          _push3(`<ul class="media__list" data-v-445aa4db${_scopeId2}><!--[-->`);
+                          _push3(`<ul class="media__list" data-v-4048e8b5${_scopeId2}><!--[-->`);
                           ssrRenderList(__props.record.media[collection], (item) => {
-                            _push3(`<li class="media__item" data-v-445aa4db${_scopeId2}><span dir="auto" data-v-445aa4db${_scopeId2}>${ssrInterpolate(item.name)}</span><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-445aa4db${_scopeId2}>`);
+                            _push3(`<li class="media__item" data-v-4048e8b5${_scopeId2}><span dir="auto" data-v-4048e8b5${_scopeId2}>${ssrInterpolate(item.name)}</span><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-4048e8b5${_scopeId2}>`);
                             _push3(ssrRenderComponent(NavIcon, {
                               name: "trash",
                               size: 18,
@@ -3282,7 +3689,7 @@ const _sfc_main$1p = {
                         } else {
                           _push3(`<!---->`);
                         }
-                        _push3(`<label class="media__upload" data-v-445aa4db${_scopeId2}><span data-v-445aa4db${_scopeId2}>${ssrInterpolate(uploading.value === collection ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" data-v-445aa4db${_scopeId2}></label><!--]-->`);
+                        _push3(`<label class="media__upload" data-v-4048e8b5${_scopeId2}><span data-v-4048e8b5${_scopeId2}>${ssrInterpolate(uploading.value === collection ? unref(t)("admin.saving") : unref(t)("admin.upload"))}</span><input type="file" data-v-4048e8b5${_scopeId2}></label><!--]-->`);
                       }
                       _push3(`</div>`);
                     });
@@ -3531,7 +3938,7 @@ _sfc_main$1p.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Content/Edit.vue");
   return _sfc_setup$1p ? _sfc_setup$1p(props, ctx) : void 0;
 };
-const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$1p, [["__scopeId", "data-v-445aa4db"]]);
+const Edit$2 = /* @__PURE__ */ _export_sfc(_sfc_main$1p, [["__scopeId", "data-v-4048e8b5"]]);
 const __vite_glob_0_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Edit$2
@@ -4493,11 +4900,11 @@ const _sfc_main$1m = {
       }, _attrs), {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="dashscreen" data-v-e0fe45e6${_scopeId}><ul class="tiles" data-v-e0fe45e6${_scopeId}><!--[-->`);
+            _push2(`<div class="dashscreen" data-v-dbebdc2a${_scopeId}><ul class="tiles" data-v-dbebdc2a${_scopeId}><!--[-->`);
             ssrRenderList(tiles.value, (tile) => {
-              _push2(`<li class="${ssrRenderClass([`tile--${tile.tone}`, "tile"])}" data-v-e0fe45e6${_scopeId}><p class="tile__label" data-v-e0fe45e6${_scopeId}>${ssrInterpolate(tile.label)}</p><p class="tile__value tabular" data-v-e0fe45e6${_scopeId}>${ssrInterpolate(unref(number)(tile.value))}</p>`);
+              _push2(`<li class="${ssrRenderClass([`tile--${tile.tone}`, "tile"])}" data-v-dbebdc2a${_scopeId}><p class="tile__label" data-v-dbebdc2a${_scopeId}>${ssrInterpolate(tile.label)}</p><p class="tile__value tabular" data-v-dbebdc2a${_scopeId}>${ssrInterpolate(unref(number)(tile.value))}</p>`);
               if (tile.change !== void 0 && tile.change !== null) {
-                _push2(`<p class="${ssrRenderClass([tile.change > 0 ? "is-up" : tile.change < 0 ? "is-down" : "is-flat", "tile__change tabular"])}" data-v-e0fe45e6${_scopeId}><span aria-hidden="true" data-v-e0fe45e6${_scopeId}>${ssrInterpolate(tile.change > 0 ? "↑" : tile.change < 0 ? "↓" : "→")}</span> ${ssrInterpolate(tile.change > 0 ? "+" : "")}${ssrInterpolate(unref(number)(tile.change))}% </p>`);
+                _push2(`<p class="${ssrRenderClass([tile.change > 0 ? "is-up" : tile.change < 0 ? "is-down" : "is-flat", "tile__change tabular"])}" data-v-dbebdc2a${_scopeId}><span aria-hidden="true" data-v-dbebdc2a${_scopeId}>${ssrInterpolate(tile.change > 0 ? "↑" : tile.change < 0 ? "↓" : "→")}</span> ${ssrInterpolate(tile.change > 0 ? "+" : "")}${ssrInterpolate(unref(number)(tile.change))}% </p>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -4511,11 +4918,11 @@ const _sfc_main$1m = {
               }, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<div class="chart" role="img"${ssrRenderAttr("aria-label", unref(t)("admin.leads_by_day"))} data-v-e0fe45e6${_scopeId2}><svg${ssrRenderAttr("viewBox", `0 0 ${__props.daily.length * 4} 60`)} preserveAspectRatio="none" class="chart__svg" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                    _push3(`<div class="chart" role="img"${ssrRenderAttr("aria-label", unref(t)("admin.leads_by_day"))} data-v-dbebdc2a${_scopeId2}><svg${ssrRenderAttr("viewBox", `0 0 ${__props.daily.length * 4} 60`)} preserveAspectRatio="none" class="chart__svg" data-v-dbebdc2a${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.daily, (day, i) => {
-                      _push3(`<rect${ssrRenderAttr("x", i * 4)}${ssrRenderAttr("y", 60 - day.count / peak.value * 60)} width="3"${ssrRenderAttr("height", Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0))} class="chart__bar" data-v-e0fe45e6${_scopeId2}></rect>`);
+                      _push3(`<rect${ssrRenderAttr("x", i * 4)}${ssrRenderAttr("y", 60 - day.count / peak.value * 60)} width="3"${ssrRenderAttr("height", Math.max(day.count / peak.value * 60, day.count > 0 ? 2 : 0))} class="chart__bar" data-v-dbebdc2a${_scopeId2}></rect>`);
                     });
-                    _push3(`<!--]--></svg><div class="chart__axis" data-v-e0fe45e6${_scopeId2}><span data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : "")}</span><span data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : "")}</span></div></div>`);
+                    _push3(`<!--]--></svg><div class="chart__axis" data-v-dbebdc2a${_scopeId2}><span data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[0].date) : "")}</span><span data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(__props.daily.length ? unref(dayMonth)(__props.daily[__props.daily.length - 1].date) : "")}</span></div></div>`);
                   } else {
                     return [
                       createVNode("div", {
@@ -4552,7 +4959,7 @@ const _sfc_main$1m = {
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<div class="split" data-v-e0fe45e6${_scopeId}>`);
+            _push2(`<div class="split" data-v-dbebdc2a${_scopeId}>`);
             if (__props.maySeeLeads) {
               _push2(ssrRenderComponent(Panel, {
                 title: unref(t)("admin.leads_by_source")
@@ -4560,11 +4967,11 @@ const _sfc_main$1m = {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
                     if (!__props.bySource.length) {
-                      _push3(`<p class="empty" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                      _push3(`<p class="empty" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                     } else {
-                      _push3(`<ul class="bars" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                      _push3(`<ul class="bars" data-v-dbebdc2a${_scopeId2}><!--[-->`);
                       ssrRenderList(__props.bySource, (row) => {
-                        _push3(`<li class="bars__row" data-v-e0fe45e6${_scopeId2}><span class="bars__label" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-e0fe45e6${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxSource.value * 100}%` })}" data-v-e0fe45e6${_scopeId2}></span></span><span class="bars__value tabular" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
+                        _push3(`<li class="bars__row" data-v-dbebdc2a${_scopeId2}><span class="bars__label" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-dbebdc2a${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxSource.value * 100}%` })}" data-v-dbebdc2a${_scopeId2}></span></span><span class="bars__value tabular" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
                       });
                       _push3(`<!--]--></ul>`);
                     }
@@ -4608,11 +5015,11 @@ const _sfc_main$1m = {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
                     if (!__props.byCampaign.length) {
-                      _push3(`<p class="empty" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                      _push3(`<p class="empty" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                     } else {
-                      _push3(`<ul class="bars" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                      _push3(`<ul class="bars" data-v-dbebdc2a${_scopeId2}><!--[-->`);
                       ssrRenderList(__props.byCampaign, (row) => {
-                        _push3(`<li class="bars__row" data-v-e0fe45e6${_scopeId2}><span class="bars__label" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-e0fe45e6${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxCampaign.value * 100}%` })}" data-v-e0fe45e6${_scopeId2}></span></span><span class="bars__value tabular" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
+                        _push3(`<li class="bars__row" data-v-dbebdc2a${_scopeId2}><span class="bars__label" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(row.label)}</span><span class="bars__track" data-v-dbebdc2a${_scopeId2}><span class="bars__fill" style="${ssrRenderStyle({ inlineSize: `${row.count / maxCampaign.value * 100}%` })}" data-v-dbebdc2a${_scopeId2}></span></span><span class="bars__value tabular" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(number)(row.count))}</span></li>`);
                       });
                       _push3(`<!--]--></ul>`);
                     }
@@ -4688,11 +5095,11 @@ const _sfc_main$1m = {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
                     if (!__props.latest.length) {
-                      _push3(`<p class="empty" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                      _push3(`<p class="empty" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                     } else {
-                      _push3(`<ul class="latest" data-v-e0fe45e6${_scopeId2}><!--[-->`);
+                      _push3(`<ul class="latest" data-v-dbebdc2a${_scopeId2}><!--[-->`);
                       ssrRenderList(__props.latest, (lead) => {
-                        _push3(`<li class="latest__row" data-v-e0fe45e6${_scopeId2}>`);
+                        _push3(`<li class="latest__row" data-v-dbebdc2a${_scopeId2}>`);
                         _push3(ssrRenderComponent(unref(Link), {
                           href: `/admin/leads/${lead.id}`,
                           class: "latest__contact latin"
@@ -4708,7 +5115,7 @@ const _sfc_main$1m = {
                           }),
                           _: 2
                         }, _parent3, _scopeId2));
-                        _push3(`<span class="latest__msg" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</span><span class="latest__status" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span><span class="${ssrRenderClass([`is-${lead.crmStatus}`, "latest__crm"])}" data-v-e0fe45e6${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></li>`);
+                        _push3(`<span class="latest__msg" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(lead.message ?? "—")}</span><span class="latest__status" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span><span class="${ssrRenderClass([`is-${lead.crmStatus}`, "latest__crm"])}" data-v-dbebdc2a${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${lead.crmStatus}`))}</span></li>`);
                       });
                       _push3(`<!--]--></ul>`);
                     }
@@ -4935,7 +5342,7 @@ _sfc_main$1m.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Dashboard.vue");
   return _sfc_setup$1m ? _sfc_setup$1m(props, ctx) : void 0;
 };
-const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$1m, [["__scopeId", "data-v-e0fe45e6"]]);
+const Dashboard = /* @__PURE__ */ _export_sfc(_sfc_main$1m, [["__scopeId", "data-v-dbebdc2a"]]);
 const __vite_glob_0_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Dashboard
@@ -6216,27 +6623,27 @@ const _sfc_main$1i = {
       }, _attrs), {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="leadscreen" data-v-de8898ad${_scopeId}><header class="summary" data-v-de8898ad${_scopeId}><div class="summary__figure" data-v-de8898ad${_scopeId}><span class="summary__value tabular" data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.leads.total)}</span><span class="summary__label" data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.viewingArchived ? unref(t)("admin.lead_archive_view") : unref(t)("admin.leads"))}</span></div>`);
+            _push2(`<div class="leadscreen" data-v-bd716778${_scopeId}><header class="summary" data-v-bd716778${_scopeId}><div class="summary__figure" data-v-bd716778${_scopeId}><span class="summary__value tabular" data-v-bd716778${_scopeId}>${ssrInterpolate(__props.leads.total)}</span><span class="summary__label" data-v-bd716778${_scopeId}>${ssrInterpolate(__props.viewingArchived ? unref(t)("admin.lead_archive_view") : unref(t)("admin.leads"))}</span></div>`);
             if (activeFilterCount.value) {
-              _push2(`<div class="summary__note" data-v-de8898ad${_scopeId}>`);
+              _push2(`<div class="summary__note" data-v-bd716778${_scopeId}>`);
               _push2(ssrRenderComponent(NavIcon, {
                 name: "advanced",
                 size: 16,
                 muted: false
               }, null, _parent2, _scopeId));
-              _push2(`<span data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.filter"))} · ${ssrInterpolate(activeFilterCount.value)}</span><button class="summary__clear" type="button" data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.reset"))}</button></div>`);
+              _push2(`<span data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.filter"))} · ${ssrInterpolate(activeFilterCount.value)}</span><button class="summary__clear" type="button" data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.reset"))}</button></div>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<div class="summary__acts" data-v-de8898ad${_scopeId}>`);
+            _push2(`<div class="summary__acts" data-v-bd716778${_scopeId}>`);
             if (__props.can.export) {
-              _push2(`<a class="btn btn--secondary act"${ssrRenderAttr("href", exportUrl())} data-v-de8898ad${_scopeId}>`);
+              _push2(`<a class="btn btn--secondary act"${ssrRenderAttr("href", exportUrl())} data-v-bd716778${_scopeId}>`);
               _push2(ssrRenderComponent(NavIcon, {
                 name: "swap",
                 size: 18,
                 muted: false
               }, null, _parent2, _scopeId));
-              _push2(`<span data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.export_csv"))}</span></a>`);
+              _push2(`<span data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.export_csv"))}</span></a>`);
             } else {
               _push2(`<!---->`);
             }
@@ -6252,7 +6659,7 @@ const _sfc_main$1i = {
                       size: 18,
                       muted: false
                     }, null, _parent3, _scopeId2));
-                    _push3(`<span data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive_back"))}</span>`);
+                    _push3(`<span data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive_back"))}</span>`);
                   } else {
                     return [
                       createVNode(NavIcon, {
@@ -6278,7 +6685,7 @@ const _sfc_main$1i = {
                       size: 18,
                       muted: false
                     }, null, _parent3, _scopeId2));
-                    _push3(`<span data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive_view"))}</span><span class="act__count" data-v-de8898ad${_scopeId2}>${ssrInterpolate(__props.archivedCount)}</span>`);
+                    _push3(`<span data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive_view"))}</span><span class="act__count" data-v-bd716778${_scopeId2}>${ssrInterpolate(__props.archivedCount)}</span>`);
                   } else {
                     return [
                       createVNode(NavIcon, {
@@ -6302,13 +6709,13 @@ const _sfc_main$1i = {
             }, {
               actions: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<button class="btn btn--ghost act" type="button"${ssrIncludeBooleanAttr(!activeFilterCount.value) ? " disabled" : ""} data-v-de8898ad${_scopeId2}>`);
+                  _push3(`<button class="btn btn--ghost act" type="button"${ssrIncludeBooleanAttr(!activeFilterCount.value) ? " disabled" : ""} data-v-bd716778${_scopeId2}>`);
                   _push3(ssrRenderComponent(NavIcon, {
                     name: "close",
                     size: 18,
                     muted: false
                   }, null, _parent3, _scopeId2));
-                  _push3(`<span data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.reset"))}</span></button>`);
+                  _push3(`<span data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.reset"))}</span></button>`);
                 } else {
                   return [
                     createVNode("button", {
@@ -6330,17 +6737,17 @@ const _sfc_main$1i = {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
                   if (__props.viewingArchived) {
-                    _push3(`<p class="archnote" data-v-de8898ad${_scopeId2}>`);
+                    _push3(`<p class="archnote" data-v-bd716778${_scopeId2}>`);
                     _push3(ssrRenderComponent(NavIcon, {
                       name: "shield",
                       size: 18,
                       muted: false
                     }, null, _parent3, _scopeId2));
-                    _push3(`<span data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive_note"))}</span></p>`);
+                    _push3(`<span data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive_note"))}</span></p>`);
                   } else {
                     _push3(`<!---->`);
                   }
-                  _push3(`<div class="filters" data-v-de8898ad${_scopeId2}><div class="filters__search searchbox" data-v-de8898ad${_scopeId2}>`);
+                  _push3(`<div class="filters" data-v-bd716778${_scopeId2}><div class="filters__search searchbox" data-v-bd716778${_scopeId2}>`);
                   _push3(ssrRenderComponent(NavIcon, {
                     name: "seo",
                     size: 18,
@@ -6496,17 +6903,17 @@ const _sfc_main$1i = {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
                   if (!__props.leads.data.length) {
-                    _push3(`<p class="empty" data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    _push3(`<p class="empty" data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                   } else {
-                    _push3(`<div class="table-wrap" data-v-de8898ad${_scopeId2}><table class="table" data-v-de8898ad${_scopeId2}><thead data-v-de8898ad${_scopeId2}><tr data-v-de8898ad${_scopeId2}><th data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_date"))}</th><th data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</th><th data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_message"))}</th><th data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_status"))}</th><th data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_state"))}</th>`);
+                    _push3(`<div class="table-wrap" data-v-bd716778${_scopeId2}><table class="table" data-v-bd716778${_scopeId2}><thead data-v-bd716778${_scopeId2}><tr data-v-bd716778${_scopeId2}><th data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_date"))}</th><th data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</th><th data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_message"))}</th><th data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_status"))}</th><th data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.crm_state"))}</th>`);
                     if (__props.can.archive) {
-                      _push3(`<th data-v-de8898ad${_scopeId2}><span class="visually-hidden" data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive"))}</span></th>`);
+                      _push3(`<th data-v-bd716778${_scopeId2}><span class="visually-hidden" data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)("admin.lead_archive"))}</span></th>`);
                     } else {
                       _push3(`<!---->`);
                     }
-                    _push3(`</tr></thead><tbody data-v-de8898ad${_scopeId2}><!--[-->`);
+                    _push3(`</tr></thead><tbody data-v-bd716778${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.leads.data, (lead) => {
-                      _push3(`<tr class="${ssrRenderClass([{ "is-archived": lead.archived }, "row"])}" data-v-de8898ad${_scopeId2}><td class="cell-when" data-v-de8898ad${_scopeId2}><span class="when__date tabular" data-v-de8898ad${_scopeId2}>${ssrInterpolate(dateOnly(lead.createdAt))}</span><span class="when__time tabular" data-v-de8898ad${_scopeId2}>${ssrInterpolate(timeOnly(lead.createdAt))}</span></td><td class="cell-who" data-v-de8898ad${_scopeId2}>`);
+                      _push3(`<tr class="${ssrRenderClass([{ "is-archived": lead.archived }, "row"])}" data-v-bd716778${_scopeId2}><td class="cell-when" data-v-bd716778${_scopeId2}><span class="when__date tabular" data-v-bd716778${_scopeId2}>${ssrInterpolate(dateOnly(lead.createdAt))}</span><span class="when__time tabular" data-v-bd716778${_scopeId2}>${ssrInterpolate(timeOnly(lead.createdAt))}</span></td><td class="cell-who" data-v-bd716778${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: `/admin/leads/${lead.id}`,
                         class: "table__link latin"
@@ -6523,26 +6930,26 @@ const _sfc_main$1i = {
                         _: 2
                       }, _parent3, _scopeId2));
                       if (lead.phone) {
-                        _push3(`<a class="table__phone latin"${ssrRenderAttr("href", `tel:${lead.phone.replace(/\s/g, "")}`)} data-v-de8898ad${_scopeId2}>`);
+                        _push3(`<a class="table__phone latin"${ssrRenderAttr("href", `tel:${lead.phone.replace(/\s/g, "")}`)} data-v-bd716778${_scopeId2}>`);
                         _push3(ssrRenderComponent(NavIcon, {
                           name: "contact",
                           size: 14,
                           muted: false
                         }, null, _parent3, _scopeId2));
-                        _push3(`<span data-v-de8898ad${_scopeId2}>${ssrInterpolate(lead.phone)}</span></a>`);
+                        _push3(`<span data-v-bd716778${_scopeId2}>${ssrInterpolate(lead.phone)}</span></a>`);
                       } else {
                         _push3(`<!---->`);
                       }
                       if (lead.organisation) {
-                        _push3(`<span class="table__org" data-v-de8898ad${_scopeId2}>${ssrInterpolate(lead.organisation)}</span>`);
+                        _push3(`<span class="table__org" data-v-bd716778${_scopeId2}>${ssrInterpolate(lead.organisation)}</span>`);
                       } else {
                         _push3(`<!---->`);
                       }
-                      _push3(`</td><td class="cell-msg"${ssrRenderAttr("title", lead.message ?? void 0)} data-v-de8898ad${_scopeId2}>${ssrInterpolate(excerpt(lead.message))}</td><td class="cell-status" data-v-de8898ad${_scopeId2}>`);
+                      _push3(`</td><td class="cell-msg"${ssrRenderAttr("title", lead.message ?? void 0)} data-v-bd716778${_scopeId2}>${ssrInterpolate(excerpt(lead.message))}</td><td class="cell-status" data-v-bd716778${_scopeId2}>`);
                       if (__props.can.updateStatus) {
-                        _push3(`<span class="${ssrRenderClass([`statuspick--${lead.status}`, "statuspick"])}" data-v-de8898ad${_scopeId2}><select class="table__select"${ssrRenderAttr("value", lead.status)}${ssrRenderAttr("aria-label", unref(t)("admin.lead_status"))} data-v-de8898ad${_scopeId2}><!--[-->`);
+                        _push3(`<span class="${ssrRenderClass([`statuspick--${lead.status}`, "statuspick"])}" data-v-bd716778${_scopeId2}><select class="table__select"${ssrRenderAttr("value", lead.status)}${ssrRenderAttr("aria-label", unref(t)("admin.lead_status"))} data-v-bd716778${_scopeId2}><!--[-->`);
                         ssrRenderList(__props.statuses, (s) => {
-                          _push3(`<option${ssrRenderAttr("value", s)} data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${s}`))}</option>`);
+                          _push3(`<option${ssrRenderAttr("value", s)} data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${s}`))}</option>`);
                         });
                         _push3(`<!--]--></select>`);
                         _push3(ssrRenderComponent(NavIcon, {
@@ -6553,11 +6960,11 @@ const _sfc_main$1i = {
                         }, null, _parent3, _scopeId2));
                         _push3(`</span>`);
                       } else {
-                        _push3(`<span class="${ssrRenderClass([`chip--st-${lead.status}`, "chip"])}" data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span>`);
+                        _push3(`<span class="${ssrRenderClass([`chip--st-${lead.status}`, "chip"])}" data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)(`admin.status_${lead.status}`))}</span>`);
                       }
-                      _push3(`</td><td data-v-de8898ad${_scopeId2}><span class="${ssrRenderClass([`chip--${crmState(lead)}`, "chip"])}" data-v-de8898ad${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${crmState(lead)}`))}</span></td>`);
+                      _push3(`</td><td data-v-bd716778${_scopeId2}><span class="${ssrRenderClass([`chip--${crmState(lead)}`, "chip"])}" data-v-bd716778${_scopeId2}>${ssrInterpolate(unref(t)(`admin.crm_${crmState(lead)}`))}</span></td>`);
                       if (__props.can.archive) {
-                        _push3(`<td class="rowact" data-v-de8898ad${_scopeId2}><button class="${ssrRenderClass([{ danger: !lead.archived }, "btn btn--ghost act act--icon"])}" type="button"${ssrRenderAttr("title", lead.archived ? unref(t)("admin.lead_restore") : unref(t)("admin.lead_archive"))}${ssrRenderAttr("aria-label", lead.archived ? unref(t)("admin.lead_restore") : unref(t)("admin.lead_archive"))} data-v-de8898ad${_scopeId2}>`);
+                        _push3(`<td class="rowact" data-v-bd716778${_scopeId2}><button class="${ssrRenderClass([{ danger: !lead.archived }, "btn btn--ghost act act--icon"])}" type="button"${ssrRenderAttr("title", lead.archived ? unref(t)("admin.lead_restore") : unref(t)("admin.lead_archive"))}${ssrRenderAttr("aria-label", lead.archived ? unref(t)("admin.lead_restore") : unref(t)("admin.lead_archive"))} data-v-bd716778${_scopeId2}>`);
                         _push3(ssrRenderComponent(NavIcon, {
                           name: lead.archived ? "swap" : "trash",
                           size: 18,
@@ -6572,7 +6979,7 @@ const _sfc_main$1i = {
                     _push3(`<!--]--></tbody></table></div>`);
                   }
                   if (__props.leads.last_page > 1) {
-                    _push3(`<nav class="pager"${ssrRenderAttr("aria-label", unref(t)("common.pagination"))} data-v-de8898ad${_scopeId2}><!--[-->`);
+                    _push3(`<nav class="pager"${ssrRenderAttr("aria-label", unref(t)("common.pagination"))} data-v-bd716778${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.leads.links, (link) => {
                       _push3(ssrRenderComponent(unref(Link), {
                         key: link.label,
@@ -6725,11 +7132,11 @@ const _sfc_main$1i = {
               _: 1
             }, _parent2, _scopeId));
             if (__props.selected) {
-              _push2(`<div class="modal" role="dialog" aria-modal="true"${ssrRenderAttr("aria-label", __props.selected.contact)} data-v-de8898ad${_scopeId}><div class="modal__card" data-v-de8898ad${_scopeId}><header class="drawer__head" data-v-de8898ad${_scopeId}><h2 class="drawer__title latin" data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.contact)}</h2><button class="drawer__close" type="button"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-de8898ad${_scopeId}> ✕ </button></header><div class="drawer__body" data-v-de8898ad${_scopeId}><dl class="pairs" data-v-de8898ad${_scopeId}><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_date"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(dateTime)(__props.selected.createdAt))}</dd><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</dt><dd class="ltr" data-v-de8898ad${_scopeId}><a${ssrRenderAttr("href", contactHref(__props.selected))} class="link-weave" data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.contact)}</a></dd><!--[-->`);
+              _push2(`<div class="modal" role="dialog" aria-modal="true"${ssrRenderAttr("aria-label", __props.selected.contact)} data-v-bd716778${_scopeId}><div class="modal__card" data-v-bd716778${_scopeId}><header class="drawer__head" data-v-bd716778${_scopeId}><h2 class="drawer__title latin" data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.contact)}</h2><button class="drawer__close" type="button"${ssrRenderAttr("aria-label", unref(t)("common.close"))} data-v-bd716778${_scopeId}> ✕ </button></header><div class="drawer__body" data-v-bd716778${_scopeId}><dl class="pairs" data-v-bd716778${_scopeId}><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_date"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(unref(dateTime)(__props.selected.createdAt))}</dd><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_contact"))}</dt><dd class="ltr" data-v-bd716778${_scopeId}><a${ssrRenderAttr("href", contactHref(__props.selected))} class="link-weave" data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.contact)}</a></dd><!--[-->`);
               ssrRenderList(__props.selected.extra ?? {}, (value, key) => {
-                _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(extraLabel(key))}</dt><dd class="${ssrRenderClass({ ltr: key === "phone" })}" data-v-de8898ad${_scopeId}>`);
+                _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(extraLabel(key))}</dt><dd class="${ssrRenderClass({ ltr: key === "phone" })}" data-v-bd716778${_scopeId}>`);
                 if (key === "phone") {
-                  _push2(`<a class="link-weave"${ssrRenderAttr("href", `tel:${String(value).replace(/\s/g, "")}`)} data-v-de8898ad${_scopeId}>${ssrInterpolate(value)}</a>`);
+                  _push2(`<a class="link-weave"${ssrRenderAttr("href", `tel:${String(value).replace(/\s/g, "")}`)} data-v-bd716778${_scopeId}>${ssrInterpolate(value)}</a>`);
                 } else {
                   _push2(`<!--[-->${ssrInterpolate(value)}<!--]-->`);
                 }
@@ -6737,36 +7144,36 @@ const _sfc_main$1i = {
               });
               _push2(`<!--]-->`);
               if (has(__props.selected.message)) {
-                _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_message"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.message)}</dd><!--]-->`);
+                _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_message"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.message)}</dd><!--]-->`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_status"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)(`admin.status_${__props.selected.status}`))}</dd><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_source"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(originOf(__props.selected))}</dd>`);
+              _push2(`<dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_status"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)(`admin.status_${__props.selected.status}`))}</dd><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_source"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(originOf(__props.selected))}</dd>`);
               if (has(__props.selected.campaign)) {
-                _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_campaign"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.campaign)}</dd><!--]-->`);
+                _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_campaign"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.campaign)}</dd><!--]-->`);
               } else {
                 _push2(`<!---->`);
               }
               if (has(__props.selected.sectorHint)) {
-                _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.sectors"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.sectorHint)}</dd><!--]-->`);
+                _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.sectors"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.sectorHint)}</dd><!--]-->`);
               } else {
                 _push2(`<!---->`);
               }
               if (has(__props.selected.interest)) {
-                _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_interest"))}</dt><dd data-v-de8898ad${_scopeId}>${ssrInterpolate(interestLabel(__props.selected.interest))}</dd><!--]-->`);
+                _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_interest"))}</dt><dd data-v-bd716778${_scopeId}>${ssrInterpolate(interestLabel(__props.selected.interest))}</dd><!--]-->`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`</dl><h3 class="drawer__sub" data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution"))}</h3>`);
+              _push2(`</dl><h3 class="drawer__sub" data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution"))}</h3>`);
               if (hasAttribution(__props.selected)) {
-                _push2(`<dl class="pairs" data-v-de8898ad${_scopeId}>`);
+                _push2(`<dl class="pairs" data-v-bd716778${_scopeId}>`);
                 if (tellingPageUrl(__props.selected)) {
-                  _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_page_url"))}</dt><dd class="ltr" data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.pageUrl)}</dd><!--]-->`);
+                  _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_page_url"))}</dt><dd class="ltr" data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.pageUrl)}</dd><!--]-->`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (has(__props.selected.referrer)) {
-                  _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_referrer"))}</dt><dd class="ltr" data-v-de8898ad${_scopeId}>${ssrInterpolate(__props.selected.referrer)}</dd><!--]-->`);
+                  _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.lead_referrer"))}</dt><dd class="ltr" data-v-bd716778${_scopeId}>${ssrInterpolate(__props.selected.referrer)}</dd><!--]-->`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -6774,7 +7181,7 @@ const _sfc_main$1i = {
                 ssrRenderList(__props.selected.utm, (value, key) => {
                   _push2(`<!--[-->`);
                   if (value) {
-                    _push2(`<!--[--><dt data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)(`admin.utm_${key}`))}</dt><dd class="ltr" data-v-de8898ad${_scopeId}>${ssrInterpolate(value)}</dd><!--]-->`);
+                    _push2(`<!--[--><dt data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)(`admin.utm_${key}`))}</dt><dd class="ltr" data-v-bd716778${_scopeId}>${ssrInterpolate(value)}</dd><!--]-->`);
                   } else {
                     _push2(`<!---->`);
                   }
@@ -6785,32 +7192,32 @@ const _sfc_main$1i = {
                 _push2(`<!---->`);
               }
               if (!hasCampaignTags(__props.selected)) {
-                _push2(`<p class="drawer__note" data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution_direct"))}</p>`);
+                _push2(`<p class="drawer__note" data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.attribution_direct"))}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<h3 class="drawer__sub" data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_log"))}</h3><p class="drawer__crm" data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)(`admin.crm_${crmState(__props.selected)}`))} `);
+              _push2(`<h3 class="drawer__sub" data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_log"))}</h3><p class="drawer__crm" data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)(`admin.crm_${crmState(__props.selected)}`))} `);
               if (__props.selected.crmProvider && __props.selected.crmProvider !== "null") {
-                _push2(`<span class="latin" data-v-de8898ad${_scopeId}>· ${ssrInterpolate(providerLabel(__props.selected.crmProvider))}</span>`);
+                _push2(`<span class="latin" data-v-bd716778${_scopeId}>· ${ssrInterpolate(providerLabel(__props.selected.crmProvider))}</span>`);
               } else {
                 _push2(`<!---->`);
               }
               _push2(`</p>`);
               if (__props.can.updateStatus && crmState(__props.selected) !== "synced") {
-                _push2(`<button class="act btn btn--secondary" type="button" data-v-de8898ad${_scopeId}>`);
+                _push2(`<button class="act btn btn--secondary" type="button" data-v-bd716778${_scopeId}>`);
                 _push2(ssrRenderComponent(NavIcon, {
                   name: "swap",
                   size: 18,
                   muted: false
                 }, null, _parent2, _scopeId));
-                _push2(`<span data-v-de8898ad${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_resync"))}</span></button>`);
+                _push2(`<span data-v-bd716778${_scopeId}>${ssrInterpolate(unref(t)("admin.crm_resync"))}</span></button>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.selected.syncLogs?.length) {
-                _push2(`<ul class="logs" data-v-de8898ad${_scopeId}><!--[-->`);
+                _push2(`<ul class="logs" data-v-bd716778${_scopeId}><!--[-->`);
                 ssrRenderList(__props.selected.syncLogs, (log) => {
-                  _push2(`<li class="logs__row" data-v-de8898ad${_scopeId}><span class="tabular" data-v-de8898ad${_scopeId}>#${ssrInterpolate(log.attempt)}</span><span class="latin" data-v-de8898ad${_scopeId}>${ssrInterpolate(providerLabel(log.provider))}</span><span class="tabular" data-v-de8898ad${_scopeId}>${ssrInterpolate(log.httpStatus ?? "—")}</span><span class="logs__error" data-v-de8898ad${_scopeId}>${ssrInterpolate(log.error ?? "")}</span></li>`);
+                  _push2(`<li class="logs__row" data-v-bd716778${_scopeId}><span class="tabular" data-v-bd716778${_scopeId}>#${ssrInterpolate(log.attempt)}</span><span class="latin" data-v-bd716778${_scopeId}>${ssrInterpolate(providerLabel(log.provider))}</span><span class="tabular" data-v-bd716778${_scopeId}>${ssrInterpolate(log.httpStatus ?? "—")}</span><span class="logs__error" data-v-bd716778${_scopeId}>${ssrInterpolate(log.error ?? "")}</span></li>`);
                 });
                 _push2(`<!--]--></ul>`);
               } else {
@@ -7275,7 +7682,7 @@ _sfc_main$1i.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Leads/Index.vue");
   return _sfc_setup$1i ? _sfc_setup$1i(props, ctx) : void 0;
 };
-const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1i, [["__scopeId", "data-v-de8898ad"]]);
+const Index$3 = /* @__PURE__ */ _export_sfc(_sfc_main$1i, [["__scopeId", "data-v-bd716778"]]);
 const __vite_glob_0_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$3
@@ -7617,30 +8024,30 @@ const _sfc_main$1f = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-2ba1fd44${_scopeId2}>`);
+                  _push3(`<div class="${ssrRenderClass([{ "is-over": dragOver.value }, "drop"])}" data-v-6da16501${_scopeId2}>`);
                   _push3(ssrRenderComponent(NavIcon, {
                     name: "upload",
                     size: 32,
                     muted: false,
                     class: "drop__glyph"
                   }, null, _parent3, _scopeId2));
-                  _push3(`<button type="button" class="btn btn--cta act drop__btn" data-v-2ba1fd44${_scopeId2}>`);
+                  _push3(`<button type="button" class="btn btn--cta act drop__btn" data-v-6da16501${_scopeId2}>`);
                   _push3(ssrRenderComponent(NavIcon, {
                     name: "upload",
                     size: 18,
                     muted: false
                   }, null, _parent3, _scopeId2));
-                  _push3(`<span data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</span></button><p class="drop__label" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><input type="file" multiple${ssrRenderAttr("accept", ACCEPT)} class="drop__input" data-v-2ba1fd44${_scopeId2}></div>`);
+                  _push3(`<span data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_or_browse"))}</span></button><p class="drop__label" data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_drop_here"))}</p><input type="file" multiple${ssrRenderAttr("accept", ACCEPT)} class="drop__input" data-v-6da16501${_scopeId2}></div>`);
                   if (uploads.value.length) {
-                    _push3(`<ul class="queue" data-v-2ba1fd44${_scopeId2}><!--[-->`);
+                    _push3(`<ul class="queue" data-v-6da16501${_scopeId2}><!--[-->`);
                     ssrRenderList(uploads.value, (entry, i) => {
-                      _push3(`<li class="queue__row" data-v-2ba1fd44${_scopeId2}><span class="queue__name" dir="auto" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(entry.name)}</span>`);
+                      _push3(`<li class="queue__row" data-v-6da16501${_scopeId2}><span class="queue__name" dir="auto" data-v-6da16501${_scopeId2}>${ssrInterpolate(entry.name)}</span>`);
                       if (entry.error) {
-                        _push3(`<span class="queue__error" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(entry.error)}</span>`);
+                        _push3(`<span class="queue__error" data-v-6da16501${_scopeId2}>${ssrInterpolate(entry.error)}</span>`);
                       } else if (entry.done) {
-                        _push3(`<span class="queue__done" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
+                        _push3(`<span class="queue__done" data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_upload_done"))}</span>`);
                       } else {
-                        _push3(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-2ba1fd44${_scopeId2}><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-2ba1fd44${_scopeId2}></span></span>`);
+                        _push3(`<span class="queue__bar" role="progressbar"${ssrRenderAttr("aria-valuenow", entry.progress)} data-v-6da16501${_scopeId2}><span class="queue__fill" style="${ssrRenderStyle({ inlineSize: `${entry.progress}%` })}" data-v-6da16501${_scopeId2}></span></span>`);
                       }
                       _push3(`</li>`);
                     });
@@ -7729,63 +8136,63 @@ const _sfc_main$1f = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<input${ssrRenderAttr("value", search.value)} type="search" class="search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-2ba1fd44${_scopeId2}><div class="screen" data-v-2ba1fd44${_scopeId2}><div class="screen__main" data-v-2ba1fd44${_scopeId2}>`);
+                  _push3(`<input${ssrRenderAttr("value", search.value)} type="search" class="search"${ssrRenderAttr("placeholder", unref(t)("admin.media_search"))} data-v-6da16501${_scopeId2}><div class="screen" data-v-6da16501${_scopeId2}><div class="screen__main" data-v-6da16501${_scopeId2}>`);
                   if (!loading.value && items.value.length === 0) {
-                    _push3(`<p class="muted" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
+                    _push3(`<p class="muted" data-v-6da16501${_scopeId2}>${ssrInterpolate(search.value ? unref(t)("admin.media_no_results") : unref(t)("admin.media_empty"))}</p>`);
                   } else {
                     _push3(`<!---->`);
                   }
-                  _push3(`<ul class="grid" data-v-2ba1fd44${_scopeId2}><!--[-->`);
+                  _push3(`<ul class="grid" data-v-6da16501${_scopeId2}><!--[-->`);
                   ssrRenderList(items.value, (item) => {
-                    _push3(`<li data-v-2ba1fd44${_scopeId2}><button type="button" class="${ssrRenderClass([{ "is-active": active.value === item.id }, "grid__cell"])}" data-v-2ba1fd44${_scopeId2}>`);
+                    _push3(`<li data-v-6da16501${_scopeId2}><button type="button" class="${ssrRenderClass([{ "is-active": active.value === item.id }, "grid__cell"])}" data-v-6da16501${_scopeId2}>`);
                     if (isVideo(item)) {
-                      _push3(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-2ba1fd44${_scopeId2}></video>`);
+                      _push3(`<video${ssrRenderAttr("src", item.url)} muted playsinline preload="metadata" data-v-6da16501${_scopeId2}></video>`);
                     } else {
-                      _push3(`<img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-2ba1fd44${_scopeId2}>`);
+                      _push3(`<img${ssrRenderAttr("src", item.thumb)}${ssrRenderAttr("alt", item.translations[locale.value]?.alt_text ?? "")} loading="lazy" data-v-6da16501${_scopeId2}>`);
                     }
                     _push3(`</button></li>`);
                   });
                   _push3(`<!--]--></ul>`);
                   if (page.value < lastPage.value) {
-                    _push3(`<button type="button" class="btn btn--ghost more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
+                    _push3(`<button type="button" class="btn btn--ghost more"${ssrIncludeBooleanAttr(loading.value) ? " disabled" : ""} data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_load_more"))}</button>`);
                   } else {
                     _push3(`<!---->`);
                   }
                   _push3(`</div>`);
                   if (activeItem.value) {
-                    _push3(`<aside class="screen__side" data-v-2ba1fd44${_scopeId2}>`);
+                    _push3(`<aside class="screen__side" data-v-6da16501${_scopeId2}>`);
                     if (isVideo(activeItem.value)) {
-                      _push3(`<video${ssrRenderAttr("src", activeItem.value.url)} class="preview" muted playsinline controls data-v-2ba1fd44${_scopeId2}></video>`);
+                      _push3(`<video${ssrRenderAttr("src", activeItem.value.url)} class="preview" muted playsinline controls data-v-6da16501${_scopeId2}></video>`);
                     } else {
-                      _push3(`<img${ssrRenderAttr("src", activeItem.value.thumb)} alt="" class="preview" data-v-2ba1fd44${_scopeId2}>`);
+                      _push3(`<img${ssrRenderAttr("src", activeItem.value.thumb)} alt="" class="preview" data-v-6da16501${_scopeId2}>`);
                     }
-                    _push3(`<dl class="facts" data-v-2ba1fd44${_scopeId2}><dt data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-2ba1fd44${_scopeId2}>`);
+                    _push3(`<dl class="facts" data-v-6da16501${_scopeId2}><dt data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_file_name"))}</dt><dd class="facts__file" data-v-6da16501${_scopeId2}>${ssrInterpolate(activeItem.value.fileName)}</dd><dt data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_dimensions"))}</dt><dd data-v-6da16501${_scopeId2}>`);
                     if (activeItem.value.width) {
-                      _push3(`<span data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
+                      _push3(`<span data-v-6da16501${_scopeId2}>${ssrInterpolate(activeItem.value.width)} × ${ssrInterpolate(activeItem.value.height)}</span>`);
                     } else {
-                      _push3(`<span data-v-2ba1fd44${_scopeId2}>—</span>`);
+                      _push3(`<span data-v-6da16501${_scopeId2}>—</span>`);
                     }
-                    _push3(`</dd><dt data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(formatDate)(activeItem.value.createdAt))}</dd></dl><!--[-->`);
+                    _push3(`</dd><dt data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_size"))}</dt><dd data-v-6da16501${_scopeId2}>${ssrInterpolate(formatSize(activeItem.value.size))}</dd><dt data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_uploaded_at"))}</dt><dd data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(formatDate)(activeItem.value.createdAt))}</dd></dl><!--[-->`);
                     ssrRenderList(__props.locales, (code) => {
-                      _push3(`<div class="alt" data-v-2ba1fd44${_scopeId2}><label${ssrRenderAttr("for", `alt-${code}`)} data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-2ba1fd44${_scopeId2}></div>`);
+                      _push3(`<div class="alt" data-v-6da16501${_scopeId2}><label${ssrRenderAttr("for", `alt-${code}`)} data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.alt_text"))} — ${ssrInterpolate(code.toUpperCase())}</label><input${ssrRenderAttr("id", `alt-${code}`)}${ssrRenderAttr("value", activeItem.value.translations[code].alt_text)} type="text" dir="auto" data-v-6da16501${_scopeId2}></div>`);
                     });
                     _push3(`<!--]-->`);
                     if (savingAlt.value) {
-                      _push3(`<p class="muted" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
+                      _push3(`<p class="muted" data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.saving"))}</p>`);
                     } else {
                       _push3(`<!---->`);
                     }
-                    _push3(`<h3 class="side__title" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_used_in"))}</h3>`);
+                    _push3(`<h3 class="side__title" data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_used_in"))}</h3>`);
                     if (usage.value.length === 0) {
-                      _push3(`<p class="muted" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_unused"))}</p>`);
+                      _push3(`<p class="muted" data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_unused"))}</p>`);
                     } else {
-                      _push3(`<ul class="usage" data-v-2ba1fd44${_scopeId2}><!--[-->`);
+                      _push3(`<ul class="usage" data-v-6da16501${_scopeId2}><!--[-->`);
                       ssrRenderList(usage.value, (place, i) => {
-                        _push3(`<li data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(placeLabel(place))}</li>`);
+                        _push3(`<li data-v-6da16501${_scopeId2}>${ssrInterpolate(placeLabel(place))}</li>`);
                       });
                       _push3(`<!--]--></ul>`);
                     }
-                    _push3(`<button type="button" class="btn btn--ghost danger delete" data-v-2ba1fd44${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_delete_forever"))}</button></aside>`);
+                    _push3(`<button type="button" class="btn btn--ghost danger delete" data-v-6da16501${_scopeId2}>${ssrInterpolate(unref(t)("admin.media_delete_forever"))}</button></aside>`);
                   } else {
                     _push3(`<!---->`);
                   }
@@ -8134,7 +8541,7 @@ _sfc_main$1f.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Media/Index.vue");
   return _sfc_setup$1f ? _sfc_setup$1f(props, ctx) : void 0;
 };
-const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$1f, [["__scopeId", "data-v-2ba1fd44"]]);
+const Index$2 = /* @__PURE__ */ _export_sfc(_sfc_main$1f, [["__scopeId", "data-v-6da16501"]]);
 const __vite_glob_0_13 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$2
@@ -9065,7 +9472,7 @@ const _sfc_main$1b = {
       }, _attrs), {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="pagescreen" data-v-7415b185${_scopeId}>`);
+            _push2(`<div class="pagescreen" data-v-17a583d7${_scopeId}>`);
             _push2(ssrRenderComponent(Panel, {
               title: unref(t)("admin.pages")
             }, {
@@ -9082,7 +9489,7 @@ const _sfc_main$1b = {
                           size: 18,
                           muted: false
                         }, null, _parent4, _scopeId3));
-                        _push4(`<span data-v-7415b185${_scopeId3}>${ssrInterpolate(unref(t)("admin.create"))}</span>`);
+                        _push4(`<span data-v-17a583d7${_scopeId3}>${ssrInterpolate(unref(t)("admin.create"))}</span>`);
                       } else {
                         return [
                           createVNode(NavIcon, {
@@ -9118,17 +9525,17 @@ const _sfc_main$1b = {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
                   if (!__props.pages.length) {
-                    _push3(`<p class="empty" data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+                    _push3(`<p class="empty" data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
                   } else {
                     _push3(`<!--[-->`);
                     if (retired.value.length) {
-                      _push3(`<button type="button" class="retired-toggle"${ssrRenderAttr("aria-expanded", showRetired.value)} data-v-7415b185${_scopeId2}>${ssrInterpolate(showRetired.value ? unref(t)("admin.hide_retired_pages") : unref(t)("admin.show_retired_pages"))} <span class="retired-toggle__count" data-v-7415b185${_scopeId2}>${ssrInterpolate(retired.value.length)}</span></button>`);
+                      _push3(`<button type="button" class="retired-toggle"${ssrRenderAttr("aria-expanded", showRetired.value)} data-v-17a583d7${_scopeId2}>${ssrInterpolate(showRetired.value ? unref(t)("admin.hide_retired_pages") : unref(t)("admin.show_retired_pages"))} <span class="retired-toggle__count" data-v-17a583d7${_scopeId2}>${ssrInterpolate(retired.value.length)}</span></button>`);
                     } else {
                       _push3(`<!---->`);
                     }
-                    _push3(`<div class="table-wrap" data-v-7415b185${_scopeId2}><table class="table" data-v-7415b185${_scopeId2}><colgroup data-v-7415b185${_scopeId2}><col class="col-title" data-v-7415b185${_scopeId2}><col class="col-slug" data-v-7415b185${_scopeId2}><col class="col-sections" data-v-7415b185${_scopeId2}><col class="col-state" data-v-7415b185${_scopeId2}><col class="col-acts" data-v-7415b185${_scopeId2}></colgroup><thead data-v-7415b185${_scopeId2}><tr data-v-7415b185${_scopeId2}><th data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.pages"))}</th><th data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.field_slug"))}</th><th data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.sections"))}</th><th data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.published"))}</th><th data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.actions"))}</th></tr></thead><tbody data-v-7415b185${_scopeId2}><!--[-->`);
+                    _push3(`<div class="table-wrap" data-v-17a583d7${_scopeId2}><table class="table" data-v-17a583d7${_scopeId2}><colgroup data-v-17a583d7${_scopeId2}><col class="col-title" data-v-17a583d7${_scopeId2}><col class="col-slug" data-v-17a583d7${_scopeId2}><col class="col-sections" data-v-17a583d7${_scopeId2}><col class="col-state" data-v-17a583d7${_scopeId2}><col class="col-acts" data-v-17a583d7${_scopeId2}></colgroup><thead data-v-17a583d7${_scopeId2}><tr data-v-17a583d7${_scopeId2}><th data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.pages"))}</th><th data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.field_slug"))}</th><th data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.sections"))}</th><th data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.published"))}</th><th data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.actions"))}</th></tr></thead><tbody data-v-17a583d7${_scopeId2}><!--[-->`);
                     ssrRenderList(rows.value, (page) => {
-                      _push3(`<tr class="${ssrRenderClass([{ "row--site": page.isSite }, "row"])}" data-v-7415b185${_scopeId2}><td class="cell-title" data-v-7415b185${_scopeId2}>`);
+                      _push3(`<tr class="${ssrRenderClass([{ "row--site": page.isSite }, "row"])}" data-v-17a583d7${_scopeId2}><td class="cell-title" data-v-17a583d7${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: `/admin/pages/${page.id}/edit`,
                         class: "table__link"
@@ -9145,20 +9552,20 @@ const _sfc_main$1b = {
                         _: 2
                       }, _parent3, _scopeId2));
                       if (page.isSite) {
-                        _push3(`<span class="chip chip--site" data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.the_site_page"))}</span>`);
+                        _push3(`<span class="chip chip--site" data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.the_site_page"))}</span>`);
                       } else {
                         _push3(`<!---->`);
                       }
                       if (page.retired && page.redirectsTo) {
-                        _push3(`<span class="chip chip--retired" data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.redirects_to"))} <code data-v-7415b185${_scopeId2}>${ssrInterpolate(page.redirectsTo)}</code></span>`);
+                        _push3(`<span class="chip chip--retired" data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.redirects_to"))} <code data-v-17a583d7${_scopeId2}>${ssrInterpolate(page.redirectsTo)}</code></span>`);
                       } else {
                         _push3(`<!---->`);
                       }
                       _push3(`<!--[-->`);
                       ssrRenderList(__props.locales.filter((l) => !page.locales.includes(l)), (loc) => {
-                        _push3(`<span class="chip chip--warn" data-v-7415b185${_scopeId2}>${ssrInterpolate(unref(t)("admin.translation_missing"))}: ${ssrInterpolate(loc)}</span>`);
+                        _push3(`<span class="chip chip--warn" data-v-17a583d7${_scopeId2}>${ssrInterpolate(unref(t)("admin.translation_missing"))}: ${ssrInterpolate(loc)}</span>`);
                       });
-                      _push3(`<!--]--></td><td class="cell-slug" data-v-7415b185${_scopeId2}><code class="slug" data-v-7415b185${_scopeId2}>${ssrInterpolate(page.slug)}</code></td><td class="cell-sections" data-v-7415b185${_scopeId2}>`);
+                      _push3(`<!--]--></td><td class="cell-slug" data-v-17a583d7${_scopeId2}><code class="slug" data-v-17a583d7${_scopeId2}>${ssrInterpolate(page.slug)}</code></td><td class="cell-sections" data-v-17a583d7${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: `/admin/sections/page/${page.id}`,
                         class: "btn btn--secondary act act--sections"
@@ -9170,7 +9577,7 @@ const _sfc_main$1b = {
                               size: 18,
                               muted: false
                             }, null, _parent4, _scopeId3));
-                            _push4(`<span data-v-7415b185${_scopeId3}>${ssrInterpolate(unref(t)("admin.sections"))}</span><span class="act__count" data-v-7415b185${_scopeId3}>${ssrInterpolate(page.sections)}</span>`);
+                            _push4(`<span data-v-17a583d7${_scopeId3}>${ssrInterpolate(unref(t)("admin.sections"))}</span><span class="act__count" data-v-17a583d7${_scopeId3}>${ssrInterpolate(page.sections)}</span>`);
                           } else {
                             return [
                               createVNode(NavIcon, {
@@ -9185,7 +9592,7 @@ const _sfc_main$1b = {
                         }),
                         _: 2
                       }, _parent3, _scopeId2));
-                      _push3(`</td><td class="cell-state" data-v-7415b185${_scopeId2}><span class="${ssrRenderClass([page.status === "published" ? "chip--live" : "chip--draft", "chip"])}" data-v-7415b185${_scopeId2}>${ssrInterpolate(page.status === "published" ? unref(t)("admin.published") : unref(t)("admin.draft"))}</span></td><td class="cell-acts" data-v-7415b185${_scopeId2}>`);
+                      _push3(`</td><td class="cell-state" data-v-17a583d7${_scopeId2}><span class="${ssrRenderClass([page.status === "published" ? "chip--live" : "chip--draft", "chip"])}" data-v-17a583d7${_scopeId2}>${ssrInterpolate(page.status === "published" ? unref(t)("admin.published") : unref(t)("admin.draft"))}</span></td><td class="cell-acts" data-v-17a583d7${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         class: "btn btn--ghost act act--icon",
                         href: `/admin/pages/${page.id}/edit`,
@@ -9211,19 +9618,19 @@ const _sfc_main$1b = {
                         }),
                         _: 2
                       }, _parent3, _scopeId2));
-                      _push3(`<button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish"))}${ssrRenderAttr("aria-label", page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish"))} data-v-7415b185${_scopeId2}>`);
+                      _push3(`<button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish"))}${ssrRenderAttr("aria-label", page.status === "published" ? unref(t)("admin.unpublish") : unref(t)("admin.publish"))} data-v-17a583d7${_scopeId2}>`);
                       _push3(ssrRenderComponent(NavIcon, {
                         name: page.status === "published" ? "unpublish" : "publish",
                         size: 18,
                         muted: false
                       }, null, _parent3, _scopeId2));
-                      _push3(`</button><a class="btn btn--ghost act act--icon"${ssrRenderAttr("href", page.previewUrl)} target="_blank" rel="noopener"${ssrRenderAttr("title", unref(t)("admin.preview"))}${ssrRenderAttr("aria-label", unref(t)("admin.preview"))} data-v-7415b185${_scopeId2}>`);
+                      _push3(`</button><a class="btn btn--ghost act act--icon"${ssrRenderAttr("href", page.previewUrl)} target="_blank" rel="noopener"${ssrRenderAttr("title", unref(t)("admin.preview"))}${ssrRenderAttr("aria-label", unref(t)("admin.preview"))} data-v-17a583d7${_scopeId2}>`);
                       _push3(ssrRenderComponent(NavIcon, {
                         name: "eye",
                         size: 18,
                         muted: false
                       }, null, _parent3, _scopeId2));
-                      _push3(`</a><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-7415b185${_scopeId2}>`);
+                      _push3(`</a><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-17a583d7${_scopeId2}>`);
                       _push3(ssrRenderComponent(NavIcon, {
                         name: "trash",
                         size: 18,
@@ -9590,7 +9997,7 @@ _sfc_main$1b.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Pages/Index.vue");
   return _sfc_setup$1b ? _sfc_setup$1b(props, ctx) : void 0;
 };
-const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-7415b185"]]);
+const Index$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1b, [["__scopeId", "data-v-17a583d7"]]);
 const __vite_glob_0_16 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Index$1
@@ -13628,7 +14035,7 @@ const _sfc_main$10 = {
           viewBox: "0 0 24 16",
           role: "img",
           "aria-hidden": "true"
-        }, _attrs))} data-v-b76e47a3><rect width="24" height="16" rx="2" fill="#006C35" data-v-b76e47a3></rect><g stroke="#fff" fill="none" stroke-linecap="round" data-v-b76e47a3><path d="M4.8 6.9c.7-1.1 1.4-1.1 2.1 0s1.4 1.1 2.1 0 1.4-1.1 2.1 0 1.4 1.1 2.1 0 1.4-1.1 2.1 0 1.4 1.1 2.1 0" stroke-width="1.15" data-v-b76e47a3></path><path d="M6.6 5.1v1.4M9.4 4.6v1.9M12.2 4.9v1.6M15 4.6v1.9M17.8 5.1v1.4" stroke-width=".85" data-v-b76e47a3></path></g><g fill="#fff" data-v-b76e47a3><path d="M5.4 10.9 15.6 10.25v1.3z" data-v-b76e47a3></path><rect x="15.6" y="9.85" width=".85" height="2.1" rx=".4" data-v-b76e47a3></rect><circle cx="17.5" cy="10.9" r=".95" data-v-b76e47a3></circle></g></svg>`);
+        }, _attrs))} data-v-6a2e373d><rect width="24" height="16" rx="2" fill="#006C35" data-v-6a2e373d></rect><g stroke="#fff" fill="none" stroke-linecap="round" data-v-6a2e373d><path d="M4.8 6.9c.7-1.1 1.4-1.1 2.1 0s1.4 1.1 2.1 0 1.4-1.1 2.1 0 1.4 1.1 2.1 0 1.4-1.1 2.1 0 1.4 1.1 2.1 0" stroke-width="1.15" data-v-6a2e373d></path><path d="M6.6 5.1v1.4M9.4 4.6v1.9M12.2 4.9v1.6M15 4.6v1.9M17.8 5.1v1.4" stroke-width=".85" data-v-6a2e373d></path></g><g fill="#fff" data-v-6a2e373d><path d="M5.4 10.9 15.6 10.25v1.3z" data-v-6a2e373d></path><rect x="15.6" y="9.85" width=".85" height="2.1" rx=".4" data-v-6a2e373d></rect><circle cx="17.5" cy="10.9" r=".95" data-v-6a2e373d></circle></g></svg>`);
       } else {
         _push(`<svg${ssrRenderAttrs(mergeProps({
           class: "flag",
@@ -13637,7 +14044,7 @@ const _sfc_main$10 = {
           viewBox: "0 0 24 16",
           role: "img",
           "aria-hidden": "true"
-        }, _attrs))} data-v-b76e47a3><rect width="24" height="16" rx="2" fill="#fff" data-v-b76e47a3></rect><g fill="#B22234" data-v-b76e47a3><rect y="0" width="24" height="1.85" data-v-b76e47a3></rect><rect y="3.7" width="24" height="1.85" data-v-b76e47a3></rect><rect y="7.4" width="24" height="1.85" data-v-b76e47a3></rect><rect y="11.1" width="24" height="1.85" data-v-b76e47a3></rect><rect y="14.8" width="24" height="1.2" data-v-b76e47a3></rect></g><rect width="10" height="8.6" fill="#3C3B6E" data-v-b76e47a3></rect><g fill="#fff" data-v-b76e47a3><circle cx="2" cy="2" r=".6" data-v-b76e47a3></circle><circle cx="5" cy="2" r=".6" data-v-b76e47a3></circle><circle cx="8" cy="2" r=".6" data-v-b76e47a3></circle><circle cx="3.5" cy="4.3" r=".6" data-v-b76e47a3></circle><circle cx="6.5" cy="4.3" r=".6" data-v-b76e47a3></circle><circle cx="2" cy="6.6" r=".6" data-v-b76e47a3></circle><circle cx="5" cy="6.6" r=".6" data-v-b76e47a3></circle><circle cx="8" cy="6.6" r=".6" data-v-b76e47a3></circle></g></svg>`);
+        }, _attrs))} data-v-6a2e373d><rect width="24" height="16" rx="2" fill="#fff" data-v-6a2e373d></rect><g fill="#B22234" data-v-6a2e373d><rect y="0" width="24" height="1.85" data-v-6a2e373d></rect><rect y="3.7" width="24" height="1.85" data-v-6a2e373d></rect><rect y="7.4" width="24" height="1.85" data-v-6a2e373d></rect><rect y="11.1" width="24" height="1.85" data-v-6a2e373d></rect><rect y="14.8" width="24" height="1.2" data-v-6a2e373d></rect></g><rect width="10" height="8.6" fill="#3C3B6E" data-v-6a2e373d></rect><g fill="#fff" data-v-6a2e373d><circle cx="2" cy="2" r=".6" data-v-6a2e373d></circle><circle cx="5" cy="2" r=".6" data-v-6a2e373d></circle><circle cx="8" cy="2" r=".6" data-v-6a2e373d></circle><circle cx="3.5" cy="4.3" r=".6" data-v-6a2e373d></circle><circle cx="6.5" cy="4.3" r=".6" data-v-6a2e373d></circle><circle cx="2" cy="6.6" r=".6" data-v-6a2e373d></circle><circle cx="5" cy="6.6" r=".6" data-v-6a2e373d></circle><circle cx="8" cy="6.6" r=".6" data-v-6a2e373d></circle></g></svg>`);
       }
     };
   }
@@ -13648,7 +14055,7 @@ _sfc_main$10.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/FlagIcon.vue");
   return _sfc_setup$10 ? _sfc_setup$10(props, ctx) : void 0;
 };
-const FlagIcon = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-b76e47a3"]]);
+const FlagIcon = /* @__PURE__ */ _export_sfc(_sfc_main$10, [["__scopeId", "data-v-6a2e373d"]]);
 const _sfc_main$$ = {
   __name: "LangSwitch",
   __ssrInlineRender: true,
@@ -14343,9 +14750,9 @@ const _sfc_main$Z = {
         _push(`<ul${ssrRenderAttrs(mergeProps({
           class: ["social", `social--${__props.tone}`],
           "aria-label": __props.label ?? void 0
-        }, _attrs))} data-v-aa7e2a13><!--[-->`);
+        }, _attrs))} data-v-b9aea658><!--[-->`);
         ssrRenderList(__props.items, (channel) => {
-          _push(`<li data-v-aa7e2a13><a class="social__mark"${ssrRenderAttr("href", channel.url)} rel="noopener noreferrer" target="_blank"${ssrRenderAttr("aria-label", channel.label)} data-v-aa7e2a13><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-aa7e2a13><path${ssrRenderAttr("d", mark(channel.url))} data-v-aa7e2a13></path></svg></a></li>`);
+          _push(`<li data-v-b9aea658><a class="social__mark"${ssrRenderAttr("href", channel.url)} rel="noopener noreferrer" target="_blank"${ssrRenderAttr("aria-label", channel.label)} data-v-b9aea658><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-b9aea658><path${ssrRenderAttr("d", mark(channel.url))} data-v-b9aea658></path></svg></a></li>`);
         });
         _push(`<!--]--></ul>`);
       } else {
@@ -14360,7 +14767,7 @@ _sfc_main$Z.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/SocialLinks.vue");
   return _sfc_setup$Z ? _sfc_setup$Z(props, ctx) : void 0;
 };
-const SocialLinks = /* @__PURE__ */ _export_sfc(_sfc_main$Z, [["__scopeId", "data-v-aa7e2a13"]]);
+const SocialLinks = /* @__PURE__ */ _export_sfc(_sfc_main$Z, [["__scopeId", "data-v-b9aea658"]]);
 const _sfc_main$Y = {
   __name: "SiteFooter",
   __ssrInlineRender: true,
@@ -14411,49 +14818,49 @@ const _sfc_main$Y = {
       return names.length ? names.join(" · ") : null;
     });
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<footer${ssrRenderAttrs(mergeProps({ class: "footer on-dark" }, _attrs))} data-v-613adb8f><div class="sadu-strip sadu-weave footer__strip" aria-hidden="true" data-v-613adb8f></div>`);
+      _push(`<footer${ssrRenderAttrs(mergeProps({ class: "footer on-dark" }, _attrs))} data-v-bd5a6753><div class="sadu-strip sadu-weave footer__strip" aria-hidden="true" data-v-bd5a6753></div>`);
       _push(ssrRenderComponent(_sfc_main$11, null, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
             if (__props.showLocation && mapEmbed.value) {
-              _push2(`<section id="visit" class="visit" aria-labelledby="visit-heading" data-v-613adb8f${_scopeId}><div class="visit__copy" data-v-613adb8f${_scopeId}><p class="mono-label mono-label--tight mono-label--gold" data-v-613adb8f${_scopeId}>${ssrInterpolate(unref(t)("common.label_location"))}</p>`);
+              _push2(`<section id="visit" class="visit" aria-labelledby="visit-heading" data-v-bd5a6753${_scopeId}><div class="visit__copy" data-v-bd5a6753${_scopeId}><p class="mono-label mono-label--tight mono-label--gold" data-v-bd5a6753${_scopeId}>${ssrInterpolate(unref(t)("common.label_location"))}</p>`);
               if (locationHeading.value) {
-                _push2(`<h2 id="visit-heading" class="visit__title" data-v-613adb8f${_scopeId}>${ssrInterpolate(locationHeading.value)}</h2>`);
+                _push2(`<h2 id="visit-heading" class="visit__title" data-v-bd5a6753${_scopeId}>${ssrInterpolate(locationHeading.value)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (locationNote.value) {
-                _push2(`<p class="visit__note" data-v-613adb8f${_scopeId}>${ssrInterpolate(locationNote.value)}</p>`);
+                _push2(`<p class="visit__note" data-v-bd5a6753${_scopeId}>${ssrInterpolate(locationNote.value)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<ul class="visit__facts" data-v-613adb8f${_scopeId}>`);
+              _push2(`<ul class="visit__facts" data-v-bd5a6753${_scopeId}>`);
               if (addressLine.value) {
-                _push2(`<li class="visit__fact" data-v-613adb8f${_scopeId}><svg class="visit__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-v-613adb8f${_scopeId}><path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" data-v-613adb8f${_scopeId}></path><circle cx="12" cy="10" r="2.6" data-v-613adb8f${_scopeId}></circle></svg> ${ssrInterpolate(addressLine.value)}</li>`);
+                _push2(`<li class="visit__fact" data-v-bd5a6753${_scopeId}><svg class="visit__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-v-bd5a6753${_scopeId}><path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" data-v-bd5a6753${_scopeId}></path><circle cx="12" cy="10" r="2.6" data-v-bd5a6753${_scopeId}></circle></svg> ${ssrInterpolate(addressLine.value)}</li>`);
               } else {
                 _push2(`<!---->`);
               }
               if (hours.value) {
-                _push2(`<li class="visit__fact" data-v-613adb8f${_scopeId}><svg class="visit__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-v-613adb8f${_scopeId}><circle cx="12" cy="12" r="9" data-v-613adb8f${_scopeId}></circle><path d="M12 7v5l3.5 2" data-v-613adb8f${_scopeId}></path></svg> ${ssrInterpolate(hours.value)}</li>`);
+                _push2(`<li class="visit__fact" data-v-bd5a6753${_scopeId}><svg class="visit__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-v-bd5a6753${_scopeId}><circle cx="12" cy="12" r="9" data-v-bd5a6753${_scopeId}></circle><path d="M12 7v5l3.5 2" data-v-bd5a6753${_scopeId}></path></svg> ${ssrInterpolate(hours.value)}</li>`);
               } else {
                 _push2(`<!---->`);
               }
               _push2(`</ul>`);
               if (mapUrl.value && directionsLabel.value) {
-                _push2(`<a class="btn btn--cta visit__cta"${ssrRenderAttr("href", mapUrl.value)} rel="noopener noreferrer" target="_blank" data-v-613adb8f${_scopeId}>${ssrInterpolate(directionsLabel.value)} <span class="visually-hidden" data-v-613adb8f${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+                _push2(`<a class="btn btn--cta visit__cta"${ssrRenderAttr("href", mapUrl.value)} rel="noopener noreferrer" target="_blank" data-v-bd5a6753${_scopeId}>${ssrInterpolate(directionsLabel.value)} <span class="visually-hidden" data-v-bd5a6753${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`</div><div class="visit__frame" data-v-613adb8f${_scopeId}><div class="visit__inner" data-v-613adb8f${_scopeId}><iframe class="visit__map"${ssrRenderAttr("src", mapEmbed.value)}${ssrRenderAttr("title", locationHeading.value ?? unref(t)("common.home"))} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" data-v-613adb8f${_scopeId}></iframe><span class="visit__wash" aria-hidden="true" data-v-613adb8f${_scopeId}></span><span class="visit__glow" aria-hidden="true" data-v-613adb8f${_scopeId}></span><span class="visit__grid" aria-hidden="true" data-v-613adb8f${_scopeId}></span><span class="visit__mark" aria-hidden="true" data-v-613adb8f${_scopeId}><span class="visit__pulse" data-v-613adb8f${_scopeId}></span><span class="visit__pulse visit__pulse--late" data-v-613adb8f${_scopeId}></span><span class="visit__pin" data-v-613adb8f${_scopeId}></span><span class="visit__cross visit__cross--x" data-v-613adb8f${_scopeId}></span><span class="visit__cross visit__cross--y" data-v-613adb8f${_scopeId}></span></span>`);
+              _push2(`</div><div class="visit__frame" data-v-bd5a6753${_scopeId}><div class="visit__inner" data-v-bd5a6753${_scopeId}><iframe class="visit__map"${ssrRenderAttr("src", mapEmbed.value)}${ssrRenderAttr("title", locationHeading.value ?? unref(t)("common.home"))} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" data-v-bd5a6753${_scopeId}></iframe><span class="visit__wash" aria-hidden="true" data-v-bd5a6753${_scopeId}></span><span class="visit__glow" aria-hidden="true" data-v-bd5a6753${_scopeId}></span><span class="visit__grid" aria-hidden="true" data-v-bd5a6753${_scopeId}></span><span class="visit__mark" aria-hidden="true" data-v-bd5a6753${_scopeId}><span class="visit__pulse" data-v-bd5a6753${_scopeId}></span><span class="visit__pulse visit__pulse--late" data-v-bd5a6753${_scopeId}></span><span class="visit__pin" data-v-bd5a6753${_scopeId}></span><span class="visit__cross visit__cross--x" data-v-bd5a6753${_scopeId}></span><span class="visit__cross visit__cross--y" data-v-bd5a6753${_scopeId}></span></span>`);
               if (coordinates.value) {
-                _push2(`<p class="visit__coords mono-label" aria-hidden="true" data-v-613adb8f${_scopeId}>${ssrInterpolate(coordinates.value)}</p>`);
+                _push2(`<p class="visit__coords mono-label" aria-hidden="true" data-v-bd5a6753${_scopeId}>${ssrInterpolate(coordinates.value)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
               if (mapUrl.value) {
-                _push2(`<a class="visit__open"${ssrRenderAttr("href", mapUrl.value)} rel="noopener noreferrer" target="_blank"${ssrRenderAttr("aria-label", directionsLabel.value ?? placeName.value ?? unref(t)("common.external_link"))} data-v-613adb8f${_scopeId}>`);
+                _push2(`<a class="visit__open"${ssrRenderAttr("href", mapUrl.value)} rel="noopener noreferrer" target="_blank"${ssrRenderAttr("aria-label", directionsLabel.value ?? placeName.value ?? unref(t)("common.external_link"))} data-v-bd5a6753${_scopeId}>`);
                 if (placeName.value) {
-                  _push2(`<span class="visit__chip" data-v-613adb8f${_scopeId}><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" data-v-613adb8f${_scopeId}><path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" data-v-613adb8f${_scopeId}></path><circle cx="12" cy="10" r="2.6" data-v-613adb8f${_scopeId}></circle></svg> ${ssrInterpolate(placeName.value)}</span>`);
+                  _push2(`<span class="visit__chip" data-v-bd5a6753${_scopeId}><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" data-v-bd5a6753${_scopeId}><path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" data-v-bd5a6753${_scopeId}></path><circle cx="12" cy="10" r="2.6" data-v-bd5a6753${_scopeId}></circle></svg> ${ssrInterpolate(placeName.value)}</span>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -14465,21 +14872,21 @@ const _sfc_main$Y = {
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<div class="footer__grid" data-v-613adb8f${_scopeId}><div class="footer__brand" data-v-613adb8f${_scopeId}>`);
+            _push2(`<div class="footer__grid" data-v-bd5a6753${_scopeId}><div class="footer__brand" data-v-bd5a6753${_scopeId}>`);
             _push2(ssrRenderComponent(Logo, {
               lockup: "stacked",
               tone: "white"
             }, null, _parent2, _scopeId));
             if (blurb.value) {
-              _push2(`<p class="footer__blurb" data-v-613adb8f${_scopeId}>${ssrInterpolate(blurb.value)}</p>`);
+              _push2(`<p class="footer__blurb" data-v-bd5a6753${_scopeId}>${ssrInterpolate(blurb.value)}</p>`);
             } else {
               _push2(`<!---->`);
             }
             _push2(`</div>`);
             if (mainLinks.value.length) {
-              _push2(`<nav class="footer__col"${ssrRenderAttr("aria-label", unref(t)("common.menu"))} data-v-613adb8f${_scopeId}><p class="mono-label mono-label--tight mono-label--gold footer__head" data-v-613adb8f${_scopeId}>${ssrInterpolate(unref(t)("common.label_sitemap"))}</p><ul class="footer__list" data-v-613adb8f${_scopeId}><!--[-->`);
+              _push2(`<nav class="footer__col"${ssrRenderAttr("aria-label", unref(t)("common.menu"))} data-v-bd5a6753${_scopeId}><p class="mono-label mono-label--tight mono-label--gold footer__head" data-v-bd5a6753${_scopeId}>${ssrInterpolate(unref(t)("common.label_sitemap"))}</p><ul class="footer__list" data-v-bd5a6753${_scopeId}><!--[-->`);
               ssrRenderList(mainLinks.value, (item) => {
-                _push2(`<li data-v-613adb8f${_scopeId}>`);
+                _push2(`<li data-v-bd5a6753${_scopeId}>`);
                 _push2(ssrRenderComponent(unref(Link), {
                   href: item.url,
                   class: "footer__link"
@@ -14502,9 +14909,9 @@ const _sfc_main$Y = {
               _push2(`<!---->`);
             }
             if (companyLinks.value.length || storeUrl.value) {
-              _push2(`<nav class="footer__col"${ssrRenderAttr("aria-label", unref(t)("common.nav_company"))} data-v-613adb8f${_scopeId}><p class="mono-label mono-label--tight mono-label--gold footer__head" data-v-613adb8f${_scopeId}>${ssrInterpolate(unref(t)("common.label_company"))}</p><ul class="footer__list" data-v-613adb8f${_scopeId}><!--[-->`);
+              _push2(`<nav class="footer__col"${ssrRenderAttr("aria-label", unref(t)("common.nav_company"))} data-v-bd5a6753${_scopeId}><p class="mono-label mono-label--tight mono-label--gold footer__head" data-v-bd5a6753${_scopeId}>${ssrInterpolate(unref(t)("common.label_company"))}</p><ul class="footer__list" data-v-bd5a6753${_scopeId}><!--[-->`);
               ssrRenderList(companyLinks.value, (item) => {
-                _push2(`<li data-v-613adb8f${_scopeId}>`);
+                _push2(`<li data-v-bd5a6753${_scopeId}>`);
                 _push2(ssrRenderComponent(unref(Link), {
                   href: item.url,
                   class: "footer__link"
@@ -14524,7 +14931,7 @@ const _sfc_main$Y = {
               });
               _push2(`<!--]-->`);
               if (storeUrl.value && storeLabel.value) {
-                _push2(`<li data-v-613adb8f${_scopeId}><a class="footer__link"${ssrRenderAttr("href", storeUrl.value)} rel="noopener noreferrer" target="_blank" data-v-613adb8f${_scopeId}>${ssrInterpolate(storeLabel.value)} <span class="visually-hidden" data-v-613adb8f${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a></li>`);
+                _push2(`<li data-v-bd5a6753${_scopeId}><a class="footer__link"${ssrRenderAttr("href", storeUrl.value)} rel="noopener noreferrer" target="_blank" data-v-bd5a6753${_scopeId}>${ssrInterpolate(storeLabel.value)} <span class="visually-hidden" data-v-bd5a6753${_scopeId}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a></li>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -14533,14 +14940,14 @@ const _sfc_main$Y = {
               _push2(`<!---->`);
             }
             if (email.value || phone.value || social.value.length) {
-              _push2(`<div class="footer__col" data-v-613adb8f${_scopeId}><p class="mono-label mono-label--tight mono-label--gold footer__head" data-v-613adb8f${_scopeId}>${ssrInterpolate(unref(t)("common.label_contact"))}</p><ul class="footer__list" data-v-613adb8f${_scopeId}>`);
+              _push2(`<div class="footer__col" data-v-bd5a6753${_scopeId}><p class="mono-label mono-label--tight mono-label--gold footer__head" data-v-bd5a6753${_scopeId}>${ssrInterpolate(unref(t)("common.label_contact"))}</p><ul class="footer__list" data-v-bd5a6753${_scopeId}>`);
               if (email.value) {
-                _push2(`<li data-v-613adb8f${_scopeId}><a class="footer__link footer__link--mono"${ssrRenderAttr("href", `mailto:${email.value}`)} data-v-613adb8f${_scopeId}>${ssrInterpolate(email.value)}</a></li>`);
+                _push2(`<li data-v-bd5a6753${_scopeId}><a class="footer__link footer__link--mono"${ssrRenderAttr("href", `mailto:${email.value}`)} data-v-bd5a6753${_scopeId}>${ssrInterpolate(email.value)}</a></li>`);
               } else {
                 _push2(`<!---->`);
               }
               if (phone.value) {
-                _push2(`<li data-v-613adb8f${_scopeId}><a class="footer__link footer__link--mono"${ssrRenderAttr("href", `tel:${phone.value}`)} dir="ltr" data-v-613adb8f${_scopeId}>${ssrInterpolate(phone.value)}</a></li>`);
+                _push2(`<li data-v-bd5a6753${_scopeId}><a class="footer__link footer__link--mono"${ssrRenderAttr("href", `tel:${phone.value}`)} dir="ltr" data-v-bd5a6753${_scopeId}>${ssrInterpolate(phone.value)}</a></li>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -14554,14 +14961,14 @@ const _sfc_main$Y = {
             } else {
               _push2(`<!---->`);
             }
-            _push2(`</div><div class="footer__base" data-v-613adb8f${_scopeId}>`);
+            _push2(`</div><div class="footer__base" data-v-bd5a6753${_scopeId}>`);
             if (copyright.value) {
-              _push2(`<p class="footer__copyright" data-v-613adb8f${_scopeId}>${ssrInterpolate(copyright.value)}</p>`);
+              _push2(`<p class="footer__copyright" data-v-bd5a6753${_scopeId}>${ssrInterpolate(copyright.value)}</p>`);
             } else {
               _push2(`<!---->`);
             }
             if (legalLinks.value.length) {
-              _push2(`<nav class="footer__legal"${ssrRenderAttr("aria-label", unref(t)("common.nav_legal"))} data-v-613adb8f${_scopeId}><!--[-->`);
+              _push2(`<nav class="footer__legal"${ssrRenderAttr("aria-label", unref(t)("common.nav_legal"))} data-v-bd5a6753${_scopeId}><!--[-->`);
               ssrRenderList(legalLinks.value, (item) => {
                 _push2(ssrRenderComponent(unref(Link), {
                   key: item.id,
@@ -14869,7 +15276,7 @@ _sfc_main$Y.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SiteFooter.vue");
   return _sfc_setup$Y ? _sfc_setup$Y(props, ctx) : void 0;
 };
-const SiteFooter = /* @__PURE__ */ _export_sfc(_sfc_main$Y, [["__scopeId", "data-v-613adb8f"]]);
+const SiteFooter = /* @__PURE__ */ _export_sfc(_sfc_main$Y, [["__scopeId", "data-v-bd5a6753"]]);
 const _sfc_main$X = {
   __name: "PublicLayout",
   __ssrInlineRender: true,
@@ -15505,48 +15912,48 @@ const _sfc_main$T = {
           ref_key: "root",
           ref: root,
           class: "section"
-        }, _attrs))} data-v-73d4b49b>`);
+        }, _attrs))} data-v-60b4c629>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`<div class="${ssrRenderClass([{ "editorial--illustrated": __props.image, "editorial--indexed": __props.index }, "editorial"])}" data-v-73d4b49b${_scopeId}>`);
+              _push2(`<div class="${ssrRenderClass([{ "editorial--illustrated": __props.image, "editorial--indexed": __props.index }, "editorial"])}" data-v-60b4c629${_scopeId}>`);
               if (__props.index) {
-                _push2(`<div class="editorial__margin reveal" aria-hidden="true" data-v-73d4b49b${_scopeId}>`);
+                _push2(`<div class="editorial__margin reveal" aria-hidden="true" data-v-60b4c629${_scopeId}>`);
                 _push2(ssrRenderComponent(SectionIndex, {
                   layout: "stacked",
                   index: __props.index,
                   total: __props.total
                 }, null, _parent2, _scopeId));
-                _push2(`<span class="editorial__rule" data-v-73d4b49b${_scopeId}></span></div>`);
+                _push2(`<span class="editorial__rule" data-v-60b4c629${_scopeId}></span></div>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<div class="prose reveal" data-v-73d4b49b${_scopeId}>`);
+              _push2(`<div class="prose reveal" data-v-60b4c629${_scopeId}>`);
               if (label.value) {
-                _push2(`<span class="eyebrow" data-v-73d4b49b${_scopeId}>${ssrInterpolate(label.value)}</span>`);
+                _push2(`<span class="eyebrow" data-v-60b4c629${_scopeId}>${ssrInterpolate(label.value)}</span>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.heading) {
-                _push2(`<h2 data-v-73d4b49b${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 data-v-60b4c629${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="prose__sub" data-v-73d4b49b${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="prose__sub" data-v-60b4c629${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.body) {
-                _push2(`<div class="prose__body" data-v-73d4b49b${_scopeId}>${__props.body ?? ""}</div>`);
+                _push2(`<div class="prose__body" data-v-60b4c629${_scopeId}>${__props.body ?? ""}</div>`);
               } else {
                 _push2(`<!---->`);
               }
               _push2(`</div>`);
               if (__props.image) {
-                _push2(`<figure class="editorial__figure reveal" data-v-73d4b49b${_scopeId}><div class="editorial__frame cut-framed" data-v-73d4b49b${_scopeId}><img class="editorial__img cut"${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} loading="lazy" decoding="async" data-v-73d4b49b${_scopeId}></div>`);
+                _push2(`<figure class="editorial__figure reveal" data-v-60b4c629${_scopeId}><div class="editorial__frame cut-framed" data-v-60b4c629${_scopeId}><img class="editorial__img cut"${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} loading="lazy" decoding="async" data-v-60b4c629${_scopeId}></div>`);
                 if (__props.image.caption) {
-                  _push2(`<figcaption class="editorial__caption" data-v-73d4b49b${_scopeId}>${ssrInterpolate(__props.image.caption)}</figcaption>`);
+                  _push2(`<figcaption class="editorial__caption" data-v-60b4c629${_scopeId}>${ssrInterpolate(__props.image.caption)}</figcaption>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -15627,7 +16034,7 @@ _sfc_main$T.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/RichText.vue");
   return _sfc_setup$T ? _sfc_setup$T(props, ctx) : void 0;
 };
-const RichText = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["__scopeId", "data-v-73d4b49b"]]);
+const RichText = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["__scopeId", "data-v-60b4c629"]]);
 const _sfc_main$S = {
   __name: "MediaSplit",
   __ssrInlineRender: true,
@@ -15764,20 +16171,20 @@ const _sfc_main$R = {
           ref_key: "root",
           ref: root,
           class: "section intro"
-        }, _attrs))} data-v-49aeb22b>`);
+        }, _attrs))} data-v-4d4380f3>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`<div class="intro__grid" data-v-49aeb22b${_scopeId}><div class="intro__margin reveal" data-v-49aeb22b${_scopeId}>`);
+              _push2(`<div class="intro__grid" data-v-4d4380f3${_scopeId}><div class="intro__margin reveal" data-v-4d4380f3${_scopeId}>`);
               _push2(ssrRenderComponent(SectionIndex, {
                 layout: "stacked",
                 index: __props.index,
                 total: __props.total,
                 slug: __props.slug
               }, null, _parent2, _scopeId));
-              _push2(`<span class="intro__rule" aria-hidden="true" data-v-49aeb22b${_scopeId}></span></div><div class="intro__body" data-v-49aeb22b${_scopeId}><p class="intro__statement reveal" data-v-49aeb22b${_scopeId}>${ssrInterpolate(statement())}</p>`);
+              _push2(`<span class="intro__rule" aria-hidden="true" data-v-4d4380f3${_scopeId}></span></div><div class="intro__body" data-v-4d4380f3${_scopeId}><p class="intro__statement reveal" data-v-4d4380f3${_scopeId}>${ssrInterpolate(statement())}</p>`);
               if (note()) {
-                _push2(`<p class="intro__note reveal" data-v-49aeb22b${_scopeId}>${ssrInterpolate(note())}</p>`);
+                _push2(`<p class="intro__note reveal" data-v-4d4380f3${_scopeId}>${ssrInterpolate(note())}</p>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -15823,7 +16230,7 @@ _sfc_main$R.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/IntroStatement.vue");
   return _sfc_setup$R ? _sfc_setup$R(props, ctx) : void 0;
 };
-const IntroStatement = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["__scopeId", "data-v-49aeb22b"]]);
+const IntroStatement = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["__scopeId", "data-v-4d4380f3"]]);
 const _sfc_main$Q = {
   __name: "CardsGrid",
   __ssrInlineRender: true,
@@ -15871,25 +16278,25 @@ const _sfc_main$Q = {
           ref_key: "root",
           ref: root,
           class: ["section", [`cardsec--${__props.variant}`, __props.variant === "band" ? "on-dark" : null]]
-        }, _attrs))} data-v-88351d39>`);
+        }, _attrs))} data-v-87288823>`);
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
               if (__props.heading) {
-                _push2(`<h2 class="reveal" data-v-88351d39${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                _push2(`<h2 class="reveal" data-v-87288823${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
               } else {
                 _push2(`<!---->`);
               }
               if (__props.subheading) {
-                _push2(`<p class="cards__sub reveal" data-v-88351d39${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
+                _push2(`<p class="cards__sub reveal" data-v-87288823${_scopeId}>${ssrInterpolate(__props.subheading)}</p>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<ul class="cards" data-v-88351d39${_scopeId}><!--[-->`);
+              _push2(`<ul class="cards" data-v-87288823${_scopeId}><!--[-->`);
               ssrRenderList(written.value, (item, i) => {
-                _push2(`<li class="card reveal" data-v-88351d39${_scopeId}>`);
+                _push2(`<li class="card reveal" data-v-87288823${_scopeId}>`);
                 if (item.icon) {
-                  _push2(`<span class="cards__icon" data-v-88351d39${_scopeId}>`);
+                  _push2(`<span class="cards__icon" data-v-87288823${_scopeId}>`);
                   _push2(ssrRenderComponent(NavIcon, {
                     name: item.icon,
                     size: 28,
@@ -15901,17 +16308,17 @@ const _sfc_main$Q = {
                   _push2(`<!---->`);
                 }
                 if (item.number) {
-                  _push2(`<span class="cards__number mono-label" data-v-88351d39${_scopeId}>${ssrInterpolate(item.number)}</span>`);
+                  _push2(`<span class="cards__number mono-label" data-v-87288823${_scopeId}>${ssrInterpolate(item.number)}</span>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (item.title) {
-                  _push2(`<h3 class="cards__title" data-v-88351d39${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
+                  _push2(`<h3 class="cards__title" data-v-87288823${_scopeId}>${ssrInterpolate(item.title)}</h3>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (item.body) {
-                  _push2(`<p class="cards__body" data-v-88351d39${_scopeId}>${ssrInterpolate(item.body)}</p>`);
+                  _push2(`<p class="cards__body" data-v-87288823${_scopeId}>${ssrInterpolate(item.body)}</p>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -15978,7 +16385,7 @@ _sfc_main$Q.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CardsGrid.vue");
   return _sfc_setup$Q ? _sfc_setup$Q(props, ctx) : void 0;
 };
-const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-88351d39"]]);
+const CardsGrid = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["__scopeId", "data-v-87288823"]]);
 const _sfc_main$P = {
   __name: "FaqAccordion",
   __ssrInlineRender: true,
@@ -16743,41 +17150,41 @@ const _sfc_main$I = {
         ref_key: "root",
         ref: root,
         class: ["lead", `lead--${__props.layout}`]
-      }, _attrs))} data-v-bae2013a>`);
+      }, _attrs))} data-v-910ee8b0>`);
       if (submitted.value) {
-        _push(`<p class="visually-hidden" role="status" aria-live="polite" data-v-bae2013a>${ssrInterpolate(thanksTitle.value)} ${ssrInterpolate(thanksBody.value)}</p>`);
+        _push(`<p class="visually-hidden" role="status" aria-live="polite" data-v-910ee8b0>${ssrInterpolate(thanksTitle.value)} ${ssrInterpolate(thanksBody.value)}</p>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`<form novalidate data-v-bae2013a>`);
+      _push(`<form novalidate data-v-910ee8b0>`);
       if (__props.heading) {
-        _push(`<p class="lead__heading" data-v-bae2013a>${ssrInterpolate(__props.heading)}</p>`);
+        _push(`<p class="lead__heading" data-v-910ee8b0>${ssrInterpolate(__props.heading)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.reassurance) {
-        _push(`<p class="lead__reassurance" data-v-bae2013a>${ssrInterpolate(__props.reassurance)}</p>`);
+        _push(`<p class="lead__reassurance" data-v-910ee8b0>${ssrInterpolate(__props.reassurance)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (extraFields.value.length) {
-        _push(`<div class="lead__extras" data-v-bae2013a><!--[-->`);
+        _push(`<div class="lead__extras" data-v-910ee8b0><!--[-->`);
         ssrRenderList(extraFields.value, (field, i) => {
-          _push(`<div class="lead__extra" data-v-bae2013a><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-bae2013a>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
+          _push(`<div class="lead__extra" data-v-910ee8b0><label class="lead__label"${ssrRenderAttr("for", fieldId(field.key))} data-v-910ee8b0>${ssrInterpolate(i === 0 && __props.firstFieldLabel ? __props.firstFieldLabel : field.label)} `);
           if (field.required) {
-            _push(`<span class="lead__required" aria-hidden="true" data-v-bae2013a>*</span>`);
+            _push(`<span class="lead__required" aria-hidden="true" data-v-910ee8b0>*</span>`);
           } else {
-            _push(`<span class="lead__optional" data-v-bae2013a>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
+            _push(`<span class="lead__optional" data-v-910ee8b0>${ssrInterpolate(unref(t)("common.optional"))}</span>`);
           }
           _push(`</label>`);
           if (field.type === "select") {
-            _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-bae2013a><option value="" data-v-bae2013a${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
+            _push(`<select${ssrRenderAttr("id", fieldId(field.key))} class="lead-input"${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] ? errorId(field.key) : void 0)} data-v-910ee8b0><option value="" data-v-910ee8b0${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], "") : ssrLooseEqual(values[field.key], "")) ? " selected" : ""}>—</option><!--[-->`);
             ssrRenderList(field.options, (opt) => {
-              _push(`<option${ssrRenderAttr("value", opt.value)} data-v-bae2013a${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
+              _push(`<option${ssrRenderAttr("value", opt.value)} data-v-910ee8b0${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], opt.value) : ssrLooseEqual(values[field.key], opt.value)) ? " selected" : ""}>${ssrInterpolate(opt.label)}</option>`);
             });
             _push(`<!--]--></select>`);
           } else if (field.type === "checkbox") {
-            _push(`<label class="lead__check" data-v-bae2013a><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-bae2013a><span data-v-bae2013a>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
+            _push(`<label class="lead__check" data-v-910ee8b0><input${ssrRenderAttr("id", fieldId(field.key))}${ssrIncludeBooleanAttr(Array.isArray(values[field.key]) ? ssrLooseContain(values[field.key], null) : values[field.key]) ? " checked" : ""} type="checkbox" data-v-910ee8b0><span data-v-910ee8b0>${ssrInterpolate(field.help ?? field.label)}</span></label>`);
           } else if (field.type === "tel") {
             _push(ssrRenderComponent(_sfc_main$J, {
               id: fieldId(field.key),
@@ -16790,12 +17197,12 @@ const _sfc_main$I = {
               onValidity: (state2) => onPhoneValidity(field.key, state2)
             }, null, _parent));
           } else if (field.type === "textarea") {
-            _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-bae2013a>${ssrInterpolate(values[field.key])}</textarea>`);
+            _push(`<textarea${ssrRenderAttr("id", fieldId(field.key))} class="lead-input lead-textarea" rows="2" dir="auto"${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] ? "true" : void 0)} data-v-910ee8b0>${ssrInterpolate(values[field.key])}</textarea>`);
           } else {
-            _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("name", field.key)}${ssrRenderAttr("autocomplete", autocompleteFor(field))}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : textDir.value)} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] || liveErrors[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] || liveErrors[field.key] ? errorId(field.key) : void 0)} data-v-bae2013a>`);
+            _push(`<input${ssrRenderAttr("id", fieldId(field.key))}${ssrRenderDynamicModel(field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text", values[field.key], null)}${ssrRenderAttr("name", field.key)}${ssrRenderAttr("autocomplete", autocompleteFor(field))}${ssrRenderAttr("type", field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text")}${ssrRenderAttr("placeholder", field.placeholder ?? "")}${ssrRenderAttr("maxlength", field.maxLength ?? void 0)}${ssrRenderAttr("dir", field.type === "email" || field.type === "tel" ? "ltr" : textDir.value)} class="${ssrRenderClass([{ "lead-input--mono": field.type === "email" || field.type === "tel" }, "lead-input"])}"${ssrIncludeBooleanAttr(field.required || void 0) ? " required" : ""}${ssrRenderAttr("aria-required", field.required ? "true" : void 0)}${ssrRenderAttr("aria-invalid", errors.value[field.key] || liveErrors[field.key] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[field.key] || liveErrors[field.key] ? errorId(field.key) : void 0)} data-v-910ee8b0>`);
           }
           if (errors.value[field.key] || liveErrors[field.key]) {
-            _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-bae2013a>${ssrInterpolate(errors.value[field.key] ?? liveErrors[field.key])}</p>`);
+            _push(`<p${ssrRenderAttr("id", errorId(field.key))} class="lead-error" data-v-910ee8b0>${ssrInterpolate(errors.value[field.key] ?? liveErrors[field.key])}</p>`);
           } else {
             _push(`<!---->`);
           }
@@ -16806,13 +17213,13 @@ const _sfc_main$I = {
         _push(`<!---->`);
       }
       if (contactField.value) {
-        _push(`<div class="lead__row" data-v-bae2013a><div class="lead__field" data-v-bae2013a><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-bae2013a>${ssrInterpolate(contactField.value.label)} `);
+        _push(`<div class="lead__row" data-v-910ee8b0><div class="lead__field" data-v-910ee8b0><label class="${ssrRenderClass(__props.layout === "inline" ? "lead__label" : "visually-hidden")}"${ssrRenderAttr("for", fieldId(CONTACT))} data-v-910ee8b0>${ssrInterpolate(contactField.value.label)} `);
         if (__props.layout === "inline") {
-          _push(`<span class="lead__required" aria-hidden="true" data-v-bae2013a> * </span>`);
+          _push(`<span class="lead__required" aria-hidden="true" data-v-910ee8b0> * </span>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-bae2013a></div>`);
+        _push(`</label><input${ssrRenderAttr("id", fieldId(CONTACT))}${ssrRenderAttr("value", values[CONTACT])} class="lead-input" type="text"${ssrRenderAttr("name", CONTACT)} inputmode="text" autocomplete="email tel" dir="auto"${ssrRenderAttr("placeholder", contactField.value.placeholder ?? contactField.value.label)}${ssrRenderAttr("aria-invalid", errors.value[CONTACT] ? "true" : void 0)}${ssrRenderAttr("aria-describedby", errors.value[CONTACT] ? errorId(CONTACT) : void 0)} required data-v-910ee8b0></div>`);
         if (!messageField.value) {
           _push(ssrRenderComponent(_sfc_main$1h, {
             type: "submit",
@@ -16839,14 +17246,14 @@ const _sfc_main$I = {
         _push(`<!---->`);
       }
       if (errors.value[CONTACT]) {
-        _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-bae2013a>${ssrInterpolate(errors.value[CONTACT])}</p>`);
+        _push(`<p${ssrRenderAttr("id", errorId(CONTACT))} class="lead-error" aria-live="polite" data-v-910ee8b0>${ssrInterpolate(errors.value[CONTACT])}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (messageField.value) {
-        _push(`<div class="lead__message" data-v-bae2013a><label class="lead__label"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-bae2013a>${ssrInterpolate(messageField.value.label)} <span class="lead__optional" data-v-bae2013a>${ssrInterpolate(unref(t)("leads.optional"))}</span></label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="3"${ssrRenderAttr("dir", textDir.value)}${ssrRenderAttr("placeholder", messageHint.value ?? __props.messagePlaceholder ?? messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-bae2013a>${ssrInterpolate(values[MESSAGE])}</textarea>`);
+        _push(`<div class="lead__message" data-v-910ee8b0><label class="lead__label"${ssrRenderAttr("for", fieldId(MESSAGE))} data-v-910ee8b0>${ssrInterpolate(messageField.value.label)} <span class="lead__optional" data-v-910ee8b0>${ssrInterpolate(unref(t)("leads.optional"))}</span></label><textarea${ssrRenderAttr("id", fieldId(MESSAGE))} class="lead-input lead-textarea"${ssrRenderAttr("name", MESSAGE)} rows="3"${ssrRenderAttr("dir", textDir.value)}${ssrRenderAttr("placeholder", messageHint.value ?? __props.messagePlaceholder ?? messageField.value.placeholder ?? "")}${ssrRenderAttr("maxlength", messageField.value.maxLength ?? void 0)} data-v-910ee8b0>${ssrInterpolate(values[MESSAGE])}</textarea>`);
         if (errors.value[MESSAGE]) {
-          _push(`<p class="lead-error" data-v-bae2013a>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
+          _push(`<p class="lead-error" data-v-910ee8b0>${ssrInterpolate(errors.value[MESSAGE])}</p>`);
         } else {
           _push(`<!---->`);
         }
@@ -16855,7 +17262,7 @@ const _sfc_main$I = {
         _push(`<!---->`);
       }
       if (messageField.value) {
-        _push(`<div class="lead__actions" data-v-bae2013a>`);
+        _push(`<div class="lead__actions" data-v-910ee8b0>`);
         _push(ssrRenderComponent(_sfc_main$1h, {
           type: "submit",
           variant: __props.layout === "inline" ? "cta-lg" : "cta",
@@ -16877,7 +17284,7 @@ const _sfc_main$I = {
       } else {
         _push(`<!---->`);
       }
-      _push(`<div class="lead__trap" aria-hidden="true" data-v-bae2013a><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-bae2013a>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-bae2013a></div></form>`);
+      _push(`<div class="lead__trap" aria-hidden="true" data-v-910ee8b0><label${ssrRenderAttr("for", `${fieldId("hp")}`)} data-v-910ee8b0>Company website</label><input${ssrRenderAttr("id", `${fieldId("hp")}`)}${ssrRenderAttr("value", honeypot.value)}${ssrRenderAttr("name", honeypotName)} type="text" tabindex="-1" autocomplete="off" data-v-910ee8b0></div></form>`);
       _push(ssrRenderComponent(Toast, {
         open: outcome.value !== null,
         type: outcome.value ?? "success",
@@ -16896,7 +17303,7 @@ _sfc_main$I.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/forms/LeadField.vue");
   return _sfc_setup$I ? _sfc_setup$I(props, ctx) : void 0;
 };
-const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["__scopeId", "data-v-bae2013a"]]);
+const LeadField = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["__scopeId", "data-v-910ee8b0"]]);
 const _sfc_main$H = {
   __name: "CtaBand",
   __ssrInlineRender: true,
@@ -16921,27 +17328,27 @@ const _sfc_main$H = {
       _push(`<section${ssrRenderAttrs(mergeProps({
         id: "lead",
         class: "band-outer"
-      }, _attrs))} data-v-66f406e2>`);
+      }, _attrs))} data-v-fde34f45>`);
       _push(ssrRenderComponent(_sfc_main$11, null, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="band on-dark" data-v-66f406e2${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-66f406e2${_scopeId}></span><div class="band__grid" data-v-66f406e2${_scopeId}><div class="band__pitch" data-v-66f406e2${_scopeId}>`);
+            _push2(`<div class="band on-dark" data-v-fde34f45${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-fde34f45${_scopeId}></span><div class="band__grid" data-v-fde34f45${_scopeId}><div class="band__pitch" data-v-fde34f45${_scopeId}>`);
             if (__props.eyebrow) {
-              _push2(`<p class="mono-label mono-label--gold" data-v-66f406e2${_scopeId}>${ssrInterpolate(__props.eyebrow)}</p>`);
+              _push2(`<p class="mono-label mono-label--gold" data-v-fde34f45${_scopeId}>${ssrInterpolate(__props.eyebrow)}</p>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.heading) {
-              _push2(`<h2 class="band__title" data-v-66f406e2${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              _push2(`<h2 class="band__title" data-v-fde34f45${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.reassurance) {
-              _push2(`<p class="band__note" data-v-66f406e2${_scopeId}>${ssrInterpolate(__props.reassurance)}</p>`);
+              _push2(`<p class="band__note" data-v-fde34f45${_scopeId}>${ssrInterpolate(__props.reassurance)}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`</div><div class="band__form" data-v-66f406e2${_scopeId}>`);
+            _push2(`</div><div class="band__form" data-v-fde34f45${_scopeId}>`);
             _push2(ssrRenderComponent(LeadField, {
               layout: "inline",
               "first-field-label": __props.firstFieldLabel,
@@ -16952,7 +17359,7 @@ const _sfc_main$H = {
               interest: __props.interest
             }, null, _parent2, _scopeId));
             if (__props.note) {
-              _push2(`<p class="band__submit-note" data-v-66f406e2${_scopeId}>${ssrInterpolate(__props.note)}</p>`);
+              _push2(`<p class="band__submit-note" data-v-fde34f45${_scopeId}>${ssrInterpolate(__props.note)}</p>`);
             } else {
               _push2(`<!---->`);
             }
@@ -17011,7 +17418,7 @@ _sfc_main$H.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/CtaBand.vue");
   return _sfc_setup$H ? _sfc_setup$H(props, ctx) : void 0;
 };
-const CtaBand = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["__scopeId", "data-v-66f406e2"]]);
+const CtaBand = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["__scopeId", "data-v-fde34f45"]]);
 const _sfc_main$G = {
   __name: "BridgeModel",
   __ssrInlineRender: true,
@@ -17459,25 +17866,25 @@ const _sfc_main$D = {
           class: ["impact", [`impact--${__props.variant}`, __props.variant === "band" ? "on-dark" : null]],
           "aria-labelledby": __props.heading ? "impact-heading" : void 0,
           "aria-label": __props.heading ? void 0 : __props.eyebrow || void 0
-        }, _attrs))} data-v-437ab32e>`);
+        }, _attrs))} data-v-fd1bc3da>`);
         if (__props.variant === "band") {
-          _push(`<span class="sadu-edge sadu-weave impact__edge" aria-hidden="true" data-v-437ab32e></span>`);
+          _push(`<span class="sadu-edge sadu-weave impact__edge" aria-hidden="true" data-v-fd1bc3da></span>`);
         } else {
           _push(`<!---->`);
         }
         _push(ssrRenderComponent(_sfc_main$11, null, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`<div class="impact__inner" data-v-437ab32e${_scopeId}>`);
+              _push2(`<div class="impact__inner" data-v-fd1bc3da${_scopeId}>`);
               if (__props.eyebrow || __props.heading || __props.ctaLabel) {
-                _push2(`<div class="impact__head" data-v-437ab32e${_scopeId}><div data-v-437ab32e${_scopeId}>`);
+                _push2(`<div class="impact__head" data-v-fd1bc3da${_scopeId}><div data-v-fd1bc3da${_scopeId}>`);
                 if (__props.eyebrow) {
-                  _push2(`<span class="eyebrow reveal" data-v-437ab32e${_scopeId}>${ssrInterpolate(__props.eyebrow)}</span>`);
+                  _push2(`<span class="eyebrow reveal" data-v-fd1bc3da${_scopeId}>${ssrInterpolate(__props.eyebrow)}</span>`);
                 } else {
                   _push2(`<!---->`);
                 }
                 if (__props.heading) {
-                  _push2(`<h2 id="impact-heading" class="h2 reveal" data-v-437ab32e${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+                  _push2(`<h2 id="impact-heading" class="h2 reveal" data-v-fd1bc3da${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
                 } else {
                   _push2(`<!---->`);
                 }
@@ -17506,7 +17913,7 @@ const _sfc_main$D = {
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<div class="impact__grid" style="${ssrRenderStyle({ "--impact-cols": columns.value })}" data-v-437ab32e${_scopeId}><!--[-->`);
+              _push2(`<div class="impact__grid" style="${ssrRenderStyle({ "--impact-cols": columns.value })}" data-v-fd1bc3da${_scopeId}><!--[-->`);
               ssrRenderList(shown.value, (item) => {
                 _push2(ssrRenderComponent(ImpactStat, {
                   key: item.id,
@@ -17519,7 +17926,7 @@ const _sfc_main$D = {
               });
               _push2(`<!--]--></div>`);
               if (__props.measuredAt) {
-                _push2(`<p class="impact__asof" data-v-437ab32e${_scopeId}>${ssrInterpolate(unref(t)("impact.measured_at"))}: <span class="tabular" data-v-437ab32e${_scopeId}>${ssrInterpolate(__props.measuredAt)}</span></p>`);
+                _push2(`<p class="impact__asof" data-v-fd1bc3da${_scopeId}>${ssrInterpolate(unref(t)("impact.measured_at"))}: <span class="tabular" data-v-fd1bc3da${_scopeId}>${ssrInterpolate(__props.measuredAt)}</span></p>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -17595,7 +18002,7 @@ _sfc_main$D.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/ImpactStats.vue");
   return _sfc_setup$D ? _sfc_setup$D(props, ctx) : void 0;
 };
-const ImpactStats = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-437ab32e"]]);
+const ImpactStats = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["__scopeId", "data-v-fd1bc3da"]]);
 const _sfc_main$C = {
   __name: "PartnersLogos",
   __ssrInlineRender: true,
@@ -18954,21 +19361,21 @@ const _sfc_main$q = {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(ssrRenderComponent(Breadcrumb, { items: __props.breadcrumbs }, null, _parent2, _scopeId));
-            _push2(`<section class="section intro" data-v-1cb26cfc${_scopeId}>`);
+            _push2(`<section class="section intro" data-v-f84ac2a2${_scopeId}>`);
             _push2(ssrRenderComponent(_sfc_main$11, null, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
                   if (__props.page?.title) {
-                    _push3(`<h1 data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(__props.page.title)}</h1>`);
+                    _push3(`<h1 data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(__props.page.title)}</h1>`);
                   } else {
                     _push3(`<!---->`);
                   }
                   if (__props.page?.subtitle) {
-                    _push3(`<p class="intro__sub" data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(__props.page.subtitle)}</p>`);
+                    _push3(`<p class="intro__sub" data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(__props.page.subtitle)}</p>`);
                   } else {
                     _push3(`<!---->`);
                   }
-                  _push3(`<div class="grid" data-v-1cb26cfc${_scopeId2}><div class="grid__form" data-v-1cb26cfc${_scopeId2}>`);
+                  _push3(`<div class="grid" data-v-f84ac2a2${_scopeId2}><div class="grid__form" data-v-f84ac2a2${_scopeId2}>`);
                   _push3(ssrRenderComponent(LeadField, {
                     ref_key: "leadForm",
                     ref: leadForm,
@@ -18979,33 +19386,33 @@ const _sfc_main$q = {
                   }, null, _parent3, _scopeId2));
                   _push3(`</div>`);
                   if (channels.value.length || whatsappHref.value || social.value.length) {
-                    _push3(`<aside class="grid__aside on-dark" data-v-1cb26cfc${_scopeId2}><p class="mono-label mono-label--gold" data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(unref(t)("contact.direct_eyebrow"))}</p><h2 class="aside__title" data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(unref(t)("contact.direct_channels"))}</h2>`);
+                    _push3(`<aside class="grid__aside on-dark" data-v-f84ac2a2${_scopeId2}><p class="mono-label mono-label--gold" data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(unref(t)("contact.direct_eyebrow"))}</p><h2 class="aside__title" data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(unref(t)("contact.direct_channels"))}</h2>`);
                     if (channels.value.length) {
-                      _push3(`<ul class="channels" data-v-1cb26cfc${_scopeId2}><!--[-->`);
+                      _push3(`<ul class="channels" data-v-f84ac2a2${_scopeId2}><!--[-->`);
                       ssrRenderList(channels.value, (channel) => {
-                        _push3(`<li class="channel" data-v-1cb26cfc${_scopeId2}><span class="channel__icon" aria-hidden="true" data-v-1cb26cfc${_scopeId2}><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" data-v-1cb26cfc${_scopeId2}><path${ssrRenderAttr("d", channel.mark)} data-v-1cb26cfc${_scopeId2}></path></svg></span><span class="channel__text" data-v-1cb26cfc${_scopeId2}><span class="channel__label" data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(channel.label)}</span><a class="channel__value latin"${ssrRenderAttr("href", channel.href)} data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(channel.value)}</a></span></li>`);
+                        _push3(`<li class="channel" data-v-f84ac2a2${_scopeId2}><span class="channel__icon" aria-hidden="true" data-v-f84ac2a2${_scopeId2}><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" data-v-f84ac2a2${_scopeId2}><path${ssrRenderAttr("d", channel.mark)} data-v-f84ac2a2${_scopeId2}></path></svg></span><span class="channel__text" data-v-f84ac2a2${_scopeId2}><span class="channel__label" data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(channel.label)}</span><a class="channel__value latin"${ssrRenderAttr("href", channel.href)} data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(channel.value)}</a></span></li>`);
                       });
                       _push3(`<!--]--></ul>`);
                     } else {
                       _push3(`<!---->`);
                     }
                     if (whatsappHref.value) {
-                      _push3(`<a class="btn btn--cta whatsapp"${ssrRenderAttr("href", whatsappHref.value)} rel="noopener noreferrer" target="_blank" data-v-1cb26cfc${_scopeId2}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true" data-v-1cb26cfc${_scopeId2}><path d="M3.5 20.5l1.3-4.4A8.2 8.2 0 1120.5 12a8.4 8.4 0 01-12.4 7.2l-4.6 1.3z" data-v-1cb26cfc${_scopeId2}></path><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5" stroke-linecap="round" data-v-1cb26cfc${_scopeId2}></path></svg> ${ssrInterpolate(unref(t)("contact.whatsapp"))} <span class="visually-hidden" data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
+                      _push3(`<a class="btn btn--cta whatsapp"${ssrRenderAttr("href", whatsappHref.value)} rel="noopener noreferrer" target="_blank" data-v-f84ac2a2${_scopeId2}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true" data-v-f84ac2a2${_scopeId2}><path d="M3.5 20.5l1.3-4.4A8.2 8.2 0 1120.5 12a8.4 8.4 0 01-12.4 7.2l-4.6 1.3z" data-v-f84ac2a2${_scopeId2}></path><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5" stroke-linecap="round" data-v-f84ac2a2${_scopeId2}></path></svg> ${ssrInterpolate(unref(t)("contact.whatsapp"))} <span class="visually-hidden" data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(unref(t)("common.external_link"))}</span></a>`);
                     } else {
                       _push3(`<!---->`);
                     }
                     if (visitLabel.value) {
-                      _push3(`<button type="button" class="btn btn--secondary visit" data-v-1cb26cfc${_scopeId2}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true" data-v-1cb26cfc${_scopeId2}><rect x="3.5" y="5" width="17" height="15.5" rx="2" data-v-1cb26cfc${_scopeId2}></rect><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" stroke-linecap="round" data-v-1cb26cfc${_scopeId2}></path></svg> ${ssrInterpolate(visitLabel.value)}</button>`);
+                      _push3(`<button type="button" class="btn btn--secondary visit" data-v-f84ac2a2${_scopeId2}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true" data-v-f84ac2a2${_scopeId2}><rect x="3.5" y="5" width="17" height="15.5" rx="2" data-v-f84ac2a2${_scopeId2}></rect><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" stroke-linecap="round" data-v-f84ac2a2${_scopeId2}></path></svg> ${ssrInterpolate(visitLabel.value)}</button>`);
                     } else {
                       _push3(`<!---->`);
                     }
                     if (responsePromise.value) {
-                      _push3(`<p class="promise" data-v-1cb26cfc${_scopeId2}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" data-v-1cb26cfc${_scopeId2}><circle cx="12" cy="12" r="9" data-v-1cb26cfc${_scopeId2}></circle><path d="M12 7v5l3.5 2" data-v-1cb26cfc${_scopeId2}></path></svg> ${ssrInterpolate(responsePromise.value)}</p>`);
+                      _push3(`<p class="promise" data-v-f84ac2a2${_scopeId2}><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" data-v-f84ac2a2${_scopeId2}><circle cx="12" cy="12" r="9" data-v-f84ac2a2${_scopeId2}></circle><path d="M12 7v5l3.5 2" data-v-f84ac2a2${_scopeId2}></path></svg> ${ssrInterpolate(responsePromise.value)}</p>`);
                     } else {
                       _push3(`<!---->`);
                     }
                     if (social.value.length) {
-                      _push3(`<!--[--><h2 class="aside__title aside__title--spaced" data-v-1cb26cfc${_scopeId2}>${ssrInterpolate(unref(t)("contact.social"))}</h2>`);
+                      _push3(`<!--[--><h2 class="aside__title aside__title--spaced" data-v-f84ac2a2${_scopeId2}>${ssrInterpolate(unref(t)("contact.social"))}</h2>`);
                       _push3(ssrRenderComponent(SocialLinks, {
                         items: social.value,
                         tone: "dark",
@@ -19358,7 +19765,7 @@ _sfc_main$q.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Contact.vue");
   return _sfc_setup$q ? _sfc_setup$q(props, ctx) : void 0;
 };
-const Contact = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["__scopeId", "data-v-1cb26cfc"]]);
+const Contact = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["__scopeId", "data-v-f84ac2a2"]]);
 const __vite_glob_0_28 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Contact
@@ -19517,39 +19924,39 @@ const _sfc_main$o = {
     return (_ctx, _push, _parent, _attrs) => {
       _push(`<section${ssrRenderAttrs(mergeProps({
         class: ["hero on-dark", { "hero--has-media": mediaUrl.value }]
-      }, _attrs))} data-v-3a7919b2><div class="hero__panes" data-v-3a7919b2><div class="hero__copy" data-v-3a7919b2>`);
+      }, _attrs))} data-v-e19e5e17><div class="hero__panes" data-v-e19e5e17><div class="hero__copy" data-v-e19e5e17>`);
       if (label.value) {
-        _push(`<span class="hero__spine mono-label" aria-hidden="true" data-v-3a7919b2>${ssrInterpolate(label.value)}</span>`);
+        _push(`<span class="hero__spine mono-label" aria-hidden="true" data-v-e19e5e17>${ssrInterpolate(label.value)}</span>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`<div class="hero__inner" data-v-3a7919b2>`);
+      _push(`<div class="hero__inner" data-v-e19e5e17>`);
       if (label.value) {
-        _push(`<p class="hero__eyebrow" data-v-3a7919b2><span class="sadu-mark sadu-weave" aria-hidden="true" data-v-3a7919b2></span><span class="mono-label mono-label--gold" data-v-3a7919b2>${ssrInterpolate(label.value)}</span></p>`);
+        _push(`<p class="hero__eyebrow" data-v-e19e5e17><span class="sadu-mark sadu-weave" aria-hidden="true" data-v-e19e5e17></span><span class="mono-label mono-label--gold" data-v-e19e5e17>${ssrInterpolate(label.value)}</span></p>`);
       } else {
         _push(`<!---->`);
       }
       if (headingLines.value.length) {
-        _push(`<h1 class="hero__heading" data-v-3a7919b2><!--[-->`);
+        _push(`<h1 class="hero__heading" data-v-e19e5e17><!--[-->`);
         ssrRenderList(headingLines.value, (line, i) => {
-          _push(`<span class="${ssrRenderClass([{ "hero__line--accent": i > 0 }, "hero__line"])}" data-v-3a7919b2>${ssrInterpolate(line)}</span>`);
+          _push(`<span class="${ssrRenderClass([{ "hero__line--accent": i > 0 }, "hero__line"])}" data-v-e19e5e17>${ssrInterpolate(line)}</span>`);
         });
         _push(`<!--]--></h1>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.subheading) {
-        _push(`<p class="${ssrRenderClass([{ "hero__sub--display": __props.displaySub }, "hero__sub"])}" data-v-3a7919b2>${ssrInterpolate(__props.subheading)}</p>`);
+        _push(`<p class="${ssrRenderClass([{ "hero__sub--display": __props.displaySub }, "hero__sub"])}" data-v-e19e5e17>${ssrInterpolate(__props.subheading)}</p>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.body) {
-        _push(`<div class="hero__body" data-v-3a7919b2>${__props.body ?? ""}</div>`);
+        _push(`<div class="hero__body" data-v-e19e5e17>${__props.body ?? ""}</div>`);
       } else {
         _push(`<!---->`);
       }
       if (__props.ctas.length) {
-        _push(`<div class="hero__actions" data-v-3a7919b2><!--[-->`);
+        _push(`<div class="hero__actions" data-v-e19e5e17><!--[-->`);
         ssrRenderList(__props.ctas, (action, i) => {
           _push(ssrRenderComponent(_sfc_main$1h, {
             key: i,
@@ -19571,7 +19978,7 @@ const _sfc_main$o = {
         });
         _push(`<!--]--></div>`);
       } else if (__props.ctaLabel || __props.secondaryLabel) {
-        _push(`<div class="hero__actions" data-v-3a7919b2>`);
+        _push(`<div class="hero__actions" data-v-e19e5e17>`);
         if (__props.ctaLabel) {
           _push(ssrRenderComponent(_sfc_main$1h, {
             variant: "cta-lg",
@@ -19614,7 +20021,7 @@ const _sfc_main$o = {
               name: "icon-start",
               fn: withCtx((_, _push2, _parent2, _scopeId) => {
                 if (_push2) {
-                  _push2(`<svg class="hero__download" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-3a7919b2${_scopeId}><path d="M12 4v12" data-v-3a7919b2${_scopeId}></path><path d="M7 12l5 5 5-5" data-v-3a7919b2${_scopeId}></path><path d="M4 20h16" data-v-3a7919b2${_scopeId}></path></svg>`);
+                  _push2(`<svg class="hero__download" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-v-e19e5e17${_scopeId}><path d="M12 4v12" data-v-e19e5e17${_scopeId}></path><path d="M7 12l5 5 5-5" data-v-e19e5e17${_scopeId}></path><path d="M4 20h16" data-v-e19e5e17${_scopeId}></path></svg>`);
                 } else {
                   return [
                     (openBlock(), createBlock("svg", {
@@ -19648,11 +20055,11 @@ const _sfc_main$o = {
       }
       _push(`</div></div>`);
       if (mediaUrl.value) {
-        _push(`<div class="hero__media" style="${ssrRenderStyle(paneGround.value)}" data-v-3a7919b2>`);
+        _push(`<div class="hero__media" style="${ssrRenderStyle(paneGround.value)}" data-v-e19e5e17>`);
         if (isVideo.value) {
-          _push(`<video class="hero__asset" autoplay muted loop playsinline preload="metadata"${ssrRenderAttr("poster", __props.image?.poster ?? void 0)}${ssrRenderAttr("aria-label", __props.image?.alt || void 0)} data-v-3a7919b2><source${ssrRenderAttr("src", mediaUrl.value)} data-v-3a7919b2></video>`);
+          _push(`<video class="hero__asset" autoplay muted loop playsinline preload="metadata"${ssrRenderAttr("poster", __props.image?.poster ?? void 0)}${ssrRenderAttr("aria-label", __props.image?.alt || void 0)} data-v-e19e5e17><source${ssrRenderAttr("src", mediaUrl.value)} data-v-e19e5e17></video>`);
         } else {
-          _push(`<img class="hero__asset"${ssrRenderAttr("src", mediaUrl.value)}${ssrRenderAttr("srcset", __props.image?.srcset ?? void 0)} sizes="100vw"${ssrRenderAttr("alt", __props.image?.alt ?? "")}${ssrRenderAttr("width", __props.image?.width ?? void 0)}${ssrRenderAttr("height", __props.image?.height ?? void 0)} fetchpriority="high" decoding="async" data-v-3a7919b2>`);
+          _push(`<img class="hero__asset"${ssrRenderAttr("src", mediaUrl.value)}${ssrRenderAttr("srcset", __props.image?.srcset ?? void 0)} sizes="100vw"${ssrRenderAttr("alt", __props.image?.alt ?? "")}${ssrRenderAttr("width", __props.image?.width ?? void 0)}${ssrRenderAttr("height", __props.image?.height ?? void 0)} fetchpriority="high" decoding="async" data-v-e19e5e17>`);
         }
         _push(`</div>`);
       } else {
@@ -19668,7 +20075,7 @@ _sfc_main$o.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/Hero.vue");
   return _sfc_setup$o ? _sfc_setup$o(props, ctx) : void 0;
 };
-const Hero = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-3a7919b2"]]);
+const Hero = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-e19e5e17"]]);
 const COLUMNS = 2;
 const _sfc_main$n = {
   __name: "SolutionsGrid",
@@ -20506,23 +20913,23 @@ const _sfc_main$i = {
           height: __props.cover.height ?? void 0,
           loading: "lazy",
           decoding: "async"
-        }, _attrs))} data-v-ec8067be>`);
+        }, _attrs))} data-v-555c7fb4>`);
       } else {
         _push(`<span${ssrRenderAttrs(mergeProps({
           class: "rcover rcover--made on-dark",
           "aria-hidden": "true"
-        }, _attrs))} data-v-ec8067be>`);
+        }, _attrs))} data-v-555c7fb4>`);
         _push(ssrRenderComponent(Logo, {
           class: "rcover__mark",
           lockup: "stacked",
           tone: "white"
         }, null, _parent));
         if (__props.year) {
-          _push(`<span class="rcover__year tabular" data-v-ec8067be>${ssrInterpolate(__props.year)}</span>`);
+          _push(`<span class="rcover__year tabular" data-v-555c7fb4>${ssrInterpolate(__props.year)}</span>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<span class="rcover__kind" data-v-ec8067be>${ssrInterpolate(unref(t)("impact.report_kind"))}</span></span>`);
+        _push(`<span class="rcover__kind" data-v-555c7fb4>${ssrInterpolate(unref(t)("impact.report_kind"))}</span></span>`);
       }
     };
   }
@@ -20533,7 +20940,7 @@ _sfc_main$i.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/ui/ReportCover.vue");
   return _sfc_setup$i ? _sfc_setup$i(props, ctx) : void 0;
 };
-const ReportCover = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["__scopeId", "data-v-ec8067be"]]);
+const ReportCover = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["__scopeId", "data-v-555c7fb4"]]);
 const _sfc_main$h = {
   __name: "ReportsList",
   __ssrInlineRender: true,
@@ -20859,27 +21266,27 @@ const _sfc_main$f = {
       return text(props.settings.contexts ?? {}, source.value);
     });
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "lcontact-outer" }, _attrs))} data-v-4b38826c>`);
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "lcontact-outer" }, _attrs))} data-v-83f5aaaf>`);
       _push(ssrRenderComponent(_sfc_main$11, null, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="band on-dark" data-v-4b38826c${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-4b38826c${_scopeId}></span><div class="band__grid" data-v-4b38826c${_scopeId}><div class="band__pitch" data-v-4b38826c${_scopeId}>`);
+            _push2(`<div class="band on-dark" data-v-83f5aaaf${_scopeId}><span class="sadu-edge sadu-weave band__edge" aria-hidden="true" data-v-83f5aaaf${_scopeId}></span><div class="band__grid" data-v-83f5aaaf${_scopeId}><div class="band__pitch" data-v-83f5aaaf${_scopeId}>`);
             if (__props.heading) {
-              _push2(`<h2 class="band__title" data-v-4b38826c${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
+              _push2(`<h2 class="band__title" data-v-83f5aaaf${_scopeId}>${ssrInterpolate(__props.heading)}</h2>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.body) {
-              _push2(`<div class="band__note" data-v-4b38826c${_scopeId}>${__props.body ?? ""}</div>`);
+              _push2(`<div class="band__note" data-v-83f5aaaf${_scopeId}>${__props.body ?? ""}</div>`);
             } else {
               _push2(`<!---->`);
             }
             if (context.value) {
-              _push2(`<p class="band__context" aria-live="polite" data-v-4b38826c${_scopeId}>${ssrInterpolate(context.value)}</p>`);
+              _push2(`<p class="band__context" aria-live="polite" data-v-83f5aaaf${_scopeId}>${ssrInterpolate(context.value)}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`</div><div class="band__form" data-v-4b38826c${_scopeId}>`);
+            _push2(`</div><div class="band__form" data-v-83f5aaaf${_scopeId}>`);
             _push2(ssrRenderComponent(LeadField, {
               layout: "inline",
               "submit-label": submitLabel.value,
@@ -20934,7 +21341,7 @@ _sfc_main$f.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/LandingContact.vue");
   return _sfc_setup$f ? _sfc_setup$f(props, ctx) : void 0;
 };
-const LandingContact = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["__scopeId", "data-v-4b38826c"]]);
+const LandingContact = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["__scopeId", "data-v-83f5aaaf"]]);
 const INDEXABLE = "rich_text";
 const _sfc_main$e = {
   __name: "Landing",
@@ -20991,7 +21398,7 @@ const _sfc_main$e = {
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`<section${ssrRenderAttr("id", group.anchor ?? void 0)} class="${ssrRenderClass([`anchor-group--${g % 2 === 0 ? "paper" : "sand"}`, "anchor-group"])}" data-v-9042feb7${_scopeId}><!--[-->`);
+              _push2(`<section${ssrRenderAttr("id", group.anchor ?? void 0)} class="${ssrRenderClass([`anchor-group--${g % 2 === 0 ? "paper" : "sand"}`, "anchor-group"])}" data-v-59d57cf6${_scopeId}><!--[-->`);
               ssrRenderList(group.sections, (section) => {
                 _push2(`<!--[-->`);
                 if (section.type === "hero") {
@@ -21076,7 +21483,7 @@ _sfc_main$e.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Landing.vue");
   return _sfc_setup$e ? _sfc_setup$e(props, ctx) : void 0;
 };
-const Landing = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["__scopeId", "data-v-9042feb7"]]);
+const Landing = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["__scopeId", "data-v-59d57cf6"]]);
 const __vite_glob_0_31 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Landing
@@ -21733,28 +22140,28 @@ const _sfc_main$9 = {
   setup(__props) {
     const { onHashCta } = useHashCta();
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<section${ssrRenderAttrs(mergeProps({ class: "shero on-dark" }, _attrs))} data-v-349d3fa0>`);
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "shero on-dark" }, _attrs))} data-v-59a95dd2>`);
       _push(ssrRenderComponent(_sfc_main$11, null, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="shero__grid" data-v-349d3fa0${_scopeId}><div class="shero__copy" data-v-349d3fa0${_scopeId}>`);
+            _push2(`<div class="shero__grid" data-v-59a95dd2${_scopeId}><div class="shero__copy" data-v-59a95dd2${_scopeId}>`);
             _push2(ssrRenderComponent(SectionIndex, {
               index: __props.index,
               total: __props.total,
               slug: __props.slug
             }, null, _parent2, _scopeId));
             if (__props.title) {
-              _push2(`<h1 class="shero__title" data-v-349d3fa0${_scopeId}>${ssrInterpolate(__props.title)}</h1>`);
+              _push2(`<h1 class="shero__title" data-v-59a95dd2${_scopeId}>${ssrInterpolate(__props.title)}</h1>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.subtitle) {
-              _push2(`<p class="shero__sub" data-v-349d3fa0${_scopeId}>${ssrInterpolate(__props.subtitle)}</p>`);
+              _push2(`<p class="shero__sub" data-v-59a95dd2${_scopeId}>${ssrInterpolate(__props.subtitle)}</p>`);
             } else {
               _push2(`<!---->`);
             }
             if (__props.ctaLabel || __props.secondaryLabel) {
-              _push2(`<div class="shero__actions" data-v-349d3fa0${_scopeId}>`);
+              _push2(`<div class="shero__actions" data-v-59a95dd2${_scopeId}>`);
               if (__props.ctaLabel) {
                 _push2(ssrRenderComponent(_sfc_main$1h, {
                   variant: "cta-lg",
@@ -21801,7 +22208,7 @@ const _sfc_main$9 = {
             }
             _push2(`</div>`);
             if (__props.image) {
-              _push2(`<figure class="shero__figure cut-framed cut" data-v-349d3fa0${_scopeId}><img class="shero__image cut"${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("srcset", __props.image.srcset ?? void 0)} sizes="(min-width: 900px) 50vw, 100vw"${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} fetchpriority="high" decoding="async" data-v-349d3fa0${_scopeId}></figure>`);
+              _push2(`<figure class="shero__figure cut-framed cut" data-v-59a95dd2${_scopeId}><img class="shero__image cut"${ssrRenderAttr("src", __props.image.webp ?? __props.image.url)}${ssrRenderAttr("srcset", __props.image.srcset ?? void 0)} sizes="(min-width: 900px) 50vw, 100vw"${ssrRenderAttr("alt", __props.image.alt ?? "")}${ssrRenderAttr("width", __props.image.width ?? void 0)}${ssrRenderAttr("height", __props.image.height ?? void 0)} fetchpriority="high" decoding="async" data-v-59a95dd2${_scopeId}></figure>`);
             } else {
               _push2(`<!---->`);
             }
@@ -21873,7 +22280,7 @@ const _sfc_main$9 = {
         }),
         _: 1
       }, _parent));
-      _push(`<div class="sadu-strip sadu-weave shero__edge" aria-hidden="true" data-v-349d3fa0></div></section>`);
+      _push(`<div class="sadu-strip sadu-weave shero__edge" aria-hidden="true" data-v-59a95dd2></div></section>`);
     };
   }
 };
@@ -21883,7 +22290,7 @@ _sfc_main$9.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Components/sections/SegmentHero.vue");
   return _sfc_setup$9 ? _sfc_setup$9(props, ctx) : void 0;
 };
-const SegmentHero = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-349d3fa0"]]);
+const SegmentHero = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-59a95dd2"]]);
 const _sfc_main$8 = {
   __name: "ProcessSteps",
   __ssrInlineRender: true,
@@ -22091,20 +22498,20 @@ const _sfc_main$7 = {
               only: ["accordion"]
             }, null, _parent2, _scopeId));
             if (__props.siblings.length) {
-              _push2(`<section class="section siblings" data-v-bf5a3f89${_scopeId}>`);
+              _push2(`<section class="section siblings" data-v-5cfb3c8d${_scopeId}>`);
               _push2(ssrRenderComponent(_sfc_main$11, null, {
                 default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<h2 class="h2 siblings__title" data-v-bf5a3f89${_scopeId2}>${ssrInterpolate(unref(t)("common.other_segments"))}</h2><ul class="siblings__list" data-v-bf5a3f89${_scopeId2}><!--[-->`);
+                    _push3(`<h2 class="h2 siblings__title" data-v-5cfb3c8d${_scopeId2}>${ssrInterpolate(unref(t)("common.other_segments"))}</h2><ul class="siblings__list" data-v-5cfb3c8d${_scopeId2}><!--[-->`);
                     ssrRenderList(__props.siblings, (item) => {
-                      _push3(`<li data-v-bf5a3f89${_scopeId2}>`);
+                      _push3(`<li data-v-5cfb3c8d${_scopeId2}>`);
                       _push3(ssrRenderComponent(unref(Link), {
                         href: item.url,
                         class: "sibling"
                       }, {
                         default: withCtx((_3, _push4, _parent4, _scopeId3) => {
                           if (_push4) {
-                            _push4(`<span class="sibling__name" data-v-bf5a3f89${_scopeId3}>${ssrInterpolate(item.name)}</span><span class="arrow" aria-hidden="true" data-v-bf5a3f89${_scopeId3}>→</span>`);
+                            _push4(`<span class="sibling__name" data-v-5cfb3c8d${_scopeId3}>${ssrInterpolate(item.name)}</span><span class="arrow" aria-hidden="true" data-v-5cfb3c8d${_scopeId3}>→</span>`);
                           } else {
                             return [
                               createVNode("span", { class: "sibling__name" }, toDisplayString(item.name), 1),
@@ -22255,7 +22662,7 @@ _sfc_main$7.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Public/Sector.vue");
   return _sfc_setup$7 ? _sfc_setup$7(props, ctx) : void 0;
 };
-const Sector = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__scopeId", "data-v-bf5a3f89"]]);
+const Sector = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__scopeId", "data-v-5cfb3c8d"]]);
 const __vite_glob_0_35 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Sector
