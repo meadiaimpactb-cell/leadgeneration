@@ -90,6 +90,32 @@ const renderable = computed(() =>
     )
 );
 
+/**
+ * The settings a component can actually receive as props.
+ *
+ * Spreading the bag whole put its keys on the rendered element as HTML
+ * attributes whenever the component did not declare them — Vue's fallthrough
+ * — so the English page carried `label="…"` and `eyebrow_en="…"` in its
+ * markup, in Arabic, on twenty-four elements. Invalid attributes, and the
+ * one thing §12 forbids: Arabic reaching an English reader.
+ *
+ * Two classes are never props by design and are dropped here:
+ *
+ *   · `anchor` — the landing page's own grouping key, read by Landing.vue
+ *     off the section row, never by the section component.
+ *   · anything `_en` — the second half of a bilingual pair, always read
+ *     through the `settings` bag by useSettingText, never named.
+ *
+ * Everything else is passed exactly as before, so no component loses a prop
+ * it was relying on.
+ */
+function renderable_settings(section) {
+    return Object.fromEntries(
+        Object.entries(section.settings ?? {})
+            .filter(([key]) => key !== 'anchor' && !key.endsWith('_en'))
+    );
+}
+
 /** Map a section row onto the props its component expects. */
 function propsFor(section) {
     const base = {
@@ -112,7 +138,7 @@ function propsFor(section) {
     // image, alignment, items — so it wins over the defaults above.
     // A dataset the page supplied for this type wins over both: the figures
     // are rows in a table, never something typed into a section's settings.
-    return { ...base, ...(section.settings ?? {}), ...(props.data[section.type] ?? {}) };
+    return { ...base, ...renderable_settings(section), ...(props.data[section.type] ?? {}) };
 }
 </script>
 

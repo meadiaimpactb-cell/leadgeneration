@@ -121,6 +121,25 @@ const { text } = useSettingText();
 const label = computed(() => text(props.settings, 'eyebrow') ?? props.eyebrow);
 
 /**
+ * The audience actions, in the language being read.
+ *
+ * `settings` is one JSON column shared by both locales, so each action stores
+ * `label` and `label_en` on the same row — the shape every other repeatable
+ * block on this page already uses. The loop printed `action.label` raw, which
+ * left three Arabic buttons standing at the foot of an English hero while the
+ * English labels sat in the database unread.
+ *
+ * Filtered rather than fallen back to: §12 is explicit that an English visitor
+ * is never served Arabic, so an action nobody has translated is one button
+ * fewer — not one Arabic button among three English ones.
+ */
+const actions = computed(() =>
+    props.ctas
+        .map((action) => ({ source: action.source ?? null, label: text(action, 'label') }))
+        .filter((action) => action.label)
+);
+
+/**
  * The still that stands in until the moving file arrives. For a video this is
  * the native `poster`; for a heavy GIF — which has no poster attribute — it is
  * painted as the pane's own background, so the pane is never an empty
@@ -186,9 +205,9 @@ const paneGround = computed(() =>
                         anchors to a real place on this page, so they work
                         with the keyboard and before the JavaScript has run.
                     -->
-                    <div v-if="ctas.length" class="hero__actions">
+                    <div v-if="actions.length" class="hero__actions">
                         <Button
-                            v-for="(action, i) in ctas"
+                            v-for="(action, i) in actions"
                             :key="i"
                             :variant="i === 0 ? 'cta-lg' : 'secondary'"
                             href="#contact"

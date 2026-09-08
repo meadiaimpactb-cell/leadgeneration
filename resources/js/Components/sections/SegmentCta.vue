@@ -16,6 +16,14 @@ import { useLeadSource } from '@/Composables/useLeadSource';
  *
  * One button, one destination, no second field to fill in on the way.
  */
+/*
+ * `label` arrives twice: once inside `settings`, where this reads it, and once
+ * as a spread key the renderer hands every component. The second copy has no
+ * matching prop, so Vue would print it on the <section> as an attribute — the
+ * approved Arabic wording, in the markup of the English page.
+ */
+defineOptions({ inheritAttrs: false });
+
 const props = defineProps({
     /** government | partner | artisan — written to the lead's `sector_hint`. */
     source: { type: String, default: null },
