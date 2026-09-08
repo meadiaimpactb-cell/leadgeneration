@@ -879,7 +879,7 @@ onBeforeUnmount(() => {
     border: 1px solid var(--hairline-soft);
     border-radius: var(--r-md);
     background: var(--paper);
-    box-shadow: 0 1px 2px rgba(0, 37, 70, 0.04);
+    box-shadow: 0 1px 2px rgb(var(--navy-rgb) / 0.04);
 }
 
 .summary__figure {
@@ -917,7 +917,7 @@ onBeforeUnmount(() => {
     gap: var(--s-2);
     padding: 7px var(--s-4);
     border-radius: var(--r-pill);
-    background: rgba(0, 37, 70, 0.06);
+    background: rgb(var(--navy-rgb) / 0.06);
     color: var(--navy-900);
     font-size: var(--t-meta);
     font-weight: 600;
@@ -999,7 +999,7 @@ onBeforeUnmount(() => {
     padding: var(--s-4);
     border-inline-start: 3px solid var(--gold-400);
     border-radius: var(--r-sm);
-    background: rgba(220, 173, 117, 0.16);
+    background: rgb(var(--gold-rgb) / 0.16);
     color: var(--navy-900);
     font-size: var(--t-label);
     line-height: 1.75;
@@ -1118,7 +1118,7 @@ onBeforeUnmount(() => {
 .statuspick:hover { box-shadow: inset 0 0 0 1px var(--ink); }
 
 .statuspick:focus-within {
-    box-shadow: 0 0 0 3px rgba(134, 133, 216, 0.22);
+    box-shadow: 0 0 0 3px rgb(var(--lavender-rgb) / 0.22);
 }
 
 /* Overrides the shared `.shell select` in admin.css: inside the
@@ -1154,21 +1154,21 @@ onBeforeUnmount(() => {
  * token whose contrast §10.2 already checked.
  */
 .statuspick--new {
-    --tint: rgba(0, 37, 70, 0.08);
+    --tint: rgb(var(--navy-rgb) / 0.08);
     --ink: var(--navy-700);
-    --edge: rgba(0, 37, 70, 0.16);
+    --edge: rgb(var(--navy-rgb) / 0.16);
 }
 
 .statuspick--contacted {
-    --tint: rgba(134, 133, 216, 0.16);
+    --tint: rgb(var(--lavender-rgb) / 0.16);
     --ink: var(--lavender-700);
     --edge: rgba(95, 94, 190, 0.22);
 }
 
 .statuspick--qualified {
-    --tint: rgba(220, 173, 117, 0.28);
+    --tint: rgb(var(--gold-rgb) / 0.28);
     --ink: var(--action-600);
-    --edge: rgba(220, 173, 117, 0.6);
+    --edge: rgb(var(--gold-rgb) / 0.6);
 }
 
 .statuspick--won {
@@ -1178,9 +1178,9 @@ onBeforeUnmount(() => {
 }
 
 .statuspick--lost {
-    --tint: rgba(215, 101, 59, 0.12);
+    --tint: rgb(var(--orange-rgb) / 0.12);
     --ink: var(--action-600);
-    --edge: rgba(215, 101, 59, 0.26);
+    --edge: rgb(var(--orange-rgb) / 0.26);
 }
 
 /* ---- Chips ------------------------------------------------ *
@@ -1194,18 +1194,18 @@ onBeforeUnmount(() => {
  * last — so every chip here would silently turn grey the day that
  * order changed. The extra class makes it win outright.          */
 
-.leadscreen .chip--pending { background: rgba(220, 173, 117, 0.28); color: var(--action-600); }
+.leadscreen .chip--pending { background: rgb(var(--gold-rgb) / 0.28); color: var(--action-600); }
 .leadscreen .chip--synced  { background: rgba(30, 122, 90, 0.12);   color: var(--success); }
-.leadscreen .chip--failed  { background: rgba(215, 101, 59, 0.14);  color: var(--action-600); }
+.leadscreen .chip--failed  { background: rgb(var(--orange-rgb) / 0.14);  color: var(--action-600); }
 /* «Not sent — no CRM» is a fact, not a fault: grey, not orange. */
 .leadscreen .chip--none,
 .leadscreen .chip--not_connected { background: var(--paper-alt); color: var(--muted); }
 
-.leadscreen .chip--st-new       { background: rgba(0, 37, 70, 0.08);     color: var(--navy-700); }
-.leadscreen .chip--st-contacted { background: rgba(134, 133, 216, 0.16); color: var(--lavender-700); }
-.leadscreen .chip--st-qualified { background: rgba(220, 173, 117, 0.28); color: var(--action-600); }
+.leadscreen .chip--st-new       { background: rgb(var(--navy-rgb) / 0.08);     color: var(--navy-700); }
+.leadscreen .chip--st-contacted { background: rgb(var(--lavender-rgb) / 0.16); color: var(--lavender-700); }
+.leadscreen .chip--st-qualified { background: rgb(var(--gold-rgb) / 0.28); color: var(--action-600); }
 .leadscreen .chip--st-won       { background: rgba(30, 122, 90, 0.12);   color: var(--success); }
-.leadscreen .chip--st-lost      { background: rgba(215, 101, 59, 0.12);  color: var(--action-600); }
+.leadscreen .chip--st-lost      { background: rgb(var(--orange-rgb) / 0.12);  color: var(--action-600); }
 
 /* ---- Actions ---------------------------------------------- *
  * The buttons themselves are shared (admin.css). This is the
@@ -1224,7 +1224,7 @@ onBeforeUnmount(() => {
     display: grid;
     place-items: center;
     padding: var(--s-5);
-    background: rgba(0, 37, 70, 0.45);
+    background: rgb(var(--navy-rgb) / 0.45);
     overflow-y: auto;
 }
 
@@ -1235,7 +1235,7 @@ onBeforeUnmount(() => {
     max-block-size: min(86vh, 900px);
     background: var(--paper);
     border-radius: var(--r-md);
-    box-shadow: 0 24px 70px rgba(0, 37, 70, 0.28);
+    box-shadow: 0 24px 70px rgb(var(--navy-rgb) / 0.28);
     overflow: hidden;
 }
 
@@ -1251,7 +1251,7 @@ onBeforeUnmount(() => {
 }
 
 html[dir='ltr'] .drawer {
-    box-shadow: 24px 0 60px rgba(0, 37, 70, 0.16);
+    box-shadow: 24px 0 60px rgb(var(--navy-rgb) / 0.16);
 }
 
 .drawer__head {

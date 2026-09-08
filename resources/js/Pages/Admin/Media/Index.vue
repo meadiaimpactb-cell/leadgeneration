@@ -611,9 +611,9 @@ const formatDate = date;
     justify-items: center;
     gap: var(--s-4);
     padding: var(--s-9) var(--s-5);
-    border: 2px dashed rgba(0, 37, 70, 0.2);
+    border: 2px dashed rgb(var(--navy-rgb) / 0.2);
     border-radius: var(--r-md);
-    background: rgba(0, 37, 70, 0.02);
+    background: rgb(var(--navy-rgb) / 0.02);
     text-align: center;
     transition:
         border-color var(--dur-micro) var(--ease),
@@ -624,7 +624,7 @@ const formatDate = date;
    identity's action colour rather than a browser default. */
 .drop.is-over {
     border-color: var(--orange-500);
-    background: rgba(215, 101, 59, 0.06);
+    background: rgb(var(--orange-rgb) / 0.06);
 }
 
 .drop__glyph {

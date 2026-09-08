@@ -156,7 +156,7 @@ const { onHashCta } = useHashCta();
 
 .shero__edge {
     --sadu-tile: 10px;
-    --sadu-colour: rgba(220, 173, 117, 0.7);
+    --sadu-colour: rgb(var(--gold-rgb) / 0.7);
     position: absolute;
     inset-inline: 0;
     inset-block-end: 0;

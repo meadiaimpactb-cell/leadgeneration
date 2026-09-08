@@ -326,7 +326,7 @@ function chapter(section) {
 }
 
 .anchor-group :deep(.prose__body ul li:hover) {
-    background: rgba(220, 173, 117, 0.07);
+    background: rgb(var(--gold-rgb) / 0.07);
 }
 
 /* ============================================================

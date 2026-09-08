@@ -370,7 +370,7 @@ function requestVisit() {
 .grid__aside {
     padding: var(--s-7) var(--s-6);
     background: var(--navy-900);
-    box-shadow: inset 0 0 0 1px rgba(220, 173, 117, 0.28);
+    box-shadow: inset 0 0 0 1px rgb(var(--gold-rgb) / 0.28);
     align-self: start;
 }
 
@@ -412,7 +412,7 @@ function requestVisit() {
     inline-size: 38px;
     block-size: 38px;
     border-radius: 50%;
-    background: rgba(220, 173, 117, 0.14);
+    background: rgb(var(--gold-rgb) / 0.14);
     color: var(--gold-400);
 }
 

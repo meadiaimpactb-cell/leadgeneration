@@ -213,7 +213,7 @@ const RENDERED_HERE = ['hero', 'process_steps', 'stats', 'logos', 'cta_band', 'a
     transform: translateY(-3px);
     box-shadow:
         inset 0 0 0 1px var(--gold-400),
-        0 10px 24px rgba(0, 37, 70, 0.1);
+        0 10px 24px rgb(var(--navy-rgb) / 0.1);
 }
 
 .sibling .arrow {

@@ -183,8 +183,8 @@ function onKeydown(event) {
     /* Deeper than the card shadow: this floats over the page rather than
        sitting on it, and on a dark panel a light shadow reads as nothing. */
     box-shadow:
-        0 2px 6px rgba(0, 37, 70, 0.24),
-        0 18px 40px rgba(0, 37, 70, 0.28);
+        0 2px 6px rgb(var(--navy-rgb) / 0.24),
+        0 18px 40px rgb(var(--navy-rgb) / 0.28);
 }
 
 /* The mark of the thing that happened, on the edge opposite the weave. */
@@ -208,7 +208,7 @@ function onKeydown(event) {
 .toast__edge {
     --sadu-tile: 16px;
     --sadu-edge-w: 16px;
-    --sadu-colour: rgba(220, 173, 117, 0.55);
+    --sadu-colour: rgb(var(--gold-rgb) / 0.55);
 }
 
 /* ---- the mark ---------------------------------------------------- */

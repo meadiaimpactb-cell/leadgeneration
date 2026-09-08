@@ -206,7 +206,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
     border: 1px solid var(--hairline-soft);
     border-radius: var(--r-md);
     background: var(--paper);
-    box-shadow: 0 1px 2px rgba(0, 37, 70, 0.04);
+    box-shadow: 0 1px 2px rgb(var(--navy-rgb) / 0.04);
     overflow: hidden;
 }
 
@@ -224,7 +224,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
     inset-block: 0;
     inset-inline-start: 0;
     inline-size: 3px;
-    background: var(--band, rgba(0, 37, 70, 0.22));
+    background: var(--band, rgb(var(--navy-rgb) / 0.22));
 }
 
 .tile__label {
@@ -266,13 +266,13 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
 }
 
 .tile__change.is-up   { background: rgba(30, 122, 90, 0.12);  color: var(--success); }
-.tile__change.is-down { background: rgba(215, 101, 59, 0.12); color: var(--action-600); }
-.tile__change.is-flat { background: rgba(0, 37, 70, 0.07);    color: var(--muted); }
+.tile__change.is-down { background: rgb(var(--orange-rgb) / 0.12); color: var(--action-600); }
+.tile__change.is-flat { background: rgb(var(--navy-rgb) / 0.07);    color: var(--muted); }
 
 /* The band per tone. `accent` is «بانتظار الرد» and `danger` is
    «لم تصل إلى CRM» — both are questions for a person, so they
    get the two colours the identity reserves for attention. */
-.tile--navy   { --band: rgba(0, 37, 70, 0.22); }
+.tile--navy   { --band: rgb(var(--navy-rgb) / 0.22); }
 .tile--accent { --band: var(--gold-400); }
 .tile--danger { --band: var(--orange-500); }
 
@@ -362,7 +362,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
     display: block;
     block-size: 10px;
     border-radius: var(--r-pill);
-    background: rgba(0, 37, 70, 0.07);
+    background: rgb(var(--navy-rgb) / 0.07);
     overflow: hidden;
 }
 
@@ -442,7 +442,7 @@ const maxCampaign = computed(() => Math.max(1, ...props.byCampaign.map((s) => s.
 .latest__status {
     padding: 5px var(--s-3);
     border-radius: var(--r-pill);
-    background: rgba(0, 37, 70, 0.07);
+    background: rgb(var(--navy-rgb) / 0.07);
     color: var(--navy-900);
     font-size: var(--t-meta);
     font-weight: 700;

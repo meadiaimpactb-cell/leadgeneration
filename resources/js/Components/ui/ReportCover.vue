@@ -93,9 +93,9 @@ const { t } = useTranslation();
      * The inner rule is what makes this read as a printed cover rather than a
      * coloured rectangle: a document has a margin, and the eye knows it.
      */
-    box-shadow: inset 0 0 0 1px rgba(220, 173, 117, 0.28),
+    box-shadow: inset 0 0 0 1px rgb(var(--gold-rgb) / 0.28),
         inset 0 0 0 var(--s-3) var(--navy-900),
-        inset 0 0 0 calc(var(--s-3) + 1px) rgba(220, 173, 117, 0.42);
+        inset 0 0 0 calc(var(--s-3) + 1px) rgb(var(--gold-rgb) / 0.42);
 }
 
 .rcover__mark {

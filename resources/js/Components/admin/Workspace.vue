@@ -323,11 +323,6 @@ async function removeImage(collection) {
     line-height: 1.2;
 }
 
-.hero__email {
-    font-size: var(--fs-sm);
-    color: var(--muted);
-    overflow-wrap: anywhere;
-}
 
 .badges {
     display: flex;

@@ -10,13 +10,56 @@
    ============================================================ */
 
 :root {
+  /* ============================================================
+     THESE FOURTEEN VALUES ARE OVERRIDDEN AT RUNTIME.
+
+     The four identity colours are settings rows now, editable on
+     the panel's brand screen, and App\Support\Palette writes them
+     and the ten shades below into a <style> block in
+     app.blade.php — so the values here are the defaults the build
+     ships with, not the last word.
+
+     Everything else in this file, and in every stylesheet and
+     scoped block on the site, is expressed in terms of them. Add
+     a colour here and it is a colour the client cannot change.
+     ============================================================ */
+
   /* ---- Brand core (from the approved identity, §23) ------ */
   --navy-900:      #002546;   /* Navy Blue    — dominant   */
   --lavender-500:  #8685D8;   /* Lavender     — secondary  */
   --orange-500:    #D7653B;   /* Burnt Orange — accent/CTA */
   --gold-400:      #DCAD75;   /* Light Gold   — premium    */
 
-  /* ---- Accessible derivations (AA-safe, §10.2) ----------- */
+  /* ---- The same four, as channels ------------------------ *
+   * This layout draws structure with low-alpha washes of the
+   * identity — a row rule, a hover ground, a scrim over a
+   * photograph — and there are a hundred and three of them
+   * across twenty-six files. Written as `rgba(0, 37, 70, .08)`
+   * each one was a navy that did not move when navy did, so a
+   * rebrand left the site tinted in the old colour. They are
+   * all `rgb(var(--navy-rgb) / .08)` now.
+   *
+   * A colour cannot be taken apart in CSS, so the channels are
+   * published beside the hex rather than derived from it.       */
+  --navy-rgb:      0 37 70;
+  --lavender-rgb:  134 133 216;
+  --orange-rgb:    215 101 59;
+  --gold-rgb:      220 173 117;
+
+  /* ---- The Sadu thread, as a shape ----------------------- *
+   * §10.1's signature element, drawn once and used three times.
+   * Black, because these are masks: a mask reads alpha only, so
+   * the colour in the file is arbitrary and the colour on
+   * screen is whichever token the rule paints beneath it. The
+   * faint counter-thread keeps its 55% here, in the alpha.     */
+  --sadu-thread: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23000' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
+  --sadu-thread-solid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23000' stroke-width='.6'/%3E%3C/svg%3E");
+
+  /* ---- Accessible derivations (AA-safe, §10.2) ----------- *
+   * Derived from the four above, not chosen independently: see
+   * App\Support\Palette for the offsets, and for why the two
+   * that carry a contrast guarantee are derived by measuring
+   * the guarantee rather than by a fixed step.                */
   --navy-800:      #06345C;
   --navy-700:      #0B4370;
   --navy-100:      #E3EAF1;
@@ -24,8 +67,9 @@
    * frame around the page rather than as part of it: the news strip at the
    * very top and the footer at the very bottom. */
   --navy-950:      #001A31;
-  --lavender-700:  #5F5EBE;   /* text on white: 4.7:1   */
-  --action-600:    #B4522C;   /* white text on it: 4.6:1 */
+  --lavender-700:  #5F5EBE;   /* text on white: 5.2:1   */
+  --action-600:    #B4522C;   /* white text on it: 5.0:1 */
+  --action-700:    #9C4525;   /* the call to action, hovered */
   --gold-100:      #F6ECDD;
   --sand:          #F3EEE7;
 
@@ -48,9 +92,9 @@
   /* Three weights of rule, because this layout draws structure with lines
    * instead of shadows: the standard divider, the lighter one used inside a
    * repeating strip where many lines meet, and the gold one on navy. */
-  --hairline:      rgba(0, 37, 70, 0.16);
-  --hairline-soft: rgba(0, 37, 70, 0.12);
-  --hairline-gold: rgba(220, 173, 117, 0.28);
+  --hairline:      rgb(var(--navy-rgb) / 0.16);
+  --hairline-soft: rgb(var(--navy-rgb) / 0.12);
+  --hairline-gold: rgb(var(--gold-rgb) / 0.28);
   --hairline-inverse: rgba(255, 255, 255, 0.18);
 
   /* ---- Semantic ----------------------------------------- */
@@ -103,14 +147,14 @@
   --r-sm:   4px;    /* inputs, badges          */
   --r-md:   12px;   /* cards                   */
   --r-pill: 999px;  /* filters only            */
-  --shadow-card: 0 1px 2px rgba(0, 37, 70, .06), 0 8px 24px rgba(0, 37, 70, .06);
+  --shadow-card: 0 1px 2px rgb(var(--navy-rgb) / .06), 0 8px 24px rgb(var(--navy-rgb) / .06);
 
   /* ---- Borders (§10.4) ----------------------------------- *
    * Cards carried their shape on the shadow alone, which reads
    * soft — a corporate surface needs an edge. Two weights only:
    * the resting hairline, and the one it firms into on hover.  */
   --border-hairline: 1px solid var(--hairline);
-  --border-strong:   1px solid rgba(0, 37, 70, 0.24);
+  --border-strong:   1px solid rgb(var(--navy-rgb) / 0.24);
   --border-inverse:  1px solid var(--hairline-inverse);
 
   /* ---- Scrims (§10.8) ------------------------------------ *
@@ -119,9 +163,9 @@
    * ratio without dulling the piece: strong under a headline,
    * soft under a caption.                                     */
   --scrim-navy-strong: linear-gradient(
-    to top, rgba(0, 37, 70, 0.88) 0%, rgba(0, 37, 70, 0.62) 45%, rgba(0, 37, 70, 0.18) 100%);
+    to top, rgb(var(--navy-rgb) / 0.88) 0%, rgb(var(--navy-rgb) / 0.62) 45%, rgb(var(--navy-rgb) / 0.18) 100%);
   --scrim-navy-soft: linear-gradient(
-    to top, rgba(0, 37, 70, 0.62) 0%, rgba(0, 37, 70, 0.28) 60%, rgba(0, 37, 70, 0) 100%);
+    to top, rgb(var(--navy-rgb) / 0.62) 0%, rgb(var(--navy-rgb) / 0.28) 60%, rgb(var(--navy-rgb) / 0) 100%);
 
   /* The hero ground. Two stops, not one: the vertical pass seats the trust
    * strip and the header, the inline pass keeps the copy column dark while

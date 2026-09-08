@@ -85,7 +85,7 @@ defineProps({
 .band__edge {
     --sadu-tile: 20px;
     --sadu-edge-w: 20px;
-    --sadu-colour: rgba(220, 173, 117, 0.55);
+    --sadu-colour: rgb(var(--gold-rgb) / 0.55);
 }
 
 .band__grid {
@@ -143,7 +143,7 @@ defineProps({
  */
 .band :deep(.lead-input) {
     background: var(--navy-800);
-    border: 1px solid rgba(220, 173, 117, 0.42);
+    border: 1px solid rgb(var(--gold-rgb) / 0.42);
     color: #fff;
     min-block-size: 54px;
 }

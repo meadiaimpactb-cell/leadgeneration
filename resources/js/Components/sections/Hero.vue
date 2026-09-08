@@ -146,10 +146,13 @@ const paneGround = computed(() =>
                  it on the reading edge. -->
             <div class="hero__copy">
                 <!--
-                    Physical `left` is deliberate and is one of the two
-                    remaining documented exceptions: this lettering is pinned
-                    to the seam between the panes, and the seam is on the
-                    physical left in Arabic. The LTR override below moves it.
+                    The vertical lettering in the seam between the two panes.
+
+                    Drawn only when the client has written an eyebrow for this
+                    language: the Arabic page's is deliberately empty, because
+                    the approved wording is Latin («B2B · CRAFT SUPPLY») and
+                    the Arabic site carries no English. An empty seam is the
+                    correct answer there, not a missing one.
                 -->
                 <span v-if="label" class="hero__spine mono-label" aria-hidden="true">
                     {{ label }}
@@ -434,7 +437,7 @@ const paneGround = computed(() =>
     background-color: var(--navy-800);
     background-image: repeating-linear-gradient(
         45deg,
-        rgba(220, 173, 117, 0.12) 0 2px,
+        rgb(var(--gold-rgb) / 0.12) 0 2px,
         transparent 2px 10px
     );
     background-size: cover;
@@ -536,20 +539,28 @@ const paneGround = computed(() =>
     .hero__spine {
         display: block;
         position: absolute;
-        left: 12px;
+        /*
+         * `inset-inline-end`, not `left` plus an LTR override putting it
+         * back on the right. Those two rules were one logical property
+         * written out longhand, and they were the last physical inline
+         * offset on the site outside the map crosshair — which is exempt
+         * because a map does not flip with the document (§22.6).
+         *
+         * The rotation stays direction-dependent: `vertical-rl` sets the
+         * glyphs the same way in both, and only Arabic wants them turned.
+         */
+        inset-inline-end: 12px;
         top: 50%;
         transform: translateY(-50%) rotate(180deg);
         writing-mode: vertical-rl;
         font-size: 11px;
         letter-spacing: 0.42em;
-        color: rgba(220, 173, 117, 0.5);
+        color: rgb(var(--gold-rgb) / 0.5);
         white-space: nowrap;
         pointer-events: none;
     }
 
     html[dir='ltr'] .hero__spine {
-        left: auto;
-        right: 12px;
         transform: translateY(-50%);
     }
 }

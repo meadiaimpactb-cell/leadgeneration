@@ -4,6 +4,7 @@
     $locale = app()->getLocale();
     $dir = Locales::dir($locale);
     $settings = app(App\Support\Settings::class);
+    $palette = app(App\Support\Palette::class);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ Locales::htmlLang($locale) }}" dir="{{ $dir }}">
@@ -53,7 +54,9 @@
     @endif
 
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#002546">
+
+    {{-- The browser chrome takes the dominant colour, whatever it now is. --}}
+    <meta name="theme-color" content="{{ $palette->themeColor() }}">
 
     {{-- Head tags rendered by Inertia (title, description, canonical, hreflang). --}}
     @inertiaHead
@@ -82,6 +85,28 @@
     @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{--
+        The client's colours.
+
+        The four identity colours and the ten shades derived from them, as a
+        `:root` block. It sits AFTER @vite deliberately: tokens.css ships the
+        approved identity as its defaults, and this overrides them at equal
+        specificity by coming later.
+
+        Here rather than in a stylesheet because the values are a database
+        row, and here rather than in JavaScript because a theme applied after
+        hydration is a theme the visitor watches change — and would leave SSR,
+        which the brief makes non-negotiable, rendering the wrong palette. In
+        Blade it is correct in the first paint, on the public site, the panel,
+        the sign-in screen and the error pages alike, because they all share
+        this template.
+
+        Palette::css() emits only values matching a hex or an `r g b` triplet,
+        so nothing a client can type into the colour field can close this tag
+        or add a declaration of its own.
+    --}}
+    <style id="brand-palette">{!! $palette->css() !!}</style>
 
     {{--
         Google Tag Manager. The container ID is a client-managed setting, never

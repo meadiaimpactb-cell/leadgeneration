@@ -115,9 +115,9 @@ function mark(url) {
  * the component at all.
  */
 .social--dark {
-    --social-line: rgba(220, 173, 117, 0.4);
+    --social-line: rgb(var(--gold-rgb) / 0.4);
     --social-ink: var(--gold-400);
-    --social-hover: rgba(220, 173, 117, 0.16);
+    --social-hover: rgb(var(--gold-rgb) / 0.16);
 }
 
 .social--dark .social__mark:hover,

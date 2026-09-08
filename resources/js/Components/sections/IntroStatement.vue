@@ -73,7 +73,7 @@ const note = () => parts().slice(1).join('\n\n') || null;
     display: block;
     margin-block-start: var(--s-5);
     block-size: 1px;
-    background: rgba(0, 37, 70, 0.22);
+    background: rgb(var(--navy-rgb) / 0.22);
 }
 
 .intro__statement {

@@ -46,9 +46,26 @@
   block-size: 8px;
   border: 0;
   margin: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23DCAD75' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-position: center;
+  /*
+   * The thread is a MASK, not a picture.
+   *
+   * It used to be an SVG with the gold written into it as `%23DCAD75`. A
+   * colour inside a data URI cannot read a custom property, so the one
+   * element §10.1 calls the site's signature was the one element a rebrand
+   * could not reach: every rule on the site would take the new colour and
+   * the divider between them would stay the old gold.
+   *
+   * As a mask the file carries the shape only, the alpha of its two strokes
+   * survives — the faint counter-thread is still 55% — and the colour comes
+   * from a token like everything else.
+   */
+  background-color: var(--gold-400);
+  -webkit-mask-image: var(--sadu-thread);
+  mask-image: var(--sadu-thread);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 /* On a navy ground the gold thread needs to sit slightly brighter. */
@@ -64,8 +81,14 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23DCAD75' stroke-width='.6'/%3E%3C/svg%3E");
-  background-repeat: repeat;
+  /* The solid thread, because this element is already fading the whole
+     pattern to .22 below — masking with the faded variant faded the
+     counter-thread twice and lost it. */
+  background-color: var(--gold-400);
+  -webkit-mask-image: var(--sadu-thread-solid);
+  mask-image: var(--sadu-thread-solid);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
   opacity: .22;              /* "very faint" — §10.1 */
   pointer-events: none;
 }
@@ -83,8 +106,11 @@
   inset-block-end: -6px;
   block-size: 8px;
   inline-size: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23D7653B' stroke-width='1'/%3E%3Cpath d='M0 1.5 L6 6.5 L12 1.5 L18 6.5 L24 1.5' fill='none' stroke='%23D7653B' stroke-width='.6' opacity='.55'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
+  background-color: var(--orange-500);
+  -webkit-mask-image: var(--sadu-thread);
+  mask-image: var(--sadu-thread);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
   transition: inline-size var(--dur-el) var(--ease);
   pointer-events: none;
 }
@@ -183,7 +209,7 @@
 
 /* Accent CTA. --action-600 keeps white text at 4.6:1 at any size. */
 .btn--cta              { background: var(--action-600); color: #fff; }
-.btn--cta:hover        { background: #9C4525; }
+.btn--cta:hover        { background: var(--action-700); }
 
 /* The identity orange is only legible with white text at ≥18px/700 (§10.2). */
 .btn--cta-lg {
@@ -216,7 +242,7 @@
   color: var(--text-inverse);
   box-shadow: inset 0 0 0 1px var(--gold-400);
 }
-.on-dark .btn--secondary:hover { background: rgba(220, 173, 117, .16); }
+.on-dark .btn--secondary:hover { background: rgb(var(--gold-rgb) / .16); }
 .on-dark .btn--ghost   { color: var(--text-inverse); }
 
 .btn[disabled],
@@ -265,7 +291,7 @@
               box-shadow var(--dur-micro) var(--ease);
 }
 .lead-input::placeholder { color: var(--muted); }
-.lead-input:hover        { border-color: rgba(0, 37, 70, .28); }
+.lead-input:hover        { border-color: rgb(var(--navy-rgb) / .28); }
 .lead-input[aria-invalid="true"] {
   border-color: var(--action-600);
   box-shadow: inset 0 0 0 1px var(--action-600);
@@ -325,7 +351,7 @@
 
 .card--link:hover {
   transform: translateY(-2px);                     /* the 2px lift */
-  border-color: rgba(0, 37, 70, 0.24);
+  border-color: rgb(var(--navy-rgb) / 0.24);
   box-shadow: var(--shadow-card);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -527,7 +553,7 @@ html[dir="rtl"] .link-weave:focus-visible .arrow { transform: scaleX(-1) transla
 .media-ground {
   background-color: var(--placeholder-warm);
   background-image: repeating-linear-gradient(
-    45deg, rgba(0, 37, 70, .1) 0 2px, transparent 2px 10px);
+    45deg, rgb(var(--navy-rgb) / .1) 0 2px, transparent 2px 10px);
 }
 
 /* ============================================================

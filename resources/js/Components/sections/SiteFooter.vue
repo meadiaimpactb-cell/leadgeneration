@@ -354,7 +354,7 @@ const placeName = computed(() => {
 
 .footer__strip {
     --sadu-tile: 10px;
-    --sadu-colour: rgba(220, 173, 117, 0.7);
+    --sadu-colour: rgb(var(--gold-rgb) / 0.7);
 }
 
 /* ---- The showroom block ---- */
@@ -425,7 +425,7 @@ const placeName = computed(() => {
 .visit__frame {
     position: relative;
     aspect-ratio: 5 / 4;
-    background: rgba(220, 173, 117, 0.55);
+    background: rgb(var(--gold-rgb) / 0.55);
     /* The corner cut scales with the frame so it stays the same proportion of
        the shape on a phone as on a desktop; 64px is the design's value at the
        size it was drawn. */
@@ -484,8 +484,8 @@ const placeName = computed(() => {
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(0, 37, 70, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 37, 70, 0.1) 1px, transparent 1px);
+        linear-gradient(rgb(var(--navy-rgb) / 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(var(--navy-rgb) / 0.1) 1px, transparent 1px);
     background-size: 44px 44px;
     pointer-events: none;
 }
@@ -541,7 +541,7 @@ const placeName = computed(() => {
     block-size: 14px;
     background: var(--gold-400);
     transform: rotate(45deg);
-    box-shadow: 0 0 0 4px rgba(0, 37, 70, 0.85);
+    box-shadow: 0 0 0 4px rgb(var(--navy-rgb) / 0.85);
 }
 
 /* Sighting lines: long enough to cross any frame, fading out at both ends. */
@@ -557,8 +557,8 @@ const placeName = computed(() => {
     background: linear-gradient(
         to right,
         transparent,
-        rgba(220, 173, 117, 0.5) 42%,
-        rgba(220, 173, 117, 0.5) 58%,
+        rgb(var(--gold-rgb) / 0.5) 42%,
+        rgb(var(--gold-rgb) / 0.5) 58%,
         transparent
     );
 }
@@ -571,8 +571,8 @@ const placeName = computed(() => {
     background: linear-gradient(
         to bottom,
         transparent,
-        rgba(220, 173, 117, 0.5) 42%,
-        rgba(220, 173, 117, 0.5) 58%,
+        rgb(var(--gold-rgb) / 0.5) 42%,
+        rgb(var(--gold-rgb) / 0.5) 58%,
         transparent
     );
 }
@@ -614,7 +614,7 @@ const placeName = computed(() => {
     white-space: nowrap;
     padding: 10px 16px;
     background: var(--navy-950);
-    border: 1px solid rgba(220, 173, 117, 0.45);
+    border: 1px solid rgb(var(--gold-rgb) / 0.45);
     color: #fff;
     font-size: 0.84375rem;
     font-weight: 600;

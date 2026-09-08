@@ -19,7 +19,25 @@ createInertiaApp({
     },
 
     progress: {
-        color: '#D7653B',
+        /*
+         * The accent, read from the theme rather than written down.
+         *
+         * The client can change the four identity colours from the panel now,
+         * and this bar is drawn by Inertia into an element of its own with an
+         * inline style — so it is the one piece of the interface a stylesheet
+         * cannot reach. A literal here meant the loading bar stayed the old
+         * orange after a rebrand had changed everything around it.
+         *
+         * This entry point is the browser's; SSR has its own (ssr.js), and it
+         * has no progress bar. The stylesheet and the palette's own <style>
+         * block are both in <head> before a module script runs, so the token
+         * is resolved by the time this is read. The literal is the fallback
+         * for the one case that leaves it empty: no stylesheet at all.
+         */
+        color:
+            getComputedStyle(document.documentElement)
+                .getPropertyValue('--orange-500')
+                .trim() || '#D7653B',
         showSpinner: false,
     },
 });

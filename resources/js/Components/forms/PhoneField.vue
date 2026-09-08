@@ -303,8 +303,8 @@ watch(
     border-radius: var(--r-md);
     background: var(--paper);
     box-shadow:
-        0 1px 2px rgba(0, 37, 70, 0.06),
-        0 8px 24px rgba(0, 37, 70, 0.06);
+        0 1px 2px rgb(var(--navy-rgb) / 0.06),
+        0 8px 24px rgb(var(--navy-rgb) / 0.06);
 }
 
 /*

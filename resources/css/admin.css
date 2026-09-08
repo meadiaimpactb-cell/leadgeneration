@@ -35,13 +35,18 @@
       is never uppercased. The mono face is for Latin runs only —
       slugs, counts, IDs, timestamps.
 
-   3. COLOUR — four identity colours and nothing else:
-        navy          #002546
-        lavender      #8685D8
-        burnt orange  #D7653B
-        light gold    #DCAD75
-      Every tint below is one of those at low alpha; every ink is
-      a token whose contrast §10.2 already checked. No new hex.
+   3. COLOUR — the four identity colours and nothing else:
+        --navy-900     the dominant colour
+        --lavender-500 the secondary
+        --orange-500   the action colour
+        --gold-400     the premium colour
+      Named, not spelled out: they are settings rows the client
+      edits on the brand screen, so a hex written here would be
+      the panel keeping the old palette after the site changed
+      it. Every tint below is one of those at low alpha, written
+      `rgb(var(--navy-rgb) / .08)` for the same reason; every ink
+      is a token whose contrast §10.2 already checked. No new
+      hex, and no literal for one of these four.
    ============================================================ */
 
 .shell {
@@ -56,12 +61,12 @@
   --cell-y: 14px;
 
   /* ---- The panel's own surface tints, all navy ---- */
-  --wash-1: rgba(0, 37, 70, 0.02);   /* a field at rest         */
-  --wash-2: rgba(0, 37, 70, 0.05);   /* a code well             */
-  --wash-3: rgba(0, 37, 70, 0.08);   /* a hover ground          */
-  --edge-1: rgba(0, 37, 70, 0.08);   /* a row rule              */
-  --edge-2: rgba(0, 37, 70, 0.12);   /* a container edge        */
-  --edge-3: rgba(0, 37, 70, 0.30);   /* a field edge, hovered   */
+  --wash-1: rgb(var(--navy-rgb) / 0.02);   /* a field at rest         */
+  --wash-2: rgb(var(--navy-rgb) / 0.05);   /* a code well             */
+  --wash-3: rgb(var(--navy-rgb) / 0.08);   /* a hover ground          */
+  --edge-1: rgb(var(--navy-rgb) / 0.08);   /* a row rule              */
+  --edge-2: rgb(var(--navy-rgb) / 0.12);   /* a container edge        */
+  --edge-3: rgb(var(--navy-rgb) / 0.30);   /* a field edge, hovered   */
 
   font-size: var(--t-body);
 }
@@ -73,7 +78,7 @@
 .shell .panel {
   border: 1px solid var(--hairline-soft);
   border-radius: var(--r-md);
-  box-shadow: 0 1px 2px rgba(0, 37, 70, 0.04);
+  box-shadow: 0 1px 2px rgb(var(--navy-rgb) / 0.04);
 }
 
 .shell .panel__title {
@@ -93,12 +98,12 @@
    layout feel loose.
    ============================================================ */
 
-.shell input:not([type='checkbox']):not([type='radio']),
+.shell input:not([type='checkbox']):not([type='radio']):not([type='color']),
 .shell select,
 .shell textarea {
   min-block-size: 44px;
   padding-inline: var(--s-4);
-  border: 1px solid rgba(0, 37, 70, 0.14);
+  border: 1px solid rgb(var(--navy-rgb) / 0.14);
   border-radius: var(--r-sm);
   /* A tinted well, not white on white: against the panel's own
      surface a white input with a hairline reads as an outline
@@ -107,7 +112,7 @@
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--t-body);
-  box-shadow: inset 0 1px 2px rgba(0, 37, 70, 0.04);
+  box-shadow: inset 0 1px 2px rgb(var(--navy-rgb) / 0.04);
   transition:
     border-color var(--dur-micro) var(--ease),
     background-color var(--dur-micro) var(--ease),
@@ -118,6 +123,26 @@
   padding-block: var(--s-3);
   line-height: 1.7;
 }
+
+/*
+ * A colour input is not a text field, which is why it is excluded above
+ * alongside the checkbox and the radio. The browser draws a swatch inside it
+ * and every platform gives it a picker of its own — an eyedropper on the
+ * desktop, a wheel on a phone — so the useful thing to do is get out of the
+ * way and let the swatch be the whole control.
+ */
+.shell input[type='color'] {
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.shell input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+.shell input[type='color']::-webkit-color-swatch { border: 0; }
+.shell input[type='color']::-moz-color-swatch { border: 0; }
 
 .shell input::placeholder,
 .shell textarea::placeholder {
@@ -144,8 +169,8 @@
   border-color: var(--lavender-700);
   background: var(--paper);
   box-shadow:
-    0 0 0 3px rgba(134, 133, 216, 0.2),
-    inset 0 1px 2px rgba(0, 37, 70, 0.03);
+    0 0 0 3px rgb(var(--lavender-rgb) / 0.2),
+    inset 0 1px 2px rgb(var(--navy-rgb) / 0.03);
 }
 
 .shell input[disabled],
@@ -221,7 +246,7 @@ html[dir='ltr'] .shell select {
 }
 
 .shell .act--icon:hover        { background: var(--wash-3); }
-.shell .act--icon.danger:hover { background: rgba(215, 101, 59, 0.14); }
+.shell .act--icon.danger:hover { background: rgb(var(--orange-rgb) / 0.14); }
 
 .shell .danger { color: var(--action-600); }
 
@@ -293,7 +318,7 @@ html[dir='ltr'] .shell select {
    Arabic, Latin and buttons reads as one strip without it. */
 .shell .table td + td,
 .shell .table th + th {
-  border-inline-start: 1px solid rgba(0, 37, 70, 0.07);
+  border-inline-start: 1px solid rgb(var(--navy-rgb) / 0.07);
 }
 
 /* The last row ends on the container's border, not on one of its
@@ -311,7 +336,7 @@ html[dir='ltr'] .shell select {
 }
 
 .shell .table tbody tr:hover {
-  background: rgba(0, 37, 70, 0.035);
+  background: rgb(var(--navy-rgb) / 0.035);
 }
 
 /* The primary link in a row: the thing being scanned for. */
@@ -373,7 +398,7 @@ html[dir='ltr'] .shell select {
   gap: 7px;
   padding: 6px var(--s-3);
   border-radius: var(--r-pill);
-  background: rgba(0, 37, 70, 0.06);
+  background: rgb(var(--navy-rgb) / 0.06);
   color: var(--navy-900);
   font-family: var(--font-body);
   font-size: var(--t-meta);
@@ -394,10 +419,10 @@ html[dir='ltr'] .shell select {
 
 .shell .chip--ok,
 .shell .chip--live    { background: rgba(30, 122, 90, 0.12);  color: var(--success); }
-.shell .chip--draft   { background: rgba(0, 37, 70, 0.07);    color: var(--muted); }
-.shell .chip--warn    { background: rgba(215, 101, 59, 0.12); color: var(--action-600); }
-.shell .chip--info    { background: rgba(134, 133, 216, 0.16); color: var(--lavender-700); }
-.shell .chip--gold    { background: rgba(220, 173, 117, 0.28); color: var(--action-600); }
+.shell .chip--draft   { background: rgb(var(--navy-rgb) / 0.07);    color: var(--muted); }
+.shell .chip--warn    { background: rgb(var(--orange-rgb) / 0.12); color: var(--action-600); }
+.shell .chip--info    { background: rgb(var(--lavender-rgb) / 0.16); color: var(--lavender-700); }
+.shell .chip--gold    { background: rgb(var(--gold-rgb) / 0.28); color: var(--action-600); }
 
 /* ============================================================
    PAGER

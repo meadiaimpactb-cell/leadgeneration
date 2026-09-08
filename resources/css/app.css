@@ -34,22 +34,36 @@
    values as the CSS custom properties. One source of truth.
    ------------------------------------------------------------ */
 @theme {
-    --color-navy-900: #002546;
-    --color-navy-800: #06345c;
-    --color-navy-700: #0b4370;
-    --color-navy-100: #e3eaf1;
-    --color-lavender-500: #8685d8;
-    --color-lavender-700: #5f5ebe;
-    --color-orange-500: #d7653b;
-    --color-action-600: #b4522c;
-    --color-gold-400: #dcad75;
-    --color-gold-100: #f6ecdd;
-    --color-sand: #f3eee7;
+    /*
+     * The brand entries point at the tokens rather than repeating them.
+     *
+     * They were the same eleven hex codes written a second time, which is one
+     * source of truth too many even before the colours became editable: a
+     * utility class and a custom property could disagree, and the only way to
+     * find out was to look at the page. Now the four identity colours are a
+     * settings row overridden at runtime, a literal here would be a `bg-navy-900`
+     * that stayed the old navy while every hand-written rule moved.
+     *
+     * The neutrals below stay literal on purpose. They are not the client's to
+     * change — §10.2 fixes the ink and the greys — and writing them as
+     * references would suggest otherwise.
+     */
+    --color-navy-900: var(--navy-900);
+    --color-navy-800: var(--navy-800);
+    --color-navy-700: var(--navy-700);
+    --color-navy-100: var(--navy-100);
+    --color-lavender-500: var(--lavender-500);
+    --color-lavender-700: var(--lavender-700);
+    --color-orange-500: var(--orange-500);
+    --color-action-600: var(--action-600);
+    --color-gold-400: var(--gold-400);
+    --color-gold-100: var(--gold-100);
+    --color-sand: var(--sand);
     --color-ink: #10161c;
     --color-muted: #5a6b7b;
     --color-paper: #ffffff;
     --color-paper-alt: #f7f9fb;
-    --color-hairline: rgba(0, 37, 70, 0.12);
+    --color-hairline: rgb(var(--navy-rgb) / 0.12);
 
     /* Spacing scale, base 4 (§10.4). Tailwind's numeric steps map
        onto it, so `p-5` is 24px — the scale, not 1.25rem. */
@@ -59,7 +73,7 @@
     --radius-md: 12px;
     --radius-pill: 999px;
 
-    --shadow-card: 0 1px 2px rgba(0, 37, 70, 0.06), 0 8px 24px rgba(0, 37, 70, 0.06);
+    --shadow-card: 0 1px 2px rgb(var(--navy-rgb) / 0.06), 0 8px 24px rgb(var(--navy-rgb) / 0.06);
 
     /* Breakpoints per §10.4. */
     --breakpoint-sm: 640px;

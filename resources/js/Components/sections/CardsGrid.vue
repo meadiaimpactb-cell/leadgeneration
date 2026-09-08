@@ -113,7 +113,7 @@ const written = computed(() =>
     border: 0;
     padding-inline: 0;
     padding-block-start: var(--s-5);
-    border-block-start: 1px solid rgba(220, 173, 117, 0.42);
+    border-block-start: 1px solid rgb(var(--gold-rgb) / 0.42);
 }
 
 .cardsec--band .cards__title {
@@ -151,7 +151,7 @@ const written = computed(() =>
     inline-size: 48px;
     block-size: 48px;
     border-radius: 50%;
-    background: rgba(134, 133, 216, 0.12);
+    background: rgb(var(--lavender-rgb) / 0.12);
     color: var(--navy-900);
 }
 
@@ -180,7 +180,7 @@ const written = computed(() =>
  * The counter, in the accent that passes on the ground it sits on.
  *
  * Gold is §10.2's divider and hairline colour, not a text colour on a light
- * surface: #DCAD75 on the warm paper is about 1.7:1, which is unreadable and
+ * surface: #DCAD75 on the warm paper is 1.93:1, which is unreadable and
  * fails AA outright. It reads correctly on navy, so the band overrides it
  * below. Setting gold here and hoping every future card set is a band is how
  * an unreadable number ships.

@@ -17,6 +17,10 @@
     // Already resolved by errors/_locale, included by the view extending this.
     $locale = app()->getLocale();
     $rtl = App\Support\Locales::dir($locale) === 'rtl';
+
+    // The client's colours if they can be read, the approved identity if not.
+    // See Palette::safely() — this page must render when the database does not.
+    $c = App\Support\Palette::safely();
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}" dir="{{ $rtl ? 'rtl' : 'ltr' }}">
@@ -27,7 +31,7 @@
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
-    <meta name="theme-color" content="#002546">
+    <meta name="theme-color" content="{{ $c['--navy-900'] }}">
     <meta name="robots" content="noindex">
 
     <style>
@@ -40,7 +44,7 @@
             display: grid;
             place-items: center;
             padding: 24px;
-            background: #002546;
+            background: {{ $c['--navy-900'] }};
             color: #fff;
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
             line-height: 1.85;
@@ -50,7 +54,7 @@
         .code {
             font-size: 14px;
             letter-spacing: .18em;
-            color: #DCAD75;
+            color: {{ $c['--gold-400'] }};
             margin: 0 0 8px;
         }
         h1 { font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem); margin: 0 0 12px; }
@@ -61,19 +65,22 @@
             min-block-size: 44px;
             padding-inline: 28px;
             border-radius: 4px;
-            background: #D7653B;
+            background: {{ $c['--orange-500'] }};
             color: #fff;
             font-weight: 700;
             text-decoration: none;
         }
-        a.home:hover { background: #B4522C; }
+        a.home:hover { background: {{ $c['--action-600'] }}; }
         /* The Sadu thread's divider, the one use that fits a page this bare. */
         .thread {
             inline-size: min(320px, 70vw);
             block-size: 8px;
             margin: 0 auto 28px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23DCAD75' stroke-width='1'/%3E%3C/svg%3E");
-            background-repeat: repeat-x;
+            background-color: {{ $c['--gold-400'] }};
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 6.5 L6 1.5 L12 6.5 L18 1.5 L24 6.5' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+            -webkit-mask-repeat: repeat-x;
+            mask-repeat: repeat-x;
         }
     </style>
 </head>

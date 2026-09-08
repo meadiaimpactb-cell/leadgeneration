@@ -557,7 +557,7 @@ const formatDate = date;
 .picker__scrim {
     position: absolute;
     inset: 0;
-    background: rgba(0, 37, 70, 0.55);
+    background: rgb(var(--navy-rgb) / 0.55);
 }
 
 .picker__panel {

@@ -223,7 +223,7 @@ const label = computed(() => text(props.settings, 'eyebrow') ?? props.eyebrow);
     display: block;
     margin-block-start: var(--s-5);
     block-size: 1px;
-    background: rgba(0, 37, 70, 0.22);
+    background: rgb(var(--navy-rgb) / 0.22);
 }
 
 @media (min-width: 900px) {

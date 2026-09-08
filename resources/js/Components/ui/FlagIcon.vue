@@ -93,6 +93,6 @@ defineProps({
     flex: 0 0 auto;
     border-radius: 2px;
     /* A white flag on a white header would otherwise have no edge. */
-    box-shadow: 0 0 0 1px rgba(0, 37, 70, 0.15);
+    box-shadow: 0 0 0 1px rgb(var(--navy-rgb) / 0.15);
 }
 </style>

@@ -139,7 +139,7 @@ const columns = computed(() => Math.max(1, shown.value.length));
  * which is the only way to get both without a second wrapper element.
  */
 .impact--overlap {
-    filter: drop-shadow(0 24px 40px rgba(0, 37, 70, 0.16));
+    filter: drop-shadow(0 24px 40px rgb(var(--navy-rgb) / 0.16));
 }
 
 .impact--overlap .impact__inner {
@@ -196,7 +196,7 @@ const columns = computed(() => Math.max(1, shown.value.length));
 .impact--band .impact__edge {
     --sadu-tile: 24px;
     --sadu-edge-w: 24px;
-    --sadu-colour: rgba(220, 173, 117, 0.55);
+    --sadu-colour: rgb(var(--gold-rgb) / 0.55);
 }
 
 .impact__head {
@@ -242,7 +242,7 @@ const columns = computed(() => Math.max(1, shown.value.length));
 }
 
 .impact--band .impact__grid > * {
-    --rule: rgba(220, 173, 117, 0.55);
+    --rule: rgb(var(--gold-rgb) / 0.55);
     padding-inline: var(--s-6);
 }
 

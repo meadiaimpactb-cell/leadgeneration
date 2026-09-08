@@ -314,15 +314,6 @@ function setMedia(collection, items) {
  * cropped thumbnail. Padding keeps the mark off the border, and the light
  * ground gives transparent logos something to sit on.
  */
-.media__thumb {
-    inline-size: 160px;
-    block-size: 120px;
-    object-fit: contain;
-    padding: var(--s-2);
-    border: 1px solid var(--hairline);
-    border-radius: var(--r-sm);
-    background: var(--paper-alt);
-}
 
 .media__upload {
     /* Contains the visually-hidden file input below; without it the input is

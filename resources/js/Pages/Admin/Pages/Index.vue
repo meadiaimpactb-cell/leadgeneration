@@ -303,7 +303,7 @@ async function destroy(page) {
 }
 
 .row--site {
-    background: rgba(0, 37, 70, 0.03);
+    background: rgb(var(--navy-rgb) / 0.03);
 }
 
 /* A retired page is not an error and not a draft — it answers, it just

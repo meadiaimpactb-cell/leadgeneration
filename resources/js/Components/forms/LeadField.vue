@@ -867,19 +867,6 @@ function submit() {
     margin-block-start: var(--s-2);
 }
 
-.lead__toggle {
-    display: inline-block;
-    margin-block-start: var(--s-4);
-    color: var(--link);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    /* 44px target without a 44px-looking control. */
-    padding-block: var(--s-3);
-}
-
-.on-dark .lead__toggle {
-    color: var(--gold-400);
-}
 
 .lead__message {
     margin-block-start: var(--s-3);
