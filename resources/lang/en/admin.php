@@ -181,6 +181,21 @@ return [
     'section_gallery' => 'Gallery images',
     'section_items' => 'Items',
     'add_item' => 'Add item',
+    // The fields of one repeatable entry, named for the person filling them in
+    // rather than for the key they are stored under.
+    'item_field_title' => 'Title',
+    'item_field_body' => 'Text',
+    'item_field_label' => 'Button text',
+    'item_field_question' => 'Question',
+    'item_field_answer' => 'Answer',
+    'item_field_icon' => 'Icon',
+    'item_field_number' => 'Number',
+    'item_field_year' => 'Year',
+    // Never shown to a visitor: it tags the enquiry with the audience the
+    // button belongs to (government · partner · artisan).
+    'item_field_source' => 'Segment (not shown to visitors)',
+    'item_lang_ar' => 'Arabic',
+    'item_lang_en' => 'English',
     'advanced_json' => 'Advanced settings (JSON)',
 
     // Lead form builder

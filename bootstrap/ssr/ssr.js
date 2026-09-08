@@ -11055,20 +11055,65 @@ const _sfc_main$18 = {
       cta_url: "text"
     };
     const ITEM_SCHEMAS = {
-      cards: [
-        { key: "icon", label: "icon" },
-        { key: "title", label: "title" },
-        { key: "body", label: "body", type: "textarea" }
-      ],
-      accordion: [
-        { key: "question", label: "question" },
-        { key: "answer", label: "answer", type: "textarea" }
-      ],
-      timeline: [
-        { key: "year", label: "year" },
-        { key: "title", label: "title" },
-        { key: "body", label: "body", type: "textarea" }
-      ]
+      hero: {
+        list: "ctas",
+        fields: [
+          { key: "label" },
+          // government | partner | artisan — written to the lead, never read.
+          { key: "source", translatable: false }
+        ]
+      },
+      cards: {
+        list: "items",
+        fields: [
+          { key: "icon", translatable: false },
+          { key: "number", translatable: false },
+          { key: "title" },
+          { key: "body", type: "textarea" }
+        ]
+      },
+      accordion: {
+        list: "items",
+        fields: [
+          { key: "question" },
+          { key: "answer", type: "textarea" }
+        ]
+      },
+      timeline: {
+        list: "items",
+        fields: [
+          { key: "year", translatable: false },
+          { key: "title" },
+          { key: "body", type: "textarea" }
+        ]
+      },
+      process_steps: {
+        list: "items",
+        fields: [
+          { key: "title" },
+          { key: "body", type: "textarea" }
+        ]
+      },
+      value_flow: {
+        list: "steps",
+        fields: [{ key: "title" }]
+      },
+      role_split: {
+        list: "columns",
+        fields: [
+          { key: "title" },
+          { key: "body", type: "textarea" }
+        ]
+      },
+      segment_cards: {
+        list: "items",
+        fields: [
+          { key: "title" },
+          { key: "body", type: "textarea" },
+          { key: "label" },
+          { key: "source", translatable: false }
+        ]
+      }
     };
     const IMAGE_TYPES = ["hero", "media_split", "testimonial"];
     const GALLERY_TYPES = ["gallery"];
@@ -11136,15 +11181,29 @@ const _sfc_main$18 = {
     function itemSchema(section) {
       return ITEM_SCHEMAS[section.type] ?? null;
     }
+    function fieldLabel(field, locale) {
+      const name = t("admin.item_field_" + field.key);
+      if (field.translatable === false) {
+        return name;
+      }
+      return name + " — " + t("admin.item_lang_" + locale);
+    }
+    function itemFields(section) {
+      return itemSchema(section)?.fields ?? null;
+    }
     function items(section) {
+      const key = itemSchema(section)?.list ?? "items";
       section.settings = section.settings ?? {};
-      section.settings.items = section.settings.items ?? [];
-      return section.settings.items;
+      section.settings[key] = section.settings[key] ?? [];
+      return section.settings[key];
     }
     function addItem(section) {
       const blank = {};
-      itemSchema(section).forEach((f) => {
+      itemFields(section).forEach((f) => {
         blank[f.key] = "";
+        if (f.translatable !== false) {
+          blank[f.key + "_en"] = "";
+        }
       });
       items(section).push(blank);
     }
@@ -11195,7 +11254,7 @@ const _sfc_main$18 = {
             }, {
               default: withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<form class="add" data-v-1b7d6f60${_scopeId2}>`);
+                  _push3(`<form class="add" data-v-3cdb6ea1${_scopeId2}>`);
                   _push3(ssrRenderComponent(Field, {
                     modelValue: unref(addForm).type,
                     "onUpdate:modelValue": ($event) => unref(addForm).type = $event,
@@ -11203,15 +11262,15 @@ const _sfc_main$18 = {
                     type: "select",
                     options: typeOptions.value
                   }, null, _parent3, _scopeId2));
-                  _push3(`<button class="btn btn--cta act" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-1b7d6f60${_scopeId2}>`);
+                  _push3(`<button class="btn btn--cta act" type="submit"${ssrIncludeBooleanAttr(unref(addForm).processing) ? " disabled" : ""} data-v-3cdb6ea1${_scopeId2}>`);
                   _push3(ssrRenderComponent(NavIcon, {
                     name: "plus",
                     size: 18,
                     muted: false
                   }, null, _parent3, _scopeId2));
-                  _push3(`<span data-v-1b7d6f60${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</span></button></form>`);
+                  _push3(`<span data-v-3cdb6ea1${_scopeId2}>${ssrInterpolate(unref(t)("admin.create"))}</span></button></form>`);
                   if (unref(addForm).type) {
-                    _push3(`<p class="add__hint" data-v-1b7d6f60${_scopeId2}>${ssrInterpolate(typeHint(unref(addForm).type))}</p>`);
+                    _push3(`<p class="add__hint" data-v-3cdb6ea1${_scopeId2}>${ssrInterpolate(typeHint(unref(addForm).type))}</p>`);
                   } else {
                     _push3(`<!---->`);
                   }
@@ -11251,31 +11310,31 @@ const _sfc_main$18 = {
               _: 1
             }, _parent2, _scopeId));
             if (!__props.sections.length) {
-              _push2(`<p class="empty" data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
+              _push2(`<p class="empty" data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)("admin.no_records"))}</p>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<ol class="list" data-v-1b7d6f60${_scopeId}><!--[-->`);
+            _push2(`<ol class="list" data-v-3cdb6ea1${_scopeId}><!--[-->`);
             ssrRenderList(__props.sections, (section, index) => {
-              _push2(`<li class="item" draggable="true" data-v-1b7d6f60${_scopeId}><header class="item__head" data-v-1b7d6f60${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-1b7d6f60${_scopeId}><span class="item__type" data-v-1b7d6f60${_scopeId}>${ssrInterpolate(typeLabel(section.type))}</span>`);
+              _push2(`<li class="item" draggable="true" data-v-3cdb6ea1${_scopeId}><header class="item__head" data-v-3cdb6ea1${_scopeId}><button class="item__toggle" type="button"${ssrRenderAttr("aria-expanded", open.value === section.id)} data-v-3cdb6ea1${_scopeId}><span class="item__type" data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(typeLabel(section.type))}</span>`);
               if (!section.isActive) {
-                _push2(`<span class="chip" data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
+                _push2(`<span class="chip" data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)("admin.inactive"))}</span>`);
               } else {
                 _push2(`<!---->`);
               }
-              _push2(`</button><div class="item__tools" data-v-1b7d6f60${_scopeId}><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_up"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-1b7d6f60${_scopeId}>`);
+              _push2(`</button><div class="item__tools" data-v-3cdb6ea1${_scopeId}><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_up"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(index === 0) ? " disabled" : ""} data-v-3cdb6ea1${_scopeId}>`);
               _push2(ssrRenderComponent(NavIcon, {
                 name: "publish",
                 size: 18,
                 muted: false
               }, null, _parent2, _scopeId));
-              _push2(`</button><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_down"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-1b7d6f60${_scopeId}>`);
+              _push2(`</button><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_down"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(index === __props.sections.length - 1) ? " disabled" : ""} data-v-3cdb6ea1${_scopeId}>`);
               _push2(ssrRenderComponent(NavIcon, {
                 name: "unpublish",
                 size: 18,
                 muted: false
               }, null, _parent2, _scopeId));
-              _push2(`</button><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-1b7d6f60${_scopeId}>`);
+              _push2(`</button><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-3cdb6ea1${_scopeId}>`);
               _push2(ssrRenderComponent(NavIcon, {
                 name: "trash",
                 size: 18,
@@ -11283,7 +11342,7 @@ const _sfc_main$18 = {
               }, null, _parent2, _scopeId));
               _push2(`</button></div></header>`);
               if (open.value === section.id) {
-                _push2(`<div class="item__body" data-v-1b7d6f60${_scopeId}>`);
+                _push2(`<div class="item__body" data-v-3cdb6ea1${_scopeId}>`);
                 _push2(ssrRenderComponent(Field, {
                   modelValue: section.isActive,
                   "onUpdate:modelValue": ($event) => section.isActive = $event,
@@ -11318,38 +11377,51 @@ const _sfc_main$18 = {
                   _push2(`<!---->`);
                 }
                 if (itemSchema(section)) {
-                  _push2(`<div class="items" data-v-1b7d6f60${_scopeId}><div class="items__head" data-v-1b7d6f60${_scopeId}><p class="media__label" data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--secondary act" type="button" data-v-1b7d6f60${_scopeId}>`);
+                  _push2(`<div class="items" data-v-3cdb6ea1${_scopeId}><div class="items__head" data-v-3cdb6ea1${_scopeId}><p class="media__label" data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)("admin.section_items"))}</p><button class="btn btn--secondary act" type="button" data-v-3cdb6ea1${_scopeId}>`);
                   _push2(ssrRenderComponent(NavIcon, {
                     name: "plus",
                     size: 18,
                     muted: false
                   }, null, _parent2, _scopeId));
-                  _push2(`<span data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</span></button></div><!--[-->`);
+                  _push2(`<span data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)("admin.add_item"))}</span></button></div><!--[-->`);
                   ssrRenderList(items(section), (item, i) => {
-                    _push2(`<div class="items__row" data-v-1b7d6f60${_scopeId}><!--[-->`);
-                    ssrRenderList(itemSchema(section), (f) => {
+                    _push2(`<div class="items__row" data-v-3cdb6ea1${_scopeId}><!--[-->`);
+                    ssrRenderList(itemFields(section), (f) => {
+                      _push2(`<!--[-->`);
                       _push2(ssrRenderComponent(Field, {
-                        key: f.key,
                         modelValue: item[f.key],
                         "onUpdate:modelValue": ($event) => item[f.key] = $event,
-                        label: f.label,
+                        label: fieldLabel(f, "ar"),
                         type: f.type ?? "text",
                         rows: 2
                       }, null, _parent2, _scopeId));
+                      if (f.translatable !== false) {
+                        _push2(ssrRenderComponent(Field, {
+                          modelValue: item[f.key + "_en"],
+                          "onUpdate:modelValue": ($event) => item[f.key + "_en"] = $event,
+                          label: fieldLabel(f, "en"),
+                          type: f.type ?? "text",
+                          rows: 2,
+                          dir: "ltr"
+                        }, null, _parent2, _scopeId));
+                      } else {
+                        _push2(`<!---->`);
+                      }
+                      _push2(`<!--]-->`);
                     });
-                    _push2(`<!--]--><div class="items__tools" data-v-1b7d6f60${_scopeId}><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_up"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-1b7d6f60${_scopeId}>`);
+                    _push2(`<!--]--><div class="items__tools" data-v-3cdb6ea1${_scopeId}><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_up"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_up"))}${ssrIncludeBooleanAttr(i === 0) ? " disabled" : ""} data-v-3cdb6ea1${_scopeId}>`);
                     _push2(ssrRenderComponent(NavIcon, {
                       name: "publish",
                       size: 18,
                       muted: false
                     }, null, _parent2, _scopeId));
-                    _push2(`</button><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_down"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-1b7d6f60${_scopeId}>`);
+                    _push2(`</button><button class="btn btn--ghost act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.move_down"))}${ssrRenderAttr("aria-label", unref(t)("admin.move_down"))}${ssrIncludeBooleanAttr(i === items(section).length - 1) ? " disabled" : ""} data-v-3cdb6ea1${_scopeId}>`);
                     _push2(ssrRenderComponent(NavIcon, {
                       name: "unpublish",
                       size: 18,
                       muted: false
                     }, null, _parent2, _scopeId));
-                    _push2(`</button><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-1b7d6f60${_scopeId}>`);
+                    _push2(`</button><button class="btn btn--ghost danger act act--icon" type="button"${ssrRenderAttr("title", unref(t)("admin.delete"))}${ssrRenderAttr("aria-label", unref(t)("admin.delete"))} data-v-3cdb6ea1${_scopeId}>`);
                     _push2(ssrRenderComponent(NavIcon, {
                       name: "trash",
                       size: 18,
@@ -11361,11 +11433,11 @@ const _sfc_main$18 = {
                 } else {
                   _push2(`<!---->`);
                 }
-                _push2(`<details class="advanced" data-v-1b7d6f60${_scopeId}><summary data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
+                _push2(`<details class="advanced" data-v-3cdb6ea1${_scopeId}><summary data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)("admin.advanced_json"))}</summary>`);
                 if (section.settingsKeys?.length) {
-                  _push2(`<dl class="keys" data-v-1b7d6f60${_scopeId}><!--[-->`);
+                  _push2(`<dl class="keys" data-v-3cdb6ea1${_scopeId}><!--[-->`);
                   ssrRenderList(section.settingsKeys, (key) => {
-                    _push2(`<!--[--><dt class="keys__name latin" dir="ltr" data-v-1b7d6f60${_scopeId}>${ssrInterpolate(key)}</dt><dd class="keys__what" data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)(`admin.section_setting_${key}`))}</dd><!--]-->`);
+                    _push2(`<!--[--><dt class="keys__name latin" dir="ltr" data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(key)}</dt><dd class="keys__what" data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)(`admin.section_setting_${key}`))}</dd><!--]-->`);
                   });
                   _push2(`<!--]--></dl>`);
                 } else {
@@ -11379,13 +11451,13 @@ const _sfc_main$18 = {
                   error: section.settingsError,
                   "onUpdate:modelValue": (v) => updateSettings(section, v)
                 }, null, _parent2, _scopeId));
-                _push2(`</details><button class="btn btn--cta act" type="button" data-v-1b7d6f60${_scopeId}>`);
+                _push2(`</details><button class="btn btn--cta act" type="button" data-v-3cdb6ea1${_scopeId}>`);
                 _push2(ssrRenderComponent(NavIcon, {
                   name: "check",
                   size: 18,
                   muted: false
                 }, null, _parent2, _scopeId));
-                _push2(`<span data-v-1b7d6f60${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</span></button></div>`);
+                _push2(`<span data-v-3cdb6ea1${_scopeId}>${ssrInterpolate(unref(t)("admin.save"))}</span></button></div>`);
               } else {
                 _push2(`<!---->`);
               }
@@ -11562,15 +11634,27 @@ const _sfc_main$18 = {
                             key: i,
                             class: "items__row"
                           }, [
-                            (openBlock(true), createBlock(Fragment, null, renderList(itemSchema(section), (f) => {
-                              return openBlock(), createBlock(Field, {
-                                key: f.key,
-                                modelValue: item[f.key],
-                                "onUpdate:modelValue": ($event) => item[f.key] = $event,
-                                label: f.label,
-                                type: f.type ?? "text",
-                                rows: 2
-                              }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type"]);
+                            (openBlock(true), createBlock(Fragment, null, renderList(itemFields(section), (f) => {
+                              return openBlock(), createBlock(Fragment, {
+                                key: f.key
+                              }, [
+                                createVNode(Field, {
+                                  modelValue: item[f.key],
+                                  "onUpdate:modelValue": ($event) => item[f.key] = $event,
+                                  label: fieldLabel(f, "ar"),
+                                  type: f.type ?? "text",
+                                  rows: 2
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type"]),
+                                f.translatable !== false ? (openBlock(), createBlock(Field, {
+                                  key: 0,
+                                  modelValue: item[f.key + "_en"],
+                                  "onUpdate:modelValue": ($event) => item[f.key + "_en"] = $event,
+                                  label: fieldLabel(f, "en"),
+                                  type: f.type ?? "text",
+                                  rows: 2,
+                                  dir: "ltr"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue", "label", "type"])) : createCommentVNode("", true)
+                              ], 64);
                             }), 128)),
                             createVNode("div", { class: "items__tools" }, [
                               createVNode("button", {
@@ -11673,7 +11757,7 @@ _sfc_main$18.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/Pages/Admin/Sections/Builder.vue");
   return _sfc_setup$18 ? _sfc_setup$18(props, ctx) : void 0;
 };
-const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-1b7d6f60"]]);
+const Builder = /* @__PURE__ */ _export_sfc(_sfc_main$18, [["__scopeId", "data-v-3cdb6ea1"]]);
 const __vite_glob_0_19 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   default: Builder

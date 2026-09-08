@@ -99,24 +99,82 @@ const FIELDS = {
 };
 
 /**
- * Which repeatable items each section type takes, and the fields of each item.
+ * Which repeatable list each section type takes, and the fields of each entry.
  * This is what turns "edit raw JSON" into a real form.
+ *
+ * `list` is the settings key holding the array, and it is NOT always `items`.
+ * It was assumed to be, so the hero's audience buttons (`ctas`), the value
+ * chain's steps (`steps`) and the partner split's columns (`columns`) had no
+ * form at all — the client edited the landing page's own content as raw JSON
+ * while every other section had proper fields.
+ *
+ * `translatable` is the other half of the same gap. `settings` is one JSON
+ * column for both languages, so a translated entry carries `title` and
+ * `title_en` side by side — and the form only ever offered the first. The
+ * English half of every card, step, column and question on the site was
+ * reachable only through the JSON box. A field marked `false` here is one that
+ * reads the same in both languages: an icon name, a segment tag, a number.
  */
 const ITEM_SCHEMAS = {
-    cards: [
-        { key: 'icon', label: 'icon' },
-        { key: 'title', label: 'title' },
-        { key: 'body', label: 'body', type: 'textarea' },
-    ],
-    accordion: [
-        { key: 'question', label: 'question' },
-        { key: 'answer', label: 'answer', type: 'textarea' },
-    ],
-    timeline: [
-        { key: 'year', label: 'year' },
-        { key: 'title', label: 'title' },
-        { key: 'body', label: 'body', type: 'textarea' },
-    ],
+    hero: {
+        list: 'ctas',
+        fields: [
+            { key: 'label' },
+            // government | partner | artisan — written to the lead, never read.
+            { key: 'source', translatable: false },
+        ],
+    },
+    cards: {
+        list: 'items',
+        fields: [
+            { key: 'icon', translatable: false },
+            { key: 'number', translatable: false },
+            { key: 'title' },
+            { key: 'body', type: 'textarea' },
+        ],
+    },
+    accordion: {
+        list: 'items',
+        fields: [
+            { key: 'question' },
+            { key: 'answer', type: 'textarea' },
+        ],
+    },
+    timeline: {
+        list: 'items',
+        fields: [
+            { key: 'year', translatable: false },
+            { key: 'title' },
+            { key: 'body', type: 'textarea' },
+        ],
+    },
+    process_steps: {
+        list: 'items',
+        fields: [
+            { key: 'title' },
+            { key: 'body', type: 'textarea' },
+        ],
+    },
+    value_flow: {
+        list: 'steps',
+        fields: [{ key: 'title' }],
+    },
+    role_split: {
+        list: 'columns',
+        fields: [
+            { key: 'title' },
+            { key: 'body', type: 'textarea' },
+        ],
+    },
+    segment_cards: {
+        list: 'items',
+        fields: [
+            { key: 'title' },
+            { key: 'body', type: 'textarea' },
+            { key: 'label' },
+            { key: 'source', translatable: false },
+        ],
+    },
 };
 
 /** Section types that take a single illustration. */
@@ -222,18 +280,59 @@ function itemSchema(section) {
     return ITEM_SCHEMAS[section.type] ?? null;
 }
 
-function items(section) {
-    section.settings = section.settings ?? {};
-    section.settings.items = section.settings.items ?? [];
+/**
+ * What one input is called.
+ *
+ * The field names were literal English strings — `title`, `body`, `icon` —
+ * printed straight into an Arabic panel, which §22.5 forbids and which read
+ * as untranslated debris beside every other label on the screen. A field the
+ * two languages share is named once; a translated one says which half it is.
+ */
+function fieldLabel(field, locale) {
+    const name = t('admin.item_field_' + field.key);
 
-    return section.settings.items;
+    if (field.translatable === false) {
+        return name;
+    }
+
+    return name + ' — ' + t('admin.item_lang_' + locale);
+}
+
+/** The fields of one entry, or null when this type has no form. */
+function itemFields(section) {
+    return itemSchema(section)?.fields ?? null;
+}
+
+/**
+ * The array this type stores its entries in.
+ *
+ * Created on the settings bag if absent, under the type's OWN key — `ctas`
+ * for the hero, `steps` for the value chain — rather than under `items` for
+ * everything, which is what left three of the landing page's blocks with no
+ * form at all.
+ */
+function items(section) {
+    const key = itemSchema(section)?.list ?? 'items';
+
+    section.settings = section.settings ?? {};
+    section.settings[key] = section.settings[key] ?? [];
+
+    return section.settings[key];
 }
 
 function addItem(section) {
     const blank = {};
-    itemSchema(section).forEach((f) => {
+
+    itemFields(section).forEach((f) => {
         blank[f.key] = '';
+
+        // Both halves from the start, so the English input has somewhere to
+        // write and the saved shape is the one the site reads.
+        if (f.translatable !== false) {
+            blank[f.key + '_en'] = '';
+        }
     });
+
     items(section).push(blank);
 }
 
@@ -434,14 +533,30 @@ function updateSettings(section, text) {
                         </div>
 
                         <div v-for="(item, i) in items(section)" :key="i" class="items__row">
-                            <Field
-                                v-for="f in itemSchema(section)"
-                                :key="f.key"
-                                v-model="item[f.key]"
-                                :label="f.label"
-                                :type="f.type ?? 'text'"
-                                :rows="2"
-                            />
+                            <template v-for="f in itemFields(section)" :key="f.key">
+                                <!--
+                                    Both languages, side by side. `settings` is
+                                    one JSON column for the two of them, so the
+                                    English half sits beside the Arabic on the
+                                    same entry — and used to be reachable only
+                                    through the JSON box below.
+                                -->
+                                <Field
+                                    v-model="item[f.key]"
+                                    :label="fieldLabel(f, 'ar')"
+                                    :type="f.type ?? 'text'"
+                                    :rows="2"
+                                />
+
+                                <Field
+                                    v-if="f.translatable !== false"
+                                    v-model="item[f.key + '_en']"
+                                    :label="fieldLabel(f, 'en')"
+                                    :type="f.type ?? 'text'"
+                                    :rows="2"
+                                    dir="ltr"
+                                />
+                            </template>
 
                             <div class="items__tools">
                                 <button

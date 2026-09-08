@@ -201,6 +201,21 @@ return [
     'section_gallery' => 'صور المعرض',
     'section_items' => 'العناصر',
     'add_item' => 'إضافة عنصر',
+    // The fields of one repeatable entry, named for the person filling them in
+    // rather than for the key they are stored under.
+    'item_field_title' => 'العنوان',
+    'item_field_body' => 'النص',
+    'item_field_label' => 'نص الزر',
+    'item_field_question' => 'السؤال',
+    'item_field_answer' => 'الإجابة',
+    'item_field_icon' => 'الأيقونة',
+    'item_field_number' => 'الرقم',
+    'item_field_year' => 'السنة',
+    // Not shown to a visitor: it tags the enquiry with the audience the button
+    // belongs to (government · partner · artisan).
+    'item_field_source' => 'الشريحة (لا تظهر للزائر)',
+    'item_lang_ar' => 'عربي',
+    'item_lang_en' => 'إنجليزي',
     'advanced_json' => 'إعدادات متقدمة (JSON)',
 
     // Lead form builder
