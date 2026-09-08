@@ -151,6 +151,15 @@ once.
 18px/700 or larger — that is what `.btn--cta-lg` is for. Everywhere else use
 `--action-600`. `#8685D8` is never body text on white; use `--lavender-700`.
 
+**Never write a brand colour as a literal.** The four identity colours are settings
+rows the client edits on `/admin/brand`, and `App\Support\Palette` derives ten shades
+from them into a `<style>` block in `app.blade.php`. A hex or an `rgba(0, 37, 70, …)`
+anywhere in a stylesheet, a scoped block or a template is a colour that stays the old
+one after a rebrand — which is how the Sadu thread, the loading bar and a hundred
+and three washes came to be the things a rebrand could not reach.
+Use `var(--navy-900)` for the colour and `rgb(var(--navy-rgb) / .08)` for a tint of
+it. The defaults in `tokens.css` are the only place the identity's hexes appear.
+
 **`Model::preventLazyLoading()` is on in local.** An N+1 throws in development rather
 than shipping (§7.4).
 
