@@ -94,21 +94,25 @@ return [
              * recommendation for Amad Craft, not a change to make unasked.
              */
             /*
-             * ARABIC CARRIES NO LABEL HERE, AND THAT IS THE POINT.
+             * NEITHER LANGUAGE CARRIES A LABEL HERE, ON INSTRUCTION.
              *
-             * «B2B · CRAFT SUPPLY» is a Latin phrase, and it was printing
-             * twice on a page written entirely in Arabic — once above the
-             * headline and once standing in the seam. The English site is
-             * where it belongs.
+             * «B2B · CRAFT SUPPLY» was dropped from the Arabic page on
+             * 7 September — a Latin phrase printing twice on a page written
+             * entirely in Arabic — and from the English page on 8 September,
+             * where the vertical half of it stood in the seam over the
+             * opening paragraph rather than beside it.
              *
-             * No Arabic replacement is written: a label like that is copy,
-             * and copy comes from Amad Craft (§22.1). Writing one here to
+             * No replacement is written for either. A label like that is
+             * copy, and copy comes from Amad Craft (§22.1); inventing one to
              * fill the space is the exact thing the first constraint forbids.
-             * Set `eyebrow` in the panel and both the label and the vertical
-             * lettering come back on the Arabic page.
+             *
+             * Kept as an empty content value rather than a code branch, so it
+             * costs nothing to change the decision again: write `eyebrow` or
+             * `eyebrow_en` in the panel and both the horizontal label and the
+             * vertical lettering come back for that language.
              */
             'eyebrow' => null,
-            'eyebrow_en' => 'B2B · CRAFT SUPPLY',
+            'eyebrow_en' => null,
             'image' => [
                 'alt' => 'جولة داخل معرض أمد الحرف',
                 'url' => '/videos/amadcraft.gif',
