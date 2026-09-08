@@ -39,6 +39,10 @@ Route::get('/', LocaleRedirectController::class)->name('root');
 | points at one sitemap per language.
 */
 Route::get('/robots.txt', [SeoFileController::class, 'robots'])->name('robots');
+// Built rather than stored: it carries the site's name and its dominant
+// colour, and both are the client's to change. public/site.webmanifest was
+// deleted so this route is what answers the path.
+Route::get('/site.webmanifest', [SeoFileController::class, 'manifest'])->name('manifest');
 Route::get('/sitemap.xml', [SeoFileController::class, 'index'])->name('sitemap');
 Route::get('/sitemap-{locale}.xml', [SeoFileController::class, 'locale'])
     ->whereIn('locale', array_keys(config('site.locales')))
