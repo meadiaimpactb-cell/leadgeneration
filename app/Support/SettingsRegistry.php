@@ -170,6 +170,23 @@ class SettingsRegistry
             'notifications.alert_intro' => ['screen' => 'notifications', 'type' => 'textarea', 'order' => 11],
             'notifications.summary_subject' => ['screen' => 'notifications', 'type' => 'text', 'order' => 20],
 
+            /*
+             * The four identity colours (§23).
+             *
+             * Screen `brand` is NOT one of SCREENS, for the same reason
+             * `notifications` is not: these have an editor of their own, on
+             * the brand screen, where the person choosing a colour can see
+             * the shades derived from it and what the choice does to the
+             * contrast the design depends on. Naming the screen here keeps
+             * them off `advanced`, which would otherwise adopt them as
+             * unknown keys and offer the same four values a second editor —
+             * a plain text box, with none of that.
+             */
+            'brand.colour.navy' => ['screen' => 'brand', 'type' => 'text', 'order' => 10],
+            'brand.colour.lavender' => ['screen' => 'brand', 'type' => 'text', 'order' => 11],
+            'brand.colour.orange' => ['screen' => 'brand', 'type' => 'text', 'order' => 12],
+            'brand.colour.gold' => ['screen' => 'brand', 'type' => 'text', 'order' => 13],
+
             // ---- robots.txt, on a screen of its own ---------------------
             'seo.robots_txt' => ['screen' => 'robots', 'type' => 'code', 'order' => 10],
 

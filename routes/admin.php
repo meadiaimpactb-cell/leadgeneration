@@ -195,6 +195,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('brand', [BrandController::class, 'edit'])->name('brand.edit');
         Route::post('brand', [BrandController::class, 'store'])->name('brand.store');
         Route::delete('brand/{medium}', [BrandController::class, 'destroy'])->name('brand.destroy');
+        // The four identity colours. PUT, not POST: it replaces the whole
+        // palette every time, so sending it twice leaves the same four rows.
+        Route::put('brand/palette', [BrandController::class, 'palette'])->name('brand.palette');
 
         Route::resource('users', UserController::class)->except(['show']);
 

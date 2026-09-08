@@ -102,7 +102,7 @@ return [
     'contact.dock_note.en' => 'Reassurance line (English)',
     'contact.dock_note.en_hint' => 'The same, on the English version.',
     'contact.header_cta.ar' => 'Header button (Arabic)',
-    'contact.header_cta.ar_hint' => 'The orange button at the top of the page. Leave it empty and the button disappears.',
+    'contact.header_cta.ar_hint' => 'The call-to-action button at the top of the page. Leave it empty and the button disappears.',
     'contact.header_cta.en' => 'Header button (English)',
     'contact.header_cta.en_hint' => 'The same, on the English version.',
     'site.footer_blurb.ar' => 'Footer blurb (Arabic)',

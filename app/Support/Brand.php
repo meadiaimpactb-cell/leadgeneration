@@ -27,17 +27,13 @@ class Brand
     /** Every asset the client may replace. */
     public const COLLECTIONS = ['logo_light', 'logo_dark', 'favicon', 'og_image'];
 
-    /**
-     * The four approved colours, shown read-only so the client can copy them
-     * into a deck or a print job without asking. Not editable — see
-     * BrandController for why.
+    /*
+     * The four colours used to be listed here, read-only. They are the
+     * client's to change now and they live in App\Support\Palette, which owns
+     * both the approved values and everything derived from them. Repeating
+     * them here would have been a second answer to the same question, and the
+     * copy nobody remembers to update.
      */
-    public const PALETTE = [
-        ['name' => 'navy', 'hex' => '#002546'],
-        ['name' => 'lavender', 'hex' => '#8685D8'],
-        ['name' => 'orange', 'hex' => '#D7653B'],
-        ['name' => 'gold', 'hex' => '#DCAD75'],
-    ];
 
     /**
      * @return array{id: int, url: string, name: string}|null

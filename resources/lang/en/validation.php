@@ -228,6 +228,11 @@ return [
         'name' => 'name',
         'job_title' => 'job title',
         'sector' => 'sector',
+        // The four identity colours, on the brand screen.
+        'navy' => 'the dominant colour',
+        'lavender' => 'the secondary colour',
+        'orange' => 'the action colour',
+        'gold' => 'the premium colour',
     ],
 
 ];

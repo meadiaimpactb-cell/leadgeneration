@@ -125,6 +125,17 @@ return [
         ],
     ],
 
+    /*
+     * The shape rule.
+     *
+     * Used by the brand screen's colour fields, which pass a message of
+     * their own saying what a colour looks like. This is the fallback for
+     * anywhere else the rule is ever used — and the reason it exists at
+     * all is that an untranslated rule renders as the word `regex` at an
+     * Arabic-speaking client.
+     */
+    'regex' => 'صيغة :attribute غير صحيحة.',
+
     'attributes' => [
         'slug' => 'المعرّف في الرابط',
         'contact' => 'البريد الإلكتروني',
@@ -137,5 +148,10 @@ return [
         'file' => 'الملف',
         'email' => 'البريد الإلكتروني',
         'password' => 'كلمة المرور',
+        // The four identity colours, on the brand screen.
+        'navy' => 'اللون الغامق',
+        'lavender' => 'اللون الثانوي',
+        'orange' => 'لون الإجراء',
+        'gold' => 'اللون المميّز',
     ],
 ];

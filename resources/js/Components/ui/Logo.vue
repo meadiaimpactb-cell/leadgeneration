@@ -31,6 +31,17 @@ const props = defineProps({
         default: 'navy',
         validator: (v) => ['navy', 'lavender', 'black', 'white'].includes(v),
     },
+    /**
+     * Draw the mark that ships with the build, never the client's upload.
+     *
+     * For the brand screen, and only for it. Everywhere else on the site the
+     * upload has to win — that is the whole point of the slot. But the screen
+     * that offers to replace the shipped mark has to be able to show what the
+     * shipped mark IS, and it said «using the logo shipped with the system»
+     * into an empty box: the one place on the site where a client could not
+     * see the logo was the logo screen.
+     */
+    shipped: { type: Boolean, default: false },
 });
 
 const { t } = useTranslation();
@@ -42,6 +53,10 @@ const page = usePage();
  * Every other tone sits on paper.
  */
 const uploaded = computed(() => {
+    if (props.shipped) {
+        return null;
+    }
+
     const brand = page.props.brand ?? {};
 
     return props.tone === 'white' ? brand.logo_dark : brand.logo_light;

@@ -106,7 +106,7 @@ return [
     'contact.dock_note.en' => 'سطر الطمأنة بالإنجليزية',
     'contact.dock_note.en_hint' => 'نفس الشيء، في النسخة الإنجليزية.',
     'contact.header_cta.ar' => 'زر الهيدر بالعربية',
-    'contact.header_cta.ar_hint' => 'نص الزر البرتقالي أعلى الصفحة. اتركه فارغًا فيختفي الزر.',
+    'contact.header_cta.ar_hint' => 'نص زر الدعوة أعلى الصفحة. اتركه فارغًا فيختفي الزر.',
     'contact.header_cta.en' => 'زر الهيدر بالإنجليزية',
     'contact.header_cta.en_hint' => 'نفس الشيء، في النسخة الإنجليزية.',
     'site.footer_blurb.ar' => 'سطر التعريف في الفوتر بالعربية',

@@ -10,6 +10,7 @@ use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
 use App\Support\Brand;
+use App\Support\Palette;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -242,18 +243,32 @@ class AdminWorkspaceTest extends TestCase
         $this->assertSame(1, preg_match('/'.$fields['tracking.ga4_id']['pattern'].'/', 'G-ABCD123456'));
     }
 
+    /**
+     * The brand screen hands over the four colours — and ships none of them.
+     *
+     * This test used to assert the opposite: that the palette was read-only
+     * and no settings row could hold a colour. §10.2's reason was a good one,
+     * and it is answered in App\Support\Palette rather than dropped — the
+     * shades that carry a contrast guarantee are derived by measuring the
+     * guarantee. What survives from the old test is the half that still
+     * matters: an installation that has changed nothing is the approved
+     * identity, and it is the identity because no row says otherwise, not
+     * because a seeder wrote the same four values somewhere else.
+     */
     #[Test]
-    public function the_brand_palette_is_read_only(): void
+    public function the_brand_screen_offers_the_four_colours_and_seeds_none(): void
     {
-        // §10.2 fixes the four colours and every contrast ratio is calculated
-        // against them, so there is no endpoint that can change one.
         $props = $this->actingAs($this->admin)
             ->get('/admin/brand')->assertOk()
             ->viewData('page')['props'];
 
         $this->assertCount(4, $props['palette']);
-        $this->assertSame('#002546', $props['palette'][0]['hex']);
+        $this->assertSame('#002546', $props['palette']['navy']);
+        $this->assertSame(Palette::IDENTITY, $props['identity']);
 
+        // Nothing stored: the identity is the fallback, not a seeded row, so
+        // there is one answer to "what colour is this site" and no second copy
+        // of it to drift.
         $this->assertSame([], array_filter(
             Setting::query()->pluck('key')->all(),
             fn (string $key): bool => str_contains($key, 'colour') || str_contains($key, 'color'),
